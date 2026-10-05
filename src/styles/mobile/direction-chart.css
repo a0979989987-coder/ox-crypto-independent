@@ -1,0 +1,80 @@
+    /* ===== v3.6 refinement: compact LONG/SHORT toggle + mobile chart readability ===== */
+    .scanner-head-actions {
+      margin-left:auto;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      min-width:0;
+    }
+    .direction-toggle-btn {
+      height:24px;
+      min-width:48px;
+      padding:0 8px;
+      border:1px solid #2b425a;
+      border-radius:var(--ox-radius-pill);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:4px;
+      background:#0b1522;
+      color:#9fb0c6;
+      font-size:9px;
+      font-weight:900;
+      line-height:1;
+      white-space:nowrap;
+      box-shadow:inset 0 1px 0 #ffffff08;
+      transition:color .16s ease,border-color .16s ease,background .16s ease,transform .16s ease;
+    }
+    .direction-toggle-btn:hover { color:var(--ink); border-color:#4b627e; }
+    .direction-toggle-btn:active { transform:scale(.97); }
+    .direction-toggle-btn.is-long { color:#54d5aa; border-color:#2d765f; background:#38c99b0d; }
+    .direction-toggle-btn.is-short { color:#f07b91; border-color:#814355; background:#ee617c0d; }
+    .direction-toggle-icon { font-size:10px; line-height:1; transition:transform .16s ease; }
+    .direction-toggle-btn.is-short .direction-toggle-icon { transform:translateY(1px); }
+
+    body.theme-light .direction-toggle-btn { background:#f6f9fc; color:#53677f; border-color:#c4d1df; box-shadow:none; }
+    body.theme-light .direction-toggle-btn.is-long { color:#187859; background:#eaf8f2; border-color:#8bc9b5; }
+    body.theme-light .direction-toggle-btn.is-short { color:#b53f59; background:#fff0f3; border-color:#df9cac; }
+
+    @media (max-width:720px) {
+      .workspace > aside .panel-head { min-height:38px !important; padding:6px 5px !important; gap:3px !important; }
+      .workspace > aside .panel-title { font-size:9.5px !important; white-space:nowrap; }
+      .scanner-head-actions { gap:3px; }
+      .direction-toggle-btn { height:20px; min-width:38px; padding:0 5px; gap:2px; font-size:7px; border-radius:var(--ox-radius-pill); }
+      .direction-toggle-icon { font-size:8px; }
+      #pool-count { display:none !important; }
+
+      /* Mobile: current price already exists on the price axis. Keep only a tiny candle countdown in the safe top-right area. */
+      .price-timer {
+        top:7px !important;
+        right:54px !important;
+        transform:none !important;
+        min-width:0 !important;
+        width:auto !important;
+        padding:2px 5px !important;
+        border-radius:5px !important;
+        background:#08111bd9 !important;
+        border-color:#2a3b52 !important;
+        box-shadow:0 1px 4px #0006 !important;
+        font-size:0 !important;
+        line-height:1 !important;
+      }
+      .price-timer small {
+        display:block !important;
+        margin:0 !important;
+        color:#c9a24e !important;
+        font-size:6.5px !important;
+        font-weight:800 !important;
+        line-height:1.15 !important;
+        white-space:nowrap !important;
+      }
+      body.theme-light .price-timer {
+        background:#ffffffeb !important;
+        border-color:#c8d4df !important;
+        box-shadow:0 1px 4px #3341551a !important;
+      }
+      body.theme-light .price-timer small { color:#976000 !important; }
+    }
+
+  
+

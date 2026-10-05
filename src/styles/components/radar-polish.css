@@ -1,0 +1,76 @@
+/* Event importance is yellow in both themes, independently of result colors. */
+body.ox-terminal .oxn-root .oxn-stars {color:#f7cb52!important}
+body.ox-terminal.theme-light.theme-light .oxn-root .oxn-stars {color:#f2bf18!important}
+body.ox-terminal.theme-light.theme-light .tw-radar-root .tw-stock-watch.active,
+body.ox-terminal.theme-light.theme-light #view-radar .watch-star.is-starred {color:#f2bf18!important;filter:drop-shadow(0 0 3px #ffdf6580)!important}
+body.ox-terminal.theme-light.theme-light .tw-radar-root .tw-stock-watch.active svg {fill:#f2bf1838!important}
+
+/* A glass filter on the empty outer shell traps fixed descendants in its box. */
+body.ox-terminal #market-unavailable-card.tw-radar-root {
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  filter:none!important;
+  transform:none!important;
+  perspective:none!important;
+  contain:none!important;
+  will-change:auto!important;
+}
+body.ox-terminal .tw-radar-root .twr-scan-button {
+  position:fixed!important;
+  inset:auto 24px 28px auto!important;
+  margin:0!important;
+  padding:0!important;
+  display:grid!important;
+  place-items:center!important;
+  box-sizing:border-box!important;
+  line-height:0!important;
+}
+body.ox-terminal .tw-radar-root .twr-scan-button svg {
+  display:block!important;
+  width:22px!important;
+  height:22px!important;
+  margin:0!important;
+  padding:0!important;
+  overflow:visible;
+  transform-box:view-box!important;
+  transform-origin:50% 50%!important;
+}
+body.ox-terminal .tw-radar-root .twr-scan-button[aria-busy="true"] svg {animation:twr-centered-scan 1.2s linear infinite}
+@keyframes twr-centered-scan {to {transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){body.ox-terminal .tw-radar-root .twr-scan-button[aria-busy="true"] svg {animation:none}}
+@media(max-width:720px) {
+  body.ox-terminal .tw-radar-root .twr-scan-button {
+    right:max(18px,env(safe-area-inset-right))!important;
+    bottom:calc(92px + env(safe-area-inset-bottom))!important;
+  }
+}
+
+/* White-theme selection uses color alone, with no halo or neon shadow. */
+body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar .coin-card.selected {
+  border-left-color:var(--ox-selected-color,#267bc9)!important;
+  outline:1px solid var(--ox-selected-color,#267bc9)!important;
+  outline-offset:-1px!important;
+  background:var(--ox-selected-fill,#eff6fd)!important;
+  box-shadow:none!important;
+}
+body.ox-terminal.theme-light #view-radar[data-price-direction="up"] {--ox-selected-color:#267bc9;--ox-selected-fill:#eff6fd}
+body.ox-terminal.theme-light #view-radar[data-price-direction="down"] {--ox-selected-color:#d64d69;--ox-selected-fill:#fff2f5}
+
+@media(max-width:700px) {
+  body.ox-terminal .tw-radar-root .twr-results-panel {margin-inline:0!important;padding-inline:0!important}
+  body.ox-terminal .tw-radar-root .twr-list {gap:8px!important}
+  body.ox-terminal .tw-radar-root .tw-stock-card {min-height:144px!important;padding:8px!important}
+  body.ox-terminal .tw-radar-root .tw-stock-quote {margin-block:5px!important}
+  body.ox-terminal .tw-radar-root .tw-stock-risk-area {min-height:36px!important}
+  body.ox-terminal .tw-radar-root .tw-stock-risk-area.no-progress {min-height:28px!important}
+}
+/* Render the chart's native high-density pixels without a compositor filter. */
+body.ox-terminal .tw-chart-radar :is(.chart-container,canvas) {filter:none!important;opacity:1!important}
+
+::view-transition-old(root),::view-transition-new(root) {animation-duration:480ms;animation-timing-function:ease-in-out;mix-blend-mode:normal}
+::view-transition-old(root) {animation-name:ox-theme-out}
+::view-transition-new(root) {animation-name:ox-theme-in}
+@keyframes ox-theme-out {to {opacity:0}}
+@keyframes ox-theme-in {from {opacity:0}}
+body.ox-theme-changing,body.ox-theme-changing * {transition:background-color 480ms ease,color 480ms ease,border-color 480ms ease,box-shadow 480ms ease!important}
+@media(prefers-reduced-motion:reduce){::view-transition-old(root),::view-transition-new(root) {animation:none}body.ox-theme-changing,body.ox-theme-changing * {transition:none!important}}

@@ -1,0 +1,822 @@
+<!doctype html>
+<!-- deploy-retry: 2026-09-23 -->
+<html lang="zh-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+  <script src="src/components/navigation/page-touch.js?v=20261005-nozoom1"></script>
+  <script src="src/components/account/feature-access.js?v=20261005-first24"></script>
+  <script src="src/core/public-feed.js?v=20261005-first24"></script>
+  <script src="src/components/control-panel/resource-guard.js?v=20261005-first24"></script>
+  <link rel="icon" type="image/png" href="ox-logo.png">
+  <meta name="color-scheme" content="dark light">
+  <meta name="description" content="OX Market Command Center - 市場總覽、指標、雷達篩選、K 線與提醒工作區。">
+  <script src="src/app/live-visibility.js?v=20261001-tiercomb2"></script>
+  <script src="src/components/loading-state.js?v=20261004-markets2"></script>
+  <title>OX 加密｜Crypto Market Command Center</title>
+  <!-- build: v4.0-modular-classified-rc2-2026-09-22 -->
+  <!-- build-refine: v3.8-ui-glass-fluid-2026-09-22 -->
+  <!-- TradingView Lightweight Charts™ Copyright (c) TradingView, Inc. https://www.tradingview.com/ -->
+  <script src="src/vendor/lightweight-charts-4.2.3.js"></script>
+  <link rel="stylesheet" href="src/styles/core/foundation.css?v=20261005-touch1">
+  <link rel="stylesheet" href="src/styles/components/benchmark-alert-detail.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/layout/three-view-shell.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/releases/v31-ui-refinement.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/layout/command-center.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/navigation/compact-dock.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/navigation/final-dock.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-system.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-complete.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-readability.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/control-center.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/layout/compact-header.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/feature-pack.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/mobile/watchlist-chart.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/mobile/direction-chart.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/releases/v361-strength-liquidation.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/premium-glass.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/liquid-glass.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/strength-liquidation.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/motion.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/mobile/btc-hero.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/layout/current-uiux.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/layout/responsive.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/releases/v37-existing-fixes.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/ios-liquid-glass.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/releases/v37-last-mile.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/releases/v38-fluid-refinement.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/radar-light-tune.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/fullscreen-lightglass.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/feature-search-provider.css?v=20261005-weeklist4">
+  <link rel="stylesheet" href="src/styles/components/news-center.css?v=20261005-glow-size15">
+  <link rel="stylesheet" href="src/styles/themes/editorial-terminal.css?v=20261005-dockmenu">
+
+<!-- CSS moved: ox-premium-glass-design-system -->
+
+
+<!-- CSS moved: ox-liquid-glass-design-system -->
+
+
+<!-- CSS moved: ox-strength-liquidation-upgrade -->
+
+
+<!-- CSS moved: ox-v36-motion-system -->
+
+
+<!-- CSS moved: ox-v36-btc-hero-mobile-refinement -->
+
+<!-- OX v3.6 · current main UI/UX optimization · active -->
+<!-- CSS moved: ox-v36-current-main-uiux-optimization -->
+
+<!-- CSS moved: ox-v36-final-responsive-ux -->
+
+<script src="src/components/layout/responsive-guard.js?v=20261001-tiercomb2"></script>
+
+
+<!-- CSS moved: ox-v37-existing-ui-fixes -->
+
+
+<!-- CSS moved: ox-v381-ios-liquid-glass-max -->
+
+  <link rel="stylesheet" href="src/styles/themes/editorial-radar.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/radar-detail-neon.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/chart-toolbar.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/chart-drawings.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/home-preview.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/radar-turnover.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/radar-combined.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/live-visibility.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/components/control-menu-compact.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/account/account.css?v=20261002-uid-entry">
+  <link rel="preload" as="style" href="src/markets/crypto/patterns/patterns.css?v=20261002-quiet1">
+  <link rel="preload" as="style" href="src/markets/crypto/analytics/flow.css?v=20261001-tiercomb2">
+  <link rel="preload" as="style" href="src/markets/crypto/bubbles/bubbles.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-compat.css?v=20261005-graytop5">
+  <link rel="stylesheet" href="src/styles/themes/light-platinum.css?v=20261005-glow-size15">
+  <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261005-weeklist4">
+  <link rel="stylesheet" href="src/styles/layout/mobile-content-width.css?v=20261005-gutters1">
+  <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261005-clarity1">
+</head>
+<body class="ox-terminal" data-view="radar">
+
+
+<header class="ox-shell-header">
+  <div class="wrap nav">
+    <span class="ox-mobile-location" data-terminal-view>Crypto</span>
+    <nav class="ox-desktop-nav" aria-label="桌面主要功能">
+      <button type="button" data-view-target="home">總覽</button>
+      <button type="button" data-view-target="strength">市場指標</button>
+      <button type="button" data-view-target="radar" class="active">雷達</button>
+      <button type="button" data-view-target="data">資訊</button>
+      <button type="button" data-view-target="media">OX Journal</button>
+    </nav>
+    <div class="nav-stats">
+      <button class="ox-menu-btn" id="ox-control-open" type="button" aria-label="開啟 OX 控制中心" aria-controls="ox-control-panel" aria-expanded="false">
+        <span class="ox-menu-glyph" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" focusable="false"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span>
+      </button>
+    </div>
+  </div>
+</header>
+<div hidden aria-hidden="true"><i id="dot"></i><span id="scan-status"></span><button id="btn-force-rescan" type="button" tabindex="-1"></button></div>
+<div class="wrap ox-live-shell" aria-live="polite">
+  <div class="ox-live-strip">
+    <span class="ox-live-badge">OX LIVE</span>
+    <div class="ox-live-window"><span id="ox-live-text">正在整理市場即時資訊…</span></div>
+  </div>
+</div>
+
+<!-- ===== OX CONTROL：右側控制中心（v3.6 isolated UI module） ===== -->
+<div class="ox-control-overlay" id="ox-control-overlay" aria-hidden="true">
+  <aside class="ox-control-panel" id="ox-control-panel" role="dialog" aria-modal="true" aria-label="OX 控制中心">
+
+    <div class="ox-control-scroll">
+      <div class="ox-control-view active" data-control-view="main">
+        <div class="ox-control-section-label">Identity</div>
+        <div class="ox-control-group">
+          <button class="ox-control-row" id="ox-control-account-open" type="button">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.7-4.2 3-6.3 7-6.3s6.3 2.1 7 6.3"/></svg></span>
+            <span class="ox-control-copy"><b id="ox-account-title">登入 / 註冊</b></span>
+            <span class="ox-control-side"><span class="ox-control-ui-tag" id="ox-account-action-tag">OX</span><span class="ox-control-arrow">›</span></span>
+          </button>
+        </div>
+
+        <div class="ox-control-group"><button class="ox-control-row" id="ox-control-media" type="button"><span class="ox-control-icon"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m10 9 5 3-5 3z"/></svg></span><span class="ox-control-copy"><b>媒體</b></span><span class="ox-control-side"><span class="ox-control-arrow">›</span></span></button></div>
+        <div class="ox-control-section-label">Appearance</div>
+        <div class="ox-control-group">
+          <div class="ox-control-row">
+            <span class="ox-control-icon" aria-hidden="true">OX</span>
+            <span class="ox-control-copy"><b>OX LIVE</b></span>
+            <span class="ox-control-side"><label class="ox-control-toggle" aria-label="顯示 OX LIVE"><input type="checkbox" data-setting-key="oxLive"><span></span></label></span>
+          </div>
+          <div class="ox-control-row">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></span>
+            <span class="ox-control-copy"><b>主題</b></span>
+            <span class="ox-control-side">
+              <span class="ox-theme-segment" aria-label="主題切換">
+                <button type="button" data-control-theme="dark">深色</button>
+                <button type="button" data-control-theme="light">白金</button>
+                <button type="button" data-control-theme="system">自動</button>
+              </span>
+            </span>
+          </div>
+        </div>
+
+        <div class="ox-control-section-label">Market</div>
+        <div class="ox-control-group">
+          <div class="ox-control-row">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.7 4 5.7 4 9s-1.4 6.3-4 9c-2.6-2.7-4-5.7-4-9s1.4-6.3 4-9Z"/></svg></span>
+            <span class="ox-control-copy"><b>市場</b><small id="ox-market-status-text" hidden>Crypto</small></span>
+            <span class="ox-control-side ox-market-segment">
+              <button class="ox-market-chip active" type="button" data-market-choice="crypto">加密</button>
+            </span>
+          </div>
+        </div>
+
+        <div class="ox-control-group">
+          <button class="ox-control-row" id="ox-control-advanced-open" type="button">
+            <span class="ox-control-icon" aria-hidden="true">⚙</span>
+            <span class="ox-control-copy"><b>進階設定</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+        </div>
+      </div>
+
+      <div class="ox-control-view" data-control-view="advanced">
+        <button class="ox-control-advanced-back" id="ox-control-advanced-back" type="button">‹ <span>進階設定</span></button>
+        <div class="ox-control-section-label">System</div>
+        <div class="ox-control-group">
+          <div class="ox-control-row">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 20h4"/></svg></span>
+            <span class="ox-control-copy"><b>通知提醒</b><small id="ox-control-notify-status">檢查瀏覽器通知權限中…</small></span>
+            <span class="ox-control-side">
+              <label class="ox-control-toggle" title="通知偏好總開關"><input id="ox-control-notify-toggle" type="checkbox"><span></span></label>
+            </span>
+          </div>
+          <button class="ox-control-row" id="ox-control-open-notifications" type="button">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M4 12h16M12 4v16"/></svg></span>
+            <span class="ox-control-copy"><b>通知設定</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+          <button class="ox-control-row" id="ox-control-open-settings" type="button">
+            <span class="ox-control-icon" aria-hidden="true">⚙</span>
+            <span class="ox-control-copy"><b>完整設定</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+          <button class="ox-control-row" id="ox-control-test-notification" type="button">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg></span>
+            <span class="ox-control-copy"><b>測試通知</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+          <div class="ox-control-row">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9Z"/><path d="M17 9c1 .8 1.5 1.8 1.5 3S18 14.2 17 15"/></svg></span>
+            <span class="ox-control-copy"><b>通知鈴聲</b></span>
+            <span class="ox-control-side"><label class="ox-control-toggle"><input id="ox-control-sound-toggle" type="checkbox" checked><span></span></label></span>
+          </div>
+          <div class="ox-control-row">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M18.4 15A7 7 0 1 1 19 8"/></svg></span>
+            <span class="ox-control-copy"><b>資料更新</b><small id="ox-control-data-status" hidden>即時 / 自動更新</small></span>
+            <span class="ox-control-side"><button class="ox-control-refresh" id="ox-control-refresh" type="button">重新整理</button></span>
+          </div>
+        </div>
+
+        <div class="ox-control-section-label">Support</div>
+        <div class="ox-control-group">
+          <button class="ox-control-row" id="ox-control-feedback-open" type="button">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M4 5h16v11H8l-4 4Z"/><path d="M8 9h8M8 12h5"/></svg></span>
+            <span class="ox-control-copy"><b>意見回饋</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+          <button class="ox-control-row" id="ox-control-about-toggle" type="button" aria-expanded="false">
+            <span class="ox-control-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.2"/></svg></span>
+            <span class="ox-control-copy"><b>關於 / 版本</b></span>
+            <span class="ox-control-side"><span class="ox-control-arrow">›</span></span>
+          </button>
+          <div class="ox-control-changelog" id="ox-control-changelog">v4.0 RC1 · 漸進式模組化基礎、外部 CSS / JS與 rollback 檢查。<br>圖表技術來源：<a href="https://www.tradingview.com/" target="_blank" rel="noopener noreferrer">TradingView Lightweight Charts™</a></div>
+        </div>
+      </div>
+
+      <div class="ox-control-view" data-control-view="account">
+        <div class="ox-feedback-head"><button class="ox-control-back" id="ox-control-account-back" type="button" aria-label="返回控制中心">‹</button><div><h3>OX 帳號</h3><small>OX ACCOUNT</small></div></div>
+        <div class="ox-auth-card"><p>使用一個 OX 帳號，連接未來的 OX 服務。</p><button class="ox-account-open-login" type="button" data-ox-account-open>登入 / 註冊 OX 帳號</button><small class="ox-account-provider-note">帳號服務尚未連接驗證供應商。此頁不會建立假帳號或保存密碼。</small></div>
+      </div>
+
+      <div class="ox-control-view" data-control-view="feedback">
+        <div class="ox-feedback-head">
+          <button class="ox-control-back" id="ox-control-feedback-back" type="button" aria-label="返回控制中心">‹</button>
+          <div><h3>意見回饋</h3><small>FEEDBACK · UI READY / BACKEND NOT CONNECTED</small></div>
+        </div>
+        <form class="ox-feedback-form" id="ox-feedback-form">
+          <label class="ox-feedback-field"><span>回饋類型</span><select id="ox-feedback-type"><option>功能建議</option><option>操作問題</option><option>資料 / 顯示問題</option><option>其他</option></select></label>
+          <label class="ox-feedback-field"><span>問題 / 建議內容</span><textarea id="ox-feedback-message" placeholder="告訴我你遇到的問題，或希望 OX 下一步改善什麼。" required></textarea></label>
+          <label class="ox-feedback-field"><span>Email（選填）</span><input id="ox-feedback-email" type="email" placeholder="yourname@gmail.com"></label>
+          <button class="ox-feedback-submit" type="submit">送出</button>
+          <div class="ox-feedback-status" id="ox-feedback-status">目前沒有串接 Formspree、Web3Forms 或自建後端，因此按下送出不會寄信。</div>
+        </form>
+      </div>
+    </div>
+  </aside>
+  <button class="ox-control-edge-close" id="ox-control-close" type="button" aria-label="收起選單"><span aria-hidden="true">›</span></button>
+</div>
+
+<div class="ox-account-overlay" id="ox-account-overlay" aria-hidden="true">
+  <section class="ox-account-shell" role="dialog" aria-modal="true" aria-labelledby="ox-account-title-main">
+    <button class="ox-account-close" id="ox-account-close" type="button" aria-label="關閉 OX 帳號">×</button>
+    <div class="ox-account-brand"><span class="ox-account-mark">OX</span><span>OXLOVE</span></div>
+    <div class="ox-account-layout">
+      <div class="ox-account-intro"><p class="ox-account-eyebrow">ONE OX ACCOUNT</p><h1>一個帳號，<br>連接你的 OX 服務。</h1><p>為 OX 市場工具與未來服務準備的統一帳號。</p><div class="ox-account-lightwave" aria-hidden="true"></div></div>
+      <div class="ox-account-card" id="ox-account-auth-view">
+        <div class="ox-account-tabs" role="tablist" aria-label="登入或建立帳號"><button type="button" role="tab" id="ox-account-tab-login" aria-selected="true">登入</button><button type="button" role="tab" id="ox-account-tab-register" aria-selected="false">建立帳號</button></div>
+        <h2 id="ox-account-title-main">登入 OX</h2><p class="ox-account-lead">一個帳號，連接你的 OX 服務。</p>
+        <button class="ox-account-google" type="button" id="ox-account-google"><span class="ox-google-g" aria-hidden="true">G</span>使用 Google 繼續</button>
+        <div class="ox-account-divider"><span>或使用電子郵件</span></div>
+        <form id="ox-account-email-form" novalidate><label for="ox-account-email">電子郵件</label><input id="ox-account-email" type="email" autocomplete="email" placeholder="name@example.com" required><div class="ox-account-password-wrap" hidden><label for="ox-account-password">密碼</label><input id="ox-account-password" type="password" autocomplete="new-password" minlength="8" placeholder="至少 8 個字元"></div><button class="ox-account-submit" type="submit" id="ox-account-email-submit">繼續</button></form>
+        <p class="ox-account-status" id="ox-account-auth-status" role="status" aria-live="polite">Google 與 Email 驗證服務尚未連接，現在不會提交或保存你的資料。</p>
+        <button class="ox-account-skip" type="button" id="ox-account-skip">繼續使用基礎版</button>
+      </div>
+      <div class="ox-account-card ox-account-center" id="ox-account-center" hidden>
+        <p class="ox-account-eyebrow">OX ACCOUNT</p><h2>帳號中心</h2><p>登入服務尚未連接。</p>
+        <h3>連結服務</h3><div class="ox-service-row"><span>OX Market</span><b>目前產品</b></div><div class="ox-service-row"><span>Bitget</span><b id="ox-bitget-link-summary">尚未連結</b><button class="ox-bitget-link-open" id="ox-bitget-link-open" type="button" aria-controls="ox-bitget-link-section">連結 / 管理 UID</button></div><button class="ox-account-submit" type="button" id="ox-account-bitget-info">了解完整 Crypto 資格</button>
+        <div class="ox-account-entitlements" data-entitlement-schema='{"guest":true,"ox_member":false,"crypto_full":false}'><small>權限架構預留</small><span>GUEST</span><span>OX_MEMBER</span><span>CRYPTO_FULL</span></div>
+        <button class="ox-account-skip" type="button" data-ox-account-login>返回登入</button>
+      </div>
+    </div>
+    <footer class="ox-account-footer"><span>OX Account · 統一 OX 身份</span><span id="ox-account-preferences">主題沿用目前網站設定</span></footer>
+  </section>
+</div>
+<div class="ox-account-modal" id="ox-account-info-modal" aria-hidden="true"><div role="dialog" aria-modal="true" aria-labelledby="ox-account-info-title"><button type="button" aria-label="關閉" id="ox-account-info-close">×</button><h2 id="ox-account-info-title">完整 Crypto 資格</h2><p>完整 Crypto 會員功能未開放驗證。未來將依 Bitget 合作帳號資格與 KYC 狀態判定。</p></div></div>
+
+<main class="wrap" style="padding-top:10px;padding-bottom:40px">
+
+  <section class="market-unavailable-card" id="market-unavailable-card" hidden>
+    <div class="market-unavailable-icon">OX</div>
+    <div><div class="page-kicker">MARKET ARCHITECTURE READY</div><h2 id="market-unavailable-title">市場</h2><p id="market-unavailable-copy">市場切換架構已完成；資料源尚未接入，因此不會把加密貨幣資料混入這個市場。</p></div>
+  </section>
+
+
+  <!-- OX editorial market overview. Data IDs and action hooks remain connected to the existing runtime. -->
+  <section class="app-view" id="view-home" data-app-view="home">
+    <div class="v33-home-page ox-editorial-home">
+      <section class="ox-home-main" aria-label="市場主圖及市場分析">
+        <article class="ox-home-chart" aria-label="BTC 價格與圖表">
+          <div class="ox-home-quote" aria-label="BTC 核心行情">
+            <div class="ox-home-identity"><img class="ox-home-coin" src="src/assets/token-logos/btc.png?v=20261001-tiercomb2" alt="Bitcoin" width="48" height="48"><div><span class="ox-home-ticker">BTC</span><small>BTCUSDT · Bitget USDT 永續</small></div></div>
+            <div class="ox-home-price"><strong id="home-btc-price">—</strong><small>USDT</small><span id="home-btc-change">—</span></div>
+          </div>
+          <div class="ox-chart-heading">
+            <div><span class="ox-eyebrow">PRICE ACTION</span><h1>Bitcoin <span>/</span> USD</h1></div>
+            <div class="v34-home-main-toolbar" aria-label="BTC 首頁主圖週期">
+              <button class="v34-home-mini-tf active" type="button" data-home-mini-tf="1H">1H</button>
+              <button class="v34-home-mini-tf" type="button" data-home-mini-tf="4H">4H</button>
+              <button class="v34-home-mini-tf" type="button" data-home-mini-tf="1D">1D</button>
+              <button class="v34-home-mini-tf" type="button" data-home-mini-tf="1W">1W</button>
+            </div>
+          </div>
+          <div class="btc-premium-chart-wrap" data-home-symbol="BTCUSDT" role="button" tabindex="0" aria-label="打開 BTC 雷達">
+            <div id="home-btc-mini-chart" class="v34-home-main-chart" aria-label="BTC 首頁 K 線"></div>
+          </div>
+
+        </article>
+
+        <section class="ox-home-t1" aria-label="T1 T2 T3 上漲與下跌候選">
+          <div class="ox-home-t1-side"><div class="ox-home-t1-head"><span>上漲 · T1 / T2 / T3</span></div><div id="home-t1-long-list" class="ox-home-t1-list"><span class="ox-home-t1-empty">等待上漲候選</span></div></div>
+          <div class="ox-home-t1-side"><div class="ox-home-t1-head"><span>下跌 · T1 / T2 / T3</span></div><div id="home-t1-short-list" class="ox-home-t1-list"><span class="ox-home-t1-empty">等待下跌候選</span></div></div>
+        </section>
+
+        <aside class="ox-home-analysis" aria-label="市場強度與 OX 分析">
+          <div class="ox-analysis-heading"><div><span class="ox-eyebrow">MARKET INTELLIGENCE</span><h2>市場強度</h2></div><button type="button" data-view-target="strength" class="ox-text-button" aria-label="查看完整市場指標">↗</button></div>
+          <div class="ox-strength-duo">
+            <div class="ox-strength-reading"><svg class="ox-strength-gauge" viewBox="0 0 160 104" aria-hidden="true"><path class="ox-gauge-track" d="M15 85 A67 67 0 1 1 145 85" pathLength="100"/><path id="home-btc-arc" class="ox-gauge-value" d="M15 85 A67 67 0 1 1 145 85" pathLength="100" stroke-dasharray="0 100"/></svg><small>BTC 強度</small><div><strong id="home-btc-strength">—</strong><span>/ 100</span></div><span id="home-btc-strength-label">等待</span><div class="ox-meter"><i id="home-btc-strength-meter"></i></div></div>
+            <div class="ox-strength-reading"><svg class="ox-strength-gauge" viewBox="0 0 160 104" aria-hidden="true"><path class="ox-gauge-track" d="M15 85 A67 67 0 1 1 145 85" pathLength="100"/><path id="home-alt-arc" class="ox-gauge-value" d="M15 85 A67 67 0 1 1 145 85" pathLength="100" stroke-dasharray="0 100"/></svg><small>小幣強度</small><div><strong id="home-alt-strength">—</strong><span>/ 100</span></div><span id="home-alt-strength-label">等待</span><div class="ox-meter"><i id="home-alt-meter"></i></div></div>
+          </div>
+          <div class="ox-strength-context"><span id="home-btc-strength-note">結構 / 資金 / 動能 / Trigger</span><span id="home-alt-note">等待全市場輪巡</span></div>
+          <div class="ox-score-panel"><span class="ox-eyebrow">OX SCORE <span class="ox-score-index">市場環境評分</span></span><div class="ox-score-reading"><strong id="home-market-score">—</strong><span>/ 100</span></div><span id="home-market-state">資料整理中</span><div class="ox-meter"><i id="home-market-meter"></i></div></div>
+
+        </aside>
+      </section>
+
+    </div>
+  </section>
+
+  <section class="app-view active" id="view-radar" data-app-view="radar">
+
+
+
+  <section class="top-summary compact-summary">
+    <div class="metric-card market-line-card">
+      <div class="market-line-item market-line-price">
+        <label id="ticker-pair">BTCUSDT · Bitget</label>
+        <strong id="price">—</strong>
+        <small id="ticker-meta">等待行情資料中…</small>
+      </div>
+      <div class="market-line-item">
+        <label>24H 漲跌幅</label>
+        <strong id="change">—</strong>
+        <small id="btc-rel">相對 BTC：—</small>
+      </div>
+      <div class="market-line-item">
+        <label>24H 成交額</label>
+        <strong id="quote">—</strong>
+        <small id="quote-rank">全市場百分位：—</small>
+      </div>
+      <div class="market-line-item radar-analysis-cell">
+        <label>OX 綜合評分</label>
+        <strong id="ox-score">—</strong>
+        <small id="ox-tier-label">分級：待評定</small>
+      </div>
+      <div class="market-line-item radar-analysis-cell">
+        <label>主導 Setup 型態</label>
+        <strong id="ox-setup">—</strong>
+        <small id="ox-rs-desc">RS 狀態：—</small>
+      </div>
+    </div>
+  </section>
+
+  <div class="workspace">
+    <article class="panel chart-box">
+      <h2 class="panel-title ox-chart-ghost-title" id="chart-head-title"><span>BTCUSDT 永續合約</span></h2>
+
+      <button class="btn-act" id="btn-chart-exit-overlay" type="button" aria-label="收合圖表" title="收合圖表"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3v6H3m18 0h-6V3M3 15h6v6m6 0v-6h6"/></svg></button>
+
+      <div class="chart-controls">
+        <div class="ctrl-group chart-timeframe-group">
+          <div class="chart-timeframe-strip" id="chart-timeframe-strip" aria-label="圖表時間級別">
+          <button class="btn-tf" data-tf="1m">1m</button>
+          <button class="btn-tf" data-tf="5m">5m</button>
+          <button class="btn-tf" data-tf="15m">15m</button>
+          <button class="btn-tf" data-tf="1H">1H</button>
+          <button class="btn-tf" data-tf="4H">4H</button>
+          <button class="btn-tf active" data-tf="1D">1D</button>
+          <button class="btn-tf" data-tf="1W" title="再次點擊設定時間級別">1W<span class="tf-hint" aria-hidden="true">▾</span></button>
+          </div>
+        </div>
+        <div class="ctrl-group chart-tool-actions">
+          <button class="chart-tool-icon indicator-open-button" id="chart-indicator-open" type="button" aria-label="指標與篩選設定" aria-haspopup="dialog" title="指標與篩選設定"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h4m4 0h8M4 12h10m4 0h2M4 18h2m4 0h10"/><circle cx="10" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></button>
+          <button class="chart-tool-icon" id="radar-scanner-toggle" type="button" aria-label="收起右側雷達" title="收起右側雷達" aria-expanded="true" aria-controls="radar-scanner-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
+          <button class="btn-act ox-chart-expand-dot" id="btn-chart-fullscreen" type="button" aria-label="展開圖表" aria-pressed="false" title="展開圖表"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m6 0h6v-6"/></svg></button>
+        </div>
+      </div>
+
+      <div id="chart" class="chart-container">
+        <div id="chart-loading" class="chart-loading-overlay">載入歷史 K 線中…</div>
+        <div id="chart-key-labels" class="chart-key-labels" aria-hidden="true"></div>
+        <div id="price-timer" class="price-timer">—</div>
+      </div>
+      <div class="chart-quickbar" hidden>
+        <div class="chart-quickitem"><label>24H 漲跌</label><strong id="quick-change">—</strong></div>
+        <div class="chart-quickitem quick-volume-item"><label>24H USDT 成交量</label><strong id="quick-volume">—</strong></div>
+        <div class="chart-quickitem"><label>前高</label><strong id="quick-high">—</strong></div>
+        <div class="chart-quickitem"><label>前低</label><strong id="quick-low">—</strong></div>
+      </div>
+    </article>
+
+    <aside class="panel" id="radar-scanner-panel">
+      <div class="scanner-tabs" role="tablist" aria-label="雷達分級">
+        <button class="tab-btn radar-combined-tab active" data-tab="all" aria-haspopup="menu" aria-expanded="false" aria-controls="radar-tier-menu" type="button" aria-label="雷達：依序顯示 T1、T2、T3" title="T1 / T2 / T3 雷達">
+          <span class="radar-combined-mark">
+            <svg class="radar-combined-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="9"/>
+              <circle cx="12" cy="12" r="4.5"/>
+              <path d="M12 12 18.4 5.6"/>
+              <circle cx="7.5" cy="15.5" r="1" fill="currentColor" stroke="none"/>
+            </svg>
+            <span class="radar-tier-current" aria-hidden="true"></span>
+            <span class="radar-combined-chevron" data-radar-tier-cycle aria-hidden="true">▼</span>
+          </span>
+        </button>
+        <button class="tab-btn" data-tab="surge" aria-label="合約 24H 成交額前 50 名" title="合約 24H 成交額前 50 名"><svg class="radar-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M13 3c1 5-4 6-3 10 2-1 3-3 3-3 4 3 5 5 4 8-1 3-7 4-10 0-3-5 2-8 6-15Z"/></svg> <span class="tab-badge" id="badge-surge">0</span></button>
+        <button class="tab-btn" data-tab="watch" aria-label="自選清單" title="自選清單"><span class="watch-tab-desktop">自選</span><span class="watch-tab-mobile"><svg class="radar-tab-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9Z"/></svg></span> <span class="tab-badge" id="badge-watch">0</span></button>
+        <button class="direction-toggle-btn is-long chart-tool-icon" id="direction-toggle" type="button" aria-label="目前多頭，點擊切換空頭" aria-pressed="false" title="目前：多頭模式；點擊切換空頭"><span class="direction-toggle-icon" aria-hidden="true">↑</span></button>
+      </div>
+      <span id="pool-count" hidden aria-live="polite">掃描中…</span>
+      <div id="radar-tier-menu" role="menu" aria-label="雷達分級" hidden>
+        <button type="button" role="menuitemradio" data-radar-tier="all" aria-checked="true">全部</button>
+        <button type="button" role="menuitemradio" data-radar-tier="t1" aria-checked="false">T1</button>
+        <button type="button" role="menuitemradio" data-radar-tier="t2" aria-checked="false">T2</button>
+        <button type="button" role="menuitemradio" data-radar-tier="t3" aria-checked="false">T3</button>
+      </div>
+      <div id="screener-list" class="scanner-body">
+        <div style="padding:24px;text-align:center;color:var(--muted)">正在初始化 Bitget 全市場資料…</div>
+      </div>
+    </aside>
+  </div>
+
+  <section class="panel detail-panel" id="ox-detail-panel">
+    <div class="panel-head">
+      <h3 class="panel-title">OX 幣種詳情 · <span id="detail-symbol">BTCUSDT</span></h3>
+      <span class="pill" id="detail-tier">Benchmark</span>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-cell"><label>OX Score</label><strong id="detail-ox">—</strong></div>
+      <div class="detail-cell"><label>流動性</label><strong id="detail-liq">—</strong></div>
+      <div class="detail-cell"><label>資金活躍</label><strong id="detail-flow">—</strong></div>
+      <div class="detail-cell"><label>結構</label><strong id="detail-structure">—</strong></div>
+      <div class="detail-cell"><label>Relative Strength</label><strong id="detail-rs">—</strong></div>
+      <div class="detail-cell"><label>Setup</label><strong id="detail-setup">—</strong></div>
+      <div class="detail-cell"><label>方向</label><strong id="detail-side">—</strong></div>
+      <div class="detail-cell"><label>Setup Progress</label><strong id="detail-progress-text">—</strong><div class="detail-progress"><i id="detail-progress-bar"></i></div></div>
+      <div class="detail-cell"><label>入選狀態</label><strong id="detail-confidence">—</strong></div>
+      <div class="detail-cell"><label>Trigger</label><strong id="detail-trigger">—</strong></div>
+      <div class="detail-cell detail-volume-cell"><label>24H USDT 成交量</label><strong id="detail-volume">—</strong></div>
+      <div class="detail-cell"><label>前高 / 前低</label><strong id="detail-levels">—</strong></div>
+    </div>
+    <div class="detail-reasons">
+      <h4>為什麼 OX 選到這顆？</h4>
+      <div id="detail-reasons-list"><div class="detail-reason wait">等待分析資料…</div></div>
+    </div>
+    <div class="alert-state-row">
+      <span class="alert-chip" id="detail-high-alert">前高提醒：未設定</span>
+      <span class="alert-chip" id="detail-low-alert">前低提醒：未設定</span>
+      <span class="alert-chip">小級別看圖時，提醒自動使用 4H 結構關鍵位</span>
+    </div>
+  </section>
+
+  </section><!-- /view-radar -->
+
+  <section class="app-view" id="view-strength" data-app-view="strength">
+    <div class="strength-page">
+      <div class="page-hero">
+        <div class="page-kicker">MARKET INTELLIGENCE / 01</div>
+        <h1>看清市場的強弱。</h1>
+        <p>從相對強弱、資金與結構，理解當下的交易環境。</p>
+      </div>
+
+
+      <section class="strength-compare-panel glass-strong" aria-labelledby="strength-compare-title">
+        <div class="strength-compare-top">
+          <div>
+            <div class="page-kicker">OX Relative Strength</div>
+            <h2 id="strength-compare-title">BTC vs 小幣相對強弱</h2>
+            <p>直接比較目前 BTC 與全市場小幣環境，不是買賣訊號。</p>
+          </div>
+          <span class="strength-compare-leader" id="strength-compare-leader">等待資料</span>
+        </div>
+        <div class="strength-compare-body">
+          <div class="strength-compare-side btc"><small>BTC</small><strong id="strength-compare-btc">50</strong><span>BTC Strength</span></div>
+          <div class="strength-compare-center">
+            <div class="strength-compare-scale" aria-label="BTC 與小幣相對強弱">
+              <i class="alt" id="strength-compare-alt-bar"></i>
+              <i class="btc" id="strength-compare-btc-bar"></i>
+              <b class="mid"></b>
+            </div>
+            <div class="strength-compare-gap"><span>差距</span><strong id="strength-compare-gap">0</strong></div>
+          </div>
+          <div class="strength-compare-side alt"><small>ALT</small><strong id="strength-compare-alt">50</strong><span>Alt Strength</span></div>
+        </div>
+        <div class="strength-compare-note" id="strength-compare-note">正在整理 BTC 與小幣相對環境。</div>
+      </section>
+
+      <div class="strength-grid">
+        <article class="strength-card">
+          <div class="strength-head">
+            <div><h2>BTC 強弱</h2><p>結構 · 資金 · 動能 · Trigger</p></div>
+            <span class="strength-state" id="btc-strength-state">中</span>
+          </div>
+          <div class="strength-dial" aria-label="BTC 強弱儀表">
+            <div class="strength-arc"></div>
+            <i class="strength-needle" id="btc-strength-needle"></i>
+            <div class="strength-value" id="btc-strength-value">50</div>
+          </div>
+          <div class="strength-scale"><span><b>0</b> 弱</span><span><b>50</b> 中</span><span><b>100</b> 強</span></div>
+          <div class="strength-note" id="btc-strength-note">等待 BTC 分析資料。</div>
+        </article>
+
+        <article class="strength-card">
+          <div class="strength-head">
+            <div><h2>小幣強弱</h2><p>流動性 · 型態廣度 · 結構 · 資金活躍</p></div>
+            <span class="strength-state" id="alt-strength-state">中</span>
+          </div>
+          <div class="strength-dial" aria-label="小幣強弱儀表">
+            <div class="strength-arc"></div>
+            <i class="strength-needle" id="alt-strength-needle"></i>
+            <div class="strength-value" id="alt-strength-value">50</div>
+          </div>
+          <div class="strength-scale"><span><b>0</b> 弱</span><span><b>50</b> 中</span><span><b>100</b> 強</span></div>
+          <div class="strength-note" id="alt-strength-note">等待全市場輪巡累積足夠樣本。</div>
+        </article>
+      </div>
+
+
+
+
+      <div class="strength-explain">
+        <strong style="color:var(--ink)">怎麼看：</strong>
+        0 靠近極弱、50 為中性區、100 靠近極強；實際分數會落在兩者之間。這是「市場環境」評分，不是買賣訊號。
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-data" data-app-view="data">
+    <div class="oxn-page">
+      <div data-news-surface="market"></div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-news" data-app-view="news">
+    <div class="oxn-page">
+      <div data-news-surface="all"></div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-media" data-app-view="media">
+    <div class="media-page">
+      <div class="media-card">
+        <div class="media-intro">
+          <div class="media-logo">
+            <img src="ox-logo.png" alt="OX Logo" onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+            <span class="media-logo-fallback" style="display:none">OX</span>
+          </div>
+          <div>
+            <div class="page-kicker">OX JOURNAL / PERSPECTIVES</div>
+            <h1>少一點雜訊。<br>多一點判斷。</h1>
+            <p>把大量市場雜訊整理成真正值得花時間看的行情。從市場結構出發，分享 OX 的觀察、方法與思考。</p>
+            <button class="ox-news-open" type="button" data-open-cross-news>查看官方市場消息</button>
+          </div>
+        </div>
+
+        <div class="media-sections">
+          <section class="media-section">
+            <h2>我是誰</h2>
+            <p>我是 OX 的創作者，也是一個長期把時間花在價格行為、趨勢、結構與資金流動上的交易者。OX 不是從「我想做一個網站」開始，而是從我每天都遇到的一個問題開始：市場裡有太多幣，但真正值得看的其實很少。</p>
+          </section>
+
+          <section class="media-section">
+            <h2>OX 是做什麼的</h2>
+            <p>OX 是一個市場篩選與看盤工具。加密市場使用 OX 經典判斷，先找有效水平或斜線壓力、右側方向與同向量能，再用 T1、T2、T3 幫我縮小觀察範圍。最後的交易決策仍然交給人。</p>
+          </section>
+
+          <section class="media-section full">
+            <h2>核心功能</h2>
+            <div class="media-function-list">
+              <div class="media-function-item"><b>全市場輪巡</b><span>不是只看漲幅榜，而是持續掃描通過流動性門檻的 USDT 永續合約。</span></div>
+              <div class="media-function-item"><b>資金與結構篩選</b><span>成交額、放量、相對強弱、價格結構與 Setup 一起看，而不是只靠單一指標。</span></div>
+              <div class="media-function-item"><b>T1 / T2 / T3</b><span>T1 完整條件最多 10 個且不補位；其餘合格同向候選依序列 T2 15 個、T3 15 個，階段另列。</span></div>
+              <div class="media-function-item"><b>前高前低提醒</b><span>把真正重要的大級別結構位置變成可監控的提醒，而不是一直盯著螢幕。</span></div>
+            </div>
+          </section>
+
+          <section class="media-section full">
+            <h2>我的想法</h2>
+            <p class="story-quote">「市場最底層的東西不是指標，而是錢。錢進入市場，留下成交量、波動與價格行為；價格行為形成 K 線，K 線累積成結構，結構最後變成我們看到的趨勢。」</p>
+            <p style="margin-top:16px">我做 OX，不是希望它替人預測下一根 K 線，也不是要它告訴所有人現在該買什麼。我更想做的是把不值得看的行情先排除掉。因為交易裡，選擇不做什麼，常常跟選擇做什麼一樣重要。</p>
+            <p style="margin-top:12px">我真正想留下的只有四件事：<strong style="color:var(--ink)">有錢、有流動性、有結構，而且是我看得懂的行情。</strong> OX 的角色，就是把幾百個標的縮成少數值得我親自打開 K 線確認的候選。</p>
+            <div class="media-social-links">
+              <a href="https://youtube.com/@snsheng?si=Dgl_f_Xv5SfPXvX-" target="_blank" rel="noopener">▶ YouTube</a>
+              <a href="https://line.me/ti/g2/FXj0yahd04U4JecSoC4uPInXiqhLulqdCl54Ag?utm_source=invitation&amp;utm_medium=link_copy&amp;utm_campaign=default" target="_blank" rel="noopener">LINE 社群</a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="app-view" id="view-settings" data-app-view="settings">
+    <div class="settings-page">
+      <div class="page-hero">
+        <div class="page-kicker">OX Settings</div>
+        <h1>設定</h1>
+        <p>通知偏好與主題會先保存在這台裝置；Email、簡訊與背景推送需要後端服務，之後可以直接接上。</p>
+      </div>
+
+      <div class="settings-grid">
+        <article class="settings-card">
+          <h2>接收方式與頻率</h2>
+          <label class="settings-field"><span>Gmail</span><input id="setting-email" type="email" autocomplete="email" placeholder="yourname@gmail.com"></label>
+          <label class="settings-field"><span>電話</span><input id="setting-phone" type="tel" autocomplete="tel" placeholder="+886 9xx xxx xxx"></label>
+          <label class="settings-field"><span>推算 / 彙整頻率</span>
+            <select id="setting-frequency">
+              <option value="1h">每 1 小時</option>
+              <option value="4h">每 4 小時</option>
+              <option value="8h">每 8 小時</option>
+              <option value="1d">每天</option>
+              <option value="1w">每週</option>
+            </select>
+          </label>
+          <div class="notification-health">
+            <div class="notification-health-head">
+              <span>瀏覽器通知</span>
+              <strong id="notification-permission-state">檢查中…</strong>
+            </div>
+            <small id="notification-support-hint">通知權限會以瀏覽器實際狀態為準，不會只看網站內的開關。</small>
+            <div class="notification-health-actions">
+              <button class="btn-act" id="btn-request-notification" type="button">授權 / 檢查</button>
+              <button class="btn-act" id="btn-test-notification" type="button">測試通知</button>
+              <button class="btn-act" id="btn-test-sound" type="button">測試鈴聲</button>
+            </div>
+          </div>
+        </article>
+
+        <article class="settings-card">
+          <h2>推送內容</h2>
+          <label class="settings-switch"><span>🔔 幣種突破前高 / 跌破前低</span><input type="checkbox" data-setting-key="breakout" checked></label>
+          <label class="settings-switch"><span>每小時強勢幣 T1 / T2 / T3</span><input type="checkbox" data-setting-key="tiers" checked></label>
+          <label class="settings-switch"><span>小幣強度到達 50</span><input type="checkbox" data-setting-key="alt50" checked></label>
+          <label class="settings-switch"><span>小幣強度到達 75</span><input type="checkbox" data-setting-key="alt75" checked></label>
+          <label class="settings-switch"><span>BTC 強度到達 50</span><input type="checkbox" data-setting-key="btc50" checked></label>
+          <label class="settings-switch"><span>BTC 強度到達 75</span><input type="checkbox" data-setting-key="btc75" checked></label>
+          <label class="settings-switch"><span>BTC 技術分析內容</span><input type="checkbox" data-setting-key="btcAnalysis" checked></label>
+          <label class="settings-switch"><span>重要新聞 <small>（功能預留）</small></span><input type="checkbox" data-setting-key="news"></label>
+        </article>
+
+        <article class="settings-card settings-wide">
+          <h2>背景主題</h2>
+          <div class="theme-buttons">
+            <button type="button" class="btn-act theme-choice" data-theme-choice="dark">黑色</button>
+            <button type="button" class="btn-act theme-choice" data-theme-choice="light">白金</button>
+            <button type="button" class="btn-act theme-choice" data-theme-choice="system">隨系統</button>
+          </div>
+          <label class="settings-switch"><span>顯示 OX LIVE</span><input type="checkbox" data-setting-key="oxLive"></label>
+          <p class="settings-hint" id="settings-status">設定會自動保存在目前瀏覽器。</p>
+        </article>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+
+<nav class="app-dock glass-nav" aria-label="主要功能">
+  <button class="dock-btn" type="button" data-view-target="home" aria-label="首頁">
+    <span class="dock-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11.2 12 4l9 7.2v8.3a1.5 1.5 0 0 1-1.5 1.5H15v-6H9v6H4.5A1.5 1.5 0 0 1 3 19.5z"/></svg></span><span>首頁</span>
+  </button>
+  <button class="dock-btn" type="button" data-view-target="strength" aria-label="指標">
+    <span class="dock-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 18v-5M10 18V8M16 18V4M22 18V11"/></svg></span><span>指標</span>
+  </button>
+  <button class="dock-btn dock-radar active" type="button" data-view-target="radar" aria-label="雷達">
+    <span class="dock-radar-orb glass-orb" aria-hidden="true">
+      <svg class="dock-radar-logo" viewBox="0 0 450 439" aria-label="OX Radar Logo" role="img" focusable="false">
+        <g fill="currentColor">
+          <rect x="0" y="0" width="202" height="43"/><rect x="247" y="0" width="203" height="43"/>
+          <rect x="0" y="80" width="202" height="42"/><rect x="247" y="80" width="202" height="42"/>
+          <rect x="0" y="159" width="202" height="42"/><rect x="247" y="159" width="202" height="42"/>
+          <rect x="0" y="238" width="449" height="42"/>
+          <rect x="0" y="317" width="202" height="42"/><rect x="248" y="317" width="202" height="42"/>
+          <rect x="0" y="396" width="202" height="43"/><rect x="247" y="396" width="203" height="43"/>
+        </g>
+      </svg>
+    </span><span class="dock-radar-label">雷達</span>
+  </button>
+  <button class="dock-btn" type="button" data-view-target="data" aria-label="資訊">
+    <span class="dock-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V11m5 8V5m5 14v-7m5 7V8M3 20h18"/></svg></span><span>資訊</span>
+  </button>
+  <button class="dock-btn" id="ox-dock-menu" type="button" aria-label="選單" aria-controls="ox-control-panel" aria-expanded="false">
+    <span class="dock-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></span><span>選單</span>
+  </button>
+</nav>
+
+
+<div id="toast" class="toast" role="status"></div>
+
+<div class="chart-tools-overlay" id="chart-tools-overlay" aria-hidden="true">
+  <section class="chart-tools-dialog" role="dialog" aria-modal="true" aria-label="指標與篩選" tabindex="-1">
+    <div class="chart-tools-panel" data-chart-tools-panel="indicators">
+      <div class="chart-indicator-options">
+        <label class="chart-indicator-option"><input type="checkbox" id="chk-vol" checked><span class="chart-indicator-check" aria-hidden="true"></span><span>成交量</span></label>
+        <label class="chart-indicator-option"><input type="checkbox" id="chk-ox-markers"><span class="chart-indicator-check" aria-hidden="true"></span><span>OX 指標</span></label>
+        <label class="chart-indicator-option key-level-visibility-toggle" title="只切換圖表顯示，不停止前高前低計算與提醒"><input type="checkbox" id="chk-key-levels"><span class="chart-indicator-check" aria-hidden="true"></span><span id="key-level-toggle-text">前高前低</span></label>
+      </div>
+      <div class="chart-level-alert-options" role="group" aria-label="前高前低提醒">
+        <button class="alert-btn" id="btn-alert-high" type="button">前高提醒</button>
+        <button class="alert-btn" id="btn-alert-low" type="button">前低提醒</button>
+      </div>
+      <div class="chart-filter-mode-section">
+        <h3>篩選模式</h3>
+        <div class="chart-filter-mode" role="group" aria-label="篩選模式">
+          <button type="button" data-filter-mode="classic" aria-pressed="true">經典</button>
+          <button type="button" data-filter-mode="custom" aria-pressed="false">自訂</button>
+          <button type="button" data-filter-mode="timeframes" aria-pressed="false">時間組合</button>
+        </div>
+        <div class="chart-custom-filters" id="chart-custom-filters" hidden>
+          <label><input type="checkbox" data-custom-filter="surge"><span>成交量放大</span></label>
+          <label><input type="checkbox" data-custom-filter="score"><span>OX 分數 75 以上</span></label>
+          <label><input type="checkbox" data-custom-filter="trigger"><span>型態觸發</span></label>
+          <small>需同時符合已開啟的條件；未開啟條件時顯示全部結果。</small>
+        </div>
+        <div id="crypto-tier-combination"></div>
+      </div>
+    </div>
+    <div class="chart-tools-panel" data-chart-tools-panel="timeframes" hidden>
+      <h3>顯示時間級別</h3>
+      <p>選擇要放在橫向時間列中的級別；未顯示的級別仍可從時間選單切換。</p>
+      <div class="chart-timeframe-preferences" id="chart-timeframe-preferences"></div>
+      <button class="chart-tools-save" type="button" id="chart-timeframe-save">儲存時間級別</button>
+    </div>
+    <button class="chart-tools-close" type="button" data-chart-tools-close aria-label="關閉指標設定"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button>
+  </section>
+</div>
+
+<script src="src/core/runtime-config.js?v=20261002-rank8"></script>
+<script src="src/components/strength/snapshots.js?v=20261001-tiercomb2"></script>
+<script src="src/components/alerts/level-alerts.js?v=20261001-tiercomb2"></script>
+<script src="src/components/strength/market-strength.js?v=20261005-touch1"></script>
+<script src="src/app/token-logos.js?v=20261001-tiercomb2"></script>
+<script src="src/app/view-home-theme.js?v=20261005-clarity1"></script>
+<script src="src/markets/crypto/api.js?v=20261005-first24"></script>
+<script src="src/markets/crypto/live-candles.js?v=20261005-first24"></script>
+<script src="src/core/classic-engine.js?v=20261002-rank8"></script>
+<script src="src/markets/crypto/liquidity-policy.js?v=20261002-rank8"></script>
+<script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
+<script src="src/markets/crypto/scanner.js?v=20261005-first24"></script>
+<script src="src/components/chart/workspace.js?v=20261005-first24"></script>
+<script src="src/markets/crypto/presentation.js?v=20261002-rank8"></script>
+<script src="src/components/account/store.js?v=20261005-graytop5"></script>
+<script src="src/components/control-panel/feature-pack.js?v=20261005-first24"></script>
+<script src="src/components/navigation/runtime-actions.js?v=20261001-tiercomb2"></script>
+<script src="src/components/radar/timeframe-filters.js?v=20261001-tiercomb2"></script>
+<script src="src/components/chart/toolbar.js?v=20261001-tiercomb2"></script>
+<script src="src/app/runtime-boot.js?v=20261005-first24"></script>
+
+<script src="src/components/motion/controller.js?v=20261001-tiercomb2"></script>
+
+
+
+<script src="src/components/navigation/repair.js?v=20261002-newsv2"></script>
+
+<script src="src/components/navigation/market-quick-switch.js?v=20261005-hover250"></script>
+<script src="src/components/news/center.js?v=20261005-stable18"></script>
+<script src="src/components/news/entry.js?v=20261002-nav6"></script>
+
+
+<script src="src/components/chart/mobile-interaction.js?v=20261001-tiercomb2"></script>
+
+
+<script src="src/components/chart/indicator-tooltip.js?v=20261001-tiercomb2"></script>
+
+
+<script src="src/components/account/summary.js?v=20261004-markets2"></script>
+<script src="src/components/account/auth.js?v=20261005-recovery3"></script>
+<script src="src/components/account/session.js?v=20261001-tiercomb2"></script>
+<script src="src/components/account/account.js?v=20261005-recovery3"></script>
+
+<!-- CSS moved: ox-v37-last-mile-fixes -->
+
+
+<!-- CSS moved: ox-v38-ui-glass-fluid-refinement -->
+
+
+<script src="src/app/market-glass-state.js?v=20261001-tiercomb2"></script>
+
+
+<script src="src/components/liquid-glass/runtime.js?v=20261001-tiercomb2"></script>
+
+
+<!-- CSS moved: ox-v382-light-radar-tune -->
+<script src="src/components/control-panel/short-panel-sync.js?v=20261001-tiercomb2"></script>
+
+
+<!-- CSS moved: ox-v383-fullscreen-lightglass-fix -->
+<script src="src/components/chart/focus-viewport.js?v=20261001-tiercomb2"></script>
+<script src="src/components/chart/drawings.js?v=20261005-graytop5"></script>
+<script src="src/components/chart/home-preview.js?v=20261005-graytop5"></script>
+
+
+<!-- OX v3.8.4 — OX CONTROL 功能搜尋 + 真實交易所 Data Provider 切換 -->
+<!-- CSS moved: ox-v384-feature-search-provider-switch-styles -->
+
+<script src="src/components/search/provider-switch.js?v=20261005-graytop5"></script>
+<script src="src/app/module-boot.js?v=20261005-first24"></script>
+
+<script src="src/app/editorial-workspace.js?v=20261004-markets2"></script>
+<script src="src/components/radar/controls.js?v=20261001-tiercomb2"></script>
+
+</body>
+</html>

@@ -1,0 +1,377 @@
+    /* ===== OX v2.3 additions: benchmark / key-level alerts / detail / mobile split ===== */
+    .benchmark-bar {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .benchmark-card {
+      width: 100%;
+      background: #0d1522;
+      border: 1px solid var(--line);
+      border-radius: var(--ox-radius-md);
+      padding: 10px 12px;
+      color: var(--ink);
+      text-align: left;
+    }
+    button.benchmark-card:hover { border-color: #3d5574; background: #111d2d; }
+    .benchmark-card label { display:block; color:var(--muted); font-size:10px; margin-bottom:2px; }
+    .benchmark-card strong { display:block; font-size:16px; font-variant-numeric:tabular-nums; }
+    .benchmark-sub { display:flex; gap:7px; align-items:center; margin-top:2px; color:var(--muted); font-size:10px; }
+    .benchmark-bias strong { color: var(--gold); }
+
+    .alert-controls { display:flex; gap:6px; align-items:center; flex-wrap:wrap; }
+    .alert-btn {
+      background:#111a28;
+      border:1px solid var(--line);
+      color:var(--muted);
+      border-radius:var(--ox-radius-xs);
+      padding:5px 8px;
+      font-size:11px;
+      font-weight:650;
+    }
+    .alert-btn.enabled-high { color:var(--gold); border-color:#8d6b2d; background:#f7bd5212; }
+    .alert-btn.enabled-low { color:#8fc0ff; border-color:#426a9d; background:#5ca5ff12; }
+    .alert-btn.triggered { color:var(--green); border-color:#2e8167; background:#38c99b12; }
+    .alert-btn:disabled { opacity:.45; cursor:not-allowed; }
+
+    .chart-quickbar {
+      display:grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap:1px;
+      background:var(--line);
+      border-top:1px solid var(--line);
+    }
+    .chart-quickitem { background:#0b1420; padding:8px 10px; min-width:0; }
+    .chart-quickitem label { display:block; color:var(--muted); font-size:9px; margin-bottom:2px; }
+    .chart-quickitem strong { display:block; font-size:11px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .mobile-coin-volume { display:none; }
+
+    .detail-panel { margin-top:12px; }
+    .detail-grid {
+      display:grid;
+      grid-template-columns: repeat(6, minmax(0,1fr));
+      gap:1px;
+      background:var(--line);
+    }
+    .detail-cell { background:#0c1622; padding:10px 12px; min-width:0; }
+    .detail-cell label { display:block; color:var(--muted); font-size:9px; margin-bottom:3px; }
+    .detail-cell strong { display:block; font-size:12px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .detail-progress { height:5px; background:#1a293b; border-radius:var(--ox-radius-pill); overflow:hidden; margin-top:5px; }
+    .detail-progress i { display:block; height:100%; width:0; background:linear-gradient(90deg,var(--blue),var(--gold)); border-radius:var(--ox-radius-pill); }
+    .detail-reasons { padding:11px 14px; border-top:1px solid var(--line); }
+    .detail-reasons h4 { margin:0 0 7px; font-size:12px; color:var(--ink); }
+    .detail-reason { font-size:10px; line-height:1.55; margin:3px 0; color:#b8c7d9; }
+    .detail-reason.ok { color:#8fe4c3; }
+    .detail-reason.wait { color:#e4c978; }
+    .alert-state-row { display:flex; gap:6px; flex-wrap:wrap; padding:9px 14px; border-top:1px solid var(--line); }
+    .alert-chip { font-size:9px; color:#bdd0e4; background:#132132; border:1px solid #304764; border-radius:var(--ox-radius-pill); padding:3px 7px; }
+
+    .mobile-only { display:none; }
+
+    @media (max-width: 1100px) {
+      .workspace { grid-template-columns: 1fr; }
+      .chart-container { height: 480px; }
+      .scanner-body {  }
+    }
+    @media (max-width: 720px) {
+      .top-summary { grid-template-columns: 1fr 1fr; }
+      .chart-controls { flex-direction: column; align-items: flex-start; }
+      .chart-container { height: 400px; }
+    }
+
+
+    .mobile-bench-label, .coin-symbol-mobile { display:none; }
+
+    /* Mobile-first split workstation: chart left / screener right */
+    @media (max-width: 720px) {
+      .wrap { max-width:none; padding:0 7px; }
+      header { position:sticky; }
+      .nav { height:52px; gap:7px; }
+      .brand { font-size:13px; gap:6px; line-height:1.15; }
+      .brand small { font-size:9px !important; }
+      .brand-logo { width:28px; height:28px; }
+      .nav-stats { gap:4px; font-size:8px; min-width:0; }
+      #btn-force-rescan { padding:4px 6px; font-size:8px; min-height:30px; }
+      .live { font-size:8px; max-width:74px; min-width:0; }
+      #scan-status { display:block; max-width:66px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+
+      main.wrap { padding-top:6px !important; }
+
+      /* Compact BTC / ETH benchmark buttons */
+      .benchmark-bar {
+        grid-template-columns:auto auto minmax(0,1fr);
+        gap:4px;
+        margin-bottom:6px;
+        align-items:stretch;
+      }
+      .benchmark-card {
+        border-radius:var(--ox-radius-xs);
+        min-height:34px;
+        padding:5px 7px;
+      }
+      button.benchmark-card {
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:5px;
+        min-width:76px;
+      }
+      .desktop-bench-label { display:none; }
+      .mobile-bench-label { display:inline; }
+      .benchmark-card label {
+        font-size:8px;
+        line-height:1;
+        margin:0;
+        white-space:nowrap;
+      }
+      .benchmark-card strong {
+        font-size:10px;
+        line-height:1.05;
+        margin:0;
+        white-space:nowrap;
+      }
+      button.benchmark-card .benchmark-sub { display:none; }
+      .benchmark-bias {
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        gap:5px;
+        padding:5px 6px;
+        min-width:0;
+      }
+      .benchmark-bias label { font-size:7px; }
+      .benchmark-bias strong { font-size:10px; }
+      .benchmark-bias .benchmark-sub { display:none; }
+
+      /* Current pair: make price the hero; remove secondary copy on mobile */
+      .top-summary {
+        grid-template-columns:1fr 1fr;
+        gap:5px;
+        margin:0 0 7px;
+      }
+      .top-summary .metric-card {
+        padding:7px 9px;
+        border-radius:var(--ox-radius-sm);
+        min-width:0;
+      }
+      .top-summary .metric-card:first-child {
+        grid-column:1 / -1;
+        min-height:72px;
+        display:flex;
+        flex-direction:column;
+        justify-content:center;
+      }
+      .top-summary .metric-card:nth-child(4),
+      .top-summary .metric-card:nth-child(5) { display:none; }
+      .metric-card label {
+        font-size:8px;
+        line-height:1.2;
+        margin-bottom:4px;
+      }
+      .metric-card strong {
+        font-size:18px;
+        line-height:1.08;
+        letter-spacing:.01em;
+      }
+      .metric-card:first-child strong {
+        font-size:29px;
+        line-height:1.05;
+      }
+      .top-summary .metric-card small { display:none; }
+
+      /* Keep the Crypto chart and ranked symbols visible together on phones. */
+      body[data-market="crypto"] #view-radar .workspace {
+        grid-template-columns:minmax(0,70%) minmax(0,30%);
+        gap:5px;
+        align-items:stretch;
+      }
+      .panel { border-radius:var(--ox-radius-sm); }
+      .panel-head { padding:7px 7px; gap:4px; }
+      .panel-title { font-size:10px; gap:3px; line-height:1.2; }
+      .pill { font-size:7px; padding:2px 4px; }
+      .chart-box { min-width:0; }
+      .chart-box .panel-head a#tv-ext-link { display:none; }
+      #btn-chart-fullscreen { padding:4px 5px; font-size:7px; }
+
+      .chart-controls { padding:5px 5px; display:block; }
+      .chart-controls .ctrl-group {
+        gap:3px;
+        flex-wrap:nowrap;
+        overflow-x:auto;
+        scrollbar-width:none;
+      }
+      .chart-controls .ctrl-group::-webkit-scrollbar { display:none; }
+      .btn-tf, .btn-act {
+        padding:5px 6px;
+        font-size:8px;
+        border-radius:var(--ox-radius-xs);
+        min-height:28px;
+        touch-action:manipulation;
+      }
+      .toggle-lbl {
+        font-size:8px;
+        white-space:nowrap;
+        line-height:1.25;
+      }
+      .alert-controls {
+        margin-top:4px;
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:4px;
+      }
+      .alert-btn {
+        padding:7px 4px;
+        font-size:8px;
+        min-height:33px;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+        touch-action:manipulation;
+      }
+
+      .chart-container { height:370px; }
+      .price-timer { min-width:54px; font-size:8px; padding:2px 3px; }
+      .price-timer small { font-size:7px; }
+      .chart-quickbar { grid-template-columns:repeat(3,1fr); }
+      .chart-quickitem.quick-volume-item { display:none; }
+      .chart-quickitem { padding:6px 6px; }
+      .chart-quickitem label { font-size:7px; line-height:1.2; }
+      .chart-quickitem strong { font-size:9px; line-height:1.2; }
+
+      /* Screener rail */
+      .workspace > aside {
+        min-width:0;
+        display:flex;
+        flex-direction:column;
+      }
+      .workspace > aside .panel-head {
+        min-height:38px;
+        padding:7px 6px;
+      }
+      .workspace > aside .panel-title { font-size:9.5px; }
+      #pool-count { display:none; }
+
+      .scanner-tabs {
+        padding:4px 3px;
+        gap:1px;
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        overflow:visible;
+      }
+      .tab-btn {
+        padding:6px 0;
+        font-size:7.5px;
+        border-radius:var(--ox-radius-xs);
+        min-height:29px;
+        touch-action:manipulation;
+      }
+      .tab-btn[data-tab="gainers"],
+      .tab-btn[data-tab="losers"] { display:none; }
+      .tab-badge { display:none; }
+
+      .scanner-body {
+        
+        
+        overflow-y:auto;
+      }
+      .coin-card {
+        padding:9px 6px;
+        min-height:72px;
+      }
+      .coin-top {
+        margin-bottom:3px;
+        align-items:flex-start;
+        gap:3px;
+      }
+      .coin-title {
+        gap:3px;
+        font-size:10px;
+        min-width:0;
+        line-height:1.25;
+        flex:1;
+      }
+      .coin-title > span:first-child {
+        font-size:8px !important;
+        flex:0 0 auto;
+      }
+      .coin-symbol-full { display:none; }
+      .coin-symbol-mobile {
+        display:inline;
+        font-size:11px;
+        font-weight:850;
+        color:var(--ink);
+        max-width:none;
+        overflow:visible;
+        text-overflow:clip;
+        white-space:nowrap;
+      }
+
+      /* On mobile prioritise coin name + OX; badges caused the name to disappear */
+      .coin-title > .badge { display:none; }
+      .coin-ox {
+        font-size:8px;
+        line-height:1.2;
+        white-space:nowrap;
+        flex:0 0 auto;
+      }
+      .coin-mid {
+        font-size:8px;
+        margin:5px 0 0;
+        display:block;
+        line-height:1.3;
+      }
+      .coin-mid .desktop-coin-meta { display:none; }
+      .mobile-coin-volume {
+        display:block;
+        color:#d6e2f1;
+        font-size:7.5px;
+        line-height:1.3;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      }
+      .coin-mid > .coin-change {
+        display:block;
+        margin-top:4px;
+        font-size:9px;
+        line-height:1.2;
+      }
+      .coin-reason,
+      .score-pills { display:none; }
+
+      .trad-row {
+        grid-template-columns:16px 1fr;
+        padding:7px 5px;
+        font-size:7px;
+      }
+      .trad-row > div:nth-last-child(-n+2) { display:none; }
+
+      .detail-panel { margin-top:7px; }
+      .detail-panel .panel-head { padding:7px 8px; }
+      .detail-grid { grid-template-columns:repeat(4,1fr); }
+      .detail-volume-cell { display:none; }
+      .detail-cell { padding:6px 6px; }
+      .detail-cell label { font-size:6px; }
+      .detail-cell strong { font-size:8px; }
+      .detail-reasons { padding:7px 8px; }
+      .detail-reasons h4 { font-size:9px; margin-bottom:4px; }
+      .detail-reason { font-size:7px; margin:2px 0; }
+      .alert-state-row { padding:6px 8px; gap:4px; }
+      .alert-chip { font-size:6px; padding:2px 5px; }
+      .extra-section { margin-top:8px; }
+      .extra-section .panel { padding:10px 12px !important; }
+      .extra-section h3 { font-size:10px !important; }
+      .extra-section p { font-size:8px !important; }
+      .mobile-only { display:block; }
+    }
+
+    @media (max-width: 390px) {
+      body[data-market="crypto"] #view-radar .workspace { grid-template-columns:minmax(0,69%) minmax(0,31%); }
+      .coin-symbol-mobile { font-size:10px; }
+      .coin-card { padding-left:5px; padding-right:5px; }
+      button.benchmark-card { min-width:70px; padding-left:5px; padding-right:5px; }
+      .metric-card:first-child strong { font-size:27px; }
+    }
+
+

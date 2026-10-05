@@ -1,0 +1,246 @@
+    /* ===== v3.6 refinement 3: light-theme readability / contrast ===== */
+    body.theme-light {
+      --ink:#0f172a;
+      --muted:#506278;
+      --line:#bfcddd;
+      --panel:#ffffff;
+      --panel-alt:#f5f8fb;
+      color:#0f172a !important;
+    }
+
+    /* Primary text: keep hierarchy crisp in light mode. */
+    body.theme-light h1,
+    body.theme-light h2,
+    body.theme-light h3,
+    body.theme-light h4,
+    body.theme-light strong,
+    body.theme-light .panel-title,
+    body.theme-light .coin-title,
+    body.theme-light .strength-value,
+    body.theme-light .v33-market-name,
+    body.theme-light .v33-market-value strong,
+    body.theme-light .v33-rank-symbol,
+    body.theme-light .v33-row-main b,
+    body.theme-light .v33-radar-cell strong,
+    body.theme-light .v33-action b {
+      color:#0f172a !important;
+    }
+
+    /* Secondary copy: darker than before so it remains readable outdoors / on mobile. */
+    body.theme-light .nav-stats,
+    body.theme-light .live,
+    body.theme-light .metric-card label,
+    body.theme-light .metric-card small,
+    body.theme-light .market-line-item label,
+    body.theme-light .market-line-item small,
+    body.theme-light .benchmark-card label,
+    body.theme-light .benchmark-sub,
+    body.theme-light .chart-quickitem label,
+    body.theme-light .detail-cell label,
+    body.theme-light .page-hero p,
+    body.theme-light .strength-head p,
+    body.theme-light .strength-note,
+    body.theme-light .strength-explain,
+    body.theme-light .strength-scale,
+    body.theme-light .media-intro p,
+    body.theme-light .media-section p,
+    body.theme-light .media-function-item span,
+    body.theme-light .settings-hint,
+    body.theme-light .settings-switch small,
+    body.theme-light .v33-home-hero p,
+    body.theme-light .v33-hero-stat label,
+    body.theme-light .v33-hero-stat small,
+    body.theme-light .v33-section-head p,
+    body.theme-light .v33-list-head span,
+    body.theme-light .v33-row-main small,
+    body.theme-light .v33-rank-no,
+    body.theme-light .v33-radar-cell label,
+    body.theme-light .v33-radar-cell small,
+    body.theme-light .v33-action small,
+    body.theme-light .v33-market-note,
+    body.theme-light .v33-watch-stage,
+    body.theme-light .v33-list-empty {
+      color:#52657d !important;
+    }
+
+    /* Cards: slightly stronger borders and separation on white backgrounds. */
+    body.theme-light .panel,
+    body.theme-light .metric-card,
+    body.theme-light .benchmark-card,
+    body.theme-light .strength-card,
+    body.theme-light .media-card,
+    body.theme-light .settings-card,
+    body.theme-light .detail-panel,
+    body.theme-light .extra-section,
+    body.theme-light .v33-home-hero,
+    body.theme-light .v33-card,
+    body.theme-light .v33-hero-stat,
+    body.theme-light .v33-radar-cell,
+    body.theme-light .v33-action {
+      border-color:#bfccda !important;
+      box-shadow:0 7px 22px rgba(51,65,85,.09) !important;
+    }
+
+    body.theme-light .panel-head,
+    body.theme-light .chart-controls,
+    body.theme-light .chart-benchmark-bar,
+    body.theme-light .scanner-tabs {
+      background:#f2f6fa !important;
+      border-color:#c4d1df !important;
+    }
+
+    /* Radar screener rows and detail section. */
+    body.theme-light .coin-card,
+    body.theme-light .trad-row {
+      color:#172033 !important;
+      border-color:#cfd9e4 !important;
+    }
+    body.theme-light .coin-mid,
+    body.theme-light .desktop-coin-meta,
+    body.theme-light .mobile-coin-volume {
+      color:#52657d !important;
+    }
+    body.theme-light .coin-reason,
+    body.theme-light .score-pill {
+      color:#455a73 !important;
+      background:#f0f5f9 !important;
+      border-color:#cbd7e4 !important;
+    }
+    body.theme-light .chart-quickbar,
+    body.theme-light .detail-grid {
+      background:#bccada !important;
+      border-color:#bccada !important;
+    }
+    body.theme-light .chart-quickitem,
+    body.theme-light .detail-cell {
+      background:#ffffff !important;
+      color:#172033 !important;
+    }
+    body.theme-light .chart-quickitem strong,
+    body.theme-light .detail-cell strong {
+      color:#172033 !important;
+    }
+    body.theme-light .detail-reasons,
+    body.theme-light .alert-state-row {
+      background:#ffffff !important;
+    }
+    body.theme-light .detail-reasons h4 { color:#172033 !important; }
+    body.theme-light .detail-reason { color:#4c6078 !important; }
+    body.theme-light .detail-reason.ok { color:#087a60 !important; }
+    body.theme-light .detail-reason.wait { color:#8b650d !important; }
+    body.theme-light .alert-chip {
+      color:#40566f !important;
+      background:#eef4f8 !important;
+      border-color:#bfcddd !important;
+    }
+
+    /* Strength page: increase copy contrast without changing the gauge palette. */
+    body.theme-light .strength-state {
+      color:#344a64 !important;
+      background:#eef4f8 !important;
+      border-color:#bfcddd !important;
+    }
+    body.theme-light .strength-note,
+    body.theme-light .strength-explain { color:#4b5f77 !important; }
+
+    /* Media page was still too pale in light mode. */
+    body.theme-light .media-intro p,
+    body.theme-light .media-section p,
+    body.theme-light .media-function-item span,
+    body.theme-light .media-links-placeholder {
+      color:#52657d !important;
+    }
+    body.theme-light .media-section h2 { color:#a86600 !important; }
+    body.theme-light .media-function-item,
+    body.theme-light .media-social-links a {
+      background:#f3f7fb !important;
+      border-color:#c7d3df !important;
+      color:#253a52 !important;
+    }
+
+    /* Settings: labels and fields need stronger foreground contrast. */
+    body.theme-light .settings-field,
+    body.theme-light .settings-switch {
+      color:#172033 !important;
+    }
+    body.theme-light .settings-field > span,
+    body.theme-light .settings-switch > span {
+      color:#172033 !important;
+    }
+    body.theme-light .settings-field input,
+    body.theme-light .settings-field select {
+      color:#172033 !important;
+      border-color:#b9c8d8 !important;
+      background:#ffffff !important;
+    }
+    body.theme-light .settings-field input::placeholder {
+      color:#7d8da0 !important;
+    }
+    body.theme-light .theme-choice:not(.active) {
+      color:#435870 !important;
+      background:#f2f6fa !important;
+      border-color:#c1cedc !important;
+    }
+
+    /* Home / Command Center: make small labels readable while preserving the gold hierarchy. */
+    body.theme-light .v33-home-hero,
+    body.theme-light .v33-card,
+    body.theme-light .v33-hero-stat,
+    body.theme-light .v33-radar-cell,
+    body.theme-light .v33-action,
+    body.theme-light .v33-list-head,
+    body.theme-light .v33-event-row,
+    body.theme-light .v33-watch-row,
+    body.theme-light .v33-rank-row {
+      color:#172033 !important;
+    }
+    body.theme-light .v33-market-badge,
+    body.theme-light .v33-row-pill {
+      color:#425a74 !important;
+      background:#f1f5f9 !important;
+      border-color:#bccada !important;
+    }
+    body.theme-light .v33-radar-summary {
+      background:#c5d2df !important;
+      border-color:#b8c6d5 !important;
+    }
+
+    /* OX LIVE: white-theme text should be clear but not overpower the gold badge. */
+    body.theme-light #ox-live-text { color:#334a63 !important; font-weight:600; }
+    body.theme-light .ox-live-strip {
+      background:linear-gradient(90deg,#fff8eb,#fbfcfe 48%,#f0f4f8) !important;
+      border-color:#a97927 !important;
+    }
+
+    /* Bottom dock: improve icon / label contrast in light mode. */
+    body.theme-light .dock-btn { color:#344b65 !important; }
+    body.theme-light .dock-btn .dock-icon { color:#344b65 !important; }
+    body.theme-light .dock-radar-label { color:#9e6500 !important; }
+
+    /* Inputs, buttons and subtle surfaces should not look washed out. */
+    body.theme-light .btn-act,
+    body.theme-light .btn-tf,
+    body.theme-light .alert-btn,
+    body.theme-light .pill {
+      color:#425870 !important;
+      background:#eef3f8 !important;
+      border-color:#bccada !important;
+    }
+    body.theme-light .btn-act:hover,
+    body.theme-light .btn-tf:hover,
+    body.theme-light .alert-btn:hover {
+      color:#172033 !important;
+      background:#e8eff6 !important;
+    }
+
+    @media (max-width:720px) {
+      body.theme-light .media-intro p,
+      body.theme-light .media-section p,
+      body.theme-light .strength-note,
+      body.theme-light .strength-explain,
+      body.theme-light .v33-home-hero p {
+        color:#4d6179 !important;
+      }
+    }
+
+

@@ -1,0 +1,44 @@
+name: Update verified news
+
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/collect-news.mjs', 'scripts/news-finance-sources.mjs', 'tests/news.test.mjs', 'scripts/news-providers.mjs']
+  workflow_dispatch:
+  schedule:
+    - cron: '23 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: update-verified-news
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    # Preview/manual runs on feature branches must never write production main.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run news:collect
+      - run: npm test
+      - name: Publish changed snapshot
+        if: github.ref == 'refs/heads/main'
+        run: |
+          if git diff --quiet -- data/news.json; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/news.json
+          git commit -m "data(news): refresh verified source snapshot"
+          git pull --rebase origin main
+          git push origin HEAD:main

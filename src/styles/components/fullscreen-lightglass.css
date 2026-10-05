@@ -1,0 +1,275 @@
+/* ===== ox-v383-fullscreen-lightglass-fix ===== */
+/* =========================================================
+   OX v3.8.3 — focused repair
+   - iPhone portrait fake-landscape chart focus fills viewport
+   - Light Home/Radar top information area becomes true white glass
+   Dark theme / scanner / data logic untouched.
+   ========================================================= */
+
+/* ---------- 1) Mobile fake-landscape fullscreen: remove the global max-width clamp ---------- */
+body.chart-focus .chart-box{
+  max-width:none!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  margin:0!important;
+}
+body.chart-focus .chart-box .panel-head,
+body.chart-focus .chart-box .chart-controls{
+  width:100%!important;
+  max-width:none!important;
+  flex:0 0 auto!important;
+}
+body.chart-focus .chart-box .chart-container{
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  flex:1 1 auto!important;
+  min-height:0!important;
+  height:auto!important;
+}
+
+@media (max-width:900px) and (orientation:portrait){
+  body.chart-focus{
+    width:100vw!important;
+    height:100vh!important;
+    height:100dvh!important;
+    overflow:hidden!important;
+    overscroll-behavior:none!important;
+    background:var(--bg)!important;
+  }
+  body.chart-focus .chart-box{
+    position:fixed!important;
+    left:50%!important;
+    top:50%!important;
+    width:var(--ox-focus-vh,100dvh)!important;
+    height:var(--ox-focus-vw,100dvw)!important;
+    min-width:var(--ox-focus-vh,100dvh)!important;
+    min-height:var(--ox-focus-vw,100dvw)!important;
+    max-width:none!important;
+    max-height:none!important;
+    transform:translate(-50%,-50%) rotate(90deg)!important;
+    transform-origin:50% 50%!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+}
+@media (max-width:900px) and (orientation:landscape){
+  body.chart-focus .chart-box{
+    position:fixed!important;
+    inset:0!important;
+    left:0!important;
+    top:0!important;
+    width:var(--ox-focus-vw,100dvw)!important;
+    height:var(--ox-focus-vh,100dvh)!important;
+    min-width:0!important;
+    min-height:0!important;
+    max-width:none!important;
+    max-height:none!important;
+    transform:none!important;
+    border:0!important;
+    border-radius:0!important;
+  }
+}
+
+/* ---------- 2) True white / ice Liquid Glass for Light Home ---------- */
+body.theme-light #view-home .btc-premium-hero,
+body.theme-light #view-home .v33-home-hero,
+body.theme-light #view-home .v33-card,
+body.theme-light #view-home .v34-home-side-card,
+body.theme-light #view-home .v33-hero-stat,
+body.theme-light #view-home .v33-radar-cell,
+body.theme-light #view-home .v33-action{
+  background:
+    radial-gradient(150% 135% at 7% -22%,rgba(255,255,255,1) 0%,rgba(255,255,255,.90) 40%,rgba(247,250,253,.72) 70%,transparent 100%),
+    linear-gradient(145deg,rgba(255,255,255,.96),rgba(245,249,252,.90))!important;
+  border-color:rgba(84,108,133,.13)!important;
+  box-shadow:
+    0 10px 26px rgba(42,60,80,.055),
+    0 1px 2px rgba(42,60,80,.025),
+    inset 0 1px 0 rgba(255,255,255,1),
+    inset 0 -1px 0 rgba(74,97,122,.028)!important;
+  backdrop-filter:blur(22px) saturate(112%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(112%)!important;
+}
+body.theme-light #view-home .btc-premium-hero{
+  background:
+    radial-gradient(44% 86% at 94% 2%,rgba(220,174,82,.085),transparent 72%),
+    radial-gradient(58% 110% at 0% 105%,rgba(113,165,211,.07),transparent 76%),
+    linear-gradient(145deg,#fff 0%,#fbfdff 54%,#f2f7fa 100%)!important;
+  border-color:rgba(165,125,55,.18)!important;
+}
+body.theme-light #view-home .v34-home-btc-head,
+body.theme-light #view-home .v34-home-main-toolbar,
+body.theme-light #view-home .v34-home-btc-footer{
+  background:rgba(252,253,255,.84)!important;
+  border-color:rgba(84,108,133,.09)!important;
+}
+body.theme-light #view-home .v34-home-main-chart{
+  background:linear-gradient(180deg,#ffffff 0%,#f7fafc 100%)!important;
+}
+
+/* ---------- 3) Radar: top price/summary/control surfaces are genuinely white, not blue-grey ---------- */
+body.theme-light #view-radar .top-summary.compact-summary,
+body.theme-light #view-radar .compact-summary{
+  background:transparent!important;
+}
+body.theme-light #view-radar .market-line-card,
+body.theme-light #view-radar .summary-mini,
+body.theme-light #view-radar .metric-card,
+body.theme-light #view-radar .benchmark-card{
+  background:
+    radial-gradient(130% 120% at 8% -18%,rgba(255,255,255,1),rgba(255,255,255,.91) 46%,rgba(245,249,252,.83) 100%)!important;
+  border-color:rgba(76,101,128,.14)!important;
+  box-shadow:
+    0 8px 22px rgba(45,62,82,.05),
+    inset 0 1px 0 #fff,
+    inset 0 -1px 0 rgba(75,98,122,.025)!important;
+  backdrop-filter:blur(20px) saturate(110%)!important;
+  -webkit-backdrop-filter:blur(20px) saturate(110%)!important;
+}
+body.theme-light #view-radar .market-line-item{
+  background:transparent!important;
+  border-color:rgba(82,107,132,.085)!important;
+}
+body.theme-light #view-radar .market-line-item label,
+body.theme-light #view-radar .metric-card label,
+body.theme-light #view-radar .market-line-item small,
+body.theme-light #view-radar .metric-card small{
+  color:#5a6d82!important;
+}
+body.theme-light #view-radar .market-line-item strong,
+body.theme-light #view-radar .metric-card strong{
+  color:#102036!important;
+}
+
+body.theme-light #view-radar .chart-box,
+body.theme-light #view-radar aside.panel,
+body.theme-light #view-radar .detail-panel{
+  background:linear-gradient(145deg,rgba(255,255,255,.965),rgba(245,249,252,.90))!important;
+  border-color:rgba(77,102,128,.14)!important;
+  box-shadow:
+    0 10px 28px rgba(43,61,82,.055),
+    inset 0 1px 0 rgba(255,255,255,1)!important;
+  backdrop-filter:blur(21px) saturate(110%)!important;
+  -webkit-backdrop-filter:blur(21px) saturate(110%)!important;
+}
+body.theme-light #view-radar .panel-head,
+body.theme-light #view-radar .chart-controls,
+body.theme-light #view-radar .chart-benchmark-bar,
+body.theme-light #view-radar .scanner-tabs{
+  background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(247,250,253,.91))!important;
+  border-color:rgba(78,103,129,.105)!important;
+}
+body.theme-light #view-radar .chart-controls>.ctrl-group:first-child,
+body.theme-light #view-radar .chart-controls .toggle-lbl{
+  background:rgba(249,251,253,.94)!important;
+  border-color:rgba(90,114,139,.13)!important;
+  box-shadow:inset 0 1px 0 #fff!important;
+}
+body.theme-light #view-radar .chart-container{
+  background:#fbfdff!important;
+  box-shadow:inset 0 0 28px rgba(64,92,123,.018)!important;
+}
+
+/* STEP 4.5 REGRESSION FIX START
+   Keep the light BTC hero legible, keep focused mobile charts crisp, and
+   colour the radar summary from the selected ranking direction. */
+body.theme-light #view-home .btc-premium-emblem{
+  background:
+    radial-gradient(circle at 34% 24%,rgba(255,255,255,.94),transparent 17%),
+    radial-gradient(circle at 50% 55%,#ffe6a0 0%,#f3c354 48%,#c98518 100%)!important;
+  border-color:rgba(172,111,16,.46)!important;
+  box-shadow:0 9px 25px rgba(156,103,20,.20),inset 0 2px 0 rgba(255,255,255,.72),inset 0 -8px 18px rgba(120,72,6,.18)!important;
+}
+body.theme-light #view-home .btc-emblem-mark{
+  color:#7b4705!important;
+  text-shadow:0 1px 0 rgba(255,244,205,.82),0 4px 10px rgba(111,68,8,.16)!important;
+}
+body.theme-light #view-home .btc-premium-stats{
+  background:linear-gradient(180deg,#f8fafc 0%,#e9eef3 100%)!important;
+  border-top-color:rgba(58,82,108,.20)!important;
+  box-shadow:inset 0 1px 0 #fff,inset 0 8px 20px rgba(69,91,114,.045)!important;
+}
+body.theme-light #view-home .btc-premium-stats>div{
+  border-right-color:rgba(58,82,108,.14)!important;
+  border-bottom-color:rgba(58,82,108,.12)!important;
+}
+body.theme-light #view-home .btc-premium-stats small{color:#53677d!important;font-weight:760!important;}
+body.theme-light #view-home .btc-premium-stats strong{color:#132238!important;font-weight:900!important;}
+body.theme-light #view-home .btc-premium-stats>div:last-child strong{color:#9a6208!important;}
+
+body.chart-focus .chart-box,
+body.chart-focus .chart-box *,
+body.chart-focus .chart-box canvas{
+  filter:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+}
+body.chart-focus .chart-box,
+body.chart-focus .chart-container,
+body.chart-focus .chart-container canvas{opacity:1!important;}
+body.chart-focus .chart-box::before,
+body.chart-focus .chart-box::after,
+body.chart-focus .chart-box .liquid-optics,
+body.chart-focus .chart-box .ox-motion-shine{display:none!important;}
+
+#view-radar:not(.ox-filter-short) .market-line-card,
+#view-radar:has(#direction-toggle.is-long) .market-line-card{
+  border-color:rgba(54,211,153,.46)!important;
+  background:
+    radial-gradient(80% 155% at 0% 50%,rgba(54,211,153,.095),transparent 64%),
+    linear-gradient(145deg,rgba(15,31,42,.90),rgba(9,22,31,.79))!important;
+  box-shadow:inset 3px 0 0 rgba(54,211,153,.68),inset 0 0 42px rgba(54,211,153,.065),0 0 22px rgba(54,211,153,.08),0 10px 25px rgba(0,0,0,.16)!important;
+}
+body.theme-light #view-radar:not(.ox-filter-short) .market-line-card,
+body.theme-light #view-radar:has(#direction-toggle.is-long) .market-line-card{
+  border-color:rgba(25,154,119,.43)!important;
+  background:
+    radial-gradient(82% 155% at 0% 50%,rgba(31,174,132,.10),transparent 65%),
+    linear-gradient(145deg,rgba(255,255,255,.98),rgba(237,250,245,.93))!important;
+  box-shadow:inset 3px 0 0 rgba(25,154,119,.62),inset 0 0 36px rgba(25,154,119,.055),0 0 19px rgba(25,154,119,.065),0 9px 22px rgba(52,76,67,.06)!important;
+}
+#view-radar.ox-filter-short .market-line-card,
+#view-radar:has(#direction-toggle.is-short) .market-line-card{
+  border-color:rgba(239,76,105,.46)!important;
+  background:radial-gradient(80% 155% at 0% 50%,rgba(239,76,105,.105),transparent 64%),linear-gradient(145deg,rgba(20,27,40,.88),rgba(11,18,29,.76))!important;
+  box-shadow:inset 3px 0 0 rgba(239,76,105,.65),inset 0 0 44px rgba(239,76,105,.075),0 0 25px rgba(239,76,105,.10),0 10px 25px rgba(0,0,0,.16)!important;
+}
+body.theme-light #view-radar.ox-filter-short .market-line-card,
+body.theme-light #view-radar:has(#direction-toggle.is-short) .market-line-card{
+  border-color:rgba(202,56,84,.43)!important;
+  background:radial-gradient(82% 155% at 0% 50%,rgba(221,63,92,.115),transparent 65%),linear-gradient(145deg,rgba(255,255,255,.98),rgba(252,235,240,.92))!important;
+  box-shadow:inset 3px 0 0 rgba(204,58,85,.62),inset 0 0 38px rgba(204,58,85,.065),0 0 21px rgba(204,58,85,.075),0 9px 22px rgba(66,56,60,.065)!important;
+}
+/* STEP 4.5 REGRESSION FIX END */
+body.theme-light #view-radar .chart-quickbar,
+body.theme-light #view-radar .detail-grid{
+  background:rgba(110,132,154,.10)!important;
+  border-color:rgba(85,109,134,.10)!important;
+}
+body.theme-light #view-radar .chart-quickitem,
+body.theme-light #view-radar .detail-cell{
+  background:linear-gradient(145deg,#fff,#f7fafc)!important;
+  border-color:rgba(84,108,133,.09)!important;
+}
+body.theme-light #view-radar .detail-reasons,
+body.theme-light #view-radar .alert-state-row{
+  background:rgba(255,255,255,.94)!important;
+  border-color:rgba(82,106,131,.09)!important;
+}
+
+/* Mobile Light: remove the remaining blue-grey wash from the radar shell. */
+@media(max-width:720px){
+  body.theme-light #view-radar .workspace,
+  body.theme-light #view-radar .chart-box,
+  body.theme-light #view-radar aside.panel{
+    background:transparent!important;
+  }
+  body.theme-light #view-radar .panel-head,
+  body.theme-light #view-radar .chart-controls,
+  body.theme-light #view-radar .chart-benchmark-bar,
+  body.theme-light #view-radar .scanner-tabs{
+    background:rgba(252,253,255,.95)!important;
+  }
+}
+

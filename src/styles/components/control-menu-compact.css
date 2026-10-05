@@ -1,0 +1,39 @@
+/* The narrow close grip sits outside the drawer, leaving the content unobstructed. */
+body.ox-terminal .ox-control-panel {width:300px!important;min-width:0!important}
+/* Let the control drawer and dim layer settle into place, then ease back at the same pace. */
+body.ox-terminal .ox-control-panel {transition-duration:.46s!important;transition-timing-function:cubic-bezier(.22,.8,.24,1)!important}
+body.ox-terminal .ox-control-overlay {transition:opacity .42s cubic-bezier(.22,.8,.24,1),background .42s cubic-bezier(.22,.8,.24,1)!important}
+body.ox-terminal .ox-control-edge-close {position:absolute;z-index:8;right:300px;top:50%;transform:translate(16px,-50%);width:14px;height:50px;display:grid;place-items:center;padding:0;border:1px solid #ffffffb5;border-right:0;border-radius:8px 0 0 8px;background:linear-gradient(120deg,#ffffff32,#16191eea);color:#fff;font-size:21px;line-height:1;opacity:0;box-shadow:inset 0 1px 0 #ffffffa8,0 0 8px #ffffff86,0 0 18px #ffffff46;cursor:pointer;transition:opacity .35s ease,transform .35s cubic-bezier(.22,.8,.24,1),background .35s ease,box-shadow .35s ease!important}
+body.ox-terminal .ox-control-overlay.is-open .ox-control-edge-close {transform:translate(0,-50%);opacity:.9}
+body.ox-terminal .ox-control-edge-close:is(:hover,:focus-visible,:active) {opacity:1;background:#ffffff48;box-shadow:inset 0 1px 0 #ffffffbd,0 0 12px #ffffffbc,0 0 22px #ffffff62}
+body.ox-terminal .ox-control-scroll {padding-top:10px!important}
+body.ox-terminal .ox-control-section-label {display:none!important}
+body.ox-terminal .ox-control-group {margin-bottom:5px!important}
+body.ox-terminal .ox-control-row {min-height:44px!important;padding:5px 6px!important;grid-template-columns:24px minmax(0,1fr) auto!important;gap:5px!important}
+body.ox-terminal .ox-control-icon {width:24px!important;height:24px!important}
+body.ox-terminal .ox-control-copy b {font-size:11px!important;font-weight:600!important}
+body.ox-terminal .ox-control-copy [hidden] {display:none!important}
+body.ox-terminal .ox-feature-search-wrap {padding:0 0 6px!important;margin-bottom:5px!important}
+body.ox-terminal .ox-feature-search-box {padding:7px 9px!important}
+body.ox-terminal .ox-control-view.active {animation:ox-menu-view-in .28s cubic-bezier(.22,.8,.24,1) both}
+@keyframes ox-menu-view-in {from {opacity:.35;transform:translateX(8px)}to {opacity:1;transform:none}}
+body.ox-terminal .ox-control-advanced-back {display:flex;align-items:center;gap:8px;width:100%;min-height:38px;padding:5px 8px;margin-bottom:5px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font-size:12px;text-align:left}
+body.ox-terminal .ox-theme-segment {width:105px!important;border-radius:10px!important;overflow:hidden!important}
+body.ox-terminal .ox-theme-segment button {border-radius:7px!important;transition:color .5s ease,background .5s cubic-bezier(.22,.8,.24,1),border-color .5s ease,box-shadow .5s ease!important}
+body.ox-terminal .ox-market-segment {gap:2px!important;max-width:116px}
+body.ox-terminal .ox-market-chip {padding:4px 5px!important}
+body.ox-terminal .ox-control-toggle span {border-radius:999px!important;transition:background .4s ease,border-color .4s ease,box-shadow .4s ease!important}
+body.ox-terminal .ox-control-toggle span::after {border-radius:50%!important;transition:transform .4s cubic-bezier(.22,.8,.24,1),background .4s ease!important}
+body.ox-terminal .ox-control-toggle input:checked+span {background:linear-gradient(145deg,#ffffff48,#ffffff12)!important;border-color:#ffffffc4!important;box-shadow:inset 0 1px 0 #ffffffb2,0 0 8px #ffffff72,0 0 18px #ffffff29!important}
+body.ox-terminal .ox-control-toggle input:checked+span::after {background:#fff!important;box-shadow:0 0 6px #ffffff9c!important}
+body.ox-terminal .ox-market-chip {transition:color .4s ease,background .4s ease,border-color .4s ease,box-shadow .4s ease!important}
+body.ox-terminal .ox-theme-segment button.active,body.ox-terminal .ox-market-chip.active {color:#fff!important;border-color:#ffffffaa!important;background:linear-gradient(145deg,#ffffff37,#ffffff0c)!important;box-shadow:inset 0 1px 0 #ffffff8a,0 0 8px #ffffff6a,0 0 16px #ffffff24!important}
+body.ox-terminal .ox-control-icon:has(+ .ox-control-copy b) {font-size:10px;font-weight:600}
+body.ox-terminal .ox-mobile-location {color:var(--ink)!important;font-size:13px!important;font-weight:600!important;letter-spacing:.02em!important}
+@media(max-width:720px){
+  body.ox-terminal .ox-control-panel {width:clamp(238px,64vw,265px)!important;max-width:calc(100% - 16px)!important}
+  body.ox-terminal .ox-control-edge-close {right:clamp(238px,64vw,265px)}
+  body.ox-terminal .ox-control-scroll {padding-top:7px!important;padding-inline:7px!important}
+  body.ox-terminal:not(.chart-focus) #view-radar .chart-container {height:clamp(430px,calc(100dvh - 320px),650px)!important}
+}
+@media(prefers-reduced-motion:reduce){body.ox-terminal .ox-control-panel,body.ox-terminal .ox-control-overlay,body.ox-terminal .ox-control-edge-close,body.ox-terminal .ox-control-toggle span,body.ox-terminal .ox-control-toggle span::after,body.ox-terminal .ox-theme-segment button,body.ox-terminal .ox-market-chip {transition:none!important}body.ox-terminal .ox-control-view.active {animation:none!important}}

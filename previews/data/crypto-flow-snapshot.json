@@ -1,0 +1,3986 @@
+{
+  "schemaVersion": 1,
+  "kind": "recorded",
+  "source": "Bitget",
+  "market": "USDT-FUTURES",
+  "capturedAt": "2026-09-27T22:07:22.366779+00:00",
+  "tickerRequestTime": 1790546842269,
+  "universe": "Top 20 crypto perpetuals by 24h USDT turnover at capture",
+  "instruments": [
+    {
+      "symbol": "BTCUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "BTC",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.05",
+      "sellLimitPriceRatio": "0.05",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.0001",
+      "maxOrderQty": "1200",
+      "pricePrecision": "1",
+      "quantityPrecision": "4",
+      "quotePrecision": "",
+      "priceMultiplier": "0.1",
+      "quantityMultiplier": "0.0001",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "150",
+      "maintainTime": "",
+      "maxMarketOrderQty": "220"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "ETH",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.05",
+      "sellLimitPriceRatio": "0.05",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.01",
+      "maxOrderQty": "9900",
+      "pricePrecision": "2",
+      "quantityPrecision": "2",
+      "quotePrecision": "",
+      "priceMultiplier": "0.01",
+      "quantityMultiplier": "0.01",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "150",
+      "maintainTime": "",
+      "maxMarketOrderQty": "1900"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "SOL",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.07",
+      "sellLimitPriceRatio": "0.07",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.1",
+      "maxOrderQty": "35000",
+      "pricePrecision": "3",
+      "quantityPrecision": "1",
+      "quotePrecision": "",
+      "priceMultiplier": "0.001",
+      "quantityMultiplier": "0.1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "100",
+      "maintainTime": "",
+      "maxMarketOrderQty": "4400"
+    },
+    {
+      "symbol": "ZECUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "ZEC",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.1",
+      "sellLimitPriceRatio": "0.1",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.001",
+      "maxOrderQty": "3400",
+      "pricePrecision": "2",
+      "quantityPrecision": "3",
+      "quotePrecision": "",
+      "priceMultiplier": "0.01",
+      "quantityMultiplier": "0.001",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1760612386667",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "430"
+    },
+    {
+      "symbol": "QNTUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "QNT",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.12",
+      "sellLimitPriceRatio": "0.12",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.01",
+      "maxOrderQty": "6300",
+      "pricePrecision": "2",
+      "quantityPrecision": "2",
+      "quotePrecision": "",
+      "priceMultiplier": "0.01",
+      "quantityMultiplier": "0.01",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "1100"
+    },
+    {
+      "symbol": "XRPUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "XRP",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.07",
+      "sellLimitPriceRatio": "0.07",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "3700000",
+      "pricePrecision": "4",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "125",
+      "maintainTime": "",
+      "maxMarketOrderQty": "460000"
+    },
+    {
+      "symbol": "NEARUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "NEAR",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.1",
+      "sellLimitPriceRatio": "0.1",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "950000",
+      "pricePrecision": "4",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "120000"
+    },
+    {
+      "symbol": "SUIUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "SUI",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.1",
+      "maxOrderQty": "5800000",
+      "pricePrecision": "4",
+      "quantityPrecision": "1",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "0.1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "720000"
+    },
+    {
+      "symbol": "WLDUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "WLD",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "10000000",
+      "pricePrecision": "4",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "1300000"
+    },
+    {
+      "symbol": "QUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "Q",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "9500000",
+      "pricePrecision": "6",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.000001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1756799947749",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "20",
+      "maintainTime": "",
+      "maxMarketOrderQty": "2000000"
+    },
+    {
+      "symbol": "ENAUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "ENA",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "25000000",
+      "pricePrecision": "5",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.00001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1712206800000",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "3100000"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "DOGE",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.1",
+      "sellLimitPriceRatio": "0.1",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "51000000",
+      "pricePrecision": "5",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.00001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "6300000"
+    },
+    {
+      "symbol": "UNIUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "UNI",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.1",
+      "sellLimitPriceRatio": "0.1",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "570000",
+      "pricePrecision": "3",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "72000"
+    },
+    {
+      "symbol": "HYPEUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "HYPE",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.01",
+      "maxOrderQty": "42000",
+      "pricePrecision": "3",
+      "quantityPrecision": "2",
+      "quotePrecision": "",
+      "priceMultiplier": "0.001",
+      "quantityMultiplier": "0.01",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1734491016220",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "5700"
+    },
+    {
+      "symbol": "ONDOUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "ONDO",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.1",
+      "maxOrderQty": "11000000",
+      "pricePrecision": "4",
+      "quantityPrecision": "1",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "0.1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1711548000000",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "50",
+      "maintainTime": "",
+      "maxMarketOrderQty": "1700000"
+    },
+    {
+      "symbol": "SOONUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "SOON",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "1100000",
+      "pricePrecision": "4",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1747981645084",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "25",
+      "maintainTime": "",
+      "maxMarketOrderQty": "120000"
+    },
+    {
+      "symbol": "PUMPUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "PUMP",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "100000000",
+      "pricePrecision": "6",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.000001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1752478497686",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "15000000"
+    },
+    {
+      "symbol": "TAOUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "TAO",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.15",
+      "sellLimitPriceRatio": "0.15",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "0.001",
+      "maxOrderQty": "13000",
+      "pricePrecision": "2",
+      "quantityPrecision": "3",
+      "quotePrecision": "",
+      "priceMultiplier": "0.01",
+      "quantityMultiplier": "0.001",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "1712847600000",
+      "fundInterval": "4",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "1600"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "ADA",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.07",
+      "sellLimitPriceRatio": "0.07",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "18000000",
+      "pricePrecision": "4",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.0001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "2100000"
+    },
+    {
+      "symbol": "LINKUSDT",
+      "category": "USDT-FUTURES",
+      "baseCoin": "LINK",
+      "quoteCoin": "USDT",
+      "symbolType": "crypto",
+      "isRwa": "NO",
+      "buyLimitPriceRatio": "0.1",
+      "sellLimitPriceRatio": "0.1",
+      "feeRateUpRatio": "0.005",
+      "makerFeeRate": "0.0002",
+      "takerFeeRate": "0.0006",
+      "openCostUpRatio": "0.01",
+      "minOrderQty": "1",
+      "maxOrderQty": "370000",
+      "pricePrecision": "3",
+      "quantityPrecision": "0",
+      "quotePrecision": "",
+      "priceMultiplier": "0.001",
+      "quantityMultiplier": "1",
+      "type": "perpetual",
+      "minOrderAmount": "5",
+      "maxSymbolOrderNum": "",
+      "maxProductOrderNum": "400",
+      "maxPositionNum": "200",
+      "status": "online",
+      "offTime": "-1",
+      "limitOpenTime": "-1",
+      "deliveryTime": "",
+      "deliveryStartTime": "",
+      "deliveryPeriod": "",
+      "launchTime": "0",
+      "fundInterval": "8",
+      "minLeverage": "1",
+      "maxLeverage": "75",
+      "maintainTime": "",
+      "maxMarketOrderQty": "47000"
+    }
+  ],
+  "tickers": [
+    {
+      "symbol": "BTCUSDT",
+      "lastPr": "84425.5",
+      "askPr": "84425.6",
+      "bidPr": "84425.5",
+      "bidSz": "1.9307",
+      "askSz": "0.4887",
+      "high24h": "85132.7",
+      "low24h": "84206.2",
+      "ts": "1790546842270",
+      "change24h": "0.00195",
+      "baseVolume": "14086.1512",
+      "quoteVolume": "1192262542.54442",
+      "usdtVolume": "1192262542.54442",
+      "openUtc": "84397.1",
+      "changeUtc24h": "0.00034",
+      "indexPrice": "84470.245",
+      "fundingRate": "0.000032",
+      "holdingAmount": "30986.2023999999874",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "84260.9",
+      "markPrice": "84430.9"
+    },
+    {
+      "symbol": "ETHUSDT",
+      "lastPr": "2677.2",
+      "askPr": "2677.21",
+      "bidPr": "2677.2",
+      "bidSz": "38.15",
+      "askSz": "17.03",
+      "high24h": "2722.66",
+      "low24h": "2671.32",
+      "ts": "1790546842270",
+      "change24h": "-0.00382",
+      "baseVolume": "266571.15",
+      "quoteVolume": "719691220.4716",
+      "usdtVolume": "719691220.4716",
+      "openUtc": "2695.12",
+      "changeUtc24h": "-0.00665",
+      "indexPrice": "2678.1695",
+      "fundingRate": "0.0001",
+      "holdingAmount": "777704.309999999026",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "2687.47",
+      "markPrice": "2677.2"
+    },
+    {
+      "symbol": "SOLUSDT",
+      "lastPr": "122.04",
+      "askPr": "122.041",
+      "bidPr": "122.04",
+      "bidSz": "94.1",
+      "askSz": "4.1",
+      "high24h": "124.933",
+      "low24h": "120.072",
+      "ts": "1790546842270",
+      "change24h": "0.00444",
+      "baseVolume": "2041709",
+      "quoteVolume": "250640358.3145",
+      "usdtVolume": "250640358.3145",
+      "openUtc": "121.387",
+      "changeUtc24h": "0.00538",
+      "indexPrice": "122.101",
+      "fundingRate": "-0.000025",
+      "holdingAmount": "4038718.299999957",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "121.501",
+      "markPrice": "122.04"
+    },
+    {
+      "symbol": "ZECUSDT",
+      "lastPr": "1592.8",
+      "askPr": "1592.55",
+      "bidPr": "1592.54",
+      "bidSz": "4.749",
+      "askSz": "0.007",
+      "high24h": "1678.96",
+      "low24h": "1577",
+      "ts": "1790546842270",
+      "change24h": "-0.04359",
+      "baseVolume": "126960.815",
+      "quoteVolume": "206698936.73709",
+      "usdtVolume": "206698936.73709",
+      "openUtc": "1647.13",
+      "changeUtc24h": "-0.03298",
+      "indexPrice": "1592.4788528732628092",
+      "fundingRate": "0.0001",
+      "holdingAmount": "109454.663999999905",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "1665.39",
+      "markPrice": "1592.64"
+    },
+    {
+      "symbol": "QNTUSDT",
+      "lastPr": "226.28",
+      "askPr": "226.4",
+      "bidPr": "226.29",
+      "bidSz": "0.67",
+      "askSz": "1.44",
+      "high24h": "239.47",
+      "low24h": "122.31",
+      "ts": "1790546842270",
+      "change24h": "0.84643",
+      "baseVolume": "1074618.17",
+      "quoteVolume": "189551999.2165",
+      "usdtVolume": "189551999.2165",
+      "openUtc": "150.5",
+      "changeUtc24h": "0.50226",
+      "indexPrice": "226.6796277471332858",
+      "fundingRate": "-0.000262",
+      "holdingAmount": "40619.580000000014",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "122.55",
+      "markPrice": "226.34"
+    },
+    {
+      "symbol": "XRPUSDT",
+      "lastPr": "1.5134",
+      "askPr": "1.5134",
+      "bidPr": "1.5133",
+      "bidSz": "26266",
+      "askSz": "17654",
+      "high24h": "1.5468",
+      "low24h": "1.5061",
+      "ts": "1790546842270",
+      "change24h": "-0.00696",
+      "baseVolume": "104952971",
+      "quoteVolume": "160221504.3736",
+      "usdtVolume": "160221504.3736",
+      "openUtc": "1.5268",
+      "changeUtc24h": "-0.00878",
+      "indexPrice": "1.5135616807145049",
+      "fundingRate": "0.0001",
+      "holdingAmount": "168468212",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "1.524",
+      "markPrice": "1.5134"
+    },
+    {
+      "symbol": "NEARUSDT",
+      "lastPr": "5.5208",
+      "askPr": "5.5206",
+      "bidPr": "5.5205",
+      "bidSz": "16",
+      "askSz": "18",
+      "high24h": "5.5798",
+      "low24h": "4.922",
+      "ts": "1790546842270",
+      "change24h": "0.10002",
+      "baseVolume": "22030806",
+      "quoteVolume": "115984343.0165",
+      "usdtVolume": "115984343.0165",
+      "openUtc": "5.0357",
+      "changeUtc24h": "0.09633",
+      "indexPrice": "5.5208515609267348",
+      "fundingRate": "0.0001",
+      "holdingAmount": "14974693",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "5.0188",
+      "markPrice": "5.5208"
+    },
+    {
+      "symbol": "SUIUSDT",
+      "lastPr": "1.2588",
+      "askPr": "1.2591",
+      "bidPr": "1.2589",
+      "bidSz": "14114.7",
+      "askSz": "10142.9",
+      "high24h": "1.2946",
+      "low24h": "1.1535",
+      "ts": "1790546842270",
+      "change24h": "0.08846",
+      "baseVolume": "81308154",
+      "quoteVolume": "100874750.49563",
+      "usdtVolume": "100874750.49563",
+      "openUtc": "1.1625",
+      "changeUtc24h": "0.08275",
+      "indexPrice": "1.2596608791364403",
+      "fundingRate": "-0.000019",
+      "holdingAmount": "61671206.5000000136",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "1.1565",
+      "markPrice": "1.2589"
+    },
+    {
+      "symbol": "WLDUSDT",
+      "lastPr": "0.5491",
+      "askPr": "0.5491",
+      "bidPr": "0.549",
+      "bidSz": "5007",
+      "askSz": "52",
+      "high24h": "0.5887",
+      "low24h": "0.511",
+      "ts": "1790546842270",
+      "change24h": "0.03273",
+      "baseVolume": "122400502",
+      "quoteVolume": "67994837.4614",
+      "usdtVolume": "67994837.4614",
+      "openUtc": "0.5234",
+      "changeUtc24h": "0.04853",
+      "indexPrice": "0.5490412776109326",
+      "fundingRate": "0.0001",
+      "holdingAmount": "66441149",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.5317",
+      "markPrice": "0.5491"
+    },
+    {
+      "symbol": "QUSDT",
+      "lastPr": "0.031521",
+      "askPr": "0.03154",
+      "bidPr": "0.031514",
+      "bidSz": "1664",
+      "askSz": "143850",
+      "high24h": "0.057164",
+      "low24h": "0.022067",
+      "ts": "1790546842271",
+      "change24h": "0.02484",
+      "baseVolume": "1611015613",
+      "quoteVolume": "61705298.670724",
+      "usdtVolume": "61705298.670724",
+      "openUtc": "0.033946",
+      "changeUtc24h": "-0.07144",
+      "indexPrice": "0.0315465905731042",
+      "fundingRate": "0.00005",
+      "holdingAmount": "87608252",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.030757",
+      "markPrice": "0.031547"
+    },
+    {
+      "symbol": "ENAUSDT",
+      "lastPr": "0.27614",
+      "askPr": "0.27622",
+      "bidPr": "0.27615",
+      "bidSz": "335",
+      "askSz": "410",
+      "high24h": "0.2946",
+      "low24h": "0.26419",
+      "ts": "1790546842270",
+      "change24h": "0.01908",
+      "baseVolume": "153207313",
+      "quoteVolume": "42150411.61351",
+      "usdtVolume": "42150411.61351",
+      "openUtc": "0.26948",
+      "changeUtc24h": "0.02471",
+      "indexPrice": "0.2766032471753689",
+      "fundingRate": "0.00005",
+      "holdingAmount": "207397331",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.27097",
+      "markPrice": "0.27615"
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "lastPr": "0.09655",
+      "askPr": "0.09655",
+      "bidPr": "0.09654",
+      "bidSz": "10065",
+      "askSz": "111170",
+      "high24h": "0.09891",
+      "low24h": "0.09536",
+      "ts": "1790546842270",
+      "change24h": "-0.00083",
+      "baseVolume": "401004898",
+      "quoteVolume": "38966895.98504",
+      "usdtVolume": "38966895.98504",
+      "openUtc": "0.09672",
+      "changeUtc24h": "-0.00165",
+      "indexPrice": "0.0965014167809918",
+      "fundingRate": "0.0001",
+      "holdingAmount": "1293984802",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.09663",
+      "markPrice": "0.09654"
+    },
+    {
+      "symbol": "UNIUSDT",
+      "lastPr": "9.619",
+      "askPr": "9.617",
+      "bidPr": "9.616",
+      "bidSz": "50",
+      "askSz": "168",
+      "high24h": "10.197",
+      "low24h": "9.514",
+      "ts": "1790546842270",
+      "change24h": "-0.01151",
+      "baseVolume": "3552139",
+      "quoteVolume": "34913090.326",
+      "usdtVolume": "34913090.326",
+      "openUtc": "9.701",
+      "changeUtc24h": "-0.00845",
+      "indexPrice": "9.6180744775830525",
+      "fundingRate": "0.0001",
+      "holdingAmount": "3834173",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "9.731",
+      "markPrice": "9.618"
+    },
+    {
+      "symbol": "HYPEUSDT",
+      "lastPr": "91.376",
+      "askPr": "91.366",
+      "bidPr": "91.365",
+      "bidSz": "560.69",
+      "askSz": "3.59",
+      "high24h": "93.844",
+      "low24h": "91.01",
+      "ts": "1790546842270",
+      "change24h": "-0.00842",
+      "baseVolume": "363599.62",
+      "quoteVolume": "33609234.35218",
+      "usdtVolume": "33609234.35218",
+      "openUtc": "92.516",
+      "changeUtc24h": "-0.01232",
+      "indexPrice": "91.4045127213600466",
+      "fundingRate": "-0.000022",
+      "holdingAmount": "2160265.33000000034",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "92.152",
+      "markPrice": "91.376"
+    },
+    {
+      "symbol": "ONDOUSDT",
+      "lastPr": "0.5561",
+      "askPr": "0.5563",
+      "bidPr": "0.5562",
+      "bidSz": "400.3",
+      "askSz": "22028.4",
+      "high24h": "0.5644",
+      "low24h": "0.5275",
+      "ts": "1790546842270",
+      "change24h": "0.03711",
+      "baseVolume": "61342918.5",
+      "quoteVolume": "33360094.49082",
+      "usdtVolume": "33360094.49082",
+      "openUtc": "0.538",
+      "changeUtc24h": "0.03364",
+      "indexPrice": "0.5562139461087336",
+      "fundingRate": "0.00005",
+      "holdingAmount": "59678852.5999999857",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.5362",
+      "markPrice": "0.5562"
+    },
+    {
+      "symbol": "SOONUSDT",
+      "lastPr": "0.3277",
+      "askPr": "0.3277",
+      "bidPr": "0.3275",
+      "bidSz": "307",
+      "askSz": "554",
+      "high24h": "0.352",
+      "low24h": "0.226",
+      "ts": "1790546842270",
+      "change24h": "0.42789",
+      "baseVolume": "107363390",
+      "quoteVolume": "32940578.682",
+      "usdtVolume": "32940578.682",
+      "openUtc": "0.2305",
+      "changeUtc24h": "0.42256",
+      "indexPrice": "0.3273328340531283",
+      "fundingRate": "0.000443",
+      "holdingAmount": "47045452",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.2295",
+      "markPrice": "0.3277"
+    },
+    {
+      "symbol": "PUMPUSDT",
+      "lastPr": "0.005036",
+      "askPr": "0.005038",
+      "bidPr": "0.005035",
+      "bidSz": "96081",
+      "askSz": "139634",
+      "high24h": "0.005217",
+      "low24h": "0.004307",
+      "ts": "1790546842271",
+      "change24h": "0.14977",
+      "baseVolume": "6707785584",
+      "quoteVolume": "31566405.396505",
+      "usdtVolume": "31566405.396505",
+      "openUtc": "0.004401",
+      "changeUtc24h": "0.14429",
+      "indexPrice": "0.0050369348538297",
+      "fundingRate": "0.00005",
+      "holdingAmount": "3855244331",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.00438",
+      "markPrice": "0.005036"
+    },
+    {
+      "symbol": "TAOUSDT",
+      "lastPr": "325.62",
+      "askPr": "325.56",
+      "bidPr": "325.49",
+      "bidSz": "0.863",
+      "askSz": "31.474",
+      "high24h": "337.32",
+      "low24h": "317.19",
+      "ts": "1790546842270",
+      "change24h": "0.02002",
+      "baseVolume": "93387.497",
+      "quoteVolume": "30519469.68931",
+      "usdtVolume": "30519469.68931",
+      "openUtc": "320.95",
+      "changeUtc24h": "0.01436",
+      "indexPrice": "325.5542736139744372",
+      "fundingRate": "0.00005",
+      "holdingAmount": "109885.4219999999885",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "319.23",
+      "markPrice": "325.56"
+    },
+    {
+      "symbol": "ADAUSDT",
+      "lastPr": "0.2534",
+      "askPr": "0.2535",
+      "bidPr": "0.2534",
+      "bidSz": "920",
+      "askSz": "285306",
+      "high24h": "0.2595",
+      "low24h": "0.2497",
+      "ts": "1790546842270",
+      "change24h": "0.00198",
+      "baseVolume": "107960601",
+      "quoteVolume": "27486054.5194",
+      "usdtVolume": "27486054.5194",
+      "openUtc": "0.2537",
+      "changeUtc24h": "-0.00118",
+      "indexPrice": "0.2535787194476042",
+      "fundingRate": "0.0001",
+      "holdingAmount": "255556300",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "0.2529",
+      "markPrice": "0.2534"
+    },
+    {
+      "symbol": "LINKUSDT",
+      "lastPr": "13.95",
+      "askPr": "13.948",
+      "bidPr": "13.947",
+      "bidSz": "227",
+      "askSz": "295",
+      "high24h": "14.477",
+      "low24h": "13.913",
+      "ts": "1790546842270",
+      "change24h": "-0.01022",
+      "baseVolume": "1778445",
+      "quoteVolume": "25203247.005",
+      "usdtVolume": "25203247.005",
+      "openUtc": "14.14",
+      "changeUtc24h": "-0.01344",
+      "indexPrice": "13.9563324892311033",
+      "fundingRate": "0.0001",
+      "holdingAmount": "3979396",
+      "deliveryStartTime": null,
+      "deliveryTime": null,
+      "deliveryStatus": "",
+      "open24h": "14.094",
+      "markPrice": "13.95"
+    }
+  ],
+  "flows": {
+    "15m": {
+      "BTCUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=BTCUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546847988,
+          "data": [
+            {
+              "sellVolume": "18.4768",
+              "buyVolume": "11.7795",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "9.2465",
+              "buyVolume": "26.6915",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "54.5194",
+              "buyVolume": "16.8701",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "40.953",
+              "buyVolume": "17.5602",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "68.7382",
+              "buyVolume": "23.3429",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "11.2704",
+              "buyVolume": "46.3226",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "29.0751",
+              "buyVolume": "12.3796",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "66.0501",
+              "buyVolume": "48.1131",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "16.3539",
+              "buyVolume": "23.4427",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "77.9123",
+              "buyVolume": "53.5265",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ETHUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ETHUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546848047,
+          "data": [
+            {
+              "sellVolume": "264.12",
+              "buyVolume": "143.13",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "105.3",
+              "buyVolume": "826.78",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "2999.5",
+              "buyVolume": "688.96",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "141.67",
+              "buyVolume": "289.4",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "2144.43",
+              "buyVolume": "749.15",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "124.1",
+              "buyVolume": "939.35",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "1326.29",
+              "buyVolume": "707.85",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "4139.47",
+              "buyVolume": "2120.68",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "163.32",
+              "buyVolume": "740.77",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "2261.63",
+              "buyVolume": "2974.56",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "SOLUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOLUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546848053,
+          "data": [
+            {
+              "sellVolume": "5203.4",
+              "buyVolume": "6642.9",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "5062.5",
+              "buyVolume": "9058",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "15798.3",
+              "buyVolume": "3928.7",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "2726.3",
+              "buyVolume": "3142.6",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "6808.3",
+              "buyVolume": "6717.2",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "1682.3",
+              "buyVolume": "4855",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "6247.9",
+              "buyVolume": "1465",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "9982.1",
+              "buyVolume": "3134.9",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "3314.8",
+              "buyVolume": "11365",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "13703.7",
+              "buyVolume": "13293.8",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ZECUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ZECUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546848051,
+          "data": [
+            {
+              "sellVolume": "261.386",
+              "buyVolume": "127.367",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "114.736",
+              "buyVolume": "496.344",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "491.822",
+              "buyVolume": "112.903",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "71.278",
+              "buyVolume": "158.289",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "413.1",
+              "buyVolume": "130.202",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "40.367",
+              "buyVolume": "187.329",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "189.079",
+              "buyVolume": "192.604",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "924.232",
+              "buyVolume": "643.857",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "124.431",
+              "buyVolume": "279.139",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "549.792",
+              "buyVolume": "302.911",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "QNTUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QNTUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546853706,
+          "data": [
+            {
+              "sellVolume": "3021.44",
+              "buyVolume": "2975.87",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "2319.53",
+              "buyVolume": "2437.71",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "11042.03",
+              "buyVolume": "10238.42",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "5566.78",
+              "buyVolume": "7388.15",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "5011",
+              "buyVolume": "5181.45",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "4775.14",
+              "buyVolume": "5748.73",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "16736.75",
+              "buyVolume": "23705.51",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "10521.18",
+              "buyVolume": "11058.1",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "5610.51",
+              "buyVolume": "5497.18",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "3107.17",
+              "buyVolume": "2108.57",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "XRPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=XRPUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546853756,
+          "data": [
+            {
+              "sellVolume": "137727",
+              "buyVolume": "103881",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "292145",
+              "buyVolume": "263835",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "744666",
+              "buyVolume": "268688",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "106103",
+              "buyVolume": "137661",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "927752",
+              "buyVolume": "325548",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "361472",
+              "buyVolume": "464793",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "561439",
+              "buyVolume": "287803",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "705071",
+              "buyVolume": "634956",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "75321",
+              "buyVolume": "273246",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "607543",
+              "buyVolume": "621603",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "NEARUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=NEARUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546853692,
+          "data": [
+            {
+              "sellVolume": "46614",
+              "buyVolume": "18953",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "63294",
+              "buyVolume": "84681",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "64826",
+              "buyVolume": "50664",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "33252",
+              "buyVolume": "54667",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "54599",
+              "buyVolume": "38984",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "126058",
+              "buyVolume": "228024",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "172534",
+              "buyVolume": "211199",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "167162",
+              "buyVolume": "113566",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "189354",
+              "buyVolume": "115698",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "79634",
+              "buyVolume": "53855",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "SUIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SUIUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546853697,
+          "data": [
+            {
+              "sellVolume": "108555.7",
+              "buyVolume": "57061.3",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "326900.3",
+              "buyVolume": "416272.2",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "704652",
+              "buyVolume": "525986.1",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "127423",
+              "buyVolume": "230423.8",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "301936.3",
+              "buyVolume": "303266.2",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "477806.7",
+              "buyVolume": "801906.2",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "1005190.1",
+              "buyVolume": "1041341.1",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "354271.8",
+              "buyVolume": "336159.9",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "118214.2",
+              "buyVolume": "177362.7",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "476036.8",
+              "buyVolume": "461321.6",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "WLDUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=WLDUSDT&period=15m",
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      "QUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546859287,
+          "data": [
+            {
+              "sellVolume": "5122748",
+              "buyVolume": "3652784",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "2190416",
+              "buyVolume": "2653550",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1901895",
+              "buyVolume": "1983783",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "973022",
+              "buyVolume": "733316",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "1068830",
+              "buyVolume": "799098",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "648611",
+              "buyVolume": "837697",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "3242305",
+              "buyVolume": "1294712",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "2032504",
+              "buyVolume": "2611506",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "908293",
+              "buyVolume": "834325",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "746767",
+              "buyVolume": "306881",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ENAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ENAUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546859228,
+          "data": [
+            {
+              "sellVolume": "958122",
+              "buyVolume": "511847",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "527282",
+              "buyVolume": "505269",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "816392",
+              "buyVolume": "492196",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "468921",
+              "buyVolume": "331095",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "809251",
+              "buyVolume": "686984",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "675274",
+              "buyVolume": "605384",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "788345",
+              "buyVolume": "1213495",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "1148389",
+              "buyVolume": "879402",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "294242",
+              "buyVolume": "217318",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "709787",
+              "buyVolume": "490531",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "DOGEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=DOGEUSDT&period=15m",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "UNIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=UNIUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546864745,
+          "data": [
+            {
+              "sellVolume": "5964",
+              "buyVolume": "3359",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "626",
+              "buyVolume": "8109",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "4350",
+              "buyVolume": "1348",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "1765",
+              "buyVolume": "2218",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "9181",
+              "buyVolume": "6097",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "1613",
+              "buyVolume": "14412",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "15852",
+              "buyVolume": "3374",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "6500",
+              "buyVolume": "9386",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "1949",
+              "buyVolume": "3154",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "7051",
+              "buyVolume": "4590",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "HYPEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=HYPEUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546864818,
+          "data": [
+            {
+              "sellVolume": "4711.15",
+              "buyVolume": "228.47",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "313.56",
+              "buyVolume": "458.77",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1522.25",
+              "buyVolume": "434.2",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "106.62",
+              "buyVolume": "183.23",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "1638.98",
+              "buyVolume": "450.16",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "248.74",
+              "buyVolume": "685.45",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "624.89",
+              "buyVolume": "996.24",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "2065.78",
+              "buyVolume": "847.76",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "188.83",
+              "buyVolume": "578.84",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "1537.39",
+              "buyVolume": "1329.58",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ONDOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ONDOUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546864754,
+          "data": [
+            {
+              "sellVolume": "150267.7",
+              "buyVolume": "91484.5",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "583498.5",
+              "buyVolume": "973441.6",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "561172.8",
+              "buyVolume": "438025.8",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "489735.5",
+              "buyVolume": "420141.1",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "174418.3",
+              "buyVolume": "219775.9",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "168853",
+              "buyVolume": "205267.7",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "271689.1",
+              "buyVolume": "170991.8",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "97206.7",
+              "buyVolume": "91856.7",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "223230.3",
+              "buyVolume": "392337.8",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "403247.3",
+              "buyVolume": "111932.2",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "SOONUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOONUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546864818,
+          "data": [
+            {
+              "sellVolume": "147366",
+              "buyVolume": "208549",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "379102",
+              "buyVolume": "432138",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "213351",
+              "buyVolume": "249497",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "117599",
+              "buyVolume": "215055",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "349691",
+              "buyVolume": "295241",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "208287",
+              "buyVolume": "161771",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "349763",
+              "buyVolume": "667163",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "283595",
+              "buyVolume": "172864",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "227646",
+              "buyVolume": "141258",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "35471",
+              "buyVolume": "49344",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "PUMPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=PUMPUSDT&period=15m",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "TAOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=TAOUSDT&period=15m",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546870051,
+          "data": [
+            {
+              "sellVolume": "634.508",
+              "buyVolume": "77.966",
+              "ts": "1790538300000"
+            },
+            {
+              "sellVolume": "203.011",
+              "buyVolume": "242.964",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "475.352",
+              "buyVolume": "179.29",
+              "ts": "1790540100000"
+            },
+            {
+              "sellVolume": "110.194",
+              "buyVolume": "202.276",
+              "ts": "1790541000000"
+            },
+            {
+              "sellVolume": "451.461",
+              "buyVolume": "123.932",
+              "ts": "1790541900000"
+            },
+            {
+              "sellVolume": "135.607",
+              "buyVolume": "793.699",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "413.913",
+              "buyVolume": "235.439",
+              "ts": "1790543700000"
+            },
+            {
+              "sellVolume": "537.2",
+              "buyVolume": "176.813",
+              "ts": "1790544600000"
+            },
+            {
+              "sellVolume": "89.094",
+              "buyVolume": "450.903",
+              "ts": "1790545500000"
+            },
+            {
+              "sellVolume": "1106.207",
+              "buyVolume": "253.668",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ADAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ADAUSDT&period=15m",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "LINKUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=LINKUSDT&period=15m",
+        "error": "HTTP Error 400: Bad Request"
+      }
+    },
+    "1h": {
+      "BTCUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=BTCUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546875729,
+          "data": [
+            {
+              "sellVolume": "875.5918",
+              "buyVolume": "918.7823",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "1028.6823",
+              "buyVolume": "471.7663",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "397.316",
+              "buyVolume": "449.3686",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "346.4705",
+              "buyVolume": "353.7478",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "187.3113",
+              "buyVolume": "221.1312",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "457.7518",
+              "buyVolume": "231.2568",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "86.2158",
+              "buyVolume": "113.4878",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "173.4571",
+              "buyVolume": "84.4647",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "122.7495",
+              "buyVolume": "130.258",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "80.2989",
+              "buyVolume": "57.9809",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ETHUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ETHUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546875746,
+          "data": [
+            {
+              "sellVolume": "11882.34",
+              "buyVolume": "13912.4",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "12772.85",
+              "buyVolume": "13312.98",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "6768.71",
+              "buyVolume": "10831.05",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "4185.82",
+              "buyVolume": "4380.86",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "1921.51",
+              "buyVolume": "3087.9",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "4468.59",
+              "buyVolume": "4880.83",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "1755.74",
+              "buyVolume": "2399.73",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "5390.9",
+              "buyVolume": "2554.29",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "5753.18",
+              "buyVolume": "4508.65",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "2473.16",
+              "buyVolume": "3004.44",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "SOLUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOLUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546875671,
+          "data": [
+            {
+              "sellVolume": "126179.7",
+              "buyVolume": "162901.2",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "120878.3",
+              "buyVolume": "108952.1",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "64053.6",
+              "buyVolume": "50916.2",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "23921.5",
+              "buyVolume": "33876.3",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "14358.5",
+              "buyVolume": "22864.1",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "53578.1",
+              "buyVolume": "40653.8",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "22782.4",
+              "buyVolume": "25250",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "30395.4",
+              "buyVolume": "22846.5",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "21227.1",
+              "buyVolume": "20819.9",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "15061.2",
+              "buyVolume": "13324.5",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ZECUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ZECUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546875944,
+          "data": [
+            {
+              "sellVolume": "3471.887",
+              "buyVolume": "3179.33",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "11450.374",
+              "buyVolume": "5855.154",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "11749.24",
+              "buyVolume": "8851.156",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "3173.746",
+              "buyVolume": "2397.678",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "632.409",
+              "buyVolume": "951.159",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "3302.447",
+              "buyVolume": "3378.625",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "1550.479",
+              "buyVolume": "1243.547",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "1090.936",
+              "buyVolume": "897.738",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1278.109",
+              "buyVolume": "1302.929",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "684.787",
+              "buyVolume": "330.465",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "QNTUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QNTUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546881488,
+          "data": [
+            {
+              "sellVolume": "16075.23",
+              "buyVolume": "17055.25",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "16306.32",
+              "buyVolume": "18633.14",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "26182.69",
+              "buyVolume": "29966.18",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "22798.2",
+              "buyVolume": "22826.91",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "20778.49",
+              "buyVolume": "21965.29",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "11167.77",
+              "buyVolume": "9681.19",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "19019.27",
+              "buyVolume": "19477.07",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "23939.34",
+              "buyVolume": "25245.73",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "37643.58",
+              "buyVolume": "46009.52",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "3293.99",
+              "buyVolume": "2279.94",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "XRPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=XRPUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546881553,
+          "data": [
+            {
+              "sellVolume": "5575888",
+              "buyVolume": "4902026",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "4666099",
+              "buyVolume": "3344102",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "3141458",
+              "buyVolume": "2365127",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "2975366",
+              "buyVolume": "3333216",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "770152",
+              "buyVolume": "1035655",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "2561440",
+              "buyVolume": "1881389",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "903001",
+              "buyVolume": "1014016",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "2070666",
+              "buyVolume": "995732",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1703303",
+              "buyVolume": "1660798",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "892236",
+              "buyVolume": "645509",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "NEARUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=NEARUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546881559,
+          "data": [
+            {
+              "sellVolume": "535386",
+              "buyVolume": "553700",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "524502",
+              "buyVolume": "370242",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "327922",
+              "buyVolume": "433396",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "300329",
+              "buyVolume": "227734",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "165107",
+              "buyVolume": "293568",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "707939",
+              "buyVolume": "603932",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "423078",
+              "buyVolume": "345023",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "215971",
+              "buyVolume": "228996",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "655108",
+              "buyVolume": "668487",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "87131",
+              "buyVolume": "54328",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "SUIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SUIUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546881551,
+          "data": [
+            {
+              "sellVolume": "2636360",
+              "buyVolume": "2407250.4",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "2350744.9",
+              "buyVolume": "1735754.7",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "1230252.7",
+              "buyVolume": "1317295.1",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "1241454.7",
+              "buyVolume": "1343940.6",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "1218793.6",
+              "buyVolume": "1525135.1",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "2028297.4",
+              "buyVolume": "3676011.1",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "2332034",
+              "buyVolume": "1175513.6",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "1460911.6",
+              "buyVolume": "1475948.3",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1955482.8",
+              "buyVolume": "2356769.9",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "542536.2",
+              "buyVolume": "510569",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "WLDUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=WLDUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546887219,
+          "data": [
+            {
+              "sellVolume": "6268411",
+              "buyVolume": "5437619",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "6010442",
+              "buyVolume": "3558966",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "4956466",
+              "buyVolume": "3885898",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "1989817",
+              "buyVolume": "1699876",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "1518351",
+              "buyVolume": "792929",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "1103715",
+              "buyVolume": "1708593",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "780954",
+              "buyVolume": "728775",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "1413953",
+              "buyVolume": "1023176",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1810393",
+              "buyVolume": "1186670",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "488480",
+              "buyVolume": "118598",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "QUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QUSDT&period=1h",
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      "ENAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ENAUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546887219,
+          "data": [
+            {
+              "sellVolume": "3404121",
+              "buyVolume": "2210268",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "2952752",
+              "buyVolume": "1807790",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "3734165",
+              "buyVolume": "3362301",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "6302052",
+              "buyVolume": "9951074",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "4548776",
+              "buyVolume": "3912385",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "8060763",
+              "buyVolume": "8356774",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "4701751",
+              "buyVolume": "4712871",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "2621846",
+              "buyVolume": "2015544",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "2906250",
+              "buyVolume": "2915599",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "720656",
+              "buyVolume": "492764",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "DOGEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=DOGEUSDT&period=1h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "UNIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=UNIUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546893460,
+          "data": [
+            {
+              "sellVolume": "122577",
+              "buyVolume": "116079",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "97594",
+              "buyVolume": "66433",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "226468",
+              "buyVolume": "126366",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "43213",
+              "buyVolume": "50087",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "32724",
+              "buyVolume": "37455",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "25551",
+              "buyVolume": "40803",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "20832",
+              "buyVolume": "21045",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "15922",
+              "buyVolume": "17772",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "25914",
+              "buyVolume": "30326",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "11953",
+              "buyVolume": "4601",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "HYPEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=HYPEUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546893516,
+          "data": [
+            {
+              "sellVolume": "29668.92",
+              "buyVolume": "18422.24",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "23518.22",
+              "buyVolume": "15980.62",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "10670.35",
+              "buyVolume": "15484.55",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "8624.96",
+              "buyVolume": "6722.84",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "4375.81",
+              "buyVolume": "4873.8",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "2902.29",
+              "buyVolume": "2965.86",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "6184.9",
+              "buyVolume": "2073.37",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "3581.41",
+              "buyVolume": "1526.36",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "3128.24",
+              "buyVolume": "3108.29",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "1566.43",
+              "buyVolume": "1380.33",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ONDOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ONDOUSDT&period=1h",
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      "SOONUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOONUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546893522,
+          "data": [
+            {
+              "sellVolume": "1833000",
+              "buyVolume": "1911839",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "1062255",
+              "buyVolume": "1174016",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "8566623",
+              "buyVolume": "9932037",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "5595932",
+              "buyVolume": "6022473",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "3469703",
+              "buyVolume": "3485936",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "1621645",
+              "buyVolume": "1629508",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "966702",
+              "buyVolume": "1193447",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "1059743",
+              "buyVolume": "1191931",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1069291",
+              "buyVolume": "1143056",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "57285",
+              "buyVolume": "49400",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "PUMPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=PUMPUSDT&period=1h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "TAOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=TAOUSDT&period=1h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546899692,
+          "data": [
+            {
+              "sellVolume": "5269.125",
+              "buyVolume": "3089.984",
+              "ts": "1790514000000"
+            },
+            {
+              "sellVolume": "1884.296",
+              "buyVolume": "1358.624",
+              "ts": "1790517600000"
+            },
+            {
+              "sellVolume": "3251.463",
+              "buyVolume": "2500.454",
+              "ts": "1790521200000"
+            },
+            {
+              "sellVolume": "1563.049",
+              "buyVolume": "1231.88",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "584.309",
+              "buyVolume": "908.772",
+              "ts": "1790528400000"
+            },
+            {
+              "sellVolume": "1206.348",
+              "buyVolume": "966.192",
+              "ts": "1790532000000"
+            },
+            {
+              "sellVolume": "2065.563",
+              "buyVolume": "617.919",
+              "ts": "1790535600000"
+            },
+            {
+              "sellVolume": "1240.018",
+              "buyVolume": "748.462",
+              "ts": "1790539200000"
+            },
+            {
+              "sellVolume": "1175.814",
+              "buyVolume": "1656.854",
+              "ts": "1790542800000"
+            },
+            {
+              "sellVolume": "1109.023",
+              "buyVolume": "310.624",
+              "ts": "1790546400000"
+            }
+          ]
+        }
+      },
+      "ADAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ADAUSDT&period=1h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "LINKUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=LINKUSDT&period=1h",
+        "error": "HTTP Error 400: Bad Request"
+      }
+    },
+    "4h": {
+      "BTCUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=BTCUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546905732,
+          "data": [
+            {
+              "sellVolume": "782.203",
+              "buyVolume": "738.0575",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "833.4586",
+              "buyVolume": "959.0873",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "344.0136",
+              "buyVolume": "247.2255",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "720.8371",
+              "buyVolume": "800.4439",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "564.0958",
+              "buyVolume": "633.2339",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "642.2265",
+              "buyVolume": "891.8994",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "1768.5288",
+              "buyVolume": "1418.4906",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "2526.7923",
+              "buyVolume": "2262.1823",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "1077.7494",
+              "buyVolume": "919.6236",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "381.5188",
+              "buyVolume": "274.1862",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "ETHUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ETHUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546905778,
+          "data": [
+            {
+              "sellVolume": "20280.25",
+              "buyVolume": "28234.74",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "12533.87",
+              "buyVolume": "11857.91",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "8050.69",
+              "buyVolume": "7387.35",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "26023.64",
+              "buyVolume": "23705.27",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "13741.58",
+              "buyVolume": "15255.99",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "19444.35",
+              "buyVolume": "22127.33",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "31539.69",
+              "buyVolume": "25613.39",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "34625.49",
+              "buyVolume": "39632.3",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "12331.66",
+              "buyVolume": "14749.32",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "13618.78",
+              "buyVolume": "10097.74",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "SOLUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOLUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546905720,
+          "data": [
+            {
+              "sellVolume": "144554.7",
+              "buyVolume": "172744.9",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "177903.8",
+              "buyVolume": "185433.1",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "71759.4",
+              "buyVolume": "61952",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "76068.2",
+              "buyVolume": "90846",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "67366.6",
+              "buyVolume": "59220.4",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "162151.6",
+              "buyVolume": "190430.8",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "218726.2",
+              "buyVolume": "270484.7",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "338189.3",
+              "buyVolume": "340708.3",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "114640.5",
+              "buyVolume": "122644.2",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "66874.4",
+              "buyVolume": "57023.7",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "ZECUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ZECUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546905780,
+          "data": [
+            {
+              "sellVolume": "6133.929",
+              "buyVolume": "5278.577",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "7546.898",
+              "buyVolume": "6656.438",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "9439.429",
+              "buyVolume": "7483.181",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "22228.618",
+              "buyVolume": "33549.453",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "8317.056",
+              "buyVolume": "6132.269",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "8011.53",
+              "buyVolume": "8086.408",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "4887.754",
+              "buyVolume": "3995.544",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "29897.991",
+              "buyVolume": "20376.729",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "8659.081",
+              "buyVolume": "7971.009",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "3063.502",
+              "buyVolume": "2536.874",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "QNTUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QNTUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546911506,
+          "data": [
+            {
+              "sellVolume": "6675.21",
+              "buyVolume": "7713.16",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "8820.15",
+              "buyVolume": "11668.38",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "26520.44",
+              "buyVolume": "28893.86",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "51612.94",
+              "buyVolume": "56479.86",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "118216.58",
+              "buyVolume": "125109.65",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "76906.65",
+              "buyVolume": "79738.79",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "69469.54",
+              "buyVolume": "68130.84",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "73358.79",
+              "buyVolume": "83022.92",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "73763.73",
+              "buyVolume": "73950.46",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "64979.11",
+              "buyVolume": "73709.3",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "XRPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=XRPUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546911551,
+          "data": [
+            {
+              "sellVolume": "10315573",
+              "buyVolume": "8470139",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "8326220",
+              "buyVolume": "8842117",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "10593989",
+              "buyVolume": "7834961",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "9660025",
+              "buyVolume": "8978712",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "5679119",
+              "buyVolume": "5837333",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "8464838",
+              "buyVolume": "9375262",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "10659687",
+              "buyVolume": "10159919",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "15764429",
+              "buyVolume": "13014717",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "7209959",
+              "buyVolume": "7264276",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "4690207",
+              "buyVolume": "3316925",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "NEARUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=NEARUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546911548,
+          "data": [
+            {
+              "sellVolume": "1783149",
+              "buyVolume": "1832950",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "1678487",
+              "buyVolume": "1131068",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "812654",
+              "buyVolume": "692616",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "1505675",
+              "buyVolume": "1359472",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "1407833",
+              "buyVolume": "1482215",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "2873026",
+              "buyVolume": "2966635",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "2196767",
+              "buyVolume": "1999773",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "1568781",
+              "buyVolume": "1571706",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "1596453",
+              "buyVolume": "1470257",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "961514",
+              "buyVolume": "954567",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "SUIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SUIUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546911543,
+          "data": [
+            {
+              "sellVolume": "4702428.2",
+              "buyVolume": "5539213.4",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "4807186.4",
+              "buyVolume": "4507076.3",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "2406348.1",
+              "buyVolume": "1996694.6",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "3104875.9",
+              "buyVolume": "2604976.2",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "2672087.7",
+              "buyVolume": "3292670.2",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "8758782.2",
+              "buyVolume": "10096974.1",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "8838930.4",
+              "buyVolume": "8273945.3",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "7757463.3",
+              "buyVolume": "7737521.2",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "6820579.7",
+              "buyVolume": "7720600.4",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "3970118.8",
+              "buyVolume": "4345313.5",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "WLDUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=WLDUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546917476,
+          "data": [
+            {
+              "sellVolume": "4158233",
+              "buyVolume": "4892673",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "14695379",
+              "buyVolume": "14351339",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "9324184",
+              "buyVolume": "7942290",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "6500953",
+              "buyVolume": "6089663",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "4756554",
+              "buyVolume": "5638024",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "8386364",
+              "buyVolume": "8754951",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "18091539",
+              "buyVolume": "18667331",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "22144139",
+              "buyVolume": "16056359",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "5392837",
+              "buyVolume": "4930173",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "3718813",
+              "buyVolume": "2343566",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "QUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=QUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546917526,
+          "data": [
+            {
+              "sellVolume": "60368574",
+              "buyVolume": "74636412",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "79739825",
+              "buyVolume": "80630721",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "240002265",
+              "buyVolume": "196888636",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "214380422",
+              "buyVolume": "230496234",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "62167270",
+              "buyVolume": "62974641",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "185687492",
+              "buyVolume": "211701901",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "107655152",
+              "buyVolume": "129322290",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "262024892",
+              "buyVolume": "235223611",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "104754038",
+              "buyVolume": "102973556",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "13720155",
+              "buyVolume": "12057865",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "ENAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ENAUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546917479,
+          "data": [
+            {
+              "sellVolume": "33062688",
+              "buyVolume": "32720109",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "21184749",
+              "buyVolume": "18506396",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "10398684",
+              "buyVolume": "11124844",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "7779951",
+              "buyVolume": "9310916",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "5709792",
+              "buyVolume": "7421751",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "9113358",
+              "buyVolume": "10432973",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "14853420",
+              "buyVolume": "14858515",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "14599103",
+              "buyVolume": "9128945",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "23613342",
+              "buyVolume": "26933104",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "6651561",
+              "buyVolume": "5498902",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "DOGEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=DOGEUSDT&period=4h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "UNIUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=UNIUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546923382,
+          "data": [
+            {
+              "sellVolume": "277964",
+              "buyVolume": "161171",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "251977",
+              "buyVolume": "215649",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "116385",
+              "buyVolume": "101264",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "369656",
+              "buyVolume": "285849",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "239281",
+              "buyVolume": "240050",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "475005",
+              "buyVolume": "523431",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "353625",
+              "buyVolume": "202796",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "524642",
+              "buyVolume": "359166",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "122320",
+              "buyVolume": "149390",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "54187",
+              "buyVolume": "52705",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "HYPEUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=HYPEUSDT&period=4h",
+        "error": "HTTP Error 429: Too Many Requests"
+      },
+      "ONDOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ONDOUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546923442,
+          "data": [
+            {
+              "sellVolume": "6456141.8",
+              "buyVolume": "7080983.4",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "6201672.7",
+              "buyVolume": "5609653.7",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "6667654.9",
+              "buyVolume": "4240033.9",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "3055512.6",
+              "buyVolume": "2664889",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "2768233",
+              "buyVolume": "2860016.6",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "5635653.4",
+              "buyVolume": "4507303.8",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "5037484.4",
+              "buyVolume": "5487872.7",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "10285277.8",
+              "buyVolume": "8722479.9",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "4019734.3",
+              "buyVolume": "3961096.2",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "2994493.7",
+              "buyVolume": "3027190.5",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "SOONUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=SOONUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546923452,
+          "data": [
+            {
+              "sellVolume": "273662",
+              "buyVolume": "287769",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "321057",
+              "buyVolume": "196338",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "251267",
+              "buyVolume": "372301",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "862394",
+              "buyVolume": "632935",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "6571100",
+              "buyVolume": "6939816",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "11901614",
+              "buyVolume": "12150722",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "6595702",
+              "buyVolume": "6924248",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "12737659",
+              "buyVolume": "14409287",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "11653982",
+              "buyVolume": "12331364",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "2191251",
+              "buyVolume": "2384387",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "PUMPUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=PUMPUSDT&period=4h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "TAOUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=TAOUSDT&period=4h",
+        "response": {
+          "code": "00000",
+          "msg": "success",
+          "requestTime": 1790546929038,
+          "data": [
+            {
+              "sellVolume": "9857.089",
+              "buyVolume": "8435.139",
+              "ts": "1790409600000"
+            },
+            {
+              "sellVolume": "17662.974",
+              "buyVolume": "16625.045",
+              "ts": "1790424000000"
+            },
+            {
+              "sellVolume": "10440.049",
+              "buyVolume": "7810.03",
+              "ts": "1790438400000"
+            },
+            {
+              "sellVolume": "9449.392",
+              "buyVolume": "8242.43",
+              "ts": "1790452800000"
+            },
+            {
+              "sellVolume": "6091.067",
+              "buyVolume": "6632.589",
+              "ts": "1790467200000"
+            },
+            {
+              "sellVolume": "8951.687",
+              "buyVolume": "11082.235",
+              "ts": "1790481600000"
+            },
+            {
+              "sellVolume": "11282.235",
+              "buyVolume": "8998.213",
+              "ts": "1790496000000"
+            },
+            {
+              "sellVolume": "13053.209",
+              "buyVolume": "9529.103",
+              "ts": "1790510400000"
+            },
+            {
+              "sellVolume": "5419.269",
+              "buyVolume": "3724.763",
+              "ts": "1790524800000"
+            },
+            {
+              "sellVolume": "3525.268",
+              "buyVolume": "2715.96",
+              "ts": "1790539200000"
+            }
+          ]
+        }
+      },
+      "ADAUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=ADAUSDT&period=4h",
+        "error": "HTTP Error 400: Bad Request"
+      },
+      "LINKUSDT": {
+        "path": "/api/v2/mix/market/taker-buy-sell?symbol=LINKUSDT&period=4h",
+        "error": "HTTP Error 400: Bad Request"
+      }
+    }
+  },
+  "captureCompletedAt": "2026-09-27T22:08:49.128919+00:00"
+}

@@ -1,0 +1,12 @@
+/* Shared mobile gutters: widen surfaces without changing their inner layout. */
+@media (max-width:720px) {
+  body.ox-terminal[data-view] main.wrap {
+    padding-left:max(8px,env(safe-area-inset-left))!important;
+    padding-right:max(8px,env(safe-area-inset-right))!important;
+  }
+
+  /* Both-edge scrollbar reservation left an empty vertical rail on the list. */
+  body.ox-terminal #view-radar #screener-list {
+    scrollbar-gutter:auto!important;
+  }
+}

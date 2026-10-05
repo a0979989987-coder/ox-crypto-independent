@@ -1,0 +1,21 @@
+/* Perpetual contract turnover ranking in the radar flame tab. */
+body.ox-terminal #view-radar .coin-card.turnover-card {
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:stretch!important;
+  gap:3px!important;
+  min-height:100px!important;
+  padding:10px 8px!important;
+  cursor:pointer;
+}
+body.ox-terminal #view-radar .turnover-name {display:flex;align-items:baseline;gap:5px;min-width:0;color:var(--ink);font-size:15px;font-weight:600}
+body.ox-terminal #view-radar .turnover-rank {flex:none;color:var(--muted);font-size:10px;font-weight:400}
+body.ox-terminal #view-radar .turnover-symbol {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.ox-terminal #view-radar .turnover-volume {color:var(--muted);font-size:11px;white-space:nowrap}
+body.ox-terminal #view-radar .turnover-price {margin-top:auto;color:var(--ink);font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.ox-terminal #view-radar .turnover-change {font-size:13px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+body.ox-terminal #view-radar .turnover-empty {padding:30px 12px;text-align:center;color:var(--muted)}
+body.ox-terminal .chart-level-alert-options {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px;padding-right:36px}
+body.ox-terminal .chart-level-alert-options .alert-btn {width:100%;min-height:36px;border:1px solid #ffffff39;border-radius:9px;background:#ffffff0a;color:var(--ink);font-size:11px;cursor:pointer;transition:border-color .35s ease,background .35s ease,box-shadow .45s ease}
+body.ox-terminal .chart-level-alert-options .alert-btn:is(.enabled-high,.enabled-low) {border-color:#ffffffaa;background:linear-gradient(145deg,#ffffff2a,#ffffff0a);box-shadow:inset 0 1px 0 #fff6,0 0 10px #ffffff29}
+@media(max-width:600px){body.ox-terminal #view-radar .coin-card.turnover-card {min-height:86px!important;padding:8px 5px!important;gap:2px!important}body.ox-terminal #view-radar .turnover-name {font-size:12px;gap:3px}body.ox-terminal #view-radar .turnover-rank {font-size:9px}body.ox-terminal #view-radar .turnover-volume {font-size:9px}body.ox-terminal #view-radar .turnover-price {font-size:12px}body.ox-terminal #view-radar .turnover-change {font-size:11px}}

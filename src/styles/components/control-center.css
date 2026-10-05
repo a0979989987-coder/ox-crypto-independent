@@ -1,0 +1,152 @@
+    /* ===== OX v3.6 · Right Control Center (isolated module UI) ===== */
+    .ox-menu-btn {
+      width: 38px; height: 36px; flex: 0 0 38px; padding: 0;
+      display: inline-flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      color: var(--muted); background: #0c1522; border: 1px solid #283a53; border-radius: var(--ox-radius-sm);
+      box-shadow: inset 0 1px 0 #ffffff08; transition: border-color .18s ease, color .18s ease, background .18s ease, transform .18s ease;
+    }
+    .ox-menu-btn span { width: 16px; height: 1.5px; border-radius: 999px; background: currentColor; display: block; }
+    .ox-menu-btn:hover, .ox-menu-btn[aria-expanded="true"] { color: var(--ink); border-color: #455d7c; background: #111d2c; }
+    .ox-menu-btn:active { transform: scale(.97); }
+
+    .ox-control-overlay {
+      position: fixed; inset: 0; z-index: 160; pointer-events: none; opacity: 0;
+      background: rgba(2, 7, 15, 0); transition: opacity .28s ease-out, background .28s ease-out;
+    }
+    .ox-control-overlay.is-open { pointer-events: auto; opacity: 1; background: rgba(2, 7, 15, .22); }
+    .ox-control-panel {
+      position: absolute; top: 0; right: 0; width: min(31vw, 420px); min-width: 340px; height: 100vh; height: 100dvh;
+      display: flex; flex-direction: column; color: var(--ink); background: rgba(9, 15, 25, .985);
+      border-left: 1px solid #2b3c54; box-shadow: -20px 0 50px #0008; transform: translateX(102%);
+      transition: transform .3s ease-out; overflow: hidden; overscroll-behavior: contain;
+    }
+    .ox-control-overlay.is-open .ox-control-panel { transform: translateX(0); }
+    body.ox-control-open { overflow: hidden; }
+    .ox-control-panel-head {
+      display: flex; align-items: flex-start; gap: 12px; padding: 19px 18px 15px; border-bottom: 1px solid var(--line);
+      background: linear-gradient(180deg, #101b2a, #0b1420);
+    }
+    .ox-control-title { min-width: 0; flex: 1; }
+    .ox-control-kicker { color: var(--gold); font-size: 9px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
+    .ox-control-title h2 { margin: 3px 0 0; font-size: 19px; letter-spacing: .04em; }
+    .ox-control-system-state { margin-top: 5px; display: flex; align-items: center; gap: 6px; color: var(--muted); font-size: 9px; }
+    .ox-control-system-state i { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 9px #38d3a66b; }
+    .ox-control-close, .ox-control-back {
+      width: 34px; height: 34px; border-radius: var(--ox-radius-sm); border: 1px solid #2b3d56; background: #0b1420; color: #b6c3d5;
+      display: grid; place-items: center; font-size: 18px; line-height: 1; padding: 0;
+    }
+    .ox-control-close:hover, .ox-control-back:hover { color: var(--ink); border-color: #4b607d; background: #111d2b; }
+    .ox-control-scroll { flex: 1; overflow: auto; padding: 12px 12px 28px; scrollbar-width: thin; scrollbar-color: #394b63 transparent; }
+    .ox-control-view { display: none; }
+    .ox-control-view.active { display: block; }
+    .ox-control-group {
+      margin-bottom: 10px; background: #0c1522; border: 1px solid #26374e; border-radius: var(--ox-radius-md); overflow: hidden;
+      box-shadow: inset 0 1px 0 #ffffff06;
+    }
+    .ox-control-row {
+      min-height: 62px; display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 10px; align-items: center;
+      padding: 10px 12px; border-bottom: 1px solid #1d2b3e;
+    }
+    .ox-control-row:last-child { border-bottom: 0; }
+    button.ox-control-row { width: 100%; color: inherit; text-align: left; background: transparent; border-top: 0; border-left: 0; border-right: 0; }
+    button.ox-control-row:hover { background: #ffffff04; }
+    .ox-control-icon {
+      width: 32px; height: 32px; border-radius: var(--ox-radius-sm); display: grid; place-items: center; color: #a7b6ca; background: #111d2b; border: 1px solid #2c4059;
+    }
+    .ox-control-icon svg { width: 17px; height: 17px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .ox-control-copy { min-width: 0; }
+    .ox-control-copy b { display: block; color: var(--ink); font-size: 11px; font-weight: 800; }
+    .ox-control-copy small { display: block; margin-top: 2px; color: var(--muted); font-size: 8.5px; line-height: 1.35; white-space: normal; }
+    .ox-control-side { display: inline-flex; align-items: center; justify-content: flex-end; gap: 7px; color: #8294ab; font-size: 8.5px; white-space: nowrap; }
+    .ox-control-live-tag { color: var(--green); border: 1px solid #2b7d6b; background: #1da98410; border-radius: 999px; padding: 3px 6px; font-size: 7.5px; font-weight: 800; }
+    .ox-control-ui-tag { color: #91a2b8; border: 1px solid #354860; border-radius: 999px; padding: 3px 6px; font-size: 7.5px; }
+    .ox-control-arrow { font-size: 16px; line-height: 1; color: #6f829a; }
+    .ox-control-section-label { margin: 13px 4px 6px; color: #71859e; font-size: 8px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+
+    .ox-theme-segment { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; width: 152px; padding: 3px; border-radius: var(--ox-radius-sm); background: #09111c; border: 1px solid #263950; }
+    .ox-theme-segment button { min-height: 27px; padding: 0 6px; border: 0; border-radius: var(--ox-radius-xs); background: transparent; color: #8395ad; font-size: 8px; font-weight: 800; }
+    .ox-theme-segment button.active { color: #16120b; background: var(--gold); box-shadow: 0 1px 7px #f7bd522d; }
+
+    .ox-control-toggle { position: relative; width: 36px; height: 20px; flex: 0 0 36px; }
+    .ox-control-toggle input { position: absolute; opacity: 0; pointer-events: none; }
+    .ox-control-toggle span { position: absolute; inset: 0; border-radius: 999px; background: #26364a; border: 1px solid #354a64; transition: .2s ease; }
+    .ox-control-toggle span::after { content: ""; position: absolute; width: 14px; height: 14px; top: 2px; left: 2px; border-radius: 50%; background: #8294aa; transition: .2s ease; }
+    .ox-control-toggle input:checked + span { background: #a87417; border-color: #c18b25; }
+    .ox-control-toggle input:checked + span::after { transform: translateX(16px); background: #fff4d6; }
+
+    .ox-control-refresh { padding: 6px 8px; border-radius: var(--ox-radius-xs); border: 1px solid #3a4c64; background: #111c2a; color: #b7c3d3; font-size: 8px; font-weight: 800; }
+    .ox-control-refresh:hover { color: var(--ink); border-color: #637590; }
+    .ox-market-segment { display: flex; gap: 5px; flex-wrap: wrap; justify-content: flex-end; }
+    .ox-market-chip { border: 1px solid #35475e; border-radius: 999px; padding: 4px 7px; color: #8192a8; background: #0a1320; font-size: 7.5px; }
+    .ox-market-chip.active { color: var(--gold); border-color: #8d6a28; background: #f7bd520a; }
+    .ox-market-chip[disabled] { opacity: .45; cursor: default; }
+
+    .ox-control-note { margin: 10px 2px 0; color: #71839a; font-size: 8px; line-height: 1.5; }
+    .ox-control-note strong { color: #9fb0c5; }
+    .ox-control-changelog { display: none; padding: 9px 12px 11px 56px; border-top: 1px solid #1d2b3e; color: var(--muted); font-size: 8.5px; line-height: 1.5; }
+    .ox-control-changelog.open { display: block; }
+
+    .ox-feedback-head { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+    .ox-feedback-head h3 { margin: 0; font-size: 16px; }
+    .ox-feedback-head small { color: var(--muted); font-size: 8px; }
+    .ox-feedback-form { padding: 14px; border-radius: var(--ox-radius-md); background: #0c1522; border: 1px solid #26374e; }
+    .ox-feedback-field { display: block; margin-bottom: 12px; }
+    .ox-feedback-field span { display: block; margin-bottom: 5px; color: #9eafc3; font-size: 9px; font-weight: 700; }
+    .ox-feedback-field input, .ox-feedback-field select, .ox-feedback-field textarea {
+      width: 100%; color: var(--ink); background: #09121d; border: 1px solid #2b3f58; border-radius: var(--ox-radius-sm); padding: 9px 10px; font-size: 10px; outline: 0;
+    }
+    .ox-feedback-field textarea { min-height: 120px; resize: vertical; line-height: 1.5; }
+    .ox-feedback-field input:focus, .ox-feedback-field select:focus, .ox-feedback-field textarea:focus { border-color: #8d6a28; box-shadow: 0 0 0 2px #f7bd5212; }
+    .ox-feedback-submit { width: 100%; min-height: 38px; border: 1px solid #9a7126; border-radius: var(--ox-radius-sm); background: #f7bd5212; color: var(--gold); font-size: 10px; font-weight: 850; }
+    .ox-feedback-status { min-height: 32px; margin-top: 9px; padding: 8px 9px; border-radius: var(--ox-radius-xs); background: #111b28; border: 1px dashed #32455e; color: #8fa1b8; font-size: 8.5px; line-height: 1.45; }
+
+    body.theme-light .ox-menu-btn { color: #52677f; background: #f6f9fc; border-color: #b9c8d8; box-shadow: inset 0 1px 0 #fff; }
+    body.theme-light .ox-menu-btn:hover, body.theme-light .ox-menu-btn[aria-expanded="true"] { color: #172033; background: #edf3f8; border-color: #8fa3b8; }
+    body.theme-light .ox-control-overlay.is-open { background: rgba(30, 41, 59, .12); }
+    body.theme-light .ox-control-panel { color: #172033; background: rgba(248,250,252,.995); border-color: #becddd; box-shadow: -18px 0 48px #33415526; }
+    body.theme-light .ox-control-panel-head { background: linear-gradient(180deg,#ffffff,#f4f7fa); border-color: #ced9e4; }
+    body.theme-light .ox-control-close, body.theme-light .ox-control-back { color: #52677f; background: #f4f7fa; border-color: #c1cedc; }
+    body.theme-light .ox-control-close:hover, body.theme-light .ox-control-back:hover { color: #172033; background: #eaf0f6; }
+    body.theme-light .ox-control-group, body.theme-light .ox-feedback-form { background: #ffffff; border-color: #c7d4e1; box-shadow: 0 7px 18px #3341550a, inset 0 1px 0 #fff; }
+    body.theme-light .ox-control-row { border-color: #dce4ec; }
+    body.theme-light button.ox-control-row:hover { background: #f8fafc; }
+    body.theme-light .ox-control-icon { color: #536980; background: #f3f7fa; border-color: #c8d4df; }
+    body.theme-light .ox-control-copy b { color: #182235; }
+    body.theme-light .ox-control-copy small, body.theme-light .ox-control-side, body.theme-light .ox-control-note, body.theme-light .ox-feedback-head small { color: #65778d; }
+    body.theme-light .ox-control-section-label { color: #6d7e92; }
+    body.theme-light .ox-theme-segment { background: #eef3f7; border-color: #c6d2de; }
+    body.theme-light .ox-theme-segment button { color: #5d7188; }
+    body.theme-light .ox-theme-segment button.active { color: #fff; background: #b97600; }
+    body.theme-light .ox-control-toggle span { background: #d9e2ea; border-color: #b9c7d5; }
+    body.theme-light .ox-control-toggle span::after { background: #fff; box-shadow: 0 1px 3px #33415533; }
+    body.theme-light .ox-control-toggle input:checked + span { background: #c58a22; border-color: #b97600; }
+    body.theme-light .ox-control-refresh { color: #425870; background: #f2f6f9; border-color: #bac8d6; }
+    body.theme-light .ox-market-chip { color: #65788d; background: #f3f7fa; border-color: #c3d0dc; }
+    body.theme-light .ox-market-chip.active { color: #a76400; background: #fff6e5; border-color: #b97600; }
+    body.theme-light .ox-control-changelog { border-color: #dce4ec; color: #5c7086; }
+    body.theme-light .ox-feedback-field span { color: #475d75; }
+    body.theme-light .ox-feedback-field input, body.theme-light .ox-feedback-field select, body.theme-light .ox-feedback-field textarea { color: #182235; background: #f8fafc; border-color: #c5d2de; }
+    body.theme-light .ox-feedback-status { background: #f5f8fb; border-color: #c8d4df; color: #5b6f85; }
+    body.theme-light .ox-feedback-submit { color: #a76400; background: #fff8ea; border-color: #b97600; }
+
+    @media (max-width: 900px) {
+      .ox-control-panel { width: min(86vw, 390px); min-width: 0; }
+    }
+    @media (max-width: 720px) {
+      .ox-menu-btn { width: 32px; height: 30px; flex-basis: 32px; border-radius: var(--ox-radius-xs); gap: 3px; }
+      .ox-menu-btn span { width: 13px; height: 1.25px; }
+      .ox-control-panel { width: 86vw; max-width: 370px; }
+      .ox-control-panel-head { padding: 15px 13px 12px; }
+      .ox-control-scroll { padding: 9px 9px 22px; }
+      .ox-control-row { min-height: 57px; grid-template-columns: 31px minmax(0,1fr) auto; gap: 8px; padding: 8px 9px; }
+      .ox-control-icon { width: 29px; height: 29px; border-radius: var(--ox-radius-xs); }
+      .ox-control-copy b { font-size: 10px; }
+      .ox-control-copy small { font-size: 7.7px; }
+      .ox-theme-segment { width: 132px; }
+      .ox-theme-segment button { min-height: 25px; font-size: 7.5px; }
+      .ox-control-side { font-size: 7.7px; }
+      .ox-control-changelog { padding-left: 49px; }
+    }
+
+  
+

@@ -1,0 +1,361 @@
+/* ===== ox-v381-ios-liquid-glass-max ===== */
+/* =========================================================
+   OX v3.8.1 — iOS Liquid Glass Max
+   UI-only art-direction refinement.
+   Existing scanner / OX Engine / T1-T2-T3 / OX LIVE / key-level logic untouched.
+   ========================================================= */
+:root{
+  --lg-specular:rgba(255,255,255,.18);
+  --lg-edge:rgba(171,203,235,.24);
+  --lg-edge-strong:rgba(190,219,248,.34);
+  --lg-dark-a:rgba(12,24,39,.78);
+  --lg-dark-b:rgba(6,14,24,.66);
+  --lg-light-a:rgba(255,255,255,.82);
+  --lg-light-b:rgba(236,244,250,.58);
+  --lg-light-line:rgba(70,101,132,.16);
+  --lg-light-shadow:0 14px 38px rgba(52,73,96,.10), inset 0 1px 0 rgba(255,255,255,.96), inset 0 -1px 0 rgba(72,101,130,.05);
+  --lg-glow-up:rgba(40,205,155,.18);
+  --lg-glow-down:rgba(239,76,105,.24);
+  --lg-fill-up:rgba(40,205,155,.085);
+  --lg-fill-down:rgba(239,76,105,.115);
+  --lg-radius:18px;
+  --lg-ease:cubic-bezier(.22,1,.36,1);
+}
+
+/* ---------- stronger Liquid Glass material ---------- */
+:where(.glass,.glass-strong,.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action,.ox-auth-card,.ox-control-panel){
+  border-color:var(--lg-edge)!important;
+  box-shadow:
+    0 16px 40px rgba(0,0,0,.22),
+    inset 0 1px 0 var(--lg-specular),
+    inset 0 -1px 0 rgba(0,0,0,.18)!important;
+  backdrop-filter:blur(22px) saturate(145%) brightness(1.02)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(145%) brightness(1.02)!important;
+}
+
+/* Specular edge without heavy animation. */
+:where(.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action){
+  position:relative;
+  isolation:isolate;
+}
+:where(.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action)::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  border-radius:inherit;
+  background:
+    radial-gradient(70% 38% at 18% 0%,rgba(255,255,255,.095),transparent 65%),
+    linear-gradient(112deg,transparent 10%,rgba(255,255,255,.025) 44%,rgba(245,191,85,.035) 50%,transparent 58%);
+  opacity:.82;
+}
+:where(.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action)>*{
+  position:relative;
+  z-index:1;
+}
+
+/* ---------- DARK material: stronger optical depth but still restrained ---------- */
+body:not(.theme-light) :where(.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action){
+  background:
+    radial-gradient(65% 45% at 18% -5%,rgba(129,175,222,.075),transparent 72%),
+    linear-gradient(145deg,var(--lg-dark-a),var(--lg-dark-b))!important;
+}
+body:not(.theme-light) .app-dock{
+  background:
+    radial-gradient(80% 90% at 50% -35%,rgba(255,255,255,.10),transparent 58%),
+    linear-gradient(180deg,rgba(18,33,51,.91),rgba(7,16,27,.88))!important;
+  border-color:rgba(154,188,223,.26)!important;
+  box-shadow:0 20px 46px rgba(0,0,0,.44),inset 0 1px 0 rgba(255,255,255,.13),inset 0 -1px 0 rgba(0,0,0,.28)!important;
+}
+
+/* ---------- LIGHT MODE: genuinely white / icy Liquid Glass ---------- */
+body.theme-light{
+  --bg:#edf3f7;
+  --panel:rgba(255,255,255,.74);
+  --panel-alt:rgba(243,248,252,.72);
+  --ink:#15273a;
+  --line:var(--lg-light-line);
+  --muted:#5d7188;
+  background:
+    radial-gradient(880px 500px at 7% -10%,rgba(98,157,213,.18),transparent 66%),
+    radial-gradient(740px 430px at 96% 4%,rgba(219,173,82,.12),transparent 72%),
+    radial-gradient(900px 680px at 52% 105%,rgba(124,171,213,.07),transparent 70%),
+    linear-gradient(180deg,#f8fbfd 0%,#edf3f7 48%,#eaf1f5 100%)!important;
+  color:#15273a!important;
+}
+body.theme-light header{
+  background:rgba(251,253,255,.72)!important;
+  border-bottom-color:rgba(78,108,138,.14)!important;
+  box-shadow:0 8px 28px rgba(56,76,99,.08),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(26px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(26px) saturate(150%)!important;
+}
+body.theme-light :where(.glass,.glass-strong,.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action,.ox-auth-card){
+  background:
+    radial-gradient(70% 55% at 17% 0%,rgba(255,255,255,.98),rgba(255,255,255,.36) 42%,transparent 72%),
+    linear-gradient(145deg,var(--lg-light-a),var(--lg-light-b)),
+    rgba(247,250,252,.60)!important;
+  border-color:var(--lg-light-line)!important;
+  box-shadow:var(--lg-light-shadow)!important;
+  backdrop-filter:blur(24px) saturate(148%) brightness(1.025)!important;
+  -webkit-backdrop-filter:blur(24px) saturate(148%) brightness(1.025)!important;
+}
+body.theme-light :where(.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action)::before{
+  background:
+    radial-gradient(74% 44% at 14% -5%,rgba(255,255,255,.92),transparent 63%),
+    linear-gradient(112deg,transparent 10%,rgba(255,255,255,.26) 44%,rgba(232,190,104,.065) 50%,transparent 59%);
+  opacity:.88;
+}
+
+/* Home: remove the remaining muddy grey/dark feeling in light mode. */
+body.theme-light #view-home :where(.v33-home-hero,.btc-premium-hero,.v34-home-side-card,.v33-card,.v33-hero-stat,.v33-radar-cell,.v33-action){
+  background:
+    radial-gradient(80% 65% at 8% -8%,rgba(255,255,255,.98),transparent 58%),
+    radial-gradient(60% 70% at 96% 0%,rgba(229,193,117,.09),transparent 68%),
+    linear-gradient(145deg,rgba(255,255,255,.86),rgba(235,243,249,.60))!important;
+  border-color:rgba(72,104,136,.15)!important;
+  box-shadow:0 14px 34px rgba(49,70,94,.09),inset 0 1px 0 #fff!important;
+}
+body.theme-light #view-home .btc-premium-hero{
+  border-color:rgba(168,122,41,.24)!important;
+  box-shadow:0 16px 40px rgba(54,75,98,.10),0 0 0 1px rgba(202,153,65,.05),inset 0 1px 0 #fff!important;
+}
+body.theme-light #view-home :where(.v34-home-btc-head,.v34-home-main-toolbar,.v34-home-btc-footer,.v33-list-head){
+  background:rgba(247,250,252,.54)!important;
+  border-color:rgba(76,106,136,.11)!important;
+}
+body.theme-light #view-home .v34-home-main-chart{
+  background:linear-gradient(180deg,rgba(251,253,255,.92),rgba(239,245,249,.78))!important;
+}
+
+/* Radar: make the whole workspace truly light instead of mixed white/black. */
+body.theme-light #view-radar :where(.chart-box,aside.panel,.detail-panel,.benchmark-card,.metric-card){
+  background:
+    radial-gradient(80% 55% at 8% 0%,rgba(255,255,255,.98),transparent 60%),
+    linear-gradient(145deg,rgba(255,255,255,.84),rgba(235,243,249,.60))!important;
+  border-color:rgba(75,106,137,.16)!important;
+  box-shadow:0 15px 36px rgba(48,69,91,.085),inset 0 1px 0 #fff!important;
+}
+body.theme-light #view-radar :where(.panel-head,.chart-controls,.chart-benchmark-bar,.scanner-tabs){
+  background:linear-gradient(180deg,rgba(250,252,254,.82),rgba(236,243,248,.64))!important;
+  border-color:rgba(75,106,137,.12)!important;
+  backdrop-filter:blur(18px) saturate(145%)!important;
+  -webkit-backdrop-filter:blur(18px) saturate(145%)!important;
+}
+body.theme-light #view-radar .chart-container{
+  background:linear-gradient(180deg,#fbfdff,#eef4f8)!important;
+  box-shadow:inset 0 0 34px rgba(63,93,125,.035)!important;
+}
+body.theme-light #view-radar .scanner-body{
+  background:linear-gradient(180deg,rgba(247,250,252,.45),rgba(234,242,248,.34))!important;
+}
+body.theme-light #view-radar .coin-reason,
+body.theme-light #view-radar .score-pill,
+body.theme-light #view-radar .chart-quickitem,
+body.theme-light #view-radar .detail-cell{
+  background:rgba(240,246,250,.70)!important;
+  border-color:rgba(78,108,138,.14)!important;
+  color:#4d647b!important;
+}
+
+/* Stronger iOS-like controls */
+body.theme-light :where(.btn-act,.btn-tf,.pill,.alert-btn,.theme-choice,.direction-toggle-btn,.v34-home-mini-tf,.ox-control-refresh,.ox-menu-btn,.tab-btn){
+  background:linear-gradient(180deg,rgba(255,255,255,.88),rgba(226,236,244,.56))!important;
+  border-color:rgba(72,103,134,.18)!important;
+  box-shadow:inset 0 1px 0 #fff,0 5px 14px rgba(52,74,98,.055)!important;
+}
+body.theme-light :where(.btn-tf.active,.theme-choice.active,.v34-home-mini-tf.active,.tab-btn.active){
+  color:#8e5a05!important;
+  background:linear-gradient(180deg,rgba(255,250,238,.98),rgba(247,231,195,.66))!important;
+  border-color:rgba(174,121,28,.40)!important;
+  box-shadow:inset 0 1px 0 #fff,0 5px 16px rgba(158,109,23,.08)!important;
+}
+
+/* OX LIVE becomes an icy pill in light mode. */
+body.theme-light .ox-live-strip{
+  background:
+    linear-gradient(90deg,rgba(255,249,236,.84),rgba(255,255,255,.74) 39%,rgba(232,241,247,.68))!important;
+  border-color:rgba(164,117,34,.25)!important;
+  box-shadow:0 8px 22px rgba(51,72,94,.07),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(20px) saturate(145%)!important;
+}
+
+/* ---------- Bottom Navigation / Active Liquid Lens ---------- */
+.app-dock{
+  isolation:isolate!important;
+  overflow:visible!important;
+  border-radius:var(--ox-radius-xl)!important;
+  backdrop-filter:blur(28px) saturate(150%)!important;
+  -webkit-backdrop-filter:blur(28px) saturate(150%)!important;
+}
+.app-dock .ox-dock-indicator{
+  top:5px!important;
+  height:calc(100% - 10px)!important;
+  border-radius:var(--ox-radius-lg)!important;
+  background:
+    radial-gradient(85% 120% at 24% -28%,rgba(255,255,255,.24),transparent 48%),
+    linear-gradient(180deg,rgba(255,255,255,.095),rgba(95,146,196,.045)),
+    rgba(105,150,197,.075)!important;
+  border:1px solid rgba(196,220,244,.15)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 7px 19px rgba(0,0,0,.13)!important;
+  transition:transform 280ms var(--lg-ease),width 280ms var(--lg-ease),opacity 140ms ease!important;
+}
+body.theme-light .app-dock{
+  background:
+    radial-gradient(70% 130% at 50% -35%,rgba(255,255,255,.98),transparent 59%),
+    linear-gradient(180deg,rgba(255,255,255,.84),rgba(229,238,245,.76))!important;
+  border-color:rgba(72,103,134,.22)!important;
+  box-shadow:0 17px 40px rgba(47,68,91,.16),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(73,100,128,.06)!important;
+}
+body.theme-light .app-dock .ox-dock-indicator{
+  background:
+    radial-gradient(90% 130% at 22% -26%,rgba(255,255,255,1),transparent 50%),
+    linear-gradient(180deg,rgba(255,255,255,.84),rgba(211,225,237,.58))!important;
+  border-color:rgba(85,116,146,.21)!important;
+  box-shadow:inset 0 1px 0 #fff,0 7px 20px rgba(51,73,96,.12),0 0 0 1px rgba(255,255,255,.28)!important;
+}
+body.theme-light .dock-radar-orb{
+  background:
+    radial-gradient(circle at 38% 22%,rgba(255,255,255,1),transparent 22%),
+    radial-gradient(circle at 50% 36%,#ffffff,#e7eef5 72%)!important;
+  border-color:rgba(171,119,29,.64)!important;
+  box-shadow:0 0 0 4px rgba(245,248,251,.90),0 0 18px rgba(171,119,29,.15),inset 0 1px 8px #fff!important;
+}
+
+/* ---------- Radar directional glass: larger colour footprint ---------- */
+#view-radar .coin-card.ox-side-long,
+#view-radar .coin-card.ox-side-short,
+#view-radar .coin-card.ox-market-up,
+#view-radar .coin-card.ox-market-down{
+  background-size:100% 100%!important;
+  background-repeat:no-repeat!important;
+}
+#view-radar .coin-card.ox-side-long{
+  border-color:rgba(54,211,153,.25)!important;
+  background:
+    radial-gradient(130% 115% at 0% 50%,rgba(54,211,153,.105),transparent 60%),
+    linear-gradient(145deg,rgba(17,44,44,.42),rgba(8,19,31,.60))!important;
+  box-shadow:inset 2px 0 0 rgba(54,211,153,.44),inset 0 0 34px rgba(54,211,153,.045)!important;
+}
+#view-radar .coin-card.ox-side-short{
+  border-color:rgba(239,97,122,.30)!important;
+  background:
+    radial-gradient(135% 120% at 0% 50%,rgba(239,97,122,.135),transparent 60%),
+    linear-gradient(145deg,rgba(48,22,34,.48),rgba(9,18,30,.62))!important;
+  box-shadow:inset 2px 0 0 rgba(239,97,122,.52),inset 0 0 36px rgba(239,97,122,.065)!important;
+}
+#view-radar .coin-card.ox-market-up{
+  border-color:rgba(54,211,153,.48)!important;
+  background:
+    radial-gradient(145% 125% at 0% 45%,rgba(54,211,153,.155),transparent 61%),
+    linear-gradient(145deg,rgba(18,49,46,.54),rgba(8,19,31,.60))!important;
+  box-shadow:inset 3px 0 0 rgba(54,211,153,.66),inset 0 0 42px rgba(54,211,153,.07),0 0 20px rgba(54,211,153,.075)!important;
+}
+#view-radar .coin-card.ox-market-down{
+  border-color:rgba(239,76,105,.58)!important;
+  background:
+    radial-gradient(150% 130% at 0% 45%,rgba(239,76,105,.205),transparent 61%),
+    linear-gradient(145deg,rgba(58,22,37,.62),rgba(10,18,30,.61))!important;
+  box-shadow:inset 3px 0 0 rgba(239,76,105,.78),inset 0 0 46px rgba(239,76,105,.105),0 0 23px rgba(239,76,105,.115)!important;
+}
+
+/* Generic strong down gets a visibly stronger red edge, as requested. */
+.ox-market-down{
+  border-color:rgba(239,76,105,.52)!important;
+  background-color:rgba(239,76,105,.06)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(239,76,105,.11),
+    inset 0 0 36px rgba(239,76,105,.085),
+    0 0 22px rgba(239,76,105,.105)!important;
+}
+.ox-market-down::after{box-shadow:inset 0 0 28px rgba(239,76,105,.22)!important;opacity:.74!important;}
+.ox-market-up{
+  border-color:rgba(54,211,153,.42)!important;
+  background-color:rgba(54,211,153,.048)!important;
+  box-shadow:inset 0 0 0 1px rgba(54,211,153,.085),inset 0 0 32px rgba(54,211,153,.06),0 0 19px rgba(54,211,153,.075)!important;
+}
+.ox-market-up::after{box-shadow:inset 0 0 24px rgba(54,211,153,.17)!important;opacity:.66!important;}
+
+/* Light theme market colours: glass-tinted, not solid fill. */
+body.theme-light #view-radar .coin-card.ox-side-long{
+  border-color:rgba(22,145,108,.28)!important;
+  background:
+    radial-gradient(145% 120% at 0% 45%,rgba(38,190,145,.115),transparent 61%),
+    linear-gradient(145deg,rgba(251,255,253,.90),rgba(231,246,240,.68))!important;
+  box-shadow:inset 2px 0 0 rgba(25,154,119,.48),inset 0 0 30px rgba(25,154,119,.055),0 7px 18px rgba(48,73,93,.055)!important;
+}
+body.theme-light #view-radar .coin-card.ox-side-short{
+  border-color:rgba(199,62,88,.34)!important;
+  background:
+    radial-gradient(150% 125% at 0% 45%,rgba(223,71,99,.16),transparent 61%),
+    linear-gradient(145deg,rgba(255,252,253,.92),rgba(251,231,237,.70))!important;
+  box-shadow:inset 2px 0 0 rgba(207,76,101,.58),inset 0 0 32px rgba(207,76,101,.075),0 7px 18px rgba(48,73,93,.055)!important;
+}
+body.theme-light #view-radar .coin-card.ox-market-up{
+  border-color:rgba(18,143,106,.43)!important;
+  background:
+    radial-gradient(150% 130% at 0% 45%,rgba(35,188,142,.17),transparent 61%),
+    linear-gradient(145deg,rgba(251,255,253,.96),rgba(224,244,236,.73))!important;
+  box-shadow:inset 3px 0 0 rgba(21,151,114,.68),inset 0 0 38px rgba(21,151,114,.08),0 8px 21px rgba(45,74,94,.07)!important;
+}
+body.theme-light #view-radar .coin-card.ox-market-down{
+  border-color:rgba(198,54,82,.52)!important;
+  background:
+    radial-gradient(155% 135% at 0% 45%,rgba(220,63,92,.225),transparent 61%),
+    linear-gradient(145deg,rgba(255,252,253,.97),rgba(249,220,228,.76))!important;
+  box-shadow:inset 3px 0 0 rgba(203,57,84,.78),inset 0 0 42px rgba(203,57,84,.12),0 8px 23px rgba(82,49,58,.085)!important;
+}
+body.theme-light .ox-market-down{
+  border-color:rgba(201,57,84,.46)!important;
+  background-color:rgba(218,65,93,.075)!important;
+  box-shadow:inset 0 0 0 1px rgba(208,63,91,.09),inset 0 0 34px rgba(208,63,91,.10),0 8px 22px rgba(82,49,58,.08)!important;
+}
+body.theme-light .ox-market-up{
+  border-color:rgba(22,144,108,.38)!important;
+  background-color:rgba(25,154,119,.055)!important;
+}
+
+/* Selected locator stays gold but direction still fills the body. */
+#view-radar .coin-card.selected.ox-side-long,
+#view-radar .coin-card.selected.ox-market-up{
+  box-shadow:inset 3px 0 0 var(--gold),inset 0 0 38px rgba(54,211,153,.075),0 7px 20px rgba(0,0,0,.10)!important;
+}
+#view-radar .coin-card.selected.ox-side-short,
+#view-radar .coin-card.selected.ox-market-down{
+  box-shadow:inset 3px 0 0 var(--gold),inset 0 0 42px rgba(239,76,105,.12),0 7px 20px rgba(0,0,0,.10)!important;
+}
+body.theme-light #view-radar .coin-card.selected.ox-side-long,
+body.theme-light #view-radar .coin-card.selected.ox-market-up{
+  box-shadow:inset 3px 0 0 #b78124,inset 0 0 36px rgba(21,151,114,.09),0 8px 20px rgba(54,76,97,.075)!important;
+}
+body.theme-light #view-radar .coin-card.selected.ox-side-short,
+body.theme-light #view-radar .coin-card.selected.ox-market-down{
+  box-shadow:inset 3px 0 0 #b78124,inset 0 0 40px rgba(203,57,84,.14),0 8px 20px rgba(77,58,64,.08)!important;
+}
+
+/* ---------- mobile Liquid Glass tuning ---------- */
+@media(max-width:720px){
+  :where(.glass,.glass-strong,.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action,.ox-auth-card){
+    backdrop-filter:blur(17px) saturate(138%)!important;
+    -webkit-backdrop-filter:blur(17px) saturate(138%)!important;
+  }
+  .app-dock{
+    backdrop-filter:blur(22px) saturate(145%)!important;
+    -webkit-backdrop-filter:blur(22px) saturate(145%)!important;
+  }
+  .app-dock .ox-dock-indicator{
+    top:4px!important;
+    height:calc(100% - 8px)!important;
+    border-radius:var(--ox-radius-md)!important;
+  }
+  #view-radar .coin-card.ox-side-short,
+  #view-radar .coin-card.ox-market-down{
+    background-position:left center!important;
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .app-dock .ox-dock-indicator{transition:none!important;}
+}
+

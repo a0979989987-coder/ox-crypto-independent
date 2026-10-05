@@ -1,0 +1,95 @@
+/* Radar chart toolbar: compact, swipeable timeframes and glass controls. */
+body.ox-terminal #view-radar .chart-controls {
+  display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;align-items:center!important;
+  gap:6px!important;overflow:hidden!important;padding:4px 7px!important;
+}
+body.ox-terminal #view-radar .chart-timeframe-group {display:flex!important;align-items:center!important;min-width:0!important;overflow:hidden!important;gap:3px!important}
+body.ox-terminal #view-radar .chart-timeframe-strip {position:relative;display:flex;align-items:center;gap:2px;min-width:0;flex:1 1 auto;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;overscroll-behavior-x:contain;touch-action:pan-x;}
+body.ox-terminal #view-radar .chart-timeframe-strip::-webkit-scrollbar {display:none}
+body.ox-terminal #view-radar .chart-timeframe-strip .btn-tf {position:relative;z-index:1;flex:0 0 auto;min-width:34px!important;height:28px!important;min-height:28px!important;padding:0 5px!important;white-space:nowrap!important;background:transparent!important;border:1px solid transparent!important;border-radius:7px!important;box-shadow:none!important;text-shadow:none;transition:color .55s ease,text-shadow .55s ease!important;}
+body.ox-terminal #view-radar .chart-timeframe-strip .btn-tf.active {color:var(--ink)!important;background:transparent!important;border:1px solid transparent!important;border-radius:7px!important;box-shadow:none!important;text-shadow:0 0 6px #ffffffa3,0 0 12px #ffffff59!important;}
+body.ox-terminal #view-radar .chart-timeframe-strip .tf-hint {display:inline-block;margin-left:2px;font-size:8px;line-height:1;color:currentColor;opacity:.7;transform:translateY(1px);transition:opacity .55s ease;text-shadow:none}
+body.ox-terminal #view-radar .chart-timeframe-strip .btn-tf.active .tf-hint {opacity:1}
+body.ox-terminal #view-radar .chart-timeframe-strip .tf-glass-indicator {position:absolute;z-index:0;top:1px;bottom:1px;left:0;width:0;border:1px solid #ffffff70;border-radius:7px;background:linear-gradient(145deg,#ffffff2b,#dce6ef16 65%,#ffffff0b);box-shadow:inset 0 1px 0 #ffffff69,inset 0 -1px 0 #ffffff20;backdrop-filter:blur(12px) saturate(1.4);-webkit-backdrop-filter:blur(12px) saturate(1.4);pointer-events:none;opacity:0;transition:transform .48s cubic-bezier(.22,.8,.24,1),width .48s cubic-bezier(.22,.8,.24,1),opacity .22s ease;}
+body.ox-terminal #view-radar .chart-timeframe-strip.is-ready .tf-glass-indicator {opacity:1}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group.chart-tool-actions:nth-child(2) {display:flex!important;align-items:center!important;align-self:center!important;justify-self:end!important;gap:4px!important;width:auto!important;height:28px!important;min-height:28px!important;overflow:hidden!important;border:0!important;border-top:0!important;padding:0!important;padding-top:0!important;margin:0!important;box-shadow:none!important;}
+body.ox-terminal #view-radar .chart-tool-actions::before,body.ox-terminal #view-radar .chart-tool-actions::after {display:none!important}
+body.ox-terminal #view-radar .chart-tool-icon {display:grid;place-items:center;flex:0 0 28px;width:28px;height:28px;padding:5px;border:1px solid transparent;border-radius:7px;color:var(--ink);background:transparent;box-shadow:none;cursor:pointer;transition:background .22s ease,border-color .22s ease,transform .28s cubic-bezier(.2,.8,.2,1);}
+body.ox-terminal #view-radar .chart-tool-icon svg {display:block;width:16px;height:16px;flex:none;overflow:hidden;fill:none;stroke:currentColor;stroke-width:1.65;stroke-linecap:round;stroke-linejoin:round}
+body.ox-terminal #view-radar :is(#chart-indicator-open) {appearance:none;line-height:0;align-self:center;justify-self:center}
+body.ox-terminal #view-radar .chart-tool-icon:active {transform:scale(.92)}
+body.ox-terminal #view-radar .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot {display:inline-grid!important;border:1px solid transparent!important;border-radius:7px!important;background:transparent!important;box-shadow:none!important}
+body.ox-terminal.chart-focus #view-radar .chart-controls>.ctrl-group.chart-tool-actions:nth-child(2) {display:none!important}
+body.ox-terminal.chart-focus #view-radar .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot {display:inline-grid!important;position:absolute!important;top:calc(env(safe-area-inset-top) + 10px)!important;right:calc(env(safe-area-inset-right) + 12px)!important;z-index:60!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;flex:none!important;border-radius:50%!important;background:#12161cdd!important;border:1px solid #ffffff78!important;box-shadow:inset 0 1px 0 #ffffff54,0 3px 12px #0008!important;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+body.ox-terminal #view-radar .chart-box:fullscreen :is(#btn-chart-fullscreen).ox-chart-expand-dot,body.ox-terminal #view-radar .chart-box:-webkit-full-screen :is(#btn-chart-fullscreen).ox-chart-expand-dot {display:inline-grid!important;position:absolute!important;top:calc(env(safe-area-inset-top) + 10px)!important;right:calc(env(safe-area-inset-right) + 12px)!important;z-index:60!important;width:28px!important;height:28px!important;min-width:28px!important;min-height:28px!important;border-radius:50%!important;background:#12161cdd!important;border:1px solid #ffffff78!important;box-shadow:inset 0 1px 0 #ffffff54,0 3px 12px #0008!important}
+body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay {display:none!important}
+@media(max-width:900px){
+  body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay {display:grid!important;place-items:center!important;position:absolute!important;top:calc(env(safe-area-inset-top) + 43px)!important;right:clamp(70px,15%,145px)!important;z-index:80!important;width:26px!important;height:26px!important;min-width:26px!important;min-height:26px!important;padding:5px!important;border:1px solid #ffffff69!important;border-radius:50%!important;background:#161b22c9!important;box-shadow:inset 0 1px 0 #ffffff40,0 0 9px #ffffff20!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);opacity:.74;transition:opacity .25s ease,box-shadow .25s ease!important}
+  body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay:is(:hover,:focus-visible,:active) {opacity:1;box-shadow:inset 0 1px 0 #ffffff85,0 0 12px #ffffff66!important}
+  body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay svg {width:14px!important;height:14px!important}
+}
+body.ox-terminal.chart-focus #view-radar .chart-timeframe-group {padding-right:38px!important}
+body.ox-terminal .chart-tools-overlay {position:fixed;inset:0;z-index:12000;display:grid;place-items:center;padding:20px;background:#02050bc2;backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease}
+body.ox-terminal .chart-tools-overlay.is-open {opacity:1;visibility:visible}
+body.ox-terminal .chart-tools-dialog {position:relative;width:min(440px,100%);max-height:min(80dvh,720px);overflow:auto;padding:18px;border:1px solid transparent;border-radius:17px;background:linear-gradient(160deg,#15191fF5,#0d1117F7) padding-box,linear-gradient(125deg,#ffffffb8,#d9e8f37a 32%,#ffffff34 58%,#ffffffa3) border-box;box-shadow:0 18px 55px #000a,inset 0 1px 0 #ffffff24,0 0 22px #eaf4ff1c;color:var(--ink);animation:chart-dialog-edge 5s linear infinite;transform:translateY(8px) scale(.985);transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+body.ox-terminal .chart-tools-overlay.is-open .chart-tools-dialog {transform:translateY(0) scale(1)}
+@keyframes chart-dialog-edge {0%,100%{background:linear-gradient(160deg,#15191ff5,#0d1117f7) padding-box,linear-gradient(125deg,#ffffffa8,#d9e8f366 32%,#ffffff2a 58%,#ffffff8e) border-box}50%{background:linear-gradient(160deg,#15191ff5,#0d1117f7) padding-box,linear-gradient(305deg,#ffffffb8,#d9e8f37a 32%,#ffffff34 58%,#ffffffa3) border-box}}
+body.ox-terminal .chart-tools-head {display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid #ffffff20}
+body.ox-terminal .chart-tools-overlay[data-active-panel="timeframes"] .chart-tools-head {display:none}
+body.ox-terminal .chart-tools-overlay[data-active-panel="timeframes"] .chart-tools-close {display:none}
+body.ox-terminal .chart-tools-overlay[data-active-panel="timeframes"] .chart-tools-panel {padding-top:0}
+body.ox-terminal .chart-tools-overlay[data-active-panel="timeframes"] .chart-timeframe-preferences {margin-top:0}
+body.ox-terminal .chart-tools-panel[data-chart-tools-panel="timeframes"]>h3,body.ox-terminal .chart-tools-panel[data-chart-tools-panel="timeframes"]>p {display:none}
+body.ox-terminal .chart-tools-head small {font-size:9px;letter-spacing:.12em;color:var(--muted)}
+body.ox-terminal .chart-tools-head h2 {margin:3px 0 0;font-size:19px;font-weight:600}
+body.ox-terminal .chart-tools-close {position:absolute;right:16px;bottom:16px;display:grid;place-items:center;width:30px;height:30px;border:1px solid #ffffff5c;border-radius:50%;background:#ffffff0b;color:var(--ink);font-size:22px;cursor:pointer;transition:background .25s ease,border-color .25s ease,box-shadow .25s ease}
+body.ox-terminal .chart-tools-close:is(:hover,:focus-visible) {border-color:#ffffffad;background:#ffffff23;box-shadow:0 0 12px #ffffff44}
+body.ox-terminal .chart-tools-panel {padding-top:0}
+body.ox-terminal .chart-tools-overlay[data-active-panel="indicators"] .chart-tools-panel:has(.chart-custom-filters:not([hidden])) {padding-bottom:36px}
+body.ox-terminal .chart-tools-panel h3 {margin:0 0 10px;font-size:14px;font-weight:600}
+body.ox-terminal .chart-tools-panel p {margin:0 0 13px;color:var(--muted);font-size:11px;line-height:1.6}
+body.ox-terminal .chart-indicator-options {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+body.ox-terminal .chart-indicator-option {position:relative;display:flex;align-items:center;justify-content:center;min-height:42px;padding:8px;border:1px solid #ffffff23;border-radius:10px;background:#ffffff06;font-size:11px;cursor:pointer;transition:border-color .35s ease,background .35s ease,box-shadow .45s ease,color .35s ease}
+body.ox-terminal .chart-indicator-option input,body.ox-terminal .chart-timeframe-preferences input,body.ox-terminal .chart-custom-filters input {position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+body.ox-terminal .chart-indicator-check {display:none}
+body.ox-terminal .chart-indicator-option:is(:has(input:checked),[aria-pressed="true"]) {color:#fff;border-color:#ffffffbd;background:linear-gradient(145deg,#ffffff31,#ffffff0c);box-shadow:inset 0 1px 0 #ffffff9c,0 0 7px #ffffff6a,0 0 17px #ffffff29}
+body.ox-terminal .chart-indicator-option:has(input:focus-visible),body.ox-terminal .chart-timeframe-preferences label:has(input:focus-visible),body.ox-terminal .chart-custom-filters label:has(input:focus-visible) {outline:2px solid #fff;outline-offset:2px}
+body.ox-terminal .chart-filter-mode-section {margin-top:18px;padding-top:15px;border-top:1px solid #ffffff20}
+body.ox-terminal .chart-filter-mode {display:flex;gap:7px}
+body.ox-terminal .chart-tools-overlay[data-active-panel="indicators"] .chart-filter-mode {padding-right:36px}
+body.ox-terminal .chart-filter-mode button,.chart-tools-save {min-height:34px;padding:0 14px;border:1px solid #ffffff39;border-radius:9px;background:#ffffff0a;color:var(--ink);font-size:11px;cursor:pointer}
+body.ox-terminal .chart-filter-mode button[aria-pressed="true"] {border-color:#ffffffaa;background:linear-gradient(145deg,#ffffff2a,#ffffff0a);box-shadow:inset 0 1px 0 #fff6,0 0 10px #ffffff1c}
+body.ox-terminal .chart-custom-filters {display:grid;gap:8px;margin-top:12px;padding:12px;border:1px solid #ffffff29;border-radius:10px;background:#ffffff06}
+body.ox-terminal .chart-custom-filters label {position:relative;display:flex;align-items:center;justify-content:center;min-height:36px;padding:6px;border:1px solid #ffffff28;border-radius:9px;font-size:11px;cursor:pointer;transition:border-color .35s ease,background .35s ease,box-shadow .45s ease}
+body.ox-terminal .chart-custom-filters label:has(input:checked) {border-color:#ffffffb0;background:linear-gradient(145deg,#ffffff2c,#ffffff0a);box-shadow:inset 0 1px 0 #ffffff78,0 0 7px #ffffff62,0 0 15px #ffffff24}
+body.ox-terminal .chart-custom-filters small {color:var(--muted);font-size:10px}
+body.ox-terminal .chart-timeframe-preferences {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px;margin:13px 0}
+body.ox-terminal .chart-timeframe-preferences label {position:relative;display:flex;align-items:center;justify-content:center;min-height:42px;padding:8px;border:1px solid #ffffff26;border-radius:8px;font-size:11px;text-align:center;cursor:pointer;transition:border-color .35s ease,background .35s ease,box-shadow .45s ease,color .35s ease}
+body.ox-terminal .chart-timeframe-preferences label:has(input:checked) {color:#fff;border-color:#ffffffbd;background:linear-gradient(145deg,#ffffff31,#ffffff0c);box-shadow:inset 0 1px 0 #ffffff9c,0 0 7px #ffffff6a,0 0 17px #ffffff29}
+body.ox-terminal .chart-tools-save {width:100%;border-color:#ffffff85;background:linear-gradient(145deg,#ffffff24,#ffffff08);box-shadow:inset 0 1px 0 #fff5,0 0 12px #fff2}
+body.ox-terminal #view-radar .chart-timeframe-group {position:relative!important}
+body.ox-terminal .chart-tools-panel[hidden],body.ox-terminal .chart-custom-filters[hidden] {display:none!important}
+body.ox-terminal #view-radar .market-line-price :is(label#ticker-pair) {color:#f2f4f7!important;font-size:11px!important;font-weight:500!important;line-height:1.2!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;max-width:100%!important}
+body.ox-terminal #view-radar .market-line-price :is(label#ticker-pair) {cursor:pointer;display:block;padding-right:10px;position:relative;touch-action:manipulation;-webkit-user-select:none;user-select:none}
+body.ox-terminal #view-radar .market-line-price :is(label#ticker-pair)::after {content:'▾';position:absolute;right:0;top:0;color:var(--muted);font-size:9px}
+body.ox-terminal #view-radar .market-line-price :is(label#ticker-pair):focus-visible {outline:2px solid var(--ink);outline-offset:2px}
+body.ox-terminal #view-radar .ox-indicator-legend {display:none!important}
+body.ox-terminal.theme-light .chart-tools-dialog {color:#18212b;background:linear-gradient(160deg,#f5f8fbf5,#eaf0f6f7) padding-box,linear-gradient(125deg,#ffffff,#8a9caf80,#ffffff) border-box}
+@media(max-width:600px){body.ox-terminal #view-radar .chart-controls{gap:3px!important;padding-inline:4px!important}body.ox-terminal #view-radar .chart-timeframe-strip .btn-tf{min-width:29px!important;height:27px!important;min-height:27px!important;padding-inline:3px!important;font-size:9px!important}body.ox-terminal #view-radar .chart-tool-icon{width:25px;height:25px;flex-basis:25px;padding:4px}body.ox-terminal #view-radar .chart-tool-icon svg{width:15px;height:15px}body.ox-terminal .chart-tools-dialog{padding:15px;border-radius:15px}.chart-indicator-options{gap:5px!important}.chart-indicator-option{padding:6px!important;font-size:10px!important}}
+@media(prefers-reduced-motion:reduce){body.ox-terminal #view-radar .tf-glass-indicator,body.ox-terminal .chart-tools-dialog,body.ox-terminal .chart-tools-overlay{transition:none!important;animation:none!important}}
+
+body.ox-terminal .chart-tools-close{padding:0;line-height:1;box-sizing:border-box;flex:none}
+body.ox-terminal .chart-tools-close svg{display:block;width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round}
+.chart-tier-combination{display:grid;gap:10px;padding-top:12px;min-width:0}
+.chart-tier-combination[hidden]{display:none!important}
+.chart-tier-combination-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:11px}
+.chart-tier-rule{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) 28px;gap:8px;align-items:center}
+.chart-tier-rules{display:grid;gap:8px}
+.chart-tier-combination select{min-width:0;max-width:100%;height:32px;border:1px solid #ffffff35;border-radius:7px;background:#1a1d21;color:inherit;padding:0 7px;font:11px system-ui}
+.chart-tier-combination button{min-height:30px;min-width:0;border:1px solid #ffffff35;border-radius:7px;background:#ffffff08;color:inherit;font:11px system-ui;padding:0 8px}
+.chart-tier-combination small{color:var(--muted,#aaa);font:10px/1.5 system-ui}
+.chart-tier-combination button:disabled{opacity:.35}
+.chart-tier-filter{margin-top:14px;padding-top:12px;border-top:1px solid #ffffff20;padding-bottom:36px}
+body.ox-terminal .chart-tools-dialog:has(.chart-tier-combination:not([hidden])){max-height:80dvh;overflow-y:auto}
+
+body.ox-terminal #crypto-tier-combination .chart-tier-combination{padding-bottom:30px}

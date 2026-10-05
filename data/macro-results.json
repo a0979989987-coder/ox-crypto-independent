@@ -1,0 +1,372 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-05T02:40:23.353Z",
+  "sources": [
+    {
+      "metric": "nonfarm-payrolls",
+      "endpoint": "https://www.bls.gov/news.release/empsit.nr0.htm",
+      "status": "ready",
+      "lastAttemptAt": "2026-10-05T02:40:23.353Z",
+      "lastSuccessAt": "2026-10-05T02:40:23.353Z",
+      "message": null
+    },
+    {
+      "metric": "cpi-mom",
+      "endpoint": "https://www.bls.gov/news.release/cpi.nr0.htm",
+      "status": "ready",
+      "lastAttemptAt": "2026-10-05T02:40:23.353Z",
+      "lastSuccessAt": "2026-10-05T02:40:23.353Z",
+      "message": null
+    },
+    {
+      "metric": "fed-rate",
+      "endpoint": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "status": "ready",
+      "lastAttemptAt": "2026-10-05T02:40:23.353Z",
+      "lastSuccessAt": "2026-10-05T02:40:23.353Z",
+      "message": null
+    }
+  ],
+  "events": [
+    {
+      "id": "macro:nonfarm-payrolls:2026-10-02",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "bls-calendar",
+      "source": "U.S. BLS",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美國非農就業人口",
+      "titleZh": "美國非農就業人口",
+      "metric": "nonfarm-payrolls",
+      "occursAt": "2026-10-02T12:30:00.000Z",
+      "releasedAt": "2026-10-02T12:30:00.000Z",
+      "updatedAt": "2026-10-05T02:40:23.353Z",
+      "status": "confirmed",
+      "previous": 133000,
+      "consensus": 90000,
+      "actual": 29000,
+      "sourceUrl": "https://www.bls.gov/news.release/archives/empsit_10022026.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.bls.gov/news.release/archives/empsit_10022026.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "matchTitle": "Employment Situation for ",
+      "previousOriginal": 162000,
+      "unit": "人",
+      "consensusSource": "https://www.reuters.com/business/us-job-growth-expected-slow-september-unemployment-rate-likely-steady-2026-10-02/"
+    },
+    {
+      "id": "macro:cpi-mom:2026-09-11",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "bls-calendar",
+      "source": "U.S. BLS",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美國 CPI 月增率",
+      "titleZh": "美國 CPI 月增率",
+      "metric": "cpi-mom",
+      "occursAt": "2026-09-11T12:30:00.000Z",
+      "releasedAt": "2026-09-11T12:30:00.000Z",
+      "updatedAt": "2026-10-05T02:40:23.353Z",
+      "status": "confirmed",
+      "previous": 0.1,
+      "consensus": null,
+      "actual": 0.4,
+      "sourceUrl": "https://www.bls.gov/news.release/archives/cpi_09112026.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.bls.gov/news.release/archives/cpi_09112026.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "matchTitle": "Consumer Price Index for ",
+      "unit": "%"
+    },
+    {
+      "id": "macro:fed-rate:2026-01-28",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": null,
+      "releasedAt": null,
+      "updatedAt": "2026-10-05T02:40:23.650Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": null,
+      "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": "2026-01-28",
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm"
+    },
+    {
+      "id": "macro:fed-rate:2026-03-18",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": null,
+      "releasedAt": null,
+      "updatedAt": "2026-10-05T02:40:23.650Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": null,
+      "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": "2026-03-18",
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm"
+    },
+    {
+      "id": "macro:fed-rate:2026-04-29",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": null,
+      "releasedAt": null,
+      "updatedAt": "2026-10-05T02:40:23.650Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": null,
+      "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": "2026-04-29",
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm"
+    },
+    {
+      "id": "macro:fed-rate:2026-06-17",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": "2026-06-17T18:00:00.000Z",
+      "releasedAt": "2026-06-17T18:00:00.000Z",
+      "updatedAt": "2026-10-05T02:37:48.533Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": 3.75,
+      "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": null,
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": null,
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260617a.htm",
+      "label": "聯邦基金利率區間上限",
+      "rateRange": "3.5–3.75%"
+    },
+    {
+      "id": "macro:fed-rate:2026-07-29",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": "2026-07-29T18:00:00.000Z",
+      "releasedAt": "2026-07-29T18:00:00.000Z",
+      "updatedAt": "2026-10-05T02:40:23.353Z",
+      "status": "confirmed",
+      "previous": 3.75,
+      "consensus": null,
+      "actual": 3.75,
+      "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": null,
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": null,
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260729a.htm",
+      "label": "聯邦基金利率區間上限",
+      "rateRange": "3.5–3.75%"
+    },
+    {
+      "id": "macro:fed-rate:2026-09-16",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": "2026-09-16T18:00:00.000Z",
+      "releasedAt": "2026-09-16T18:00:00.000Z",
+      "updatedAt": "2026-10-05T02:40:23.353Z",
+      "status": "confirmed",
+      "previous": 3.75,
+      "consensus": null,
+      "actual": 4,
+      "sourceUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": null,
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": null,
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
+      "label": "聯邦基金利率區間上限",
+      "rateRange": "3.75–4%"
+    },
+    {
+      "id": "macro:fed-rate:2026-10-28",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": null,
+      "releasedAt": null,
+      "updatedAt": "2026-10-05T02:40:23.650Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": null,
+      "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": "2026-10-28",
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。"
+    },
+    {
+      "id": "macro:fed-rate:2026-12-09",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "fed",
+      "source": "Federal Reserve",
+      "markets": [
+        "crypto",
+        "tw"
+      ],
+      "title": "美聯準會 FOMC 利率決策",
+      "titleZh": "美聯準會 FOMC 利率決策",
+      "metric": "fed-rate",
+      "occursAt": null,
+      "releasedAt": null,
+      "updatedAt": "2026-10-05T02:40:23.650Z",
+      "status": "confirmed",
+      "previous": null,
+      "consensus": null,
+      "actual": null,
+      "sourceUrl": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "date": "2026-12-09",
+      "unit": "%",
+      "allDay": false,
+      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。"
+    }
+  ]
+}

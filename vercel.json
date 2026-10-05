@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "api/v1/account/*.js": {
+      "maxDuration": 60
+    }
+  },
+  "buildCommand": "npm run build:tools && npm run check"
+}

@@ -1,0 +1,558 @@
+/* Radar terminal surface. Preserve workspace placement and existing input handlers. */
+body.ox-terminal #view-radar {--radar-surface:var(--bg);--radar-line:var(--line)}
+body.ox-terminal .ox-live-strip {border-radius:0!important;background:var(--bg)!important;box-shadow:none!important}
+body.ox-terminal .ox-live-badge {background:transparent!important;color:var(--ink)!important}
+body.ox-terminal #view-radar:has(:is(#direction-toggle)) .market-line-card {
+ background:linear-gradient(115deg,#ffffff09,transparent 80%)!important;border:1px solid var(--line)!important;border-radius:var(--ox-radius-xs)!important;box-shadow:inset 0 1px 0 #ffffff26!important;backdrop-filter:blur(10px)!important
+}
+body.ox-terminal #view-radar .market-line-item {background:none!important;border-color:var(--line)!important;box-shadow:none!important}
+body.ox-terminal #view-radar .market-line-item label {color:var(--muted)!important}
+body.ox-terminal #view-radar :is(#price) {color:var(--ink)!important;font-family:var(--ox-font-display)!important;font-weight:400!important}
+body.ox-terminal #view-radar .panel {background:var(--bg)!important;border:1px solid var(--line)!important;border-radius:var(--ox-radius-xs)!important;box-shadow:none!important}
+body.ox-terminal #view-radar .panel-head,body.ox-terminal #view-radar .chart-controls,body.ox-terminal #view-radar .scanner-tabs {background:var(--bg)!important;border-color:var(--line)!important}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group {background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;padding:0!important}
+body.ox-terminal #view-radar .chart-controls .btn-tf {
+ color:var(--muted)!important;background:none!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;box-shadow:none!important;transform:none!important;font-weight:500!important
+}
+body.ox-terminal #view-radar .chart-controls .btn-tf.active {color:var(--ink)!important;background:linear-gradient(145deg,#ffffff36,#e1e4ea0c)!important;border:1px solid #ffffff66!important;border-radius:5px!important;box-shadow:inset 0 1px 0 #ffffffcc,inset 0 -1px 0 #ffffff80,0 0 8px #ffffff2b!important}
+body.ox-terminal #view-radar .chart-controls .btn-tf::before,body.ox-terminal #view-radar .chart-controls .btn-tf::after {display:none!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl,body.ox-terminal #view-radar .chart-controls .toggle-lbl:has(input:checked) {
+ border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:var(--muted)!important;padding:4px 2px!important;gap:4px!important;font-weight:400!important
+}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl:has(input:checked) {color:var(--ink)!important}
+body.ox-terminal #view-radar .chart-controls {height:auto!important;min-height:0!important;grid-auto-rows:min-content!important;align-content:start!important;row-gap:3px!important}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group {height:auto!important;min-height:0!important;align-content:center!important;margin:0!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input {appearance:none!important;width:26px!important;min-width:26px!important;height:16px!important;margin:0!important;border:1px solid #8d929b66!important;border-radius:12px!important;background:#ffffff12!important;box-shadow:inset 0 1px 3px #0004!important;position:relative!important;cursor:pointer;transition:background .18s,border-color .18s!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input::after {display:block!important;content:""!important;position:absolute!important;left:2px!important;top:2px!important;width:10px!important;height:10px!important;border:0!important;border-radius:50%!important;background:var(--muted)!important;transform:translateX(0)!important;box-shadow:none!important;transition:transform .18s,background .18s!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input:checked {background:#ddd5b84a!important;border-color:#e9dfbfa6!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input:checked::after {background:#f1e6c7!important;transform:translateX(10px)!important;box-shadow:0 0 4px #f1e6c72b!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input:focus-visible {outline:2px solid var(--ink)!important;outline-offset:3px}
+@media(prefers-reduced-motion:reduce){body.ox-terminal #view-radar .chart-controls .toggle-lbl input,body.ox-terminal #view-radar .chart-controls .toggle-lbl input::after{transition:none!important}}
+body.ox-terminal #view-radar :is(#direction-toggle) {width:auto!important;min-width:36px!important;max-width:none!important;padding:4px 6px!important;height:26px!important;background:none!important;border:1px solid var(--line)!important;border-radius:0!important;color:var(--ink)!important;box-shadow:none!important;font-size:11px!important;transform:none!important}
+body.ox-terminal #view-radar :is(#direction-toggle)::before,body.ox-terminal #view-radar :is(#direction-toggle)::after {display:none!important}
+body.ox-terminal #view-radar .scanner-tabs .tab-btn {background:none!important;border:0!important;border-bottom:2px solid transparent!important;border-radius:0!important;color:var(--muted)!important;box-shadow:none!important;transform:none!important}
+body.ox-terminal #view-radar .scanner-tabs .tab-btn.active {background:var(--panel-alt)!important;border-bottom-color:var(--ink)!important;color:var(--ink)!important;box-shadow:none!important}
+body.ox-terminal #view-radar .scanner-tabs .tab-btn::before,body.ox-terminal #view-radar .scanner-tabs .tab-btn::after {display:none!important}
+body.ox-terminal #view-radar #chart,body.ox-terminal #view-radar .ox-indicator-legend {background:var(--bg)!important;border-color:var(--line)!important;color:var(--muted)!important}
+body.ox-terminal #view-radar .ox-indicator-up {color:var(--green)!important}
+body.ox-terminal #view-radar .ox-indicator-down {color:var(--red)!important}
+body.ox-terminal #view-radar #price-timer {border:0!important;background:var(--bg)!important;border-radius:0!important;box-shadow:none!important;color:var(--muted)!important;padding:3px!important}
+body.ox-terminal #view-radar #price-timer small {color:var(--muted)!important;font-weight:400!important}
+body.ox-terminal #view-radar .chart-benchmark-bar,body.ox-terminal #view-radar .chart-quickbar {background:none!important;border-color:var(--line)!important;border-radius:0!important;box-shadow:none!important}
+body.ox-terminal #view-radar .benchmark-card,body.ox-terminal #view-radar .alert-btn {border-radius:0!important;background:none!important;border-color:var(--line)!important;box-shadow:none!important}
+body.ox-terminal #view-radar .coin-card {background:none!important;box-shadow:none!important;border-radius:0!important;border-left:2px solid transparent!important;border-bottom:1px solid var(--line)!important}
+body.ox-terminal #view-radar .coin-card.selected {background:var(--panel-alt)!important;border-left-color:var(--ink)!important;box-shadow:none!important}
+body.ox-terminal #view-radar .coin-card::before,body.ox-terminal #view-radar .coin-card::after {display:none!important}
+body.ox-terminal #view-radar .coin-ox {color:var(--muted)!important;background:none!important;border:0!important;border-radius:0!important;font-weight:400!important}
+body.ox-terminal #view-radar .watch-star {background:none!important;border:0!important;border-radius:0!important;box-shadow:none!important;color:var(--muted)!important}
+body.ox-terminal #view-radar .watch-star.is-starred {color:#f4c65b!important}
+body.ox-terminal #view-radar :is(#screener-list) {scrollbar-width:thin!important;scrollbar-color:var(--line) transparent!important}
+body.ox-terminal #view-radar :is(#screener-list)::-webkit-scrollbar {width:3px!important}
+body.ox-terminal #view-radar :is(#screener-list)::-webkit-scrollbar-track {background:transparent!important}
+body.ox-terminal #view-radar :is(#screener-list)::-webkit-scrollbar-thumb {background:var(--line)!important;border-radius:0!important}
+@media(max-width:720px){
+ body.ox-terminal[data-view="radar"] .wrap {padding-left:12px!important;padding-right:12px!important}
+ body.ox-terminal #view-radar .workspace {grid-template-columns:minmax(0,1fr) 124px!important;gap:7px!important}
+ body.ox-terminal #view-radar .market-line-card {padding:9px 3px!important;margin:0 0 9px!important;min-height:52px!important}
+ body.ox-terminal #view-radar .market-line-item {padding:0 8px!important}
+ body.ox-terminal #view-radar .market-line-item:first-child {padding-left:8px!important}
+ body.ox-terminal #view-radar .market-line-item label {font-size:8px!important;line-height:1.5!important}
+ body.ox-terminal #view-radar :is(#price) {font-size:22px!important;line-height:1.2!important}
+ body.ox-terminal #view-radar :is(#quote),body.ox-terminal #view-radar :is(#change) {font-size:12px!important;font-weight:500!important}
+ body.ox-terminal #view-radar .chart-controls {gap:5px!important;padding:7px 4px!important}
+ body.ox-terminal #view-radar .chart-controls .btn-tf {height:32px!important;min-height:32px!important;min-width:0!important;padding:0 1px!important;font-size:9px!important}
+ body.ox-terminal #view-radar .chart-controls .toggle-lbl {font-size:8px!important;min-height:28px!important;overflow:visible!important}
+ body.ox-terminal #view-radar .workspace>aside .panel-head {padding:7px 6px!important;min-height:43px!important}
+ body.ox-terminal #view-radar .workspace>aside .panel-title {font-size:11px!important;font-weight:500!important}
+ body.ox-terminal #view-radar .scanner-tabs {padding:0 3px!important;gap:0!important;min-height:34px!important}
+ body.ox-terminal #view-radar .scanner-tabs .tab-btn {font-size:10px!important;min-height:32px!important;height:32px!important;padding:0!important}
+ body.ox-terminal #view-radar .coin-card {display:grid!important;grid-template-columns:minmax(0,1fr) auto!important;grid-template-rows:auto auto auto!important;gap:4px 3px!important;padding:9px 8px 6px!important;min-height:100px!important;margin:0!important;position:relative!important}
+ body.ox-terminal #view-radar .coin-top {display:contents!important}
+ body.ox-terminal #view-radar .coin-title {grid-column:1!important;grid-row:1!important;display:flex!important;align-items:baseline!important;gap:3px!important;min-width:0!important;max-width:none!important;overflow:visible!important;flex-wrap:nowrap!important;line-height:1.3!important}
+ body.ox-terminal #view-radar .coin-title .coin-rank {color:var(--muted)!important;font-size:9px!important;font-weight:400!important;flex:none!important}
+ body.ox-terminal #view-radar .coin-symbol-mobile {font-size:13px!important;font-weight:600!important;line-height:1.45!important;min-width:0!important;max-width:none!important;overflow:visible!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;color:var(--ink)!important}
+ body.ox-terminal #view-radar .coin-top-right {grid-column:2!important;grid-row:1!important;width:auto!important;min-width:22px!important;display:block!important;align-self:start!important;text-align:right!important}
+ body.ox-terminal #view-radar .coin-ox {font-size:9px!important;width:auto!important;max-width:none!important;white-space:nowrap!important;line-height:1.5!important}
+ body.ox-terminal #view-radar .coin-mid {grid-column:1/-1!important;grid-row:2!important;margin:0!important;min-width:0!important;align-self:center!important}
+ body.ox-terminal #view-radar .mobile-coin-volume {color:var(--muted)!important;font-size:9px!important;line-height:1.5!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important}
+ body.ox-terminal #view-radar .coin-mobile-bottom {grid-column:1/-1!important;grid-row:3!important;display:flex!important;flex-direction:row-reverse!important;align-items:center!important;justify-content:space-between!important;gap:3px!important;margin:0!important}
+ body.ox-terminal #view-radar .coin-mobile-bottom .coin-change {font:600 13px/1.3 -apple-system,BlinkMacSystemFont,sans-serif!important;font-variant-numeric:tabular-nums!important;white-space:nowrap!important}
+ body.ox-terminal #view-radar .watch-star-mobile {width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;padding:8px!important;font-size:16px!important}
+ body.ox-terminal #view-radar .watch-star-desktop {display:none!important}
+}
+@media(max-width:360px){body.ox-terminal #view-radar .workspace {grid-template-columns:minmax(0,1fr) 114px!important} body.ox-terminal #view-radar .coin-card {padding-left:5px!important;padding-right:5px!important}}
+
+body.ox-terminal #view-radar :is(#direction-toggle).is-long .direction-toggle-icon {color:var(--green)!important}
+body.ox-terminal #view-radar :is(#direction-toggle).is-short .direction-toggle-icon {color:var(--red)!important}
+body.ox-terminal #view-radar .chart-quickitem {background:var(--bg)!important;border-color:var(--line)!important}
+body.ox-terminal #view-radar .radar-tab-icon {display:block;width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+body.ox-terminal.theme-light #view-radar:has(:is(#direction-toggle)) .market-line-card {background:var(--bg)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+
+/* Redundant chart footer summary removed; data hooks remain for the existing renderer. */
+body.ox-terminal #view-radar .chart-quickbar[hidden] {display:none!important}
+
+/* A small frosted control band, without moving the chart or candidates. */
+body.ox-terminal:not(.theme-light) #view-radar .chart-controls {
+ background:radial-gradient(ellipse at 15% 0,#ffffff12,transparent 70%),linear-gradient(115deg,#ffffff13,#262a3045)!important;
+ border-top:1px solid #ffffff55!important;border-bottom:1px solid #ffffff33!important;
+ box-shadow:inset 0 1px 0 #ffffff4d,inset 0 -1px 0 #ffffff2b,0 0 9px #ffffff15!important;
+ backdrop-filter:blur(10px) saturate(115%)!important;-webkit-backdrop-filter:blur(10px) saturate(115%)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar .scanner-tabs .tab-btn.active {background:linear-gradient(140deg,#ffffff29,#ffffff09)!important;border-bottom-color:#f5f6f8!important;box-shadow:inset 0 1px 0 #ffffff99,0 0 6px #ffffff1f!important}
+body.ox-terminal #view-radar .coin-card.selected {background:linear-gradient(100deg,#c6cad219,transparent)!important;border-left-color:#e2e4ea!important}
+body.ox-terminal.theme-light #view-radar .chart-controls .btn-tf.active {background:#fff9!important;border-color:#a4a8b0!important;box-shadow:inset 0 1px 0 #fff!important}
+
+/* OX LIVE stays in its original tape; the white neon rim identifies the broadcast. */
+body.ox-terminal:not(.theme-light) .ox-live-strip {
+ background:linear-gradient(100deg,#ffffff0c,transparent 48%)!important;
+ border:1px solid #ffffff4a!important;border-radius:2px!important;
+ box-shadow:inset 0 1px 0 #ffffff66,0 0 6px #ffffff29,0 0 16px #ffffff2b!important;
+}
+body.ox-terminal:not(.theme-light) .ox-live-badge {
+ color:#ffffff!important;border-right-color:#ffffff66!important;
+ background:linear-gradient(100deg,#ffffff1c,transparent)!important;
+ text-shadow:0 0 8px #ffffff88;
+}
+body.ox-terminal:not(.theme-light) .ox-live-window {color:#c9ccd3!important}
+/* The dock must not cover the return icon in the rotated mobile chart. */
+body.ox-terminal.chart-focus .app-dock.glass-nav {display:none!important}
+
+/* Market light follows the direction explicitly selected in the Radar. */
+body.ox-terminal #view-radar[data-price-direction="up"] {--radar-price-rgb:136,195,169}
+body.ox-terminal #view-radar[data-price-direction="down"] {--radar-price-rgb:190,117,145}
+body.ox-terminal #view-radar[data-price-direction="up"] .chart-box,
+body.ox-terminal #view-radar[data-price-direction="down"] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.703)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.737),0 0 9px rgba(var(--radar-price-rgb),.227),0 0 22px rgba(var(--radar-price-rgb),.136)!important;
+}
+body.ox-terminal #view-radar[data-price-direction]:has(:is(#direction-toggle)) .market-line-card {
+ border-color:rgba(var(--radar-price-rgb),.68)!important;border-top-color:rgba(var(--radar-price-rgb),.794)!important;
+ background:linear-gradient(100deg,rgba(var(--radar-price-rgb),.136),transparent 80%)!important;
+ box-shadow:0 0 8px rgba(var(--radar-price-rgb),.193),0 0 20px rgba(var(--radar-price-rgb),.113)!important;
+}
+body.ox-terminal #view-radar[data-price-direction] .chart-controls {
+ border-top-color:rgba(var(--radar-price-rgb),.567)!important;border-bottom-color:rgba(var(--radar-price-rgb),.454)!important;
+ background:linear-gradient(110deg,rgba(var(--radar-price-rgb),.17),#ffffff08 76%)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.567),0 0 11px rgba(var(--radar-price-rgb),.09)!important;
+}
+body.ox-terminal #view-radar[data-price-direction] .coin-card.selected {
+ border-left-color:rgb(var(--radar-price-rgb))!important;
+ background:linear-gradient(100deg,rgba(var(--radar-price-rgb),.159),transparent)!important;
+ box-shadow:inset 2px 0 9px rgba(var(--radar-price-rgb),.136)!important;
+}
+body.ox-terminal.theme-light #view-radar[data-price-direction="up"] {--radar-price-rgb:0,119,138}
+body.ox-terminal.theme-light #view-radar[data-price-direction="down"] {--radar-price-rgb:184,21,80}
+
+/* Native vector star stays consistent across devices and keeps its own touch target. */
+body.ox-terminal #view-radar .watch-star {display:inline-grid!important;place-items:center!important}
+body.ox-terminal #view-radar .watch-star-icon {display:block;width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
+body.ox-terminal #view-radar .watch-star.is-starred .watch-star-icon {fill:currentColor}
+body.ox-terminal #view-radar .coin-ox-value {font-weight:500}
+@media(max-width:720px){
+ /* Score stays in the upper-right; volume and the action line stay below. */
+ body.ox-terminal #view-radar .coin-ox {display:flex!important;flex-direction:column!important;justify-content:flex-start!important;align-items:flex-end!important;gap:1px!important;width:auto!important;padding:0!important;line-height:1.4!important}
+ body.ox-terminal #view-radar .coin-ox-label {font-size:9px!important;letter-spacing:.04em;color:var(--muted)!important}
+ body.ox-terminal #view-radar .coin-ox-value {font-size:15px!important;font-weight:500!important;line-height:1.2!important;font-variant-numeric:tabular-nums;color:var(--ink)!important}
+ body.ox-terminal #view-radar .mobile-coin-volume {display:flex!important;justify-content:space-between!important;align-items:baseline!important;gap:4px!important;width:100%!important;font-variant-numeric:tabular-nums}
+ body.ox-terminal #view-radar .coin-volume-label {font-size:8px!important;white-space:nowrap}
+ body.ox-terminal #view-radar .coin-volume-value {font-size:10px!important;text-align:right;white-space:nowrap;color:var(--muted)!important}
+ body.ox-terminal #view-radar .coin-mobile-bottom {min-height:32px!important;padding-top:2px!important;border-top:1px solid #ffffff09!important}
+ body.ox-terminal #view-radar .coin-title .coin-rank {min-width:13px!important;font-size:8px!important}
+ body.ox-terminal #view-radar .watch-star-mobile {margin-right:-6px!important}
+ body.ox-terminal #view-radar .watch-star-desktop {display:none!important}
+ /* Saved symbols use the same vertical rhythm; their existing latest-price field remains. */
+ body.ox-terminal #view-radar .coin-card.watch-list-card {display:block!important;min-height:100px!important}
+ body.ox-terminal #view-radar .watch-card-main {display:grid!important;grid-template-columns:minmax(0,1fr) 26px!important;gap:4px!important;align-items:center!important}
+ body.ox-terminal #view-radar .watch-card-copy,body.ox-terminal #view-radar .watch-metrics {display:contents!important}
+ body.ox-terminal #view-radar .watch-coin-title {grid-column:1!important;grid-row:1!important;min-width:0!important}
+ body.ox-terminal #view-radar .watch-symbol {font-size:13px!important;line-height:1.45!important;min-width:0!important;max-width:none!important;overflow:visible!important;text-overflow:clip!important;white-space:normal!important;overflow-wrap:anywhere!important;color:var(--ink)!important}
+ body.ox-terminal #view-radar .watch-coin-title .badge {display:none!important}
+ body.ox-terminal #view-radar .watch-metric {display:flex!important;align-items:baseline!important;justify-content:space-between!important;gap:4px!important;background:none!important;padding:0!important;border:0!important;border-radius:0!important;min-width:0!important}
+ body.ox-terminal #view-radar .watch-metric label {font-size:8px!important;color:var(--muted)!important;white-space:nowrap!important}
+ body.ox-terminal #view-radar .watch-metric strong {font-size:10px!important;font-weight:500!important;font-variant-numeric:tabular-nums!important;white-space:nowrap!important;overflow:visible!important;text-overflow:clip!important;max-width:none!important;flex-shrink:0!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(3) {grid-column:2!important;grid-row:1!important;flex-direction:column!important;align-items:flex-end!important;gap:1px!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(3) strong {font-size:15px!important;color:var(--ink)!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(1) {grid-column:1/-1!important;grid-row:2!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(2) {grid-column:1!important;grid-row:3!important;min-height:32px!important;align-items:center!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(2) label {display:none!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(2) strong {font-size:13px!important;font-weight:600!important}
+ body.ox-terminal #view-radar .watch-card-main>.watch-star {grid-column:2!important;grid-row:3!important;width:32px!important;min-width:32px!important;height:32px!important;min-height:32px!important;padding:8px!important;justify-self:end!important;margin-right:-6px!important}
+ /* Mobile halo is a little bluer and lower in luminance; candle colors are unchanged. */
+ body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"] {--radar-price-rgb:125,180,157}
+ body.ox-terminal #view-radar[data-price-direction] .chart-box {border-color:rgba(var(--radar-price-rgb),.477)!important;box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.477),0 0 9px rgba(var(--radar-price-rgb),.136),0 0 22px rgba(var(--radar-price-rgb),.074)!important}
+ body.ox-terminal #view-radar[data-price-direction]:has(:is(#direction-toggle)) .market-line-card {border-color:rgba(var(--radar-price-rgb),.431)!important;border-top-color:rgba(var(--radar-price-rgb),.51)!important;background:linear-gradient(100deg,rgba(var(--radar-price-rgb),.074),transparent 80%)!important;box-shadow:0 0 8px rgba(var(--radar-price-rgb),.113),0 0 20px rgba(var(--radar-price-rgb),.062)!important}
+ body.ox-terminal #view-radar[data-price-direction] .chart-controls {border-top-color:rgba(var(--radar-price-rgb),.363)!important;border-bottom-color:rgba(var(--radar-price-rgb),.317)!important;background:linear-gradient(110deg,rgba(var(--radar-price-rgb),.085),#ffffff06 76%)!important;box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.363),0 0 11px rgba(var(--radar-price-rgb),.051)!important}
+ body.ox-terminal #view-radar[data-price-direction] .coin-card.selected {border-left-color:rgba(var(--radar-price-rgb),.737)!important;background:linear-gradient(100deg,rgba(var(--radar-price-rgb),.09),transparent)!important;box-shadow:inset 2px 0 9px rgba(var(--radar-price-rgb),.068)!important}
+}
+
+/* The analysis band and detail accents follow the selected market signal. */
+body.ox-terminal #view-radar[data-price-direction] .detail-cell:has(#detail-ox),
+body.ox-terminal #view-radar[data-price-direction] .detail-cell:has(#detail-setup) {
+ border-color:rgba(var(--radar-price-rgb),.477)!important;
+ background:linear-gradient(130deg,rgba(var(--radar-price-rgb),.113),transparent 85%)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.454),0 0 13px rgba(var(--radar-price-rgb),.103)!important;
+}
+body.ox-terminal #view-radar .workspace>aside.panel,
+body.ox-terminal #view-radar #ox-detail-panel {
+ border-top-color:#ffffff42!important;
+ box-shadow:inset 0 1px 0 #ffffff35,0 -4px 12px -8px #ffffff55!important;
+}
+body.ox-terminal #view-radar #ox-detail-panel>.panel-head {border-bottom-color:#ffffff28!important}
+@media(max-width:720px){
+  body.ox-terminal #view-radar[data-price-direction] .detail-cell:has(#detail-ox),
+ body.ox-terminal #view-radar[data-price-direction] .detail-cell:has(#detail-setup) {
+  border-color:rgba(var(--radar-price-rgb),.34)!important;
+  background:linear-gradient(130deg,rgba(var(--radar-price-rgb),.074),transparent 85%)!important;
+  box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.34),0 0 13px rgba(var(--radar-price-rgb),.057)!important;
+ }
+}
+body.ox-terminal.theme-light #view-radar .workspace>aside.panel,
+body.ox-terminal.theme-light #view-radar #ox-detail-panel {border-top-color:var(--line)!important;box-shadow:inset 0 1px 0 #fff9!important}
+
+/* All five summary fields share the original quote strip's single surface. */
+body.ox-terminal #view-radar>.compact-summary {display:block!important}
+body.ox-terminal #view-radar:has(:is(#direction-toggle)) .market-line-card {grid-template-columns:minmax(0,1.35fr) minmax(0,.72fr) minmax(0,.88fr) minmax(0,.62fr) minmax(0,1fr)!important}
+body.ox-terminal #view-radar .market-line-item {display:flex!important;flex-direction:column!important;justify-content:center!important;gap:3px;padding:12px 14px!important}
+body.ox-terminal #view-radar .market-line-item strong {line-height:1.25!important}
+body.ox-terminal #view-radar .radar-analysis-cell strong {color:var(--ink)!important;font-size:18px!important;font-weight:500!important;overflow-wrap:anywhere}
+body.ox-terminal #view-radar .radar-analysis-cell small {color:var(--muted)!important;line-height:1.5!important}
+body.ox-terminal:not(.theme-light) #view-radar .chart-benchmark-bar {border-top-color:#ffffff45!important;box-shadow:0 -3px 10px -6px #ffffff55!important}
+body.ox-terminal:not(.theme-light) #view-radar .benchmark-card.active,
+body.ox-terminal:not(.theme-light) #view-radar .alert-btn[aria-pressed="true"] {border-color:#ffffff55!important;box-shadow:inset 0 1px 0 #ffffff55,0 0 8px #ffffff14!important}
+body.ox-terminal:not(.theme-light) #view-radar :is(.tab-btn,.btn-tf,.watch-star,.alert-btn,.benchmark-card):focus-visible {outline:1px solid #ffffffb3!important;outline-offset:2px;box-shadow:0 0 9px #ffffff40!important}
+@media(max-width:720px){
+ /* Retain the mobile workspace height; the full analysis remains below the chart. */
+ /* Separate the broadcast tape from the quote strip and its edge light. */
+ body.ox-terminal #view-radar>.compact-summary {margin-top:12px!important}
+ body.ox-terminal #view-radar .radar-analysis-cell {display:none!important}
+ body.ox-terminal #view-radar:has(:is(#direction-toggle)) .market-line-card {grid-template-columns:minmax(0,1.28fr) minmax(0,.76fr) minmax(0,.82fr)!important}
+ body.ox-terminal #view-radar .market-line-item {padding:0 7px!important}
+ body.ox-terminal #view-radar .market-line-item:nth-child(3) {border-right:0!important}
+}
+
+/* Alert metadata uses a quiet text row, preserving all states and controls. */
+body.ox-terminal #view-radar .alert-state-row {gap:10px 18px!important;background:none!important;border-color:var(--line)!important}
+body.ox-terminal #view-radar .alert-chip {border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;color:var(--muted)!important;padding:3px 0!important;font-size:11px!important;line-height:1.5!important}
+body.ox-terminal #view-radar .alert-chip+.alert-chip {border-left:1px solid var(--line)!important;padding-left:14px!important}
+body.ox-terminal #view-radar .detail-progress {background:var(--line)!important;border-radius:1px!important}
+body.ox-terminal #view-radar .detail-progress i {background:var(--meter-color,var(--ink))!important;border-radius:1px!important}
+body.ox-terminal #view-radar .score-pill {background:none!important;border:0!important;border-radius:0!important;color:var(--muted)!important;padding:2px 0!important;box-shadow:none!important}
+body.ox-terminal #view-radar .score-pill+.score-pill {border-left:1px solid var(--line)!important;padding-left:7px!important}
+body.ox-terminal #view-radar .coin-title .badge {border:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;padding:1px 3px!important}
+body.ox-terminal #view-radar .badge-long {color:var(--green)!important}
+body.ox-terminal #view-radar .badge-short {color:var(--red)!important}
+
+/* Give downward market edges the same legibility as the bright upward state. */
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"] {--radar-price-rgb:225,100,119}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.78)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.75),0 0 12px rgba(var(--radar-price-rgb),.29),0 0 28px rgba(var(--radar-price-rgb),.16)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"]:has(:is(#direction-toggle)) .market-line-card {
+ border-color:rgba(var(--radar-price-rgb),.75)!important;border-top-color:rgba(var(--radar-price-rgb),.82)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.66),0 0 12px rgba(var(--radar-price-rgb),.23),0 0 24px rgba(var(--radar-price-rgb),.12)!important;
+}
+
+/* The candidate panel carries the same selected-symbol signal as the chart. */
+body.ox-terminal #view-radar[data-price-direction] .workspace>aside.panel {border-color:rgba(var(--radar-price-rgb),.65)!important;box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.62),0 0 12px rgba(var(--radar-price-rgb),.18)!important}
+body.ox-terminal #view-radar[data-price-direction] .workspace>aside.panel>.panel-head {border-bottom-color:rgba(var(--radar-price-rgb),.38)!important}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"] .workspace>aside.panel {border-color:rgba(var(--radar-price-rgb),.7)!important;box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.64),0 0 12px rgba(var(--radar-price-rgb),.2),0 0 25px rgba(var(--radar-price-rgb),.1)!important}
+
+/* Entering Radar starts with a neutral white frame; chosen direction adds color. */
+body.ox-terminal:not(.theme-light) #view-radar:not([data-price-direction]) .chart-box,
+body.ox-terminal:not(.theme-light) #view-radar:not([data-price-direction]):has(:is(#direction-toggle)) .market-line-card,
+body.ox-terminal:not(.theme-light) #view-radar:not([data-price-direction]) .workspace>aside.panel {
+ border-color:#ffffffa3!important;
+ box-shadow:inset 0 1px 0 #ffffff8f,0 0 10px #ffffff2c,0 0 22px #ffffff16!important;
+}
+
+/* The scanner header pairs a sliding direction switch with the chart expander. */
+body.ox-terminal #view-radar :is(#radar-scanner-panel)>.panel-head {gap:6px!important}
+body.ox-terminal #view-radar :is(#direction-toggle) {
+ position:relative!important;display:grid!important;grid-template-columns:1fr 1fr!important;align-items:center!important;
+ flex:1 1 auto!important;width:auto!important;min-width:0!important;height:34px!important;padding:3px!important;
+ border:1px solid #ffffff55!important;border-radius:var(--ox-radius-sm)!important;
+ background:linear-gradient(160deg,#ffffff16,#ffffff06)!important;
+ box-shadow:inset 0 1px 0 #ffffff27,0 2px 8px #0003!important;
+ overflow:hidden!important;isolation:isolate;
+}
+body.ox-terminal #view-radar :is(#direction-toggle) .radar-direction-thumb {
+ position:absolute;left:3px;top:3px;bottom:3px;width:calc(50% - 3px);z-index:-1;
+ border:1px solid #ffffff8a;border-radius:var(--ox-radius-xs);
+ background:linear-gradient(155deg,#ffffff35,#ffffff13 50%,#ffffff24);
+ box-shadow:inset 0 1px 0 #ffffffa1,0 2px 8px #0004,0 0 9px #ffffff24;
+ transform:translateX(0);transition:transform 350ms cubic-bezier(.22,.8,.22,1),border-color 350ms,box-shadow 350ms;
+}
+body.ox-terminal #view-radar :is(#direction-toggle).is-short .radar-direction-thumb {transform:translateX(100%);border-color:#e5a2af;box-shadow:inset 0 1px 0 #ffffff7b,0 2px 8px #0004,0 0 10px #de89965e}
+body.ox-terminal #view-radar :is(#direction-toggle) .radar-direction-choice {z-index:1;text-align:center;color:var(--muted);font:600 11px/1 system-ui,sans-serif;white-space:nowrap;transition:color 320ms ease}
+body.ox-terminal #view-radar :is(#direction-toggle).is-long .radar-direction-choice:nth-child(2),
+body.ox-terminal #view-radar :is(#direction-toggle).is-short .radar-direction-choice:nth-child(3) {color:var(--ink)}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-head-actions {flex:none;gap:0!important}
+body.ox-terminal #view-radar .radar-scanner-collapse,
+body.ox-terminal #view-radar .radar-scanner-reopen {
+ display:inline-flex!important;align-items:center;justify-content:center;gap:3px;
+ min-width:28px;height:34px;padding:0 6px;border:1px solid #ffffff57;border-radius:var(--ox-radius-xs);
+ color:var(--ink);background:linear-gradient(150deg,#ffffff21,#ffffff08);
+ box-shadow:inset 0 1px 0 #ffffff65,0 0 8px #ffffff16;cursor:pointer;
+ transition:background 220ms,border-color 220ms,box-shadow 220ms;
+}
+body.ox-terminal #view-radar .radar-scanner-collapse span {font:26px/1 var(--ox-font-display);transform:translateY(-1px)}
+body.ox-terminal #view-radar .radar-scanner-reopen {display:none!important;font-size:11px;white-space:nowrap}
+body.ox-terminal #view-radar .radar-scanner-reopen span {font:23px/1 var(--ox-font-display)}
+body.ox-terminal #view-radar.ox-scanner-collapsed .radar-scanner-reopen {display:inline-flex!important}
+body.ox-terminal #view-radar .radar-scanner-collapse:hover,
+body.ox-terminal #view-radar .radar-scanner-reopen:hover {border-color:#ffffffb3;background:#ffffff28;box-shadow:inset 0 1px 0 #ffffff99,0 0 12px #ffffff3b}
+body.ox-terminal #view-radar .workspace {transition:grid-template-columns 340ms cubic-bezier(.22,.8,.22,1),gap 340ms cubic-bezier(.22,.8,.22,1)}
+body.ox-terminal #view-radar.ox-scanner-collapsed .workspace {grid-template-columns:minmax(0,1fr) 0px!important;gap:0!important}
+body.ox-terminal #view-radar.ox-scanner-collapsed :is(#radar-scanner-panel) {min-width:0!important;width:0!important;opacity:0;visibility:hidden;pointer-events:none;overflow:hidden;transition:opacity 180ms,visibility 0s 180ms}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) {transition:opacity 180ms;min-width:0}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) #pool-count {display:none!important}
+body.ox-terminal.theme-light #view-radar :is(#direction-toggle) {background:#e6e9ef!important;border-color:#b9c0c9!important}
+body.ox-terminal.theme-light #view-radar :is(#direction-toggle) .radar-direction-thumb {background:#fff;box-shadow:0 1px 5px #253a5a30}
+body.ox-terminal.theme-light #view-radar :is(.radar-scanner-collapse,.radar-scanner-reopen) {border-color:#a8b0ba;background:#fff;color:#202832}
+@media(max-width:720px){
+ body.ox-terminal #view-radar.ox-scanner-collapsed .workspace {grid-template-columns:minmax(0,1fr) 0px!important}
+ body.ox-terminal #view-radar :is(#radar-scanner-panel)>.panel-head {padding:5px!important}
+ body.ox-terminal #view-radar :is(#direction-toggle) {height:30px!important;padding:2px!important;border-radius:7px!important}
+ body.ox-terminal #view-radar :is(#direction-toggle) .radar-direction-thumb {left:2px;top:2px;bottom:2px;width:calc(50% - 2px);border-radius:5px}
+ body.ox-terminal #view-radar :is(#direction-toggle) .radar-direction-choice {font-size:9px}
+ body.ox-terminal #view-radar .radar-scanner-collapse {min-width:24px;height:30px;padding:0 3px;border-radius:6px}
+ body.ox-terminal #view-radar .radar-scanner-reopen {min-width:50px;height:30px;padding:0 5px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ body.ox-terminal #view-radar .workspace,body.ox-terminal #view-radar :is(#direction-toggle) .radar-direction-thumb {transition:none!important}
+}
+
+/* Restore the luminous blue selected-up frame after the subdued mobile pass. */
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"] {--radar-price-rgb:83,194,224}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.88)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.83),0 0 12px rgba(var(--radar-price-rgb),.37),0 0 28px rgba(var(--radar-price-rgb),.20)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"]:has(:is(#direction-toggle)) .market-line-card {
+ border-color:rgba(var(--radar-price-rgb),.78)!important;border-top-color:rgba(var(--radar-price-rgb),.9)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.71),0 0 12px rgba(var(--radar-price-rgb),.29),0 0 24px rgba(var(--radar-price-rgb),.14)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"] .workspace>aside.panel {
+ border-color:rgba(var(--radar-price-rgb),.78)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.72),0 0 14px rgba(var(--radar-price-rgb),.26),0 0 26px rgba(var(--radar-price-rgb),.12)!important;
+}
+
+/* The direction is one button with one visible state. */
+body.ox-terminal #view-radar :is(#direction-toggle),
+body.ox-terminal.theme-light #view-radar :is(#direction-toggle) {
+ display:inline-flex!important;justify-content:center!important;align-items:center!important;gap:4px!important;
+ flex:0 0 auto!important;width:54px!important;min-width:54px!important;max-width:54px!important;
+ border-radius:var(--ox-radius-pill)!important;transition:color .28s,border-color .28s,background .28s,box-shadow .28s!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-long {
+ color:#66daf4!important;border-color:#69dbf4!important;background:#38bbde24!important;
+ box-shadow:inset 0 1px 0 #b7f4ff8c,0 0 8px #44ceef9c,0 0 16px #44ceef46!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-short {
+ color:#ff879b!important;border-color:#ff8297!important;background:#e9517224!important;
+ box-shadow:inset 0 1px 0 #ffb6c18c,0 0 8px #fa67849c,0 0 16px #fa678446!important;
+}
+body.ox-terminal #view-radar :is(#direction-toggle) .direction-toggle-icon {color:inherit!important;font-size:13px!important}
+body.ox-terminal #view-radar :is(#direction-toggle) .direction-toggle-text {font-size:11px!important;font-weight:700!important}
+body.ox-terminal #view-radar :is(.radar-scanner-collapse,.radar-scanner-reopen) {width:30px!important;min-width:30px!important;padding:0!important;gap:0!important}
+body.ox-terminal #view-radar :is(.radar-scanner-collapse,.radar-scanner-reopen) span {display:block!important;font:24px/1 Arial,sans-serif!important;transform:none!important;translate:0 -1px!important}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group:nth-child(2) {
+ border-top:1px solid #ffffff55!important;padding-top:7px!important;
+}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl,
+body.ox-terminal #view-radar .chart-controls .toggle-lbl:has(input:checked) {
+ justify-content:center!important;min-height:29px!important;padding:4px 3px!important;
+ border:1px solid #ffffff36!important;border-radius:var(--ox-radius-pill)!important;
+ background:#ffffff08!important;box-shadow:none!important;color:var(--muted)!important;
+ font-weight:600!important;cursor:pointer;transition:border-color .2s,box-shadow .2s,color .2s,background .2s!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar .chart-controls .toggle-lbl:has(input:checked) {
+ border-color:#ffffffcb!important;color:#fff!important;background:#ffffff1c!important;
+ box-shadow:inset 0 1px 0 #ffffffa6,0 0 7px #ffffff7a,0 0 15px #ffffff3b!important;
+}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input {
+ position:absolute!important;opacity:0!important;width:1px!important;height:1px!important;min-width:1px!important;
+ pointer-events:none!important;
+}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl input::after {display:none!important}
+body.ox-terminal #view-radar .chart-controls .toggle-lbl:has(input:focus-visible) {outline:2px solid var(--ink)!important;outline-offset:2px}
+body.ox-terminal.theme-light #view-radar .chart-controls .toggle-lbl:has(input:checked) {
+ color:#171c25!important;border-color:#6a737d!important;background:#fff!important;box-shadow:0 0 7px #86929a70!important;
+}
+
+/* Full chart follows the device's real orientation. The chart canvas is never CSS-rotated. */
+@media(max-width:900px){
+ body.ox-terminal.chart-focus #view-radar .chart-box {
+  position:fixed!important;inset:0!important;left:0!important;top:0!important;
+  border-radius:0!important;
+  width:100vw!important;width:100dvw!important;height:100vh!important;height:100dvh!important;
+  min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;
+  transform:none!important;transform-origin:center!important;
+  transition:none!important;animation:none!important;
+  display:flex!important;flex-direction:column!important;z-index:9999!important;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-box .panel-head {
+  min-height:46px!important;justify-content:flex-end!important;padding:5px 12px!important;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-box .panel-head .panel-title,
+ body.ox-terminal.chart-focus #view-radar .radar-scanner-reopen,
+ body.ox-terminal.chart-focus #view-radar .chart-controls>.ctrl-group:nth-child(2),
+ body.ox-terminal.chart-focus #view-radar :is(.ox-indicator-legend,.chart-benchmark-bar,.chart-quickbar,#chart-key-labels,#price-timer) {
+  display:none!important;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-controls {display:block!important;padding:4px 10px!important}
+ body.ox-terminal.chart-focus #view-radar .chart-controls>.ctrl-group:first-child {width:100%!important}
+ body.ox-terminal.chart-focus #view-radar .chart-container {flex:1 1 auto!important;min-height:0!important;height:auto!important}
+}
+
+/* Softer signal, just above the original frame shown in the reference. */
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"] {--radar-price-rgb:102,178,202}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"] {--radar-price-rgb:201,113,135}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.55)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.43),0 0 9px rgba(var(--radar-price-rgb),.16),0 0 20px rgba(var(--radar-price-rgb),.07)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction]:has(:is(#direction-toggle)) .market-line-card,
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction] .workspace>aside.panel {
+ border-color:rgba(var(--radar-price-rgb),.55)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.40),0 0 10px rgba(var(--radar-price-rgb),.13)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-long {
+ border-color:#69c7da85!important;background:#38bbde12!important;color:#89d6e6!important;
+ box-shadow:inset 0 1px 0 #b7f4ff38,0 0 7px #44ceef30!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-short {
+ border-color:#e694a785!important;background:#e9517212!important;color:#e3a2b0!important;
+ box-shadow:inset 0 1px 0 #ffb6c138,0 0 7px #fa678430!important;
+}
+
+/* The newly selected row gives an immediate response without transforming the chart canvas. */
+body.ox-terminal #view-radar .coin-card.ox-coin-new-selection {animation:oxCoinSelected 420ms ease-out both}
+@keyframes oxCoinSelected {
+ from {background-color:#ffffff2b;outline:1px solid #ffffff6b;outline-offset:-1px}
+ to {background-color:transparent;outline:1px solid transparent;outline-offset:-1px}
+}
+@media(prefers-reduced-motion:reduce){body.ox-terminal #view-radar .coin-card.ox-coin-new-selection{animation:none}}
+@media(max-width:720px){
+ body.ox-terminal #view-radar .coin-mobile-bottom .coin-change.positive {font-size:12px!important}
+}
+@media(max-width:720px){
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) {min-height:71px!important;padding-top:3px!important;padding-bottom:2px!important;row-gap:2px!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-title {align-self:center!important;white-space:nowrap!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-symbol-mobile {font-size:12px!important;line-height:1.2!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-ox {gap:4px!important;line-height:1!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-ox-label {font-size:7px!important;line-height:1!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-ox-value {font-size:12px!important;line-height:1!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-top-right {padding-bottom:4px!important;transform:translateY(9px)}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .mobile-coin-volume {justify-content:flex-start!important;gap:1px!important;line-height:1.2!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-volume-value {text-align:left!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .coin-mobile-bottom .coin-change {font-size:11px!important;line-height:1.2!important}
+ body.ox-terminal #view-radar .coin-card:not(.watch-list-card) .watch-star-icon {width:13px!important;height:13px!important}
+ body.ox-terminal #view-radar .coin-mobile-bottom {min-height:23px!important;padding-top:0!important}
+ body.ox-terminal #view-radar .watch-star-mobile {height:23px!important;min-height:23px!important;width:23px!important;min-width:23px!important;padding:4px!important}
+ body.ox-terminal #view-radar .coin-card.watch-list-card {min-height:77px!important}
+ body.ox-terminal #view-radar .watch-card-main {row-gap:1px!important}
+ body.ox-terminal #view-radar .watch-metric:nth-child(2) {min-height:25px!important}
+ body.ox-terminal #view-radar .watch-card-main>.watch-star {height:25px!important;min-height:25px!important;width:25px!important;min-width:25px!important;padding:5px!important}
+}
+
+/* Selected coin's 24H move sets the signal strength. Level 1 uses the baseline above. */
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"][data-glow-level="2"] {--radar-price-rgb:92,185,213}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"][data-glow-level="2"] {--radar-price-rgb:213,107,127}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="up"][data-glow-level="3"] {--radar-price-rgb:83,194,224}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction="down"][data-glow-level="3"] {--radar-price-rgb:225,100,119}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="2"] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.68)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.60),0 0 10px rgba(var(--radar-price-rgb),.23),0 0 24px rgba(var(--radar-price-rgb),.12)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="2"]:has(:is(#direction-toggle)) .market-line-card,
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="2"] .workspace>aside.panel {
+ border-color:rgba(var(--radar-price-rgb),.67)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.54),0 0 11px rgba(var(--radar-price-rgb),.20),0 0 21px rgba(var(--radar-price-rgb),.09)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="3"] .chart-box {
+ border-color:rgba(var(--radar-price-rgb),.84)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.80),0 0 12px rgba(var(--radar-price-rgb),.35),0 0 28px rgba(var(--radar-price-rgb),.18)!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="3"]:has(:is(#direction-toggle)) .market-line-card,
+body.ox-terminal:not(.theme-light) #view-radar[data-price-direction][data-glow-level="3"] .workspace>aside.panel {
+ border-color:rgba(var(--radar-price-rgb),.78)!important;
+ box-shadow:inset 0 1px 0 rgba(var(--radar-price-rgb),.72),0 0 12px rgba(var(--radar-price-rgb),.29),0 0 24px rgba(var(--radar-price-rgb),.14)!important;
+}
+
+/* In full chart, float the exit over the plot and let the timeframe strip take the first row. */
+@media(max-width:900px){
+ body.ox-terminal.chart-focus #view-radar .chart-box>.panel-head {
+  position:static!important;flex:0 0 0!important;height:0!important;min-height:0!important;max-height:0!important;
+  padding:0!important;margin:0!important;border:0!important;overflow:visible!important;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-box>.panel-head>div {
+  height:0!important;min-height:0!important;overflow:visible!important;
+ }
+ body.ox-terminal.chart-focus #view-radar :is(#btn-chart-fullscreen) {
+  position:absolute!important;top:calc(52px + env(safe-area-inset-top))!important;
+  right:calc(10px + env(safe-area-inset-right))!important;z-index:20!important;
+  width:36px!important;height:34px!important;min-width:36px!important;
+  background:#181d25dc!important;border:1px solid #ffffff82!important;border-radius:10px!important;
+  box-shadow:inset 0 1px 0 #ffffff40,0 4px 12px #0009!important;
+ }
+}
+
+/* The fullscreen exit is a direct chart child, never a zero-height header descendant. */
+body.ox-terminal #view-radar .chart-box>#btn-chart-exit-overlay {display:none!important}
+@media(max-width:900px){
+ body.ox-terminal.chart-focus #view-radar .chart-box .panel-head :is(#btn-chart-fullscreen) {display:none!important}
+ body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay {
+  display:grid!important;place-items:center!important;
+  position:absolute!important;top:calc(52px + env(safe-area-inset-top))!important;
+  right:calc(10px + env(safe-area-inset-right))!important;z-index:50!important;
+  width:36px!important;height:34px!important;min-width:36px!important;min-height:34px!important;padding:5px!important;
+  color:var(--ink)!important;background:#181d25ed!important;border:1px solid #ffffff96!important;border-radius:10px!important;
+  box-shadow:inset 0 1px 0 #ffffff4d,0 4px 12px #0009!important;
+  cursor:pointer;touch-action:manipulation;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay svg {
+  width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;
+ }
+ body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay:focus-visible {outline:2px solid #fff!important;outline-offset:2px}
+}
+
+/* Keep the symbol in the data model, but reclaim its redundant chart-title row. */
+body.ox-terminal #view-radar .chart-box>.ox-chart-ghost-title {display:none!important}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group:nth-child(2) {
+ display:flex!important;align-items:center!important;gap:4px!important;min-width:0!important;
+}
+body.ox-terminal #view-radar .chart-controls>.ctrl-group:nth-child(2)>.toggle-lbl {
+ flex:1 1 0!important;width:auto!important;min-width:0!important;
+ overflow:hidden!important;white-space:nowrap!important;padding:3px 1px!important;
+}
+body.ox-terminal #view-radar .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot {
+ display:inline-grid!important;place-items:center!important;flex:0 0 28px!important;
+ width:28px!important;min-width:28px!important;height:28px!important;min-height:28px!important;
+ padding:5px!important;border:1px solid #ffffff73!important;border-radius:50%!important;
+ background:#ffffff13!important;box-shadow:inset 0 1px 0 #ffffff48!important;
+}
+body.ox-terminal #view-radar .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot svg {width:15px;height:15px}
+body.ox-terminal #view-radar .chart-controls .radar-scanner-reopen {
+ flex:0 0 28px!important;width:28px!important;min-width:28px!important;height:28px!important;
+ border-radius:50%!important;padding:0!important;
+}
+@media(max-width:720px) {
+ body.ox-terminal #view-radar .chart-controls>.ctrl-group:nth-child(2)>.toggle-lbl {font-size:8px!important;letter-spacing:-.02em}
+ body.ox-terminal #view-radar .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot,
+ body.ox-terminal #view-radar .chart-controls .radar-scanner-reopen {
+  flex-basis:25px!important;width:25px!important;min-width:25px!important;height:25px!important;min-height:25px!important;
+ }
+}
+/* The toggle indicates the active scan side immediately, including on first paint. */
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-long {
+ color:#8bd3e3!important;border-color:#6abbd0a8!important;background:#38bbde1b!important;
+ box-shadow:inset 0 1px 0 #b7f4ff4a,0 0 7px #44ceef32!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar :is(#direction-toggle).is-short {
+ color:#e8a1b0!important;border-color:#df8299a8!important;background:#e951721b!important;
+ box-shadow:inset 0 1px 0 #ffb6c14a,0 0 7px #fa678432!important;
+}
+body.ox-terminal.theme-light #view-radar :is(#direction-toggle).is-long {color:#086f89!important;border-color:#78b8c9!important;background:#d9eff5!important}
+body.ox-terminal.theme-light #view-radar :is(#direction-toggle).is-short {color:#a42e50!important;border-color:#d991a7!important;background:#fbe4eb!important}

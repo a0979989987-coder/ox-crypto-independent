@@ -1,0 +1,28 @@
+name: Validate Crypto pattern feed
+on:
+  push:
+    branches: [main, ox-pattern-search-20260928]
+    paths:
+      - 'src/markets/crypto/patterns/**'
+      - 'tests/crypto-patterns.test.mjs'
+      - 'scripts/validate-pattern-feed.mjs'
+      - '.github/workflows/validate-crypto-patterns.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  pattern-feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/crypto-patterns.test.mjs
+      - run: node scripts/validate-pattern-feed.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pattern-feed-evidence
+          path: artifacts/pattern-feed/verified.json
+          retention-days: 7

@@ -1,0 +1,289 @@
+{
+  "sourceCommit": "0c193666f65f51022f02a99d81d4ba6454cfa949",
+  "unchangedFiles": [
+    {
+      "path": "src/markets/crypto/liquidity-policy.js",
+      "sha256": "b1978476b58e1abe9e45f637a48fbd0525400063c5f7604f6af00ddf16fabb30"
+    },
+    {
+      "path": "src/markets/crypto/index.js",
+      "sha256": "99433b6a28a336e3a3af0a36eb4bf38377fa8feaadafa0a982e2efa1f16fc2b9"
+    },
+    {
+      "path": "src/markets/crypto/strength.js",
+      "sha256": "c592f36a229688ae38c92438858bb2bade6ab35357b22085c93a625370f468ee"
+    },
+    {
+      "path": "src/markets/crypto/config.js",
+      "sha256": "a90035e94f6521aced83c9a8ba8c31d3d56008598ffe119e01b1ef336450b44a"
+    },
+    {
+      "path": "src/markets/crypto/radar.js",
+      "sha256": "65197f01aaf73009c0dc1382885ce6f24284c794286e012c2f1851959fee7d8c"
+    },
+    {
+      "path": "src/markets/crypto/live-candles.js",
+      "sha256": "2b5ba4b8fa630119acfba00e0b3998a1e7e362ebe40c11ca393c5a37d8e9dba0"
+    },
+    {
+      "path": "src/markets/crypto/engine.js",
+      "sha256": "e46cb30f1d43117ac28a90b05367dd4bcd6c9929b73118060749fd98c46d9f14"
+    },
+    {
+      "path": "src/markets/crypto/api.js",
+      "sha256": "422644421259ef776f8da824dbfe90141e71f9bc44d1134d2d5e1d1552b72cd5"
+    },
+    {
+      "path": "src/markets/crypto/home.js",
+      "sha256": "0c613376cfdc5132cf53421ee577606b0959df75760d20e7ffcd0e3952bc92a4"
+    },
+    {
+      "path": "src/markets/crypto/presentation.js",
+      "sha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4"
+    },
+    {
+      "path": "src/markets/crypto/scanner.js",
+      "sha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/field.js",
+      "sha256": "12c3f1892f777848c05ec0820a19a75c6dab03f74ac9582807955428a592fa1c"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/view.js",
+      "sha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/bubbles.css",
+      "sha256": "63c13c1a4bfc785a8937a0d421c234e648e1a1150066af95a588a507a5de386c"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/source.js",
+      "sha256": "a36652fbda308d6622175409ca90fe28362873a23d5088671f3e3bc0fa1c0985"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/bubbles-light.css",
+      "sha256": "306237a373a8ac5334cbc9871dc72116f9f2ad2b22af9c64a5c6f66d3c8945cf"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/soft-body.js",
+      "sha256": "cb52561164dfc549de7c274649f817e4f37f4fe9916b43d6790de98f84637eeb"
+    },
+    {
+      "path": "src/markets/crypto/bubbles/model.js",
+      "sha256": "ca0fbbc939b2b1a9a4986f6ceb92a9f9ca85a7ebe7a8453f07e77b8e2bd5d5e4"
+    },
+    {
+      "path": "src/markets/crypto/analytics/tools-model.js",
+      "sha256": "f9350870cde26059be2e1071081ea171ec18557ff01eadf90747fc172d59c8ad"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-chart.js",
+      "sha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-view.js",
+      "sha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36"
+    },
+    {
+      "path": "src/markets/crypto/analytics/tools-charts.js",
+      "sha256": "fca2a60f8bfd5f8cd7f2c9140f7eec50175c4bbd71f20b77fd9100184c2a86f8"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-model.js",
+      "sha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88"
+    },
+    {
+      "path": "src/markets/crypto/analytics/market-live.js",
+      "sha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-light.css",
+      "sha256": "59d3164a14533c1c7c45245bb80f5a3187ea85ed1423b0c0c535a516e71e7191"
+    },
+    {
+      "path": "src/markets/crypto/analytics/entry.js",
+      "sha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow.css",
+      "sha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a"
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-source.js",
+      "sha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad"
+    },
+    {
+      "path": "src/markets/crypto/patterns/patterns.css",
+      "sha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c"
+    },
+    {
+      "path": "src/markets/crypto/patterns/worker.js",
+      "sha256": "ab3285ed2ca7895ee4a9ccb0c07e2743264166b108ce9c54753fd50ede529fce"
+    },
+    {
+      "path": "src/markets/crypto/patterns/view.js",
+      "sha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c"
+    },
+    {
+      "path": "src/markets/crypto/patterns/charts.js",
+      "sha256": "53bcea4fdde642bbd0723dc979f240022b40c565b178eb834b861b98d1493d06"
+    },
+    {
+      "path": "src/markets/crypto/patterns/patterns-light.css",
+      "sha256": "ae1a48cc3625a32ea89732354f13ada964265c949976ef2045f77712041eb0f3"
+    },
+    {
+      "path": "src/markets/crypto/patterns/source.js",
+      "sha256": "754eaef2c72407b872c0a1701e8efe8a2e1d992eb46eacd9ee2e4ca668494d0d"
+    },
+    {
+      "path": "src/markets/crypto/patterns/index-cache.js",
+      "sha256": "0e53061cdf7ef3e491cc68d2fad69a9e9c0d26c9aca8bb2dceb29f0d57a4e73e"
+    },
+    {
+      "path": "src/markets/crypto/patterns/matcher.js",
+      "sha256": "9203a6b79a60f7989f962d5315a0bc0eca633d8bd6d103e1d0c0e2c9be4808bc"
+    },
+    {
+      "path": "src/markets/crypto/patterns/catalog.js",
+      "sha256": "32482bd581ec531002e5df2a3088f34e876451a7be23a7388605ba20cfc23d30"
+    },
+    {
+      "path": "src/components/chart/indicator-tooltip.js",
+      "sha256": "768fbf20d38d32e295f7ce882373c5133defc7744944db2ca8324fe8f7df6869"
+    },
+    {
+      "path": "src/components/chart/focus-viewport.js",
+      "sha256": "912c210e1ac16219a16bd7e1a9a37518d312cef1d9ed99843762385bca012f9d"
+    },
+    {
+      "path": "src/components/chart/mobile-interaction.js",
+      "sha256": "60d377a4a731eeddf641d2902c14e7d622517dc51371530af6778897d486dd2d"
+    },
+    {
+      "path": "src/components/chart/home-preview.js",
+      "sha256": "8112393e3565ebbda9dcf47d0b0832f13902c739507b011f8dd07232a9b9094d"
+    },
+    {
+      "path": "src/components/chart/workspace.js",
+      "sha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1"
+    },
+    {
+      "path": "src/components/chart/.gitkeep",
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "src/components/chart/toolbar.js",
+      "sha256": "95fd921df956d16f442bb9472609c961b0be54a03f0e60c85794417cafc08a88"
+    },
+    {
+      "path": "src/components/chart/drawings.js",
+      "sha256": "db0df31e1326e037ed56d228874accbda3aef3e20d918ec45b29b44f00340b88"
+    },
+    {
+      "path": "server/account/admin-review-rpc.js",
+      "sha256": "568ce1b300e9eb7e9b7e30c61b3f07b856867d4c261f0f63033e576d0769d810"
+    },
+    {
+      "path": "server/account/bitget-link.js",
+      "sha256": "62c93d06308fae28be4871b8c27ed507c139a1044ddf9b9097122d9ef3556f15"
+    },
+    {
+      "path": "server/account/schema.sql",
+      "sha256": "3956ab35cac44c8aca72bda938b67499bdec2a33d3a1324d8a67e59297146b27"
+    },
+    {
+      "path": "server/account/admin-review-preview.js",
+      "sha256": "b7a797637fe69e6bc70d4e1b914ef2b2a5699561ffb5e191087f7a05c7c56a90"
+    },
+    {
+      "path": "server/account/cookies.js",
+      "sha256": "b2d58b425b432bf6879a73f3f290d9883bc2c5f6aff93674597a205600b0cc8f"
+    },
+    {
+      "path": "server/account/feature-catalog.js",
+      "sha256": "f6804a8cb687fb3a61570436bc8e2f366d2e6c83fbfcd13727df39bc80a83b67"
+    },
+    {
+      "path": "server/account/admin-review-preview-http.js",
+      "sha256": "dff38ef4018138f037131e538b6bcc382a466b89a062b0ae79183e0941a7b99a"
+    },
+    {
+      "path": "server/account/feature-access.js",
+      "sha256": "7148b8bbda0679c541f75edd770a5d2e47a2ec8c716a9db8360a05c6273099fa"
+    },
+    {
+      "path": "server/account/bitget-admin-lookup.js",
+      "sha256": "e4b95d1419a82e05892d10655915e83a0ce5aa9dfb4adefa75a2b3895f975016"
+    },
+    {
+      "path": "server/account/handler.js",
+      "sha256": "cccd5494dc81ad8586124f909705e2a83ecaf10a76fd3e313f05522cfe633cab"
+    },
+    {
+      "path": "server/account/migrations/001_pending_bitget_links.verify.sql",
+      "sha256": "6c7c43a9c3f57fee87629c2bd4eda2e4a8c936c36c85d8818d48932d453a8091"
+    },
+    {
+      "path": "server/account/migrations/001_pending_bitget_links.disable.sql",
+      "sha256": "9fc20a75d984cd9b55ca92707b7ad2089e672682ac3ae056456934f465e77fb0"
+    },
+    {
+      "path": "server/account/migrations/001_pending_bitget_links.sql",
+      "sha256": "36c254e939135cb8e7f6e26df0f33c5b76ee2f89ea64a2533a182bedbbca81d5"
+    },
+    {
+      "path": "server/integrations/bitget/affiliate.js",
+      "sha256": "e0ae2ba9041c77a4a5b224d62a27a80f9db8944e085cb573a5aa8e886a67ba24"
+    },
+    {
+      "path": "server/integrations/bitget/http-handler.js",
+      "sha256": "322204c5e786d1b9b9a7f3ca0010077e480380ebc88960633c3a624a84e5119c"
+    },
+    {
+      "path": "server/integrations/bitget/operator-handler.js",
+      "sha256": "5abc8fe4f03463844852ccd11da2cd063adfdcc79b025ba6ded5d2a65b2d1b2b"
+    },
+    {
+      "path": "server/integrations/bitget/operator-page.js",
+      "sha256": "8f70e6ef3d9c0338dfb6458104d3c6284a0385a83c9183bd918443e624d1163c"
+    },
+    {
+      "path": "api/v1/account/[endpoint].js",
+      "sha256": "1deda5eb024eca6f688a1bca9f58daedbdb8604ab305dd9d5b2ac29ba133b1aa"
+    },
+    {
+      "path": "src/vendor/lightweight-charts-4.2.3.js",
+      "sha256": "c7dda807d662a95b3d257119ed315cec669e3bdf5aaece75c480a39307f23540"
+    },
+    {
+      "path": "src/core/public-feed.js",
+      "sha256": "5adec9d3f10059c10c1c1594a071958116a8d8f7f6f7788824b6c477999f7117"
+    },
+    {
+      "path": "src/core/classic.js",
+      "sha256": "6a6756da8265b159e99930d6fbad09299f4c940f5edc985e391af744a11f1fc1"
+    },
+    {
+      "path": "src/core/classic-engine.js",
+      "sha256": "e01a3520b24dae8a63069c46bbfe71c1864b4f27d042dbea48e3151f8cc0eaae"
+    },
+    {
+      "path": "src/core/runtime-config.js",
+      "sha256": "ecbf9571a713a50d8d6409993562f554b14d907fd3108056cacbafbe626a7067"
+    },
+    {
+      "path": "src/components/account/auth.js",
+      "sha256": "fe0c9841da5a06c646607b8d866bae9fb877ffd09e75fc7fd89533197bc320b9"
+    },
+    {
+      "path": "src/components/account/session.js",
+      "sha256": "3c7e587c0c7a966ad34575d40191dd2de1c0c8f5972306a33f66d64aa7b57d0b"
+    },
+    {
+      "path": "src/components/account/account.js",
+      "sha256": "375ef44d53a823bc4d07f80e5e80c3e4c3d25fee16cfc29586eed568bf413123"
+    }
+  ]
+}

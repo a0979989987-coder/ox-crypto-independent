@@ -1,0 +1,52 @@
+/* Crypto Radar detail: a quieter white edge and legible, compact data tiles. */
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel {
+  overflow:hidden;
+  border:1px solid #ffffff75!important;
+  border-radius:var(--ox-radius-md)!important;
+  background:linear-gradient(150deg,#ffffff0b,transparent 35%),var(--panel)!important;
+  box-shadow:inset 0 1px 0 #ffffff55,0 0 0 1px #ffffff14,0 0 16px #ffffff29,0 9px 25px #0005!important;
+}
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel>.panel-head {
+  border-bottom:1px solid #ffffff35!important;
+  background:linear-gradient(115deg,#ffffff14,transparent 78%)!important;
+}
+body.ox-terminal #view-radar #ox-detail-panel .panel-title {font-weight:600!important;letter-spacing:0!important}
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel #detail-tier {
+  border:1px solid #ffffff65!important;
+  background:linear-gradient(155deg,#ffffff1a,#ffffff05)!important;
+  box-shadow:inset 0 1px 0 #ffffff32,0 0 9px #ffffff1c!important;
+}
+body.ox-terminal #view-radar #ox-detail-panel .detail-grid {
+  gap:1px;
+  background:#ffffff27;
+}
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel .detail-cell {
+  min-width:0;
+  border:0!important;
+  border-radius:0!important;
+  background:linear-gradient(150deg,#ffffff0a,transparent 82%),var(--panel)!important;
+  box-shadow:inset 0 1px 0 #ffffff12!important;
+}
+body.ox-terminal #view-radar #ox-detail-panel .detail-cell label {letter-spacing:.01em;line-height:1.25}
+body.ox-terminal #view-radar #ox-detail-panel .detail-cell strong {font-variant-numeric:tabular-nums lining-nums;line-height:1.3}
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel .detail-reasons,
+body.ox-terminal:not(.theme-light) #view-radar #ox-detail-panel .alert-state-row {
+  border-top:1px solid #ffffff2b!important;
+  background:linear-gradient(120deg,#ffffff09,transparent 76%)!important;
+}
+body.ox-terminal #view-radar #ox-detail-panel .detail-reasons h4 {font-weight:600}
+body.ox-terminal #view-radar #ox-detail-panel .alert-state-row {align-items:center}
+
+@media(max-width:720px){
+  body.ox-terminal #view-radar #ox-detail-panel .detail-grid {grid-template-columns:repeat(3,minmax(0,1fr))}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-cell {padding:9px 8px}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-cell label {font-size:9px}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-cell strong {font-size:12px}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-reasons {padding:11px 12px}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-reasons h4 {font-size:12px;margin-bottom:7px}
+  body.ox-terminal #view-radar #ox-detail-panel .detail-reason {font-size:10px;line-height:1.5;margin:3px 0}
+  body.ox-terminal #view-radar #ox-detail-panel .alert-state-row {padding:9px 12px;gap:5px 10px!important}
+  body.ox-terminal #view-radar #ox-detail-panel .alert-chip {font-size:10px!important;line-height:1.4!important}
+  body.ox-terminal #view-radar #ox-detail-panel .alert-chip+.alert-chip {padding-left:10px!important}
+  body.ox-terminal #view-radar #ox-detail-panel .alert-chip:last-child {flex-basis:100%;border-left:0!important;padding-left:0!important}
+}

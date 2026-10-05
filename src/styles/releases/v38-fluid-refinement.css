@@ -1,0 +1,315 @@
+/* ===== ox-v38-ui-glass-fluid-refinement ===== */
+/* =========================================================
+   OX v3.8 — Light Glass + Fluid UI + Market Edge Glass
+   UI-only refinement. Scanner / OX Engine / key levels untouched.
+   ========================================================= */
+:root{
+  --ox-v38-fast:110ms;
+  --ox-v38-ui:165ms;
+  --ox-v38-panel:220ms;
+  --ox-v38-slow:280ms;
+  --ox-v38-ease:cubic-bezier(.22,1,.36,1);
+}
+
+/* ---------- Global responsiveness / motion ---------- */
+html{scroll-behavior:smooth;}
+body{
+  text-rendering:optimizeLegibility;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+}
+.app-view,.panel,.v33-card,.strength-card,.settings-card,.metric-card,.benchmark-card,
+.coin-card,.app-dock,.ox-control-panel,.ox-control-overlay,.tab-btn,.btn-act,.btn-tf,
+.alert-btn,.toggle-lbl,.theme-choice,.direction-toggle-btn,.v34-home-mini-tf,.glass-button{
+  transition-timing-function:var(--ox-v38-ease)!important;
+}
+:where(.btn-act,.btn-tf,.tab-btn,.direction-toggle-btn,.dock-btn,.theme-choice,.v34-home-mini-tf,
+.glass-button,.alert-btn,.watch-star,.ox-menu-btn,.benchmark-card){
+  transition-duration:var(--ox-v38-ui)!important;
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.ox-control-panel{transition-duration:var(--ox-v38-panel)!important;}
+.app-view.ox-view-entering{animation-duration:var(--ox-v38-slow)!important;}
+.app-view.ox-view-leaving{animation-duration:var(--ox-v38-fast)!important;}
+
+/* Stable numeric layout reduces small jumps while data refreshes. */
+#home-btc-price,#home-btc-change,#home-eth-price,#home-eth-change,
+.metric-card strong,.v33-market-value strong,.v33-radar-cell strong,.coin-ox,.coin-change,
+.strength-value,.price-timer,.watch-metric strong{
+  font-variant-numeric:tabular-nums lining-nums;
+}
+
+/* Loading overlays fade instead of popping in/out. */
+.chart-loading-overlay{
+  display:flex!important;
+  opacity:0;
+  visibility:hidden;
+  transform:translate3d(0,-3px,0);
+  pointer-events:none;
+  transition:opacity var(--ox-v38-ui) ease,transform var(--ox-v38-ui) var(--ox-v38-ease),visibility 0s linear var(--ox-v38-ui)!important;
+}
+.chart-loading-overlay.show{
+  opacity:1;
+  visibility:visible;
+  transform:translate3d(0,0,0);
+  transition-delay:0s!important;
+}
+
+/* Scroll / touch surfaces */
+.scanner-body,.ox-control-scroll{
+  -webkit-overflow-scrolling:touch;
+  overscroll-behavior-y:contain;
+  scroll-behavior:smooth;
+}
+.coin-card,.v33-event-row,.v33-watch-row,.v33-rank-row{
+  transform:translateZ(0);
+  backface-visibility:hidden;
+}
+@media(max-width:720px){
+  .scanner-body{scroll-snap-type:y proximity;}
+  .coin-card{scroll-snap-align:start;}
+  :where(button,.btn-act,.btn-tf,.tab-btn,.direction-toggle-btn,.watch-star,.dock-btn,.alert-btn):active{
+    transform:scale(.965)!important;
+    filter:brightness(1.045);
+  }
+  .app-dock::after{
+    content:"";
+    position:absolute;
+    inset:1px 16% auto 16%;
+    height:1px;
+    pointer-events:none;
+    opacity:.62;
+    background:linear-gradient(90deg,transparent,rgba(255,255,255,.24),rgba(245,191,85,.13),transparent);
+    transform:translate3d(0,var(--global-glass-shift,0px),0);
+    transition:opacity var(--ox-v38-ui) ease;
+  }
+}
+
+/* ---------- Premium Light Mode / Liquid Glass ---------- */
+body.theme-light{
+  --bg:#edf2f6;
+  --panel:rgba(250,252,254,.74);
+  --panel-alt:rgba(242,247,251,.76);
+  --ink:#162437;
+  --line:rgba(83,111,141,.18);
+  --muted:#5d7087;
+  --gold:#a96d08;
+  --gold-dim:rgba(169,109,8,.11);
+  background:
+    radial-gradient(820px 460px at 9% -8%,rgba(106,158,207,.16),transparent 66%),
+    radial-gradient(720px 430px at 96% 5%,rgba(211,163,73,.11),transparent 70%),
+    linear-gradient(180deg,#f4f7fa 0%,#eaf0f5 52%,#eef3f7 100%)!important;
+  color:#162437!important;
+}
+body.theme-light header{
+  background:rgba(247,250,252,.74)!important;
+  border-bottom-color:rgba(87,113,141,.16)!important;
+  box-shadow:0 7px 24px rgba(60,78,99,.07),inset 0 1px 0 rgba(255,255,255,.94)!important;
+  backdrop-filter:blur(22px) saturate(135%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(135%)!important;
+}
+
+/* Major glass surfaces */
+body.theme-light :where(
+  .glass,.glass-strong,.panel,.metric-card,.benchmark-card,.v33-card,.v33-home-hero,
+  .strength-card,.strength-compare-panel,.settings-card,.media-card,.detail-panel,.v33-radar-cell,
+  .v33-action,.market-unavailable-card,.ox-auth-card
+){
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.79),rgba(236,243,249,.47)),
+    rgba(245,249,252,.58)!important;
+  border-color:rgba(84,113,142,.17)!important;
+  box-shadow:
+    0 14px 34px rgba(54,75,99,.075),
+    inset 0 1px 0 rgba(255,255,255,.92),
+    inset 0 -1px 0 rgba(93,119,146,.055)!important;
+  backdrop-filter:blur(19px) saturate(132%)!important;
+  -webkit-backdrop-filter:blur(19px) saturate(132%)!important;
+}
+body.theme-light .glass-strong,
+body.theme-light .btc-premium-hero{
+  background:
+    radial-gradient(55% 105% at 93% 4%,rgba(210,159,67,.13),transparent 66%),
+    radial-gradient(72% 120% at 2% 100%,rgba(91,151,208,.11),transparent 70%),
+    linear-gradient(145deg,rgba(255,255,255,.88),rgba(232,240,247,.54)),
+    rgba(244,248,251,.70)!important;
+  border-color:rgba(157,123,63,.20)!important;
+}
+
+body.theme-light :where(.panel-head,.chart-controls,.chart-benchmark-bar,.scanner-tabs,.v34-home-main-toolbar){
+  background:rgba(242,247,251,.70)!important;
+  border-color:rgba(91,119,148,.13)!important;
+  backdrop-filter:blur(15px) saturate(125%);
+  -webkit-backdrop-filter:blur(15px) saturate(125%);
+}
+
+body.theme-light :where(.btn-act,.btn-tf,.pill,.alert-btn,.theme-choice,.direction-toggle-btn,.v34-home-mini-tf,.ox-control-refresh,.ox-menu-btn){
+  background:linear-gradient(180deg,rgba(255,255,255,.79),rgba(226,236,245,.42))!important;
+  color:#4d6279!important;
+  border-color:rgba(76,108,141,.18)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.95),0 4px 12px rgba(62,82,105,.045)!important;
+}
+body.theme-light :where(.btn-act,.btn-tf,.alert-btn,.theme-choice,.direction-toggle-btn,.v34-home-mini-tf,.ox-control-refresh,.ox-menu-btn):hover{
+  color:#17283c!important;
+  border-color:rgba(69,104,140,.30)!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.94),rgba(226,237,247,.60))!important;
+}
+body.theme-light :where(.btn-tf.active,.theme-choice.active,.v34-home-mini-tf.active,.tab-btn.active){
+  color:#9a6200!important;
+  border-color:rgba(176,124,30,.38)!important;
+  background:linear-gradient(180deg,rgba(255,249,234,.94),rgba(247,231,196,.56))!important;
+  box-shadow:inset 0 1px 0 #fff,0 0 0 1px rgba(183,130,32,.06),0 5px 14px rgba(160,113,28,.07)!important;
+}
+
+/* White OX LIVE */
+body.theme-light .ox-live-strip{
+  background:
+    linear-gradient(90deg,rgba(255,248,233,.78),rgba(250,252,254,.72) 43%,rgba(235,243,249,.72))!important;
+  border-color:rgba(170,122,34,.27)!important;
+  box-shadow:0 7px 20px rgba(56,76,98,.06),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(16px) saturate(130%);
+}
+body.theme-light .ox-live-badge{color:#986100!important;border-color:rgba(171,124,35,.27)!important;}
+body.theme-light #ox-live-text{color:#405771!important;}
+
+/* White Radar */
+body.theme-light #view-radar .chart-box,
+body.theme-light #view-radar aside.panel{
+  background:linear-gradient(145deg,rgba(255,255,255,.83),rgba(236,243,249,.54))!important;
+  border-color:rgba(78,109,142,.18)!important;
+  box-shadow:0 15px 36px rgba(53,72,94,.075),inset 0 1px 0 #fff!important;
+}
+body.theme-light #view-radar .chart-container{
+  background:linear-gradient(180deg,#f7f9fc,#eef3f7)!important;
+  box-shadow:inset 0 0 30px rgba(66,103,139,.025)!important;
+}
+body.theme-light #view-radar .coin-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.74),rgba(229,238,246,.36))!important;
+  border-color:rgba(86,116,147,.13)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.86)!important;
+}
+body.theme-light #view-radar .coin-card:hover{
+  background:linear-gradient(145deg,rgba(255,255,255,.92),rgba(227,238,247,.54))!important;
+  border-color:rgba(76,110,145,.23)!important;
+}
+body.theme-light #view-radar .coin-card.selected{
+  background:linear-gradient(145deg,rgba(255,250,239,.90),rgba(245,248,251,.72))!important;
+  border-color:rgba(178,133,47,.32)!important;
+  box-shadow:inset 3px 0 0 #b78124,0 8px 19px rgba(70,78,87,.055)!important;
+}
+
+/* White Strength */
+body.theme-light #view-strength .strength-card,
+body.theme-light #view-strength .strength-compare-panel{
+  background:
+    radial-gradient(50% 100% at 100% 0%,rgba(94,154,210,.095),transparent 72%),
+    linear-gradient(145deg,rgba(255,255,255,.82),rgba(237,244,249,.50))!important;
+  border-color:rgba(83,112,142,.16)!important;
+}
+body.theme-light #view-strength .strength-explain{
+  background:rgba(248,251,253,.68)!important;
+  border-color:rgba(85,115,145,.15)!important;
+}
+
+/* White Settings / OX CONTROL */
+body.theme-light #view-settings .settings-card,
+body.theme-light .ox-control-panel{
+  background:linear-gradient(155deg,rgba(255,255,255,.91),rgba(236,243,249,.78))!important;
+  border-color:rgba(79,109,139,.17)!important;
+  box-shadow:0 17px 42px rgba(53,73,96,.10),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(22px) saturate(132%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(132%)!important;
+}
+body.theme-light .ox-control-group,
+body.theme-light .ox-feedback-form{
+  background:rgba(250,252,254,.72)!important;
+  border-color:rgba(83,112,142,.16)!important;
+  box-shadow:0 6px 18px rgba(54,73,94,.045),inset 0 1px 0 #fff!important;
+}
+
+/* White Bottom Navigation */
+body.theme-light .app-dock{
+  background:linear-gradient(180deg,rgba(255,255,255,.84),rgba(233,241,247,.76))!important;
+  border-color:rgba(78,108,138,.21)!important;
+  box-shadow:0 16px 38px rgba(52,71,92,.14),inset 0 1px 0 #fff!important;
+  backdrop-filter:blur(22px) saturate(137%)!important;
+  -webkit-backdrop-filter:blur(22px) saturate(137%)!important;
+}
+body.theme-light .dock-btn{color:#536a82!important;}
+body.theme-light .dock-btn.active:not(.dock-radar){color:#172a40!important;}
+body.theme-light .dock-radar-orb{
+  background:radial-gradient(circle at 50% 28%,rgba(255,255,255,.98),rgba(232,239,246,.94) 70%)!important;
+  border-color:rgba(170,119,28,.58)!important;
+  box-shadow:0 0 0 4px rgba(239,244,248,.88),0 0 17px rgba(174,122,28,.12),inset 0 1px 7px #fff!important;
+}
+
+/* ---------- Market direction glass edge ---------- */
+.ox-market-up,
+.ox-market-down{
+  position:relative;
+  isolation:isolate;
+  transition:border-color var(--ox-v38-ui) ease,box-shadow var(--ox-v38-panel) var(--ox-v38-ease),background-color var(--ox-v38-panel) ease!important;
+}
+.ox-market-up{
+  border-color:rgba(54,211,153,.34)!important;
+  background-color:rgba(54,211,153,.025)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(54,211,153,.055),
+    inset 0 0 28px rgba(54,211,153,.025),
+    0 0 18px rgba(54,211,153,.045)!important;
+}
+.ox-market-down{
+  border-color:rgba(239,97,122,.34)!important;
+  background-color:rgba(239,97,122,.025)!important;
+  box-shadow:
+    inset 0 0 0 1px rgba(239,97,122,.055),
+    inset 0 0 28px rgba(239,97,122,.025),
+    0 0 18px rgba(239,97,122,.045)!important;
+}
+/* Keep selected radar's gold locator while adding direction edge. */
+.coin-card.selected.ox-market-up{
+  box-shadow:inset 3px 0 0 var(--gold),inset 0 0 25px rgba(54,211,153,.028),0 0 14px rgba(54,211,153,.045)!important;
+}
+.coin-card.selected.ox-market-down{
+  box-shadow:inset 3px 0 0 var(--gold),inset 0 0 25px rgba(239,97,122,.028),0 0 14px rgba(239,97,122,.045)!important;
+}
+body.theme-light .ox-market-up{
+  border-color:rgba(25,154,119,.32)!important;
+  background-color:rgba(25,154,119,.035)!important;
+  box-shadow:inset 0 0 0 1px rgba(25,154,119,.045),inset 0 0 24px rgba(25,154,119,.026),0 7px 19px rgba(25,154,119,.045)!important;
+}
+body.theme-light .ox-market-down{
+  border-color:rgba(207,76,101,.31)!important;
+  background-color:rgba(207,76,101,.032)!important;
+  box-shadow:inset 0 0 0 1px rgba(207,76,101,.045),inset 0 0 24px rgba(207,76,101,.024),0 7px 19px rgba(207,76,101,.04)!important;
+}
+body.theme-light .coin-card.selected.ox-market-up{
+  box-shadow:inset 3px 0 0 #b78124,inset 0 0 22px rgba(25,154,119,.024),0 7px 17px rgba(61,86,108,.055)!important;
+}
+body.theme-light .coin-card.selected.ox-market-down{
+  box-shadow:inset 3px 0 0 #b78124,inset 0 0 22px rgba(207,76,101,.023),0 7px 17px rgba(61,86,108,.055)!important;
+}
+
+/* Soft edge shine only — never fill the whole card green/red. */
+.ox-market-up::after,
+.ox-market-down::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  pointer-events:none;
+  z-index:0;
+  opacity:.54;
+  mask-image:linear-gradient(90deg,#000,transparent 13%,transparent 87%,#000),linear-gradient(#000,transparent 12%,transparent 88%,#000);
+  -webkit-mask-image:linear-gradient(90deg,#000,transparent 13%,transparent 87%,#000),linear-gradient(#000,transparent 12%,transparent 88%,#000);
+}
+.ox-market-up::after{box-shadow:inset 0 0 19px rgba(54,211,153,.13);}
+.ox-market-down::after{box-shadow:inset 0 0 19px rgba(239,97,122,.12);}
+.ox-market-up > *, .ox-market-down > *{position:relative;z-index:1;}
+
+/* Reduced motion keeps parity without sacrificing accessibility. */
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;}
+}
+

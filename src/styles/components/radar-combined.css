@@ -1,0 +1,262 @@
+/* Combined T1 / T2 / T3 display and existing toolbar controls. */
+body.ox-terminal #view-radar :is(#screener-list) .coin-tier-heading {display:block;flex:0 0 100%;margin:0 0 4px;color:var(--muted);font:9px/1.2 system-ui;letter-spacing:.06em}
+@media(max-width:720px){
+ body.ox-terminal #view-radar :is(#screener-list) .coin-card.is-tier-start {grid-template-rows:auto auto auto auto!important}
+ body.ox-terminal #view-radar :is(#screener-list) .coin-tier-heading {grid-column:1/-1!important;grid-row:1!important;margin:0;font-size:8px;line-height:10px}
+ body.ox-terminal #view-radar :is(#screener-list) .coin-card.is-tier-start :is(.coin-title,.coin-top-right) {grid-row:2!important}
+ body.ox-terminal #view-radar :is(#screener-list) .coin-card.is-tier-start .coin-mid {grid-row:3!important}
+ body.ox-terminal #view-radar :is(#screener-list) .coin-card.is-tier-start .coin-mobile-bottom {grid-row:4!important}
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs {
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+}
+body.ox-terminal #view-radar .radar-combined-mark {
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:28px;
+  height:25px;
+}
+body.ox-terminal #view-radar .radar-combined-logo {
+  display:block;
+  width:17px;
+  height:17px;
+  color:inherit;
+}
+body.ox-terminal #view-radar .radar-combined-chevron {
+  position:absolute;
+  right:-1px;
+  bottom:0;
+  font-size:6px;
+  line-height:1;
+  pointer-events:none;
+}
+body.ox-terminal #view-radar :is(#screener-list) > .coin-card.is-tier-end::after {
+  content:"";
+  display:block!important;
+  position:absolute!important;
+  top:auto!important;
+  left:8px!important;
+  right:8px!important;
+  bottom:0!important;
+  height:1px!important;
+  opacity:1!important;
+  z-index:2;
+  mask:none!important;
+  -webkit-mask:none!important;
+  background:linear-gradient(90deg,transparent,#ffffffb3 12%,#fff 50%,#ffffffb3 88%,transparent)!important;
+  box-shadow:0 0 5px #ffffffb3,0 0 12px #ffffff66!important;
+  pointer-events:none;
+}
+
+/* Existing toolbar treatment, scoped to the radar controls. */
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs {
+  grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  min-height:44px!important;
+  align-items:center!important;
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .radar-combined-tab {
+  height:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  /* Keep Safari from taking over a stationary hold as a native pan/selection.
+     This affects only the toolbar button; the radar list still scrolls. */
+  touch-action:none!important;
+  user-select:none;
+  -webkit-user-select:none;
+  -webkit-touch-callout:none;
+}
+/* Flat icon controls: no sliding glass tile or pressed glass background. */
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs > button {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  position:relative;
+  width:100%!important;
+  min-width:0!important;
+  height:44px!important;
+  min-height:44px!important;
+  padding:0!important;
+  line-height:1!important;
+  border:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  backdrop-filter:none!important;
+  -webkit-backdrop-filter:none!important;
+  -webkit-tap-highlight-color:transparent;
+}
+/* iOS must treat the entire control row as buttons, not selectable text. */
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs,
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs * {
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  -webkit-touch-callout:none!important;
+}
+@media(max-width:720px) {
+  /* The full first cell is the Radar hit target, including its upper half. */
+  body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs {
+    grid-template-columns:40px repeat(3,minmax(0,1fr))!important;
+  }
+}
+/* The active underline must not shift the content's vertical center. */
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs > .tab-btn.active::after {
+  display:block!important;
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:2px;
+  background:var(--ink);
+  pointer-events:none;
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .tab-badge {
+  position:absolute;
+  top:2px;
+  right:2px;
+  margin:0;
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .radar-tab-icon {flex:none;margin:0}
+@media(max-width:720px) {
+  body.ox-terminal #view-radar :is(#radar-scanner-panel) .watch-tab-mobile {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    line-height:1;
+  }
+}
+body.ox-terminal #view-radar .radar-combined-tab * {
+  -webkit-touch-callout:none;
+  -webkit-user-select:none;
+  user-select:none;
+}
+body.ox-terminal #view-radar .radar-combined-logo {pointer-events:none}
+body.ox-terminal #view-radar .radar-combined-chevron {
+  pointer-events:auto;
+}
+body.ox-terminal #view-radar .radar-combined-chevron::before {
+  content:"";
+  position:absolute;
+  /* Keep the chevron target below the radar glyph, so icon presses open
+     the menu instead of accidentally cycling the tier. */
+  width:12px;
+  height:12px;
+  bottom:-3px;
+  right:-3px;
+}
+body.ox-terminal #view-radar .radar-tier-current {
+  position:absolute;
+  right:-2px;
+  top:-2px;
+  font:600 7px/1 system-ui,sans-serif;
+  color:var(--ink);
+  text-shadow:0 0 5px #ffffff66;
+  pointer-events:none;
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) .scanner-tabs :is(#direction-toggle) {
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  grid-template-columns:none!important;
+  width:100%!important;
+  min-width:0!important;
+  max-width:none!important;
+  height:36px!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  background:transparent!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+}
+body.ox-terminal #view-radar :is(#direction-toggle) .direction-toggle-icon {
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  width:16px;
+  height:16px;
+  line-height:1;
+  transform:none;
+  translate:none;
+  font-size:16px!important;
+  transition:color .28s ease,text-shadow .28s ease,translate .28s ease;
+}
+body.ox-terminal #view-radar :is(#direction-toggle):is(:hover,:focus-visible,:active) .direction-toggle-icon {
+  text-shadow:0 0 6px currentColor;
+}
+body.ox-terminal #view-radar :is(#direction-toggle):focus-visible,
+body.ox-terminal #view-radar :is(#radar-scanner-toggle):focus-visible {
+  outline:1px solid var(--ink)!important;
+  outline-offset:-2px;
+}
+body.ox-terminal #view-radar :is(#radar-scanner-toggle) {flex:none}
+body.ox-terminal #view-radar:not(.ox-scanner-collapsed) .chart-controls :is(#btn-chart-fullscreen).ox-chart-expand-dot {
+  display:none!important;
+}
+body.ox-terminal #view-radar.ox-scanner-collapsed .workspace {
+  grid-template-columns:minmax(0,1fr) 0px!important;
+  gap:0!important;
+}
+/* Keep both grid tracks mounted so width can interpolate and the chart's
+   existing ResizeObserver redraws each frame without stretching its canvas. */
+body.ox-terminal #view-radar .workspace {
+  transition:grid-template-columns 620ms cubic-bezier(.22,.8,.22,1),gap 620ms cubic-bezier(.22,.8,.22,1);
+}
+body.ox-terminal #view-radar :is(#radar-scanner-panel) {
+  transition:opacity 400ms ease,visibility 0s;
+}
+body.ox-terminal #view-radar.ox-scanner-collapsed :is(#radar-scanner-panel) {
+  transition:opacity 300ms ease,visibility 0s 620ms;
+}
+body.ox-terminal #radar-tier-menu {
+  position:fixed;
+  z-index:12001;
+  display:grid;
+  min-width:88px;
+  padding:4px;
+  border:0;
+  border-radius:8px;
+  background:#171b20;
+  color:#eeece7;
+  box-shadow:0 6px 22px #0008,inset 0 0 0 1px #ffffff2b,0 0 8px #ffffff1c;
+  backdrop-filter:none;
+  -webkit-backdrop-filter:none;
+  transform-origin:var(--radar-menu-origin-x, 18px) top;
+  animation:radar-tier-menu-in .24s cubic-bezier(.22,.8,.24,1);
+}
+body.ox-terminal #radar-tier-menu[hidden] {display:none}
+body.ox-terminal #radar-tier-menu button {
+  min-height:36px;
+  padding:6px 12px;
+  border:0;
+  border-radius:4px;
+  background:transparent;
+  color:inherit;
+  text-align:left;
+  font:500 12px/1.3 system-ui,sans-serif;
+  cursor:pointer;
+}
+body.ox-terminal #radar-tier-menu button:is(:hover,:focus-visible) {background:#ffffff0d;outline:none}
+body.ox-terminal #radar-tier-menu button[aria-checked="true"] {color:#fff;text-shadow:0 0 6px #ffffff85;background:#ffffff0a}
+body.ox-terminal #radar-tier-menu button[aria-checked="true"]::after {content:"·";float:right}
+body.ox-terminal.theme-light #radar-tier-menu {background:#f3f4f6;color:#202832;box-shadow:0 6px 22px #0002,inset 0 0 0 1px #0002}
+body.ox-terminal.theme-light #radar-tier-menu button[aria-checked="true"] {color:#111;background:#0000000a;text-shadow:none}
+@keyframes radar-tier-menu-in {from {opacity:0;transform:translateY(-6px) scale(.94)} to {opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce) {
+  body.ox-terminal #radar-tier-menu {animation:none}
+  body.ox-terminal #view-radar :is(#radar-scanner-panel) {transition:none!important}
+  body.ox-terminal #view-radar :is(#direction-toggle) .direction-toggle-icon {transition:none}
+}
+/* Let the existing native fullscreen chart fill its available height too. */
+body.ox-terminal #view-radar .chart-box:fullscreen {
+  display:flex!important;
+  flex-direction:column!important;
+}
+body.ox-terminal #view-radar .chart-box:fullscreen .chart-controls {flex:0 0 auto!important}
+body.ox-terminal #view-radar .chart-box:fullscreen #chart {
+  flex:1 1 0!important;
+  height:0!important;
+  min-height:0!important;
+  max-height:none!important;
+}

@@ -1,0 +1,15 @@
+import test from 'node:test';import assert from 'node:assert/strict';import vm from 'node:vm';import {readFile} from 'node:fs/promises';
+const code=await readFile(new URL('../src/core/public-feed.js',import.meta.url),'utf8');
+function feed(options={}){const context=vm.createContext({fetch:options.fetcher,URL,AbortController,DOMException,setTimeout,clearTimeout});vm.runInContext(code,context);return context.OXPublicFeed.create(options);}
+const response=(data=1)=>({ok:true,status:200,json:async()=>data});
+test('in-flight background work leaves capacity for the visible chart',async()=>{
+ const seen=[],releases=[];const f=feed({intervalMs:1,concurrency:4,fetcher:async url=>{seen.push(url);if(!url.endsWith('/chart'))await new Promise(resolve=>releases.push(resolve));return response();}});
+ const scans=Array.from({length:4},(_,i)=>f.json('https://market.test/scan'+i,{priority:0}));
+ await new Promise(resolve=>setTimeout(resolve,20));assert.equal(seen.length,3);
+ await f.json('https://market.test/chart',{priority:100});assert.equal(seen.at(-1),'https://market.test/chart');
+ while(releases.length)releases.shift()();await new Promise(resolve=>setTimeout(resolve,10));while(releases.length)releases.shift()();await Promise.all(scans);
+});
+test('radar/pattern/chart work share start rate and chart has queued priority',async()=>{const seen=[];let release;const gate=new Promise(r=>release=r);const f=feed({intervalMs:12,concurrency:1,fetcher:async url=>{seen.push({url,at:Date.now()});if(seen.length===1)await gate;return response();}});const a=f.json('https://market.test/first',{priority:0});const b=f.json('https://market.test/radar',{priority:0});const c=f.json('https://market.test/chart',{priority:100});release();await Promise.all([a,b,c]);assert.equal(seen[1].url,'https://market.test/chart');assert.ok(seen[2].at-seen[1].at>=9);});
+test('429 cools the whole host, retries once, and cancellation removes departed work',async()=>{const times=[];const f=feed({intervalMs:1,concurrency:1,cooldownMs:20,fetcher:async url=>{times.push({url,at:Date.now()});return times.length===1?{status:429,ok:false,headers:{get:()=>null}}:response();}});const a=f.json('https://market.test/a');const cancelled=f.json('https://market.test/old',{owner:'departed'});f.cancel('departed');await assert.rejects(cancelled,{name:'AbortError'});await a;assert.equal(times.length,2);assert.ok(times[1].at-times[0].at>=18);assert.equal(f.stats().queued,0);});
+test('stalled body is bounded and does not consume all future capacity',async()=>{let calls=0;const f=feed({intervalMs:1,concurrency:1,fetcher:async()=>++calls===1?{ok:true,status:200,json:()=>new Promise(()=>{})}:response(7)});await assert.rejects(f.json('https://market.test/stalled',{timeoutMs:12}),{name:'TimeoutError'});assert.equal(await f.json('https://market.test/recovered'),7);});
+test('persistent 429 is finite and never becomes an empty market result',async()=>{let calls=0;const f=feed({intervalMs:1,cooldownMs:5,fetcher:async()=>{calls++;return {status:429,ok:false,headers:{get:()=>null}};}});await assert.rejects(f.json('https://market.test/radar'),{status:429});assert.equal(calls,2);});

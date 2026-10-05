@@ -1,0 +1,74 @@
+:host{display:block;min-width:0;color:#ecece4;font-family:Inter,-apple-system,BlinkMacSystemFont,"PingFang TC",system-ui,sans-serif}
+*{box-sizing:border-box}
+.oxb-shell{display:grid;gap:12px;min-width:0}
+.oxb,.oxb-assets{background:#101416;border:1px solid #dce6e36b;border-radius:15px;box-shadow:0 0 6px #ffffff25,inset 0 0 1px #fff8}
+.oxb{overflow:hidden}
+.oxb-shell button,.oxb-shell select{font-family:inherit;color:inherit}
+.oxb-shell button{cursor:pointer}
+.oxb-shell button:focus-visible,.oxb-shell select:focus-visible,.oxb canvas:focus-visible{outline:2px solid #fff;outline-offset:-3px}
+.oxb-controls{position:relative;z-index:2;display:flex;align-items:center;gap:6px;padding:8px 10px;border-bottom:1px solid #ffffff12}
+.oxb-scope,.oxb-metric-toggle{display:flex;align-items:center;justify-content:center;gap:5px;min-height:36px;padding:0 9px;background:linear-gradient(135deg,#ffffff13,#ffffff05);border:1px solid #ffffff42;border-radius:18px;box-shadow:inset 0 0 1px #ffffff50;font-size:11px;white-space:nowrap}
+.oxb-scope{flex:0 0 auto}
+.oxb-scope[aria-pressed=true],.oxb-metric-toggle[aria-expanded=true]{border-color:#ffffff85;box-shadow:0 0 4px #fff2,inset 0 0 1px #fff8}
+.oxb svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+.oxb-scope svg,.oxb-metric-toggle svg{width:12px;height:12px;opacity:.7}
+.oxb-metric{position:relative;min-width:0}
+.oxb-menu{position:absolute;z-index:3;left:0;top:calc(100% + 6px);width:156px;padding:4px;background:#172023f5;backdrop-filter:blur(12px);border:1px solid #ffffff62;border-radius:12px;box-shadow:0 8px 24px #0009,0 0 5px #fff2}
+.oxb-menu[hidden]{display:none}
+.oxb-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;min-height:34px;padding:0 10px;background:transparent;border:0;border-radius:8px;text-align:left;font-size:11px}
+.oxb-menu button[aria-checked=true],.oxb-menu button:hover,.oxb-menu button:focus-visible{background:#ffffff10}
+.oxb-menu button svg{width:13px;height:13px;visibility:hidden}
+.oxb-menu button[aria-checked=true] svg{visibility:visible}
+.oxb-direction{flex:0 0 36px;display:flex;align-items:center;justify-content:center;margin-left:auto;width:36px;height:36px;padding:0;background:transparent;border:0;border-radius:8px;color:#eeeee7;box-shadow:none}
+.oxb-direction[data-direction=long]{color:#54c4e8}
+.oxb-direction[data-direction=short]{color:#f0728b}
+.direction-toggle-icon{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;font-size:16px;line-height:1;transition:color .28s,text-shadow .28s}
+.oxb-direction:hover .direction-toggle-icon,.oxb-direction:focus-visible .direction-toggle-icon,.oxb-direction:active .direction-toggle-icon{text-shadow:0 0 6px currentColor}
+.oxb-stage{position:relative;background:radial-gradient(ellipse at 50% 40%,#1a2022,#0c1012 85%);isolation:isolate}
+.oxb canvas{display:block;width:100%;height:clamp(460px,64dvh,650px);touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+.oxb canvas:active{cursor:grabbing}
+.oxb-empty{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:30px;font-size:12px;color:#aeb9b8;pointer-events:none}
+.oxb-empty[hidden]{display:none}
+.oxb-zoom{position:absolute;bottom:10px;right:10px;display:flex;gap:3px}
+.oxb-zoom button,.oxb-zoom select{background:#151d20df;backdrop-filter:blur(6px);border:1px solid #ffffff40;color:#fff;width:26px;height:26px;font-size:16px;border-radius:8px;display:grid;place-items:center}
+.oxb-zoom select{width:auto;min-width:54px;padding:0 5px;font-size:10px}
+.oxb-zoom svg{width:14px;height:14px}
+.oxb-assets{min-width:0;padding:10px}
+.oxb-asset-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;max-height:260px;overflow:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#ffffff30 transparent}
+.oxb-asset-grid button{display:flex;flex-direction:column;justify-content:center;text-align:left;gap:4px;min-width:0;min-height:46px;padding:7px 9px;border:1px solid #ffffff12;border-radius:8px;background:#ffffff05;font-size:11px}
+.oxb-asset-grid button:hover,.oxb-asset-grid button:focus-visible{background:#ffffff0b;border-color:#ffffff50}
+.oxb-asset-grid span,.oxb-asset-grid b{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.oxb-asset-grid b{font-size:10px;font-weight:400;color:#a9b8b7;font-variant-numeric:tabular-nums}
+.oxb-asset-grid .up b{color:#54c4e8}
+.oxb-asset-grid .down b{color:#f0728b}
+.oxb-assets-empty{margin:0;padding:20px 10px;text-align:center;font-size:11px;color:#9aa5a3}
+.oxb-assets-empty[hidden]{display:none}
+.oxb-dialog{background:linear-gradient(140deg,#22292c,#101416);color:#eeeee7;border:1px solid #d6e0dc9c;border-radius:17px;box-shadow:0 0 14px #ffffff25;padding:18px;width:380px;max-width:calc(100vw - 28px);max-height:85dvh;overflow:auto}
+.oxb-dialog::backdrop{background:#0008;backdrop-filter:blur(7px)}
+.oxb-dialog header{display:flex;justify-content:space-between;align-items:center;margin-bottom:15px}
+.oxb-dialog header strong{font-weight:500}
+.oxb-dialog header button{border:0;background:#ffffff0c;display:grid;place-items:center;width:29px;height:29px;border-radius:10px}
+.oxb-price{font-size:27px;font-weight:500;font-variant-numeric:tabular-nums}
+.oxb-price small{font-size:10px;color:#9ba8a6}
+.oxb-dialog dl{font-size:12px;margin:18px 0}
+.oxb-dialog dl>div{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid #ffffff10}
+.oxb-dialog dt{color:#9daaa7}
+.oxb-dialog dd{margin:0;font-variant-numeric:tabular-nums}
+.oxb-dialog .up{color:#54c4e8}
+.oxb-dialog .down{color:#f0728b}
+.oxb-note{display:block;color:#929e9b;font-size:9px;line-height:1.7}
+.oxb-radar{margin-top:18px;padding:10px 14px;background:#ffffff12;border:1px solid #ffffff7b;border-radius:20px;color:#f2f2eb;width:100%;box-shadow:0 0 5px #fff3;font-size:12px}
+@media(max-width:600px){.oxb-controls{gap:5px;padding:7px}.oxb-scope,.oxb-metric-toggle{min-height:35px;padding:0 8px}.oxb canvas{height:clamp(360px,calc(100dvh - 340px),620px)}.oxb-assets{padding:8px}.oxb-asset-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important}}
+
+.oxb-loading{margin-left:auto;min-width:24px}.oxb-loading[hidden]{display:none}.oxb-loading .ox-region-loading{padding:0}.oxb-loading .ox-loading-label{display:none}.oxb-loading .ox-loading{gap:2px}.oxb-loading .ox-loading-count{font-size:9px}.oxb-loading:not([hidden])+.oxb-direction{margin-left:0}:host([data-bubble-market=tw]){--oxb-up:#f16a70;--oxb-down:#48b78e}:host([data-bubble-market=tw]) .oxb-dialog .up,:host([data-bubble-market=tw]) .up b{color:var(--oxb-up)}:host([data-bubble-market=tw]) .oxb-dialog .down,:host([data-bubble-market=tw]) .down b{color:var(--oxb-down)}
+
+.direction-toggle-icon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}.oxb-direction:hover .direction-toggle-icon,.oxb-direction:focus-visible .direction-toggle-icon{filter:drop-shadow(0 0 4px currentColor)}
+
+/* One unframed close icon, with a 44px pointer target. */
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close){position:relative;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:0!important;background:transparent!important;box-shadow:none!important;color:inherit!important;font-size:0!important;line-height:1!important;cursor:pointer;flex-shrink:0}
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)>*{visibility:hidden!important}
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)::before,
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)::after{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:18px!important;height:1.5px!important;border:0!important;border-radius:1px!important;background:currentColor!important;box-shadow:none!important;transform:translate(-50%,-50%) rotate(45deg)!important;opacity:1!important;pointer-events:none}
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)::after{transform:translate(-50%,-50%) rotate(-45deg)!important}
+:is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close):focus-visible{outline:2px solid currentColor!important;outline-offset:2px}

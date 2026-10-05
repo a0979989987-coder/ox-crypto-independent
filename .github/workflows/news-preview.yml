@@ -1,0 +1,33 @@
+name: Verify news preview (no production write)
+on:
+  push:
+    branches: ['feature/news-center-v2-*']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: news-preview-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    if: startsWith(github.ref, 'refs/heads/feature/news-center-v2-')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci
+      - run: npm run news:collect
+      - run: npm test
+      - run: npm run check
+      - uses: actions/upload-artifact@v4
+        with:
+          name: verified-preview-news
+          path: data/news.json
+          retention-days: 7
+      # Deliberately no commit, push, deployment of main, or scheduled trigger.

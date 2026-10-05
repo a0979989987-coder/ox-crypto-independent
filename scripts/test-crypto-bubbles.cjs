@@ -1,0 +1,81 @@
+const {chromium}=require('playwright');
+const {readFileSync,mkdirSync}=require('node:fs');
+const {spawn}=require('node:child_process');
+const assert=require('node:assert/strict');
+const root=require('node:path').join(__dirname,'..');
+const port=Number(process.env.OX_BUBBLE_TEST_PORT||4181),base=`http://127.0.0.1:${port}`;
+const server=spawn(process.execPath,['scripts/dev-server.mjs','--port',String(port)],{cwd:root});
+const symbols=['BTC','ETH','SOL','XRP','DOGE','ADA','LINK','AVAX','SUI','PEPE','DOT','LTC','NEAR','ARB','OP','APT','UNI','SHIB','BONK','HYPE','ZEC','QNT','TON','TAO','ICP','ONDO','WLD','FET','JUP','PUMP'];
+const fixture=process.env.OX_BUBBLE_QUOTES?JSON.parse(readFileSync(process.env.OX_BUBBLE_QUOTES)).data:null;
+const instruments=process.env.OX_BUBBLE_INSTRUMENTS?JSON.parse(readFileSync(process.env.OX_BUBBLE_INSTRUMENTS)).data:null;
+const allowed=instruments?new Map(instruments.filter(i=>i.symbolType==='crypto'&&i.status==='online'&&i.type==='perpetual'&&i.quoteCoin==='USDT').map(i=>[i.symbol,i.baseCoin])):null;
+const quotes=fixture?fixture.filter(t=>allowed.has(t.symbol)).map(t=>({...t,baseCoin:allowed.get(t.symbol)})):Array.from({length:100},(_,i)=>({symbol:(symbols[i]||'COIN'+i)+'USDT',baseCoin:symbols[i]||'COIN'+i,lastPr:String(10+i),change24h:String((i%2?-1:1)*(.01+i*.003)),usdtVolume:String((101-i)*1000000)}));
+const caps=process.env.OX_BUBBLE_CAPS?JSON.parse(readFileSync(process.env.OX_BUBBLE_CAPS)):quotes.map(t=>({symbol:t.baseCoin.toLowerCase(),id:({BTC:'bitcoin',ETH:'ethereum',SOL:'solana'})[t.baseCoin]||t.baseCoin.toLowerCase(),current_price:Number(t.lastPr),market_cap:Number(t.usdtVolume)*30}));
+const errors=[];
+let browser;
+(async()=>{
+ await new Promise(r=>server.stdout.once('data',r));
+ browser=await chromium.launch({executablePath:process.env.OX_CHROMIUM_EXECUTABLE,headless:true,args:['--no-sandbox']});
+ const page=await browser.newPage({viewport:{width:1440,height:950},hasTouch:true});page.on('pageerror',e=>errors.push(e.message));
+ await page.route('**/bubbles/field.js*',r=>r.fulfill({contentType:'text/javascript',body:readFileSync(root+'/src/markets/crypto/bubbles/field.js','utf8').replace('this.canvas=canvas;','window.oxField=this;this.canvas=canvas;')}));
+ await page.route('**/bubbles/bubbles.css*',async r=>{await new Promise(resolve=>setTimeout(resolve,200));await r.fulfill({contentType:'text/css',body:readFileSync(root+'/src/markets/crypto/bubbles/bubbles.css','utf8')});});
+ await page.route(base+'/__bubbles',r=>r.fulfill({contentType:'text/html',body:'<!doctype html><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{margin:0;padding:16px;background:#080d10}#view-strength{max-width:1280px;margin:auto}</style><section id="view-strength"><div class="strength-page"><div class="strength-compare-panel"></div></div></section><script src="/src/app/token-logos.js"></script>'}));
+ await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:caps.map(c=>({...c,last_updated:new Date().toISOString()}))}));
+ let flowRequests=0;
+ await page.route('https://api.bitget.com/**',r=>{flowRequests++;const positive=quotes.findIndex(t=>t.symbol===new URL(r.request().url()).searchParams.get('symbol'))%2===0;return r.fulfill({json:{code:'00000',requestTime:Date.now(),data:[{tradeId:'a',side:'buy',size:positive?150:100,price:100,ts:Date.now()},{tradeId:'b',side:'sell',size:positive?100:150,price:100,ts:Date.now()}]}});});
+ await page.goto(base+'/__bubbles');
+ await page.evaluate(async q=>{window.state={activeMarket:'crypto',tickers:q.map(t=>({...t,ts:Date.now()})),analyzedCache:new Map(q.map((t,i)=>[t.symbol,{oxScore:(i*7)%101}]))};window.getWatchlistRecords=()=>[{symbol:q[0].symbol}];window.switchSymbol=s=>{window.openedRadar=s;};document.body.dataset.market='crypto';document.body.dataset.view='strength';await import('/src/markets/crypto/analytics/entry.js');window.freshTimer=setInterval(()=>state.tickers.forEach(t=>t.ts=Date.now()),1000);},quotes);
+ const tab=id=>page.locator(`[data-crypto-tool="${id}"]`);
+ await tab('bubbles').click();
+ const canvas=page.locator('canvas');await canvas.waitFor();await page.waitForFunction(()=>document.querySelector('#ox-crypto-tools-inline>div')?.shadowRoot?.querySelector('canvas')?.dataset.coins==='50');
+ await canvas.waitFor({state:'visible'});assert.ok(await page.evaluate(()=>oxField.nodes.every(n=>Number.isFinite(n.x)&&Number.isFinite(n.y))),'cold stylesheet load preserves finite bubble positions');
+ const menuToggle=page.locator('[data-action="metric-menu"]'),menu=page.getByRole('menu');
+ const metric=async id=>{await menuToggle.click();await page.locator(`[data-bubble-metric="${id}"]`).click();assert.equal(await menuToggle.getAttribute('aria-expanded'),'false');assert.equal(await page.locator(`[data-bubble-metric="${id}"]`).getAttribute('aria-checked'),'true');};
+ assert.equal(await page.locator('.oxb-footer,summary,details').count(),0);
+ assert.equal(await page.locator('.oxb-assets [data-asset]').count(),50);assert.equal(await page.locator('.oxb .oxb-assets').count(),0);assert.equal(await page.locator('.oxb-shell>section').count(),2);
+ assert.equal(await page.locator('[data-action="direction"]').innerText(),'↕');
+ await menuToggle.click();assert.equal(await page.getByRole('menuitemradio').count(),5);await page.keyboard.press('Escape');assert.equal(await menuToggle.getAttribute('aria-expanded'),'false');assert.ok(await menuToggle.evaluate(e=>e.getRootNode().activeElement===e));
+ await menuToggle.press('ArrowDown');await page.keyboard.press('ArrowDown');await page.keyboard.press('Enter');assert.equal(await canvas.getAttribute('data-metric'),'volume');
+ await menuToggle.click();await page.locator('[data-action="scope"]').click();assert.equal(await menuToggle.getAttribute('aria-expanded'),'false');assert.equal(await page.locator('.oxb-assets [data-asset]').count(),1);await page.locator('[data-action="scope"]').click();
+ await metric('volume');assert.equal(await canvas.getAttribute('data-metric'),'volume');
+ await metric('cap');assert.ok(Number(await canvas.getAttribute('data-coins'))>0);
+ await metric('score');assert.equal(await canvas.getAttribute('data-metric'),'score');assert.equal(await canvas.getAttribute('data-coins'),'50');
+ await page.locator('select').selectOption('30');assert.equal(await canvas.getAttribute('data-coins'),'30');
+ assert.equal(await page.getByRole('searchbox').count(),0);assert.equal(await page.locator('[data-action="help"],[data-action="pause"],[data-action="focus"]').count(),0);
+ assert.equal(await page.locator('[data-action="scope"]').count(),1);
+ await page.locator('[data-action="scope"]').click();assert.equal(await canvas.getAttribute('data-coins'),'1');assert.equal(await page.locator('[data-action="scope"]').getAttribute('data-scope'),'watch');
+ await page.locator('[data-action="scope"]').click();assert.equal(await page.locator('[data-action="scope"]').getAttribute('data-scope'),'all');
+ for(const direction of ['long','short','both']){await page.locator('[data-action="direction"]').click();assert.equal(await canvas.getAttribute('data-direction'),direction);assert.equal(await page.locator('[data-action="direction"]').innerText(),({long:'↑',short:'↓',both:'↕'})[direction]);assert.ok(await page.evaluate(d=>oxField.nodes.every(n=>d==='both'||(d==='long'?n.change>0:n.change<0)),direction));assert.equal(await page.locator('.oxb-assets [data-asset]').count(),Number(await canvas.getAttribute('data-coins')));}
+ await page.locator('select').selectOption('100');assert.equal(await canvas.getAttribute('data-coins'),'100');await page.locator('select').selectOption('30');
+ await metric('flow');await page.waitForFunction(()=>document.querySelector('#ox-crypto-tools-inline>div').shadowRoot.querySelector('canvas').dataset.coins==='30',{},{timeout:20000});assert.ok(flowRequests>=30);
+ for(const direction of ['long','short','both']){await page.locator('[data-action="direction"]').click();assert.equal(await canvas.getAttribute('data-direction'),direction);assert.ok(await page.evaluate(d=>oxField.nodes.every(n=>d==='both'||(d==='long'?n.value>0:n.value<0)),direction));}
+ await metric('change');await page.locator('select').selectOption('50');
+ const shotDir=process.env.OX_BUBBLE_SHOTS;if(shotDir){mkdirSync(shotDir,{recursive:true});await page.waitForTimeout(700);await page.screenshot({path:shotDir+'/desktop.png',fullPage:true});}
+ await page.locator('[data-asset]').first().evaluate(e=>window.firstAssetButton=e);await page.waitForTimeout(2100);assert.ok(await page.locator('[data-asset]').first().evaluate(e=>window.firstAssetButton===e),'periodic price refresh preserves list buttons');
+ await page.locator('[data-asset]').first().click();assert.equal(await page.locator('.oxb-dialog[open]').count(),1);
+ const symbol=await page.locator('[data-asset]').first().getAttribute('data-asset');await page.locator('[data-action="radar"]').click();assert.equal(await page.evaluate(()=>window.openedRadar),symbol);
+ for(const width of [320,390,768,1440]){await page.setViewportSize({width,height:844});await page.waitForTimeout(100);assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),'page overflow '+width);const scopeBox=await page.locator('[data-action="scope"]').boundingBox(),directionBox=await page.locator('[data-action="direction"]').boundingBox(),metricBox=await menuToggle.boundingBox();assert.ok(Math.abs(scopeBox.y-directionBox.y)<2&&Math.abs(scopeBox.y-metricBox.y)<2,'one control row '+width);const beforeBox=await canvas.boundingBox();await menuToggle.click();const menuBox=await menu.boundingBox();assert.ok(menuBox.x>=0&&menuBox.x+menuBox.width<=width,'popup fits '+width);assert.deepEqual(await canvas.boundingBox(),beforeBox,'popup does not shift canvas');await page.keyboard.press('Escape');}
+ await page.setViewportSize({width:390,height:844});await page.waitForTimeout(500);
+ if(shotDir){await page.screenshot({path:shotDir+'/mobile.png',fullPage:true});await menuToggle.click();await page.screenshot({path:shotDir+'/mobile-menu.png',fullPage:true});await page.keyboard.press('Escape');}assert.ok(await page.evaluate(()=>Math.max(0,...oxField.nodes.flatMap((a,i)=>oxField.nodes.slice(i+1).map(b=>a.r+b.r-Math.hypot(a.x-b.x,a.y-b.y))))<2),'resize preserves bubble spacing');
+ await page.locator('.oxb-asset-grid').evaluate(e=>e.scrollTop=e.scrollHeight);assert.ok(await page.locator('.oxb-asset-grid').evaluate(e=>e.scrollTop>0),'independent coin list scrolls');await page.locator('.oxb-asset-grid').evaluate(e=>e.scrollTop=0);
+ const cdp=await page.context().newCDPSession(page),box=await canvas.boundingBox();
+ await page.evaluate(()=>{oxField.paused=true;oxField.run();});
+ const before=await canvas.evaluate(c=>c.toDataURL());
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:box.x+100,y:box.y+200,id:1},{x:box.x+230,y:box.y+200,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:box.x+65,y:box.y+200,id:1},{x:box.x+270,y:box.y+200,id:2}]});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ const zoomed=await canvas.evaluate(c=>c.toDataURL());assert.ok(zoomed!==before,'pinch changes viewport');assert.equal(await page.locator('.oxb-dialog[open]').count(),0);
+ await page.locator('[data-action="reset"]').click();assert.ok(await canvas.evaluate(c=>c.toDataURL())!==zoomed,'reset changes viewport');
+ const dragged=await page.evaluate(()=>{const n=oxField.nodes[0],b=oxField.canvas.getBoundingClientRect();return {symbol:n.symbol,x:b.x+n.x,y:b.y+n.y,nx:n.x,ny:n.y};});
+ await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:dragged.x,y:dragged.y,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:dragged.x+25,y:dragged.y+18,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});assert.ok(await page.evaluate(d=>{const n=oxField.nodes.find(n=>n.symbol===d.symbol);return Math.hypot(n.x-d.nx,n.y-d.ny)>5;},dragged),'drag moves bubble');assert.equal(await page.locator('.oxb-dialog[open]').count(),0);
+ await page.keyboard.press('Escape');assert.equal(await page.locator('body>dialog').count(),0);assert.equal(await page.evaluate(()=>document.body.style.overflow),'');
+ // The field is exercised directly to verify motion, collision constraints, reduced motion and teardown.
+ await page.evaluate(async()=>{const {BubbleField}=await import('/src/markets/crypto/bubbles/field.js');const c=document.createElement('canvas');c.style='width:360px;height:500px';document.body.append(c);const f=new BubbleField(c);f.paused=true;f.setRows(Array.from({length:50},(_,i)=>({symbol:'X'+i,base:'X'+i,value:i+1,change:i%2?2:-2})),'change');window.testField=f;});
+ const physics=await page.evaluate(()=>{const f=testField,start=f.nodes.map(n=>({x:n.x,y:n.y}));for(let i=0;i<240;i++)f.advance(1,i*16.67);return {moved:f.nodes.some((n,i)=>Math.hypot(n.x-start[i].x,n.y-start[i].y)>1),bounds:f.nodes.every(n=>n.x>=n.r&&n.x<=f.width-n.r&&n.y>=n.r&&n.y<=f.height-n.r),overlap:Math.max(0,...f.nodes.flatMap((a,i)=>f.nodes.slice(i+1).map(b=>a.r+b.r-Math.hypot(a.x-b.x,a.y-b.y))))};});
+ assert.ok(physics.moved);assert.ok(physics.bounds);assert.ok(physics.overlap<2,JSON.stringify(physics));
+ await page.emulateMedia({reducedMotion:'reduce'});
+ await page.evaluate(()=>{testField.setRows(testField.nodes.map((n,i)=>({...n,value:i===0?100000:1})),'cap');if(!testField.nodes.every(n=>n.r===n.target))throw Error('paused/reduced radii did not update');testField.destroy();if(testField.frame!==0)throw Error('rAF not cleared');});
+ for(const market of ['tw','crypto']){await page.evaluate(m=>{state.activeMarket=m;document.body.dataset.market=m;document.dispatchEvent(new CustomEvent('ox:marketchange'));},market);assert.equal(await page.locator('#ox-crypto-tools-inline').isVisible(),market==='crypto');}
+ await tab('strength').click();assert.equal(await page.locator('#ox-crypto-tools-inline canvas').count(),0);await tab('bubbles').click();await page.locator('#ox-crypto-tools-inline canvas').waitFor();
+ assert.deepEqual(errors,[]);console.log('PASS: radar arrow direction control, compact filter popup with keyboard/outside dismissal, independent default-visible scrolling coin list, no footer/accordion, five metrics/30–100 coins, detail/radar, 320–1440px, touch drag/pinch/reset, differentiated sizes/physics, reduced motion and market teardown.');
+})().catch(e=>{console.error(e);process.exitCode=1;}).finally(async()=>{await browser?.close();server.kill();});

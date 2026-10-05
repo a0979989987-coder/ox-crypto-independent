@@ -1,0 +1,27 @@
+{
+  "name": "ox-crypto-independent",
+  "private": true,
+  "version": "4.0.0-rc.2",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev-server.mjs",
+    "test": "node --test --test-concurrency=1 tests/*.test.mjs",
+    "news:collect": "node scripts/collect-news.mjs",
+    "check": "node scripts/check-build.mjs",
+    "test:e2e": "node scripts/independent-ui-check.mjs",
+    "verify:extraction": "node scripts/verify-crypto-preservation.mjs",
+    "test:news-v2": "node --test tests/news-v2.test.mjs tests/news-navigation.test.mjs tests/news-time.test.mjs",
+    "test:light-theme": "node scripts/independent-ui-check.mjs",
+    "build:tools": "node scripts/build-toolkit.mjs"
+  },
+  "devDependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "pg": "8.23.1",
+    "playwright": "^1.63.0",
+    "esbuild": "0.25.12"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "fast-xml-parser": "^5.11.1"
+  }
+}

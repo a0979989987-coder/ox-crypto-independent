@@ -1,0 +1,409 @@
+/* ===== ox-liquid-glass-design-system ===== */
+/* =========================================================
+   OX v3.6 — Liquid Glass Material System
+   Apple Liquid Glass inspired + OX Black Gold financial UI.
+   UI only: no market / OX Engine / scanner / alert logic here.
+   ========================================================= */
+:root{
+  --glass-bg:rgba(7,17,29,.40);
+  --glass-bg-strong:rgba(6,15,26,.53);
+  --glass-bg-soft:rgba(16,31,49,.30);
+  --glass-border:rgba(196,225,255,.17);
+  --glass-border-cool:rgba(112,175,235,.16);
+  --glass-border-gold:rgba(245,191,85,.22);
+  --glass-highlight:rgba(255,255,255,.16);
+  --glass-highlight-soft:rgba(210,235,255,.085);
+  --glass-shadow:0 18px 50px rgba(0,0,0,.31),0 4px 14px rgba(0,0,0,.15),inset 0 1px 0 rgba(255,255,255,.13),inset 1px 0 0 rgba(143,194,239,.045),inset -1px 0 0 rgba(30,55,83,.10),inset 0 -1px 0 rgba(0,0,0,.30);
+  --glass-shadow-soft:0 10px 28px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,255,255,.10),inset 0 -1px 0 rgba(0,0,0,.20);
+  --glass-blur:18px;
+  --glass-blur-strong:22px;
+  --glass-saturation:148%;
+  --glass-radius:18px;
+  --glass-radius-sm:12px;
+  --glass-ease:cubic-bezier(.2,.74,.2,1);
+  --lg-x:18%;
+  --lg-y:4%;
+
+  --ox-gold:#F5BF55;
+  --ox-blue:#5CA5FF;
+  --ox-green:#36D399;
+  --ox-red:#EF617A;
+  --ox-purple:#A77BFF;
+}
+
+/* ---------- Environment behind the glass ---------- */
+html{background:#040910 !important;}
+body{
+  background:
+    radial-gradient(900px 560px at 12% -7%,rgba(83,142,210,.17),transparent 66%),
+    radial-gradient(760px 520px at 86% 11%,rgba(245,191,85,.095),transparent 69%),
+    radial-gradient(620px 460px at 62% 50%,rgba(42,94,153,.075),transparent 72%),
+    linear-gradient(180deg,#08111D 0%,#050B13 48%,#04080E 100%) !important;
+  background-attachment:fixed !important;
+}
+main.wrap{position:relative;isolation:isolate;}
+main.wrap::before{
+  content:"";position:absolute;z-index:-2;pointer-events:none;
+  inset:-70px -8vw -180px;
+  background:
+    radial-gradient(circle at 12% 16%,rgba(86,153,228,.14),transparent 18%),
+    radial-gradient(circle at 79% 21%,rgba(245,191,85,.075),transparent 17%),
+    radial-gradient(ellipse at 89% 10%,transparent 0 46.4%,rgba(126,179,235,.050) 46.65%,transparent 46.95%),
+    radial-gradient(ellipse at 85% 13%,transparent 0 57.1%,rgba(245,191,85,.040) 57.32%,transparent 57.58%),
+    radial-gradient(circle at 37% 62%,rgba(31,81,139,.065),transparent 24%);
+  filter:saturate(115%);
+}
+main.wrap::after{
+  content:"";position:absolute;z-index:-1;pointer-events:none;inset:-50px -5vw -100px;opacity:.18;
+  background:
+    linear-gradient(116deg,transparent 0 33%,rgba(135,182,230,.050) 33.08% 33.15%,transparent 33.22% 100%),
+    linear-gradient(64deg,transparent 0 71%,rgba(245,191,85,.033) 71.08% 71.14%,transparent 71.2% 100%);
+  mask-image:linear-gradient(180deg,#000,transparent 86%);
+}
+
+/* ---------- Shared Liquid Glass materials ---------- */
+.glass,.glass-strong,.glass-light,.glass-button,.glass-pill,.glass-nav,.glass-orb{box-sizing:border-box;}
+.glass,.glass-strong{
+  position:relative;isolation:isolate;
+  background:
+    radial-gradient(120% 95% at 8% -8%,rgba(255,255,255,.105),transparent 35%),
+    radial-gradient(85% 100% at 105% 100%,rgba(58,111,173,.060),transparent 56%),
+    linear-gradient(135deg,rgba(255,255,255,.055),rgba(104,153,211,.018) 44%,rgba(2,8,15,.16) 100%),
+    var(--glass-bg) !important;
+  border:1px solid rgba(174,212,249,.14) !important;
+  box-shadow:var(--glass-shadow) !important;
+  backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(1.055) !important;
+  -webkit-backdrop-filter:blur(var(--glass-blur)) saturate(var(--glass-saturation)) brightness(1.055) !important;
+}
+.glass-strong{
+  background:
+    radial-gradient(115% 90% at 12% -5%,rgba(255,255,255,.125),transparent 36%),
+    radial-gradient(95% 110% at 100% 100%,rgba(65,125,192,.075),transparent 58%),
+    linear-gradient(138deg,rgba(255,255,255,.064),rgba(81,132,190,.020) 48%,rgba(2,8,15,.21) 100%),
+    var(--glass-bg-strong) !important;
+  border-color:rgba(196,225,255,.175) !important;
+  backdrop-filter:blur(var(--glass-blur-strong)) saturate(155%) brightness(1.06) !important;
+  -webkit-backdrop-filter:blur(var(--glass-blur-strong)) saturate(155%) brightness(1.06) !important;
+}
+.glass-light{
+  position:relative;isolation:isolate;
+  background:
+    radial-gradient(110% 100% at 7% 0%,rgba(255,255,255,.085),transparent 38%),
+    linear-gradient(145deg,rgba(255,255,255,.038),rgba(80,134,192,.014) 52%,rgba(2,8,15,.10)),
+    rgba(11,25,41,.32) !important;
+  border:1px solid rgba(172,210,247,.12) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.095),inset 0 -1px 0 rgba(0,0,0,.20),0 8px 22px rgba(0,0,0,.12) !important;
+  /* no backdrop-filter: avoids nested glass blur */
+}
+
+/* Gradient optical edge for reusable top-level glass cards. */
+.glass:not(.v34-home-btc-primary)::before{
+  content:"";position:absolute;inset:0;z-index:5;pointer-events:none;border-radius:inherit;padding:1px;
+  background:linear-gradient(135deg,rgba(255,255,255,.30),rgba(128,186,239,.12) 33%,rgba(59,91,126,.035) 64%,rgba(0,0,0,.24));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+  opacity:.62;
+}
+.glass:not(.v34-home-btc-primary)::after{
+  content:"";position:absolute;z-index:4;pointer-events:none;border-radius:inherit;
+  inset:1px;
+  background:
+    radial-gradient(80% 46% at 12% -4%,rgba(255,255,255,.13),transparent 56%),
+    linear-gradient(180deg,rgba(255,255,255,.025),transparent 22%,transparent 76%,rgba(0,0,0,.08));
+  opacity:.68;
+}
+
+/* Dedicated liquid optics for Hero / BTC, because they already use decorative pseudo layers. */
+.liquid-interactive{--lg-x:18%;--lg-y:4%;}
+.liquid-optics{
+  position:absolute !important;inset:0 !important;z-index:1 !important;pointer-events:none !important;border-radius:inherit !important;overflow:hidden !important;
+  background:
+    radial-gradient(circle at var(--lg-x) var(--lg-y),rgba(255,255,255,.125),transparent 25%),
+    radial-gradient(55% 36% at 22% -8%,rgba(180,220,255,.09),transparent 60%),
+    linear-gradient(118deg,rgba(255,255,255,.028),transparent 33%,rgba(76,137,202,.022) 62%,transparent 82%);
+  mix-blend-mode:screen;opacity:.86;
+  transition:opacity .22s ease,filter .22s ease;
+}
+.liquid-optics::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(136deg,rgba(255,255,255,.34),rgba(130,188,241,.13) 33%,rgba(46,77,110,.025) 66%,rgba(0,0,0,.28));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.liquid-optics::after{
+  content:"";position:absolute;left:8%;right:36%;top:0;height:38%;border-radius:50%;
+  background:radial-gradient(ellipse at top,rgba(255,255,255,.11),transparent 72%);filter:blur(8px);opacity:.65;
+}
+.liquid-optics-gold{
+  background:
+    radial-gradient(circle at var(--lg-x) var(--lg-y),rgba(255,255,255,.12),transparent 23%),
+    radial-gradient(58% 72% at 96% 8%,rgba(245,191,85,.12),transparent 66%),
+    linear-gradient(118deg,rgba(255,255,255,.022),transparent 36%,rgba(245,191,85,.018) 70%,transparent 88%);
+}
+.liquid-interactive:hover .liquid-optics{opacity:1;filter:brightness(1.04);}
+.v33-home-hero>.v33-home-hero-top,.v33-home-hero>.v33-hero-stats,
+.v34-home-btc-primary> :not(.liquid-optics){position:relative;z-index:2;}
+.v33-home-hero::after,.v34-home-btc-primary::before{z-index:0 !important;}
+
+/* ---------- Existing top-level surfaces mapped to the material system ---------- */
+.panel,.metric-card,.benchmark-card,.strength-card,.media-card,.settings-card,.detail-panel,.extra-section,.market-unavailable-card,.ox-control-panel{
+  background:
+    radial-gradient(120% 90% at 8% -5%,rgba(255,255,255,.085),transparent 35%),
+    linear-gradient(145deg,rgba(255,255,255,.043),rgba(72,121,177,.018) 48%,rgba(3,9,16,.15)),
+    rgba(7,17,29,.43) !important;
+  border-color:rgba(177,215,250,.14) !important;
+  box-shadow:var(--glass-shadow-soft) !important;
+  backdrop-filter:blur(15px) saturate(142%) brightness(1.045) !important;
+  -webkit-backdrop-filter:blur(15px) saturate(142%) brightness(1.045) !important;
+}
+/* Keep chart rendering itself optically clean and non-glass. */
+.chart-container,.v34-home-main-chart{
+  backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  background:linear-gradient(180deg,rgba(4,11,19,.96),rgba(4,9,16,.99)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.015),inset 0 0 34px rgba(20,58,98,.055) !important;
+}
+.panel-head,.chart-controls,.chart-benchmark-bar,.scanner-tabs{
+  background:linear-gradient(180deg,rgba(255,255,255,.024),rgba(5,13,23,.08)) !important;
+  border-color:rgba(152,192,232,.11) !important;
+}
+
+/* ---------- Header / OX Live ---------- */
+header{
+  background:linear-gradient(180deg,rgba(10,20,33,.57),rgba(5,12,21,.43)) !important;
+  border-bottom:1px solid rgba(189,220,251,.11) !important;
+  box-shadow:0 9px 28px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.04) !important;
+  backdrop-filter:blur(18px) saturate(150%) brightness(1.04) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(150%) brightness(1.04) !important;
+}
+.ox-live-strip{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(72% 140% at 0% -10%,rgba(245,191,85,.09),transparent 58%),
+    linear-gradient(90deg,rgba(255,255,255,.045),rgba(70,126,188,.025) 48%,rgba(4,11,19,.12)),
+    rgba(8,18,31,.40) !important;
+  border:1px solid rgba(245,191,85,.19) !important;
+  box-shadow:0 9px 26px rgba(0,0,0,.16),inset 0 1px 0 rgba(255,255,255,.105),inset 0 -1px 0 rgba(0,0,0,.21) !important;
+  backdrop-filter:blur(13px) saturate(148%) !important;
+  -webkit-backdrop-filter:blur(13px) saturate(148%) !important;
+}
+.ox-live-strip::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(105deg,rgba(255,255,255,.06),transparent 19%,transparent 81%,rgba(92,165,255,.025));}
+
+/* ---------- Buttons and pills: optical material, no nested blur ---------- */
+.glass-button,.btn-act,.btn-tf,.alert-btn,.theme-choice,.direction-toggle-btn,.v34-home-mini-tf,.v34-home-open-radar,.ox-control-refresh,.ox-menu-btn{
+  position:relative;
+  background:
+    linear-gradient(180deg,rgba(255,255,255,.060),rgba(255,255,255,.015)),
+    rgba(10,23,39,.48) !important;
+  border:1px solid rgba(177,215,249,.15) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.105),inset 0 -1px 0 rgba(0,0,0,.22),0 5px 14px rgba(0,0,0,.12) !important;
+  transition:background .20s ease,border-color .20s ease,box-shadow .20s ease,color .20s ease,filter .20s ease !important;
+}
+.glass-button:hover,.btn-act:hover,.btn-tf:hover,.alert-btn:hover,.theme-choice:hover,.v34-home-mini-tf:hover,.v34-home-open-radar:hover,.ox-control-refresh:hover,.ox-menu-btn:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.082),rgba(255,255,255,.022)),rgba(13,28,47,.56) !important;
+  border-color:rgba(209,232,255,.24) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.21),0 8px 20px rgba(0,0,0,.15) !important;
+  filter:brightness(1.04);
+}
+.btn-tf.active,.theme-choice.active,.v34-home-mini-tf.active,.v34-home-open-radar{
+  background:linear-gradient(180deg,rgba(245,191,85,.14),rgba(245,191,85,.045)),rgba(19,25,32,.45) !important;
+  border-color:rgba(245,191,85,.40) !important;color:var(--ox-gold) !important;
+  box-shadow:inset 0 1px 0 rgba(255,235,194,.16),inset 0 -1px 0 rgba(88,58,12,.22),0 7px 18px rgba(245,191,85,.055) !important;
+}
+.glass-pill,.v33-market-state,.v33-section-tag,.v33-market-badge,.v33-row-pill,.badge,.score-pill{
+  background:linear-gradient(180deg,rgba(255,255,255,.055),rgba(255,255,255,.012)),rgba(11,24,39,.44) !important;
+  border:1px solid rgba(174,211,248,.14) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),inset 0 -1px 0 rgba(0,0,0,.18) !important;
+}
+
+/* ---------- Home: liquid depth and adaptive tints ---------- */
+.v33-home-hero{
+  overflow:hidden !important;
+  background:
+    radial-gradient(74% 120% at 96% -8%,rgba(245,191,85,.085),transparent 58%),
+    radial-gradient(86% 120% at -5% 105%,rgba(92,165,255,.11),transparent 62%),
+    linear-gradient(140deg,rgba(255,255,255,.055),rgba(55,101,156,.022) 48%,rgba(2,8,15,.16)),
+    rgba(7,17,29,.48) !important;
+  box-shadow:0 22px 56px rgba(0,0,0,.30),inset 0 1px 0 rgba(255,255,255,.14),inset 0 -1px 0 rgba(0,0,0,.26) !important;
+}
+.v33-home-hero::after{opacity:.52;filter:blur(.15px);}
+.v33-hero-stat{
+  transition:background .20s ease,border-color .20s ease,box-shadow .20s ease,filter .20s ease !important;
+}
+@media(hover:hover){
+  .v33-hero-stat:hover{background:linear-gradient(145deg,rgba(255,255,255,.060),rgba(83,139,201,.020)),rgba(11,25,41,.36) !important;border-color:rgba(198,225,252,.19) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 10px 26px rgba(0,0,0,.14) !important;}
+}
+.v34-home-btc-primary{
+  overflow:hidden !important;
+  border-color:rgba(245,191,85,.25) !important;
+  background:
+    radial-gradient(62% 98% at 100% 6%,rgba(245,191,85,.115),transparent 61%),
+    radial-gradient(85% 120% at 2% 100%,rgba(53,111,176,.08),transparent 66%),
+    linear-gradient(140deg,rgba(255,255,255,.060),rgba(85,131,181,.018) 46%,rgba(2,8,15,.20)),
+    rgba(7,16,28,.49) !important;
+  box-shadow:0 24px 64px rgba(0,0,0,.33),0 0 0 1px rgba(245,191,85,.035),inset 0 1px 0 rgba(255,237,202,.15),inset 0 -1px 0 rgba(0,0,0,.29) !important;
+}
+.v34-home-btc-primary::before{
+  color:rgba(245,191,85,.070) !important;
+  text-shadow:0 0 35px rgba(245,191,85,.12),0 0 80px rgba(245,191,85,.055) !important;
+  transform:rotate(-4deg);
+}
+.v34-home-btc-head,.v34-home-main-toolbar,.v34-home-btc-footer{background:transparent !important;}
+.v34-home-main-toolbar{border-color:rgba(173,211,249,.095) !important;}
+.v34-home-side-card{
+  position:relative;overflow:hidden;
+  background:
+    radial-gradient(100% 95% at 0% 0%,rgba(255,255,255,.075),transparent 40%),
+    linear-gradient(145deg,rgba(255,255,255,.042),rgba(65,116,177,.014) 50%,rgba(3,9,16,.12)),
+    rgba(8,19,32,.38) !important;
+  border-color:rgba(175,213,249,.13) !important;
+  box-shadow:0 11px 28px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,255,255,.095),inset 0 -1px 0 rgba(0,0,0,.18) !important;
+  backdrop-filter:blur(11px) saturate(138%) !important;
+  -webkit-backdrop-filter:blur(11px) saturate(138%) !important;
+}
+.liquid-tint-blue{box-shadow:0 11px 28px rgba(0,0,0,.17),inset 0 1px 0 rgba(199,226,255,.12),inset 0 -1px 0 rgba(0,0,0,.18),0 0 26px rgba(92,165,255,.026) !important;}
+.liquid-tint-gold{box-shadow:0 11px 28px rgba(0,0,0,.17),inset 0 1px 0 rgba(255,235,192,.105),inset 0 -1px 0 rgba(0,0,0,.18),0 0 25px rgba(245,191,85,.025) !important;}
+.liquid-tint-cyan{box-shadow:0 11px 28px rgba(0,0,0,.17),inset 0 1px 0 rgba(195,255,239,.095),inset 0 -1px 0 rgba(0,0,0,.18),0 0 25px rgba(54,211,153,.024) !important;}
+.v33-card.glass{overflow:hidden;}
+.v33-event-row,.v33-watch-row,.v33-rank-row{transition:background .18s ease,box-shadow .18s ease !important;}
+.v33-event-row:hover,.v33-watch-row:hover,.v33-rank-row:hover{background:linear-gradient(90deg,rgba(255,255,255,.035),rgba(92,165,255,.016),transparent) !important;box-shadow:inset 2px 0 0 rgba(245,191,85,.16);}
+
+/* ---------- Professional trading workspace: glass frame, solid chart ---------- */
+.workspace>.panel,.detail-panel,.extra-section .panel{
+  border-color:rgba(174,213,250,.14) !important;
+  box-shadow:0 18px 46px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.09),inset 0 -1px 0 rgba(0,0,0,.20) !important;
+}
+.coin-card{
+  background:linear-gradient(145deg,rgba(255,255,255,.033),rgba(58,105,159,.010)),rgba(8,19,32,.30) !important;
+  border-color:rgba(163,203,242,.10) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.055),inset 0 -1px 0 rgba(0,0,0,.13) !important;
+  backdrop-filter:none !important;
+}
+.coin-card:hover{background:linear-gradient(145deg,rgba(255,255,255,.052),rgba(76,129,188,.018)),rgba(9,22,36,.36) !important;border-color:rgba(194,224,253,.17) !important;}
+.coin-card.selected{background:linear-gradient(145deg,rgba(245,191,85,.085),rgba(255,255,255,.025)),rgba(9,21,34,.38) !important;border-color:rgba(245,191,85,.29) !important;}
+
+/* ---------- Floating Liquid Glass Navigation ---------- */
+.app-dock.glass-nav{
+  position:fixed !important;overflow:visible !important;
+  background:
+    radial-gradient(90% 130% at 16% -20%,rgba(255,255,255,.125),transparent 48%),
+    radial-gradient(80% 120% at 88% 120%,rgba(67,124,187,.080),transparent 58%),
+    linear-gradient(180deg,rgba(255,255,255,.057),rgba(255,255,255,.016)),
+    rgba(6,15,26,.43) !important;
+  border:1px solid rgba(196,225,255,.17) !important;
+  box-shadow:0 18px 45px rgba(0,0,0,.36),0 4px 15px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.16),inset 0 -1px 0 rgba(0,0,0,.28) !important;
+  backdrop-filter:blur(22px) saturate(165%) brightness(1.065) !important;
+  -webkit-backdrop-filter:blur(22px) saturate(165%) brightness(1.065) !important;
+}
+.app-dock.glass-nav::before{
+  content:"";position:absolute;inset:0;border-radius:inherit;padding:1px;pointer-events:none;z-index:4;
+  background:linear-gradient(135deg,rgba(255,255,255,.34),rgba(138,196,248,.13) 34%,rgba(46,74,104,.035) 70%,rgba(0,0,0,.27));
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;
+}
+.app-dock.glass-nav::after{
+  content:"";position:absolute;left:7%;right:32%;top:1px;height:39%;border-radius:var(--ox-radius-pill);pointer-events:none;z-index:3;
+  background:radial-gradient(ellipse at top,rgba(255,255,255,.12),transparent 74%);filter:blur(7px);opacity:.75;
+}
+.dock-btn{position:relative;isolation:isolate;}
+.dock-btn>*{position:relative;z-index:2;}
+.dock-btn.active:not(.dock-radar)::before{
+  content:"";position:absolute;z-index:1;inset:5px 12%;border-radius:var(--ox-radius-pill);
+  background:linear-gradient(180deg,rgba(255,255,255,.080),rgba(255,255,255,.020)),rgba(62,108,160,.070);
+  border:1px solid rgba(195,223,250,.095);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.10),0 7px 17px rgba(0,0,0,.10);
+}
+
+/* ---------- Liquid Glass Radar Orb ---------- */
+.dock-radar-orb.glass-orb{
+  overflow:hidden !important;
+  background:
+    radial-gradient(circle at 31% 18%,rgba(255,255,255,.18),transparent 23%),
+    radial-gradient(circle at 70% 78%,rgba(245,191,85,.085),transparent 43%),
+    linear-gradient(145deg,rgba(255,255,255,.075),rgba(75,128,185,.020) 45%,rgba(2,8,15,.22)),
+    rgba(7,16,28,.52) !important;
+  border:1px solid rgba(245,191,85,.42) !important;
+  box-shadow:0 11px 25px rgba(0,0,0,.31),0 0 22px rgba(245,191,85,.13),inset 0 1px 0 rgba(255,239,204,.19),inset 0 -1px 0 rgba(0,0,0,.28) !important;
+  backdrop-filter:blur(18px) saturate(160%) brightness(1.05) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(160%) brightness(1.05) !important;
+}
+.dock-radar-orb.glass-orb::before{
+  content:"" !important;position:absolute !important;inset:0 !important;border-radius:50% !important;padding:1px !important;pointer-events:none !important;
+  background:linear-gradient(140deg,rgba(255,245,220,.48),rgba(245,191,85,.29) 33%,rgba(125,86,22,.10) 68%,rgba(0,0,0,.31)) !important;
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0) !important;
+  -webkit-mask-composite:xor !important;mask-composite:exclude !important;
+}
+.dock-radar-orb.glass-orb::after{
+  display:block !important;content:"" !important;position:absolute !important;left:18% !important;top:9% !important;width:48% !important;height:28% !important;border-radius:50% !important;
+  background:radial-gradient(ellipse,rgba(255,255,255,.19),transparent 72%) !important;filter:blur(2px) !important;opacity:.88 !important;pointer-events:none !important;
+}
+.dock-radar-logo{
+  display:block !important;position:relative !important;z-index:3 !important;object-fit:contain !important;
+  filter:brightness(0) saturate(100%) invert(82%) sepia(58%) saturate(1010%) hue-rotate(346deg) brightness(103%) contrast(95%) drop-shadow(0 0 6px rgba(245,191,85,.16)) !important;
+}
+@keyframes oxLiquidOrbBreath{
+  0%,100%{box-shadow:0 11px 25px rgba(0,0,0,.31),0 0 17px rgba(245,191,85,.10),inset 0 1px 0 rgba(255,239,204,.18),inset 0 -1px 0 rgba(0,0,0,.28)}
+  50%{box-shadow:0 11px 25px rgba(0,0,0,.31),0 0 25px rgba(245,191,85,.18),inset 0 1px 0 rgba(255,239,204,.20),inset 0 -1px 0 rgba(0,0,0,.28)}
+}
+.dock-radar.active .dock-radar-orb.glass-orb{animation:oxLiquidOrbBreath 3.8s ease-in-out infinite !important;}
+
+/* ---------- Light theme: same material, brighter adaptive tint ---------- */
+body.theme-light{
+  --glass-bg:rgba(247,251,255,.53);
+  --glass-bg-strong:rgba(249,252,255,.64);
+  --glass-border:rgba(87,122,159,.18);
+  --glass-highlight:rgba(255,255,255,.68);
+  background:
+    radial-gradient(900px 560px at 10% -5%,rgba(92,165,255,.15),transparent 66%),
+    radial-gradient(720px 460px at 88% 9%,rgba(245,191,85,.11),transparent 68%),
+    linear-gradient(180deg,#F7FAFE 0%,#EEF3F8 100%) !important;
+}
+body.theme-light main.wrap::before{background:radial-gradient(circle at 13% 14%,rgba(92,165,255,.11),transparent 18%),radial-gradient(circle at 79% 20%,rgba(245,191,85,.10),transparent 17%),radial-gradient(ellipse at 88% 11%,transparent 0 46.4%,rgba(75,127,179,.040) 46.7%,transparent 47%),radial-gradient(circle at 36% 60%,rgba(79,136,196,.06),transparent 24%);}
+body.theme-light .glass,body.theme-light .glass-strong,
+body.theme-light .panel,body.theme-light .metric-card,body.theme-light .benchmark-card,body.theme-light .strength-card,body.theme-light .media-card,body.theme-light .settings-card,body.theme-light .detail-panel,body.theme-light .extra-section,body.theme-light .market-unavailable-card,body.theme-light .ox-control-panel{
+  background:
+    radial-gradient(120% 90% at 8% -5%,rgba(255,255,255,.82),transparent 34%),
+    linear-gradient(145deg,rgba(255,255,255,.60),rgba(185,215,243,.10) 46%,rgba(235,242,249,.20)),
+    rgba(247,251,255,.53) !important;
+  border-color:rgba(87,122,159,.16) !important;
+  box-shadow:0 16px 42px rgba(70,90,116,.10),inset 0 1px 0 rgba(255,255,255,.94),inset 0 -1px 0 rgba(100,122,147,.11) !important;
+  backdrop-filter:blur(18px) saturate(135%) brightness(1.02) !important;
+  -webkit-backdrop-filter:blur(18px) saturate(135%) brightness(1.02) !important;
+}
+body.theme-light .glass-light{background:linear-gradient(145deg,rgba(255,255,255,.60),rgba(190,218,244,.09)),rgba(247,251,255,.42) !important;border-color:rgba(87,122,159,.13) !important;box-shadow:inset 0 1px 0 rgba(255,255,255,.88),inset 0 -1px 0 rgba(108,130,153,.08),0 8px 20px rgba(78,96,120,.055) !important;}
+body.theme-light .v33-home-hero{background:radial-gradient(80% 120% at 95% -5%,rgba(245,191,85,.11),transparent 60%),radial-gradient(90% 120% at -5% 110%,rgba(92,165,255,.13),transparent 63%),linear-gradient(140deg,rgba(255,255,255,.63),rgba(203,224,245,.13) 50%,rgba(244,248,252,.25)),rgba(247,251,255,.55) !important;}
+body.theme-light .v34-home-btc-primary{background:radial-gradient(60% 95% at 100% 5%,rgba(245,191,85,.16),transparent 63%),radial-gradient(80% 120% at 0% 100%,rgba(92,165,255,.09),transparent 66%),linear-gradient(140deg,rgba(255,255,255,.68),rgba(211,227,244,.10) 48%,rgba(246,249,252,.23)),rgba(249,252,255,.58) !important;}
+body.theme-light .v34-home-main-chart,body.theme-light .chart-container{background:linear-gradient(180deg,#F7FAFD,#F2F6FA) !important;}
+body.theme-light .v34-home-side-card{background:linear-gradient(145deg,rgba(255,255,255,.66),rgba(201,223,244,.08)),rgba(247,251,255,.48) !important;border-color:rgba(87,122,159,.14) !important;box-shadow:0 10px 26px rgba(65,85,109,.075),inset 0 1px 0 rgba(255,255,255,.88),inset 0 -1px 0 rgba(99,119,142,.08) !important;}
+body.theme-light .app-dock.glass-nav{background:radial-gradient(90% 130% at 16% -20%,rgba(255,255,255,.96),transparent 47%),linear-gradient(180deg,rgba(255,255,255,.70),rgba(235,243,250,.36)),rgba(245,249,253,.60) !important;border-color:rgba(96,126,158,.20) !important;box-shadow:0 16px 38px rgba(58,75,97,.14),inset 0 1px 0 rgba(255,255,255,.98),inset 0 -1px 0 rgba(101,122,144,.12) !important;backdrop-filter:blur(22px) saturate(140%) brightness(1.02) !important;-webkit-backdrop-filter:blur(22px) saturate(140%) brightness(1.02) !important;}
+body.theme-light .dock-radar-orb.glass-orb{background:radial-gradient(circle at 30% 18%,rgba(255,255,255,.98),transparent 24%),radial-gradient(circle at 70% 78%,rgba(245,191,85,.11),transparent 43%),linear-gradient(145deg,rgba(255,255,255,.70),rgba(224,234,244,.25)),rgba(246,250,253,.68) !important;border-color:rgba(181,128,38,.42) !important;box-shadow:0 10px 24px rgba(63,79,99,.15),0 0 18px rgba(181,128,38,.10),inset 0 1px 0 #fff,inset 0 -1px 0 rgba(96,116,138,.10) !important;}
+body.theme-light .coin-card{background:linear-gradient(145deg,rgba(255,255,255,.66),rgba(219,231,243,.08)),rgba(250,252,254,.56) !important;border-color:rgba(88,120,153,.12) !important;}
+body.theme-light .glass-button,body.theme-light .btn-act,body.theme-light .btn-tf,body.theme-light .alert-btn,body.theme-light .theme-choice,body.theme-light .v34-home-mini-tf,body.theme-light .v34-home-open-radar,body.theme-light .ox-control-refresh,body.theme-light .ox-menu-btn{background:linear-gradient(180deg,rgba(255,255,255,.80),rgba(232,240,248,.34)),rgba(245,249,253,.58) !important;border-color:rgba(83,116,150,.17) !important;box-shadow:inset 0 1px 0 #fff,inset 0 -1px 0 rgba(83,107,132,.08),0 5px 13px rgba(62,80,104,.06) !important;}
+
+/* ---------- Responsive / performance ---------- */
+@media(max-width:720px){
+  :root{--glass-blur:10px;--glass-blur-strong:12px;}
+  .glass,.glass-strong,.panel,.strength-card,.media-card,.settings-card,.detail-panel,.extra-section,.market-unavailable-card,.ox-control-panel{
+    backdrop-filter:blur(10px) saturate(132%) brightness(1.035) !important;
+    -webkit-backdrop-filter:blur(10px) saturate(132%) brightness(1.035) !important;
+  }
+  .v33-card.glass,.v34-home-side-card{
+    backdrop-filter:none !important;-webkit-backdrop-filter:none !important;
+  }
+  .v33-home-hero,.v34-home-btc-primary,.app-dock.glass-nav,.dock-radar-orb.glass-orb{
+    backdrop-filter:blur(11px) saturate(140%) brightness(1.04) !important;
+    -webkit-backdrop-filter:blur(11px) saturate(140%) brightness(1.04) !important;
+  }
+  main.wrap::before{inset:-30px -40px -90px;opacity:.82;}
+  .liquid-optics{opacity:.70;}
+  .app-dock.glass-nav::after{opacity:.55;}
+}
+@media(max-width:430px){
+  .v33-home-hero,.v34-home-btc-primary{border-radius:var(--ox-radius-lg) !important;}
+  .v33-hero-stat{border-radius:var(--ox-radius-md) !important;}
+  .app-dock.glass-nav{border-radius:var(--ox-radius-xl) !important;}
+}
+@media(prefers-reduced-motion:reduce){
+  .dock-radar.active .dock-radar-orb.glass-orb{animation:none !important;}
+  .liquid-optics,.glass-button,.btn-act,.btn-tf,.v33-hero-stat{transition:none !important;}
+}
+

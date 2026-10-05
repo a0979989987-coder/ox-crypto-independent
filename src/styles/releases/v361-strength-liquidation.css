@@ -1,0 +1,159 @@
+/* ===== OX v3.6.1 refinement: balanced BTC Hero + stronger scroll-light + Strength 2.0 / Native Liq ===== */
+:root{
+  --btc-hero-h:360px;
+  --btc-chart-h:166px;
+}
+
+/* BTC market block: tighter, more product-like proportions */
+.v34-home-market-layout{
+  
+  
+  
+}
+.btc-premium-hero{
+  
+  
+  
+  display:grid!important;
+  
+  border-color:rgba(245,191,85,.22)!important;
+  background:
+    radial-gradient(58% 115% at 89% 4%,rgba(245,191,85,.115),transparent 62%),
+    radial-gradient(62% 110% at 4% 100%,rgba(63,125,190,.075),transparent 70%),
+    linear-gradient(142deg,rgba(255,255,255,.052),rgba(255,255,255,.014) 46%,rgba(5,12,21,.31)),
+    rgba(7,16,27,.55)!important;
+}
+.btc-premium-top{
+  min-height:82px!important;
+  padding:14px 17px 5px!important;
+  align-items:flex-start!important;
+}
+.btc-premium-copy{max-width:62%!important;}
+.btc-premium-name{font-size:11px!important;}
+.btc-premium-pair{font-size:8px!important;opacity:.84;}
+.btc-premium-price strong{font-size:30px!important;letter-spacing:-.035em;}
+.btc-premium-price span{font-size:10px!important;}
+.btc-premium-actions{}
+.btc-premium-state{font-size:7px!important;padding:4px 7px!important;}
+.btc-premium-radar-btn{padding:6px 9px!important;font-size:7px!important;}
+.btc-premium-period-row{min-height:32px!important;padding:0 13px 4px!important;}
+.btc-premium-toolbar{min-height:28px!important;padding:3px 4px!important;gap:4px!important;background:transparent!important;border:0!important;}
+.btc-premium-toolbar .v34-home-mini-tf{height:22px!important;min-width:34px!important;border-radius:var(--ox-radius-pill)!important;font-size:7px!important;}
+.btc-premium-note{font-size:7px!important;opacity:.72;}
+.btc-premium-chart-wrap{min-height:0!important;height:var(--btc-chart-h)!important;margin:0 10px!important;border-radius:10px!important;overflow:hidden!important;border:1px solid rgba(115,160,210,.10)!important;background:rgba(3,10,18,.38)!important;}
+.btc-premium-chart{height:var(--btc-chart-h)!important;min-height:0!important;background:transparent!important;}
+.btc-premium-stats{padding:7px 12px 9px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;background:linear-gradient(180deg,rgba(6,14,24,.08),rgba(5,13,22,.28))!important;}
+.btc-premium-stats>div{padding:0 10px!important;}
+.btc-premium-stats small{font-size:6.5px!important;}
+.btc-premium-stats strong{font-size:9px!important;}
+
+/* Replace the e-commerce-like gold coin with a restrained optical BTC emblem. */
+.btc-premium-coin{display:none!important;}
+.btc-premium-visual-refined{
+  right:5%!important;
+  top:6px!important;
+  width:29%!important;
+  min-width:150px!important;
+  max-width:225px!important;
+  opacity:.82!important;
+  transform:translate3d(0,var(--global-glass-shift,0px),0)!important;
+  transition:transform var(--motion-slow,340ms) var(--ease-smooth,cubic-bezier(.22,1,.36,1)),opacity .24s ease!important;
+}
+.btc-premium-hero:hover .btc-premium-visual-refined{transform:translate3d(-2px,calc(var(--global-glass-shift,0px) + 1px),0)!important;}
+.btc-premium-emblem{
+  position:absolute;
+  inset:19%;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  color:rgba(249,201,97,.88);
+  background:
+    radial-gradient(circle at 32% 22%,rgba(255,246,214,.18),transparent 16%),
+    radial-gradient(circle at 52% 57%,rgba(245,191,85,.08),rgba(12,20,31,.18) 58%,rgba(5,11,18,.16) 73%);
+  border:1px solid rgba(245,191,85,.24);
+  box-shadow:
+    0 0 52px rgba(245,191,85,.115),
+    inset 0 1px 0 rgba(255,241,203,.14),
+    inset 0 -10px 28px rgba(0,0,0,.22);
+  backdrop-filter:blur(5px) saturate(120%);
+  -webkit-backdrop-filter:blur(5px) saturate(120%);
+}
+.btc-premium-emblem::before{
+  content:"";
+  position:absolute;
+  inset:-12%;
+  border-radius:50%;
+  background:conic-gradient(from 225deg,transparent 0 18%,rgba(245,191,85,.16) 24%,transparent 34% 69%,rgba(92,165,255,.07) 78%,transparent 87%);
+  -webkit-mask:radial-gradient(circle,transparent 0 69%,#000 70% 73%,transparent 74%);
+  mask:radial-gradient(circle,transparent 0 69%,#000 70% 73%,transparent 74%);
+  transform:rotate(calc(var(--global-scroll-progress,0) * 16deg));
+}
+.btc-emblem-lens{
+  position:absolute;inset:0;border-radius:50%;pointer-events:none;
+  background:
+    radial-gradient(circle at var(--global-light-x,28%) var(--global-light-y,18%),rgba(255,255,255,.19),transparent 23%),
+    linear-gradient(145deg,rgba(255,255,255,.06),transparent 42%,rgba(245,191,85,.045));
+  mix-blend-mode:screen;opacity:.72;
+}
+.btc-emblem-ring{position:absolute;border-radius:50%;border:1px solid rgba(245,191,85,.16);pointer-events:none;}
+.btc-emblem-ring-a{inset:10%;}
+.btc-emblem-ring-b{inset:22%;border-color:rgba(143,181,224,.10);}
+.btc-emblem-mark{
+  position:relative;z-index:2;
+  font:800 clamp(46px,5.2vw,76px)/1 ui-monospace,SFMono-Regular,Menlo,monospace;
+  color:rgba(247,200,90,.72);
+  text-shadow:0 0 22px rgba(245,191,85,.16);
+  transform:rotate(-7deg);
+}
+.btc-premium-orbit{border-color:rgba(245,191,85,.08)!important;}
+.btc-premium-orbit-a{inset:6% -1% 12% 8%!important;}
+.btc-premium-orbit-b{inset:22% 5% 3% 22%!important;opacity:.45!important;}
+
+/* Scroll-driven liquid reflection: stronger on major panels while still subtle. */
+.btc-premium-hero::before,
+.v33-home-hero::before,
+.strength-compare-panel::before,
+.ox-liquidation-card::before{
+  background:
+    radial-gradient(circle at var(--global-light-x,22%) var(--global-light-y,15%),rgba(255,255,255,.105),transparent 24%),
+    linear-gradient(116deg,transparent 5%,rgba(255,255,255,.018) 39%,rgba(255,241,205,.055) 48%,transparent 59%)!important;
+  transform:translate3d(0,var(--global-glass-shift,0px),0);
+  will-change:transform,opacity;
+}
+
+/* Strength 2.0 reason list */
+.strength-compare-note{display:flex!important;flex-wrap:wrap;gap:5px 8px!important;align-items:center;}
+.strength-reason-chip{display:inline-flex;align-items:center;min-height:20px;padding:3px 7px;border:1px solid rgba(112,151,197,.16);border-radius:var(--ox-radius-pill);background:rgba(85,118,154,.075);color:var(--muted);font-size:8px;line-height:1.2;}
+.strength-reason-chip strong{color:var(--ink);font-weight:800;}
+
+/* Liquidation source status */
+.ox-liq-source-badge{display:inline-flex;align-items:center;justify-content:center;height:25px;padding:0 8px;border:1px solid rgba(93,144,199,.24);border-radius:var(--ox-radius-pill);background:rgba(75,112,151,.08);color:var(--muted);font-size:7px;font-weight:900;letter-spacing:.04em;white-space:nowrap;}
+.ox-liq-source-badge[data-source="COINGLASS"]{color:var(--gold);border-color:rgba(245,191,85,.32);background:rgba(245,191,85,.08);}
+.ox-liq-source-badge[data-source="NATIVE"]{color:#7edfc0;border-color:rgba(56,201,155,.28);background:rgba(56,201,155,.08);}
+.ox-liq-source-badge[data-source="OFFLINE"]{color:var(--muted);}
+
+@media(max-width:720px){
+  :root{--btc-hero-h:350px;--btc-chart-h:150px;}
+  .v34-home-market-layout{}
+  .btc-premium-hero{}
+  .btc-premium-top{min-height:79px!important;padding:12px 12px 4px!important;}
+  .btc-premium-copy{max-width:67%!important;}
+  .btc-premium-price strong{font-size:27px!important;}
+  .btc-premium-visual-refined{width:31%!important;min-width:112px!important;max-width:145px!important;right:2%!important;top:9px!important;opacity:.68!important;}
+  .btc-emblem-mark{font-size:42px!important;}
+  .btc-premium-chart-wrap{height:var(--btc-chart-h)!important;margin:0 7px!important;}
+  .btc-premium-chart{height:var(--btc-chart-h)!important;}
+  .btc-premium-stats{grid-template-columns:repeat(2,minmax(0,1fr))!important;padding:5px 7px 8px!important;}
+  .btc-premium-stats>div{padding:4px 7px!important;}
+  .strength-reason-chip{font-size:7px;}
+  .ox-liq-source-badge{height:23px;font-size:6.5px;padding:0 7px;}
+}
+@media(max-width:430px){
+  :root{--btc-hero-h:342px;--btc-chart-h:146px;}
+  .btc-premium-actions .btc-premium-state{display:none!important;}
+  .btc-premium-copy{max-width:72%!important;}
+  .btc-premium-visual-refined{width:28%!important;min-width:98px!important;max-width:122px!important;right:1%!important;}
+}
+body.theme-light .btc-premium-emblem{background:radial-gradient(circle at 32% 22%,rgba(255,255,255,.72),transparent 18%),radial-gradient(circle,rgba(245,191,85,.13),rgba(240,246,253,.40) 63%);border-color:rgba(171,120,31,.25);box-shadow:0 12px 30px rgba(59,83,110,.10),0 0 32px rgba(245,191,85,.09),inset 0 1px 0 rgba(255,255,255,.9);}
+body.theme-light .btc-emblem-mark{color:rgba(156,103,16,.69);}
+

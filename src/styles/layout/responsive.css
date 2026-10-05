@@ -1,0 +1,520 @@
+/* ===== ox-v36-final-responsive-ux ===== */
+/* =========================================================
+   1. VIEWPORT / OVERFLOW ROOT FIX
+   ========================================================= */
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+  overflow-x: clip;
+  overscroll-behavior-x: none;
+}
+*, *::before, *::after { box-sizing: border-box; }
+
+.wrap,
+header,
+main,
+.app-view,
+.v33-home-page,
+.v33-section,
+.v34-home-market-section,
+.v34-home-market-layout,
+.btc-premium-hero,
+.btc-premium-chart-wrap,
+.v34-home-side-stack {
+  min-width: 0;
+  max-width: 100%;
+}
+
+img, svg, canvas {
+  max-width: 100%;
+}
+
+.btc-premium-chart-wrap,
+#home-btc-mini-chart {
+  width: auto;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#home-btc-mini-chart > div,
+#home-btc-mini-chart table,
+#home-btc-mini-chart canvas {
+  max-width: 100% !important;
+}
+
+/* Keep optical / glass layers inside their own card.
+   This fixes real overflow sources instead of only hiding body overflow. */
+.btc-premium-hero,
+.v33-home-hero,
+.glass,
+.glass-strong {
+  contain: paint;
+}
+
+.btc-premium-hero::before,
+.btc-premium-hero::after,
+.btc-premium-hero .liquid-optics,
+.v33-home-hero::before,
+.v33-home-hero::after {
+  max-width: 100%;
+}
+
+/* =========================================================
+   2. DESKTOP — KEEP CURRENT DESIGN, ONLY HARDEN SHRINKING
+   ========================================================= */
+#view-home .v34-home-market-layout {
+  min-width: 0 !important;
+}
+
+#view-home .btc-premium-hero,
+#view-home .v34-home-side-stack,
+#view-home .v34-home-side-card,
+#view-home .btc-premium-copy {
+  min-width: 0 !important;
+}
+
+#view-home .btc-premium-price strong {
+  max-width: 100%;
+}
+
+/* =========================================================
+   3. TABLET
+   ========================================================= */
+@media (min-width: 721px) and (max-width: 1024px) {
+  .wrap {
+    padding-inline: 18px;
+  }
+
+  #view-home .v34-home-market-layout {
+    
+    
+  }
+
+  #view-home .btc-premium-visual,
+  #view-home .btc-premium-visual-refined {
+    width: 31% !important;
+    min-width: 150px !important;
+    max-width: 205px !important;
+  }
+
+  #view-home .btc-premium-copy {
+    max-width: 63% !important;
+  }
+}
+
+/* =========================================================
+   4. MOBILE — NATIVE PHONE BTC MARKET CARD
+   ========================================================= */
+@media (max-width: 720px) {
+  html,
+  body {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+  }
+
+  body {
+    padding-inline: 0 !important;
+  }
+
+  .wrap {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    padding-left: max(10px, env(safe-area-inset-left)) !important;
+    padding-right: max(10px, env(safe-area-inset-right)) !important;
+    margin-inline: 0 !important;
+  }
+
+  header {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+
+  header .nav {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+    gap: 8px !important;
+  }
+
+  header .brand {
+    min-width: 0;
+    flex: 1 1 auto;
+    overflow: hidden;
+  }
+
+  header .brand > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  header .nav-stats {
+    flex: 0 0 auto;
+    min-width: 0;
+    gap: 5px !important;
+  }
+
+  #view-home,
+  #view-home .v33-home-page,
+  #view-home .v34-home-market-section,
+  #view-home .v34-home-market-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #view-home .v34-home-market-layout {
+    
+    
+    
+  }
+
+  /* BTC Hero becomes its own mobile composition. */
+  #view-home .btc-premium-hero {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    
+    grid-template-columns: minmax(0, 1fr) !important;
+    
+    border-radius: var(--ox-radius-lg) !important;
+    overflow: hidden !important;
+  }
+
+  #view-home .btc-premium-top {
+    position: relative !important;
+    width: 100% !important;
+    height: 94px !important;
+    min-height: 94px !important;
+    padding: 11px 11px 5px !important;
+    display: block !important;
+  }
+
+  #view-home .btc-premium-copy {
+    width: calc(100% - 104px) !important;
+    max-width: calc(100% - 104px) !important;
+    min-width: 0 !important;
+  }
+
+  #view-home .btc-premium-title-row {
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  #view-home .btc-premium-name,
+  #view-home .btc-premium-pair {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  #view-home .btc-premium-price {
+    display: flex !important;
+    align-items: baseline !important;
+    flex-wrap: nowrap !important;
+    gap: 7px !important;
+    min-width: 0 !important;
+  }
+
+  #view-home .btc-premium-price strong {
+    font-size: clamp(22px, 7.1vw, 27px) !important;
+    white-space: nowrap !important;
+    min-width: 0 !important;
+  }
+
+  #view-home .btc-premium-price span {
+    font-size: 8px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Bitcoin visual owns a predictable top-right zone. */
+  #view-home .btc-premium-visual,
+  #view-home .btc-premium-visual-refined {
+    left: auto !important;
+    right: 8px !important;
+    top: 8px !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    height: 76px !important;
+    transform: translate3d(0, var(--global-glass-shift, 0px), 0) !important;
+    pointer-events: none !important;
+  }
+
+  #view-home .btc-premium-emblem {
+    width: 62px !important;
+    height: 62px !important;
+    right: 0 !important;
+    top: 1px !important;
+  }
+
+  #view-home .btc-emblem-mark {
+    font-size: 32px !important;
+  }
+
+  #view-home .btc-visual-context {
+    left: 0 !important;
+    top: 12px !important;
+    width: 30px !important;
+    align-items: flex-end !important;
+    overflow: hidden !important;
+  }
+
+  #view-home .btc-visual-context span {
+    font-size: 5px !important;
+  }
+
+  #view-home .btc-visual-context b,
+  #view-home .btc-visual-context small,
+  #view-home .btc-visual-ledger {
+    display: none !important;
+  }
+
+  #view-home .btc-premium-orbit-a,
+  #view-home .btc-premium-orbit-b {
+    max-width: 100% !important;
+  }
+
+  /* Radar CTA cannot drift over chart or period controls. */
+  #view-home .btc-premium-actions {}
+
+  #view-home .btc-premium-actions .btc-premium-state {
+    display: none !important;
+  }
+
+  #view-home .btc-premium-radar-btn {
+    height: 23px !important;
+    min-height: 23px !important;
+    padding: 0 8px !important;
+    font-size: 6px !important;
+    white-space: nowrap !important;
+  }
+
+  /* Period controls and note use one alignment line. */
+  #view-home .btc-premium-period-row {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding: 2px 8px 4px !important;
+    gap: 5px !important;
+  }
+
+  #view-home .btc-premium-toolbar {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    flex: 0 0 auto !important;
+  }
+
+  #view-home .btc-premium-toolbar .v34-home-mini-tf {
+    min-width: 38px !important;
+    padding-inline: 7px !important;
+  }
+
+  #view-home .btc-premium-note {
+    min-width: 0 !important;
+    flex: 1 1 auto !important;
+    text-align: right !important;
+    overflow: hidden !important;
+    text-overflow: ellipsis !important;
+    white-space: nowrap !important;
+  }
+
+  /* Chart and stats share the exact same horizontal content line. */
+  #view-home .btc-premium-chart-wrap {
+    width: calc(100% - 16px) !important;
+    max-width: calc(100% - 16px) !important;
+    min-width: 0 !important;
+    margin: 0 8px !important;
+    justify-self: stretch !important;
+    overflow: hidden !important;
+  }
+
+  #view-home .btc-premium-chart {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+  }
+
+  #view-home .btc-premium-stats {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 6px 8px 8px !important;
+    gap: 0 !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+
+  #view-home .btc-premium-stats > div {
+    min-width: 0 !important;
+    padding: 5px 7px !important;
+  }
+
+  #view-home .btc-premium-stats strong {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  #view-home .v34-home-side-stack {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    
+  }
+
+  /* Bottom navigation:
+     physical viewport edges instead of 100vw + translateX. */
+  .app-dock {
+    left: max(10px, env(safe-area-inset-left)) !important;
+    right: max(10px, env(safe-area-inset-right)) !important;
+    width: auto !important;
+    max-width: none !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+
+  .app-dock::before,
+  .app-dock::after {
+    max-width: 100% !important;
+  }
+
+  .app-dock > .dock-btn {
+    min-width: 0 !important;
+  }
+
+  /* Right drawer remains inside the layout viewport even while translated. */
+  .ox-control-overlay {
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow: hidden !important;
+  }
+
+  .ox-control-panel {
+    width: min(86%, 370px) !important;
+    max-width: calc(100% - 12px) !important;
+    min-width: 0 !important;
+  }
+
+  /* Safe compositor-only mobile motion. */
+  .btc-premium-hero,
+  .v33-home-hero,
+  .app-dock,
+  .dock-btn,
+  .v34-home-mini-tf {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+}
+
+/* =========================================================
+   5. TARGET PHONE WIDTHS
+   375 / 390 / 414 / 430
+   ========================================================= */
+@media (max-width: 430px) {
+  #view-home .btc-premium-copy {
+    width: calc(100% - 96px) !important;
+    max-width: calc(100% - 96px) !important;
+  }
+
+  #view-home .btc-premium-visual,
+  #view-home .btc-premium-visual-refined {
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
+  }
+
+  #view-home .btc-premium-emblem {
+    width: 58px !important;
+    height: 58px !important;
+  }
+
+  #view-home .btc-emblem-mark {
+    font-size: 30px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  .wrap {
+    padding-left: max(8px, env(safe-area-inset-left)) !important;
+    padding-right: max(8px, env(safe-area-inset-right)) !important;
+  }
+
+  #view-home .btc-premium-copy {
+    width: calc(100% - 90px) !important;
+    max-width: calc(100% - 90px) !important;
+  }
+
+  #view-home .btc-premium-visual,
+  #view-home .btc-premium-visual-refined {
+    right: 6px !important;
+    width: 80px !important;
+    min-width: 80px !important;
+    max-width: 80px !important;
+  }
+
+  #view-home .btc-premium-toolbar .v34-home-mini-tf {
+    min-width: 35px !important;
+    padding-inline: 6px !important;
+  }
+
+  .app-dock {
+    left: max(8px, env(safe-area-inset-left)) !important;
+    right: max(8px, env(safe-area-inset-right)) !important;
+  }
+}
+
+@media (max-width: 375px) {
+  #view-home .btc-premium-note {
+    display: none !important;
+  }
+
+  #view-home .btc-premium-copy {
+    width: calc(100% - 84px) !important;
+    max-width: calc(100% - 84px) !important;
+  }
+
+  #view-home .btc-premium-price strong {
+    font-size: 22px !important;
+  }
+
+  #view-home .btc-premium-visual,
+  #view-home .btc-premium-visual-refined {
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+  }
+
+  #view-home .btc-premium-emblem {
+    width: 54px !important;
+    height: 54px !important;
+  }
+
+  #view-home .btc-emblem-mark {
+    font-size: 28px !important;
+  }
+}
+
+/* Fallback only for browsers without overflow:clip.
+   Real overflow offenders are constrained above. */
+@supports not (overflow: clip) {
+  html,
+  body {
+    overflow-x: hidden;
+  }
+}
+

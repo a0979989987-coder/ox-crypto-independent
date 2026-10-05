@@ -1,0 +1,60 @@
+/* ===== ox-strength-liquidation-upgrade ===== */
+/* --- Radar logo: inline SVG, always visible in preview and GitHub Pages --- */
+.dock-radar-logo{
+  display:block!important;width:24px!important;height:24px!important;color:var(--ox-gold,var(--gold))!important;
+  filter:none!important;opacity:1!important;position:relative!important;z-index:6!important;
+}
+.dock-radar-logo rect{fill:currentColor!important;}
+@media(max-width:720px){.dock-radar-logo{width:22px!important;height:22px!important;}}
+
+/* --- BTC vs Alt relative-strength panel --- */
+.strength-compare-panel{
+  margin:12px 0 14px;padding:16px 18px;border-radius:var(--ox-radius-lg);overflow:hidden;
+  background:
+    radial-gradient(55% 110% at 4% 20%,rgba(245,191,85,.10),transparent 70%),
+    radial-gradient(55% 120% at 98% 24%,rgba(54,211,153,.08),transparent 72%),
+    linear-gradient(140deg,rgba(255,255,255,.055),rgba(60,112,170,.018) 54%,rgba(2,8,15,.15)),
+    rgba(7,17,29,.47)!important;
+}
+.strength-compare-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;}
+.strength-compare-top h2{margin:2px 0 3px;font-size:17px;letter-spacing:.01em;}
+.strength-compare-top p{margin:0;color:var(--muted);font-size:10px;}
+.strength-compare-leader{flex:0 0 auto;padding:6px 10px;border-radius:var(--ox-radius-pill);font-size:9px;font-weight:900;color:#dce8f5;border:1px solid rgba(150,185,220,.17);background:rgba(100,142,188,.07);}
+.strength-compare-leader[data-leader="btc"]{color:var(--gold);border-color:rgba(245,191,85,.28);background:rgba(245,191,85,.09);}
+.strength-compare-leader[data-leader="alt"]{color:var(--green);border-color:rgba(54,211,153,.26);background:rgba(54,211,153,.08);}
+.strength-compare-body{display:grid;grid-template-columns:118px minmax(0,1fr) 118px;gap:18px;align-items:center;margin-top:16px;}
+.strength-compare-side{display:flex;flex-direction:column;gap:1px;}
+.strength-compare-side.alt{text-align:right;align-items:flex-end;}
+.strength-compare-side small{color:var(--muted);font-size:9px;font-weight:900;letter-spacing:.04em;}
+.strength-compare-side strong{font-size:34px;line-height:1;font-weight:950;font-variant-numeric:tabular-nums;}
+.strength-compare-side.btc strong{color:var(--gold);}.strength-compare-side.alt strong{color:var(--green);}
+.strength-compare-side span{font-size:8px;color:var(--muted);}
+.strength-compare-center{min-width:0;}
+.strength-compare-scale{position:relative;height:10px;border-radius:var(--ox-radius-pill);background:rgba(117,146,181,.10);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.35);}
+.strength-compare-scale i{position:absolute;top:0;bottom:0;transition:width .3s ease;}
+.strength-compare-scale i.btc{left:0;background:linear-gradient(90deg,#95691f,var(--gold));opacity:.92;clip-path:inset(0 50% 0 0);}
+.strength-compare-scale i.alt{right:0;background:linear-gradient(270deg,#1f8f72,var(--green));opacity:.88;clip-path:inset(0 0 0 50%);}
+.strength-compare-scale .mid{position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:rgba(231,239,248,.48);z-index:3;}
+.strength-compare-gap{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:7px;color:var(--muted);font-size:8px;}
+.strength-compare-gap strong{font-size:11px;color:var(--ink);}.strength-compare-gap strong.btc-lead{color:var(--gold);}.strength-compare-gap strong.alt-lead{color:var(--green);}
+.strength-compare-note{margin-top:12px;padding-top:10px;border-top:1px solid rgba(136,171,207,.10);font-size:9px;color:var(--muted);}
+
+/* Liquidation belongs to Strength / Market Pulse, not Home. */
+#strength-liquidations{margin-top:14px;}
+#strength-liquidations .ox-liquidation-card{border-radius:var(--ox-radius-lg);}
+#strength-liquidations .v33-section-head{margin-bottom:8px;}
+
+body.theme-light .strength-compare-panel{background:radial-gradient(55% 110% at 4% 20%,rgba(245,191,85,.10),transparent 70%),radial-gradient(55% 120% at 98% 24%,rgba(54,211,153,.07),transparent 72%),linear-gradient(140deg,rgba(255,255,255,.70),rgba(213,228,244,.10)),rgba(248,251,254,.58)!important;}
+body.theme-light .strength-compare-top p,body.theme-light .strength-compare-note,body.theme-light .strength-compare-side span,body.theme-light .strength-compare-side small{color:#62778e!important;}
+body.theme-light .strength-compare-scale{background:#dbe5ef;}
+body.theme-light .strength-compare-scale .mid{background:#6d8195;}
+
+@media(max-width:720px){
+  .strength-compare-panel{padding:12px;border-radius:var(--ox-radius-lg);margin:8px 0 10px;backdrop-filter:blur(10px) saturate(132%)!important;-webkit-backdrop-filter:blur(10px) saturate(132%)!important;}
+  .strength-compare-top{gap:8px}.strength-compare-top h2{font-size:14px}.strength-compare-top p{font-size:8px;line-height:1.45}.strength-compare-leader{font-size:8px;padding:5px 8px;}
+  .strength-compare-body{grid-template-columns:70px minmax(0,1fr) 70px;gap:8px;margin-top:12px;}
+  .strength-compare-side strong{font-size:25px}.strength-compare-side span{font-size:7px}.strength-compare-side small{font-size:7px}
+  .strength-compare-note{font-size:8px;margin-top:9px;padding-top:8px;}
+  #strength-liquidations{margin-top:10px;}
+}
+

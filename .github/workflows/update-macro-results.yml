@@ -1,0 +1,33 @@
+name: Update official macro results
+on:
+  push:
+    branches: [main]
+    paths: ['scripts/collect-macro-results.mjs', 'data/macro-consensus.json']
+  workflow_dispatch:
+  schedule:
+    - cron: '7,22,37,52 12-21 * * 1-5'
+permissions:
+  contents: write
+concurrency:
+  group: update-official-macro
+  cancel-in-progress: false
+jobs:
+  collect:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node scripts/collect-macro-results.mjs
+      - name: Publish result facts
+        run: |
+          if git diff --quiet -- data/macro-results.json; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/macro-results.json
+          git commit -m "data(news): refresh official macro results"
+          git pull --rebase origin main
+          git push origin HEAD:main

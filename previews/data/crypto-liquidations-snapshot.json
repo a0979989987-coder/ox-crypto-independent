@@ -1,0 +1,26 @@
+{
+  "source": "Bybit allLiquidation",
+  "kind": "observed-snapshot",
+  "symbols": [
+    "BTCUSDT",
+    "ETHUSDT",
+    "SOLUSDT"
+  ],
+  "startedAt": 1790548859418,
+  "endedAt": 1790549039429,
+  "connectedAt": null,
+  "acknowledged": false,
+  "status": "disconnected",
+  "events": [],
+  "gaps": [
+    {
+      "time": 1790548868041,
+      "reason": "WebSocket connection error"
+    },
+    {
+      "time": 1790548868041,
+      "reason": "Disconnected before capture end"
+    }
+  ],
+  "priceBasis": "Bankruptcy price × executed size, in USDT; not actual execution notional."
+}

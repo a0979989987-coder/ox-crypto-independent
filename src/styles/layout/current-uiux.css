@@ -1,0 +1,182 @@
+/* ===== ox-v36-current-main-uiux-optimization ===== */
+/* =========================================================
+   OX v3.6 · CURRENT MAIN UI/UX OPTIMIZATION · 2026-09-21
+   UI-only patch. Keeps OX Engine / T1-T2-T3 / chart logic intact.
+   ========================================================= */
+
+/* 1) Remove redundant top intro/header blocks */
+#view-home .v34-home-market-section > .v33-section-head{display:none!important;}
+#view-strength .strength-page > .page-hero{display:none!important;}
+#view-settings .settings-page > .page-hero{display:none!important;}
+#view-strength .strength-page,#view-settings .settings-page{padding-top:0!important;}
+#view-strength .strength-compare-panel,#view-settings .settings-grid{margin-top:0!important;}
+
+/* 2) OX LIVE — denser label/content relationship */
+.ox-live-shell{margin-top:6px!important;margin-bottom:7px!important;padding-top:0!important;}
+.ox-live-strip{min-height:34px!important;height:34px!important;padding:0!important;display:flex!important;align-items:center!important;gap:0!important;overflow:clip!important;}
+.ox-live-badge{height:100%!important;min-width:auto!important;flex:0 0 auto!important;padding:0 11px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;}
+.ox-live-window{margin-left:0!important;padding-left:7px!important;min-width:0!important;flex:1 1 auto!important;}
+#ox-live-text{margin-left:0!important;padding-left:0!important;}
+
+/* 3) Home BTC hero — larger chart without sacrificing information */
+:root{--btc-hero-desktop-h:374px;--btc-hero-chart-h:186px;--btc-mobile-chart-h:190px;}
+#view-home .v34-home-market-section{padding-top:0!important;}
+#view-home .btc-premium-hero{
+  
+  
+  
+  
+}
+#view-home .btc-premium-chart-wrap,#view-home .btc-premium-chart{height:var(--btc-hero-chart-h)!important;min-height:var(--btc-hero-chart-h)!important;}
+
+/* 4) Control center — always anchored to RIGHT, slides right -> left */
+.ox-control-overlay{position:fixed!important;inset:0!important;width:100%!important;max-width:100%!important;overflow:hidden!important;overscroll-behavior:contain!important;}
+.ox-control-panel{
+  position:fixed!important;
+  top:0!important;right:0!important;left:auto!important;bottom:0!important;
+  margin:0!important;
+  height:100dvh!important;max-height:100dvh!important;
+  transform:translate3d(102%,0,0)!important;
+  transform-origin:right center!important;
+  will-change:transform!important;
+  overflow:hidden!important;
+}
+.ox-control-overlay.is-open .ox-control-panel{transform:translate3d(0,0,0)!important;right:0!important;left:auto!important;}
+body.ox-control-open{overflow:hidden!important;overflow-x:hidden!important;}
+
+/* 5) Radar chart controls — two clear glass tiers */
+.chart-controls{
+  display:grid!important;
+  grid-template-columns:1fr!important;
+  gap:7px!important;
+  padding:8px 10px!important;
+  align-items:stretch!important;
+  background:linear-gradient(180deg,rgba(13,25,40,.82),rgba(8,17,29,.74))!important;
+  border-bottom:1px solid rgba(115,154,199,.15)!important;
+}
+.chart-controls>.ctrl-group{min-width:0!important;}
+.chart-controls>.ctrl-group:first-child{
+  display:grid!important;
+  grid-template-columns:repeat(7,minmax(0,1fr))!important;
+  gap:5px!important;
+  padding:4px!important;
+  border:1px solid rgba(117,157,202,.16)!important;
+  border-radius:12px!important;
+  background:rgba(5,13,23,.42)!important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035)!important;
+  overflow:visible!important;
+}
+.chart-controls .btn-tf{
+  min-width:0!important;height:34px!important;padding:0 6px!important;
+  border-radius:9px!important;border:1px solid transparent!important;
+  background:transparent!important;color:#91a3ba!important;
+  font-size:11px!important;font-weight:800!important;letter-spacing:.01em!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  transition:background .16s ease,border-color .16s ease,color .16s ease,box-shadow .16s ease,transform .1s ease!important;
+}
+.chart-controls .btn-tf:hover{color:#e8f0fa!important;background:rgba(255,255,255,.035)!important;}
+.chart-controls .btn-tf.active{
+  color:#ffd16c!important;
+  border-color:rgba(247,189,82,.45)!important;
+  background:linear-gradient(180deg,rgba(247,189,82,.16),rgba(247,189,82,.075))!important;
+  box-shadow:inset 0 1px 0 rgba(255,236,190,.12),0 0 16px rgba(247,189,82,.06)!important;
+}
+.chart-controls>.ctrl-group:nth-child(2){
+  display:grid!important;
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  gap:6px!important;
+  padding:0!important;
+}
+.chart-controls .toggle-lbl{
+  min-width:0!important;min-height:34px!important;margin:0!important;padding:5px 9px!important;
+  display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:7px!important;
+  border:1px solid rgba(113,153,198,.15)!important;border-radius:10px!important;
+  background:rgba(10,21,35,.52)!important;color:#9aacc2!important;
+  font-size:10px!important;font-weight:700!important;line-height:1.15!important;white-space:nowrap!important;
+  overflow:hidden!important;
+}
+.chart-controls .toggle-lbl input{
+  appearance:none!important;-webkit-appearance:none!important;
+  width:28px!important;height:16px!important;min-width:28px!important;margin:0!important;
+  border:1px solid rgba(112,151,196,.32)!important;border-radius:var(--ox-radius-pill)!important;
+  background:#182638!important;position:relative!important;box-shadow:inset 0 1px 3px rgba(0,0,0,.28)!important;
+  transition:.18s ease!important;
+}
+.chart-controls .toggle-lbl input::after{
+  content:""!important;position:absolute!important;width:10px!important;height:10px!important;left:2px!important;top:2px!important;
+  border-radius:50%!important;background:#71849b!important;transition:transform .18s ease,background .18s ease!important;
+}
+.chart-controls .toggle-lbl input:checked{background:rgba(183,126,24,.48)!important;border-color:rgba(247,189,82,.65)!important;}
+.chart-controls .toggle-lbl input:checked::after{transform:translateX(12px)!important;background:#ffd56f!important;box-shadow:0 0 7px rgba(247,189,82,.35)!important;}
+.chart-controls .toggle-lbl:has(input:checked){color:#e5edf7!important;border-color:rgba(247,189,82,.20)!important;background:linear-gradient(180deg,rgba(247,189,82,.055),rgba(10,21,35,.52))!important;}
+
+/* Desktop chart-focus keeps both groups useful without collision. */
+body.chart-focus .chart-controls{grid-template-columns:minmax(0,1.35fr) minmax(300px,.65fr)!important;gap:8px!important;}
+body.chart-focus .chart-controls .ctrl-group:nth-child(2){display:grid!important;}
+
+/* Root horizontal overflow guard */
+html,body{max-width:100%!important;overflow-x:clip!important;}
+.app-view,.strength-page,.settings-page,.v33-home-page,.workspace,.chart-box{max-width:100%!important;min-width:0!important;}
+
+@media(max-width:720px){
+  /* Mobile OX LIVE */
+  /* Keep the top bar, OX Live and content in one native page flow. */
+  body > header{position:relative!important;top:auto!important;}
+  .ox-live-shell{margin-top:5px!important;margin-bottom:6px!important;padding:0 7px!important;}
+  .ox-live-strip{height:30px!important;min-height:30px!important;border-radius:9px!important;}
+  .ox-live-badge{padding:0 8px!important;font-size:7px!important;letter-spacing:.10em!important;}
+  .ox-live-window{padding-left:5px!important;}
+  #ox-live-text{font-size:7px!important;}
+
+  /* Home: no header gap; larger K-line */
+  :root{--btc-mobile-chart-h:190px;}
+  #view-home .v34-home-market-section{margin-top:0!important;padding-top:0!important;}
+  #view-home .btc-premium-hero{
+    
+    
+  }
+  #view-home .btc-premium-chart-wrap,#view-home .btc-premium-chart{height:var(--btc-mobile-chart-h)!important;min-height:var(--btc-mobile-chart-h)!important;}
+  #view-home .btc-premium-visual,#view-home .btc-premium-visual-refined{right:5px!important;top:5px!important;max-width:112px!important;min-width:92px!important;width:29%!important;}
+
+  /* Compact page starts */
+  #view-strength .strength-page,#view-settings .settings-page{padding-top:0!important;margin-top:0!important;}
+  #view-strength .strength-compare-panel{margin-top:0!important;}
+  #view-settings .settings-grid{margin-top:0!important;}
+
+  /* Right drawer remains a right-side sheet on iPhone */
+  .ox-control-panel{right:0!important;left:auto!important;width:min(88%,370px)!important;max-width:calc(100% - 12px)!important;min-width:0!important;touch-action:pan-y!important;}
+
+  /* Mobile control bar: 7 equal timeframes + 3 clean toggles */
+  .chart-controls{padding:7px 6px!important;gap:6px!important;overflow:visible!important;}
+  .chart-controls>.ctrl-group:first-child{
+    grid-template-columns:repeat(7,minmax(0,1fr))!important;
+    gap:3px!important;padding:3px!important;border-radius:10px!important;
+    overflow:visible!important;
+  }
+  .chart-controls .btn-tf{height:32px!important;min-height:32px!important;padding:0 2px!important;border-radius:8px!important;font-size:8.5px!important;}
+  .chart-controls>.ctrl-group:nth-child(2){grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:4px!important;margin-top:0!important;}
+  .chart-controls .toggle-lbl{min-height:31px!important;padding:4px 5px!important;gap:4px!important;border-radius:9px!important;font-size:7.5px!important;justify-content:center!important;text-align:center!important;}
+  .chart-controls .toggle-lbl input{width:24px!important;height:14px!important;min-width:24px!important;}
+  .chart-controls .toggle-lbl input::after{width:8px!important;height:8px!important;}
+  .chart-controls .toggle-lbl input:checked::after{transform:translateX(10px)!important;}
+  #key-level-toggle-text{overflow:visible!important;text-overflow:clip!important;white-space:nowrap!important;font-size:0!important;}
+  #key-level-toggle-text::after{content:"前高前低";font-size:7.5px!important;}
+  body.chart-focus .chart-controls{grid-template-columns:1fr!important;}
+  body.chart-focus .chart-controls .ctrl-group:nth-child(2){display:grid!important;}
+}
+
+@media(max-width:390px){
+  :root{--btc-mobile-chart-h:184px;}
+  .chart-controls .btn-tf{font-size:8px!important;}
+  .chart-controls .toggle-lbl{font-size:7px!important;padding-inline:4px!important;gap:4px!important;}
+}
+
+
+/* Final containment for the radar control system. */
+.chart-controls,.chart-controls>.ctrl-group{width:100%!important;max-width:100%!important;min-width:0!important;}
+.chart-controls .btn-tf,.chart-controls .toggle-lbl{max-width:100%!important;}
+body.theme-light .chart-controls>.ctrl-group:first-child{background:rgba(237,243,248,.76)!important;border-color:#d1dce7!important;}
+body.theme-light .chart-controls .btn-tf{color:#5e7188!important;}
+body.theme-light .chart-controls .btn-tf.active{color:#9d6500!important;background:#fff5df!important;border-color:#d3a650!important;}
+body.theme-light .chart-controls .toggle-lbl{background:rgba(248,250,252,.88)!important;border-color:#d4dee8!important;color:#52677f!important;}
+

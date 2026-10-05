@@ -1,0 +1,57 @@
+    /* ===== v3.6 feature pack: watchlist / local account / market switch / home BTC mini chart ===== */
+    .coin-card { position: relative; cursor: pointer; }
+    .coin-top-right { display:flex; align-items:center; gap:7px; }
+    .watch-star { width:27px; height:27px; display:grid; place-items:center; flex:0 0 27px; border:1px solid #34485f; border-radius:var(--ox-radius-xs); background:#0b1420; color:#7f91a8; font-size:16px; line-height:1; cursor:pointer; transition:.15s ease; }
+    .watch-star:hover { color:var(--gold); border-color:#8e6a27; background:#f7bd520c; }
+    .watch-star.is-starred { color:var(--gold); border-color:#9a7329; background:#f7bd5213; }
+    .watch-card-main { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; align-items:center; }
+    .watch-metrics { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; margin-top:6px; }
+    .watch-metric { padding:5px 6px; border-radius:var(--ox-radius-xs); border:1px solid #22334a; background:#0a111b; min-width:0; }
+    .watch-metric label { display:block; color:var(--muted); font-size:7px; }
+    .watch-metric strong { display:block; margin-top:1px; font-size:9px; overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+
+    .v34-btc-mini-card { cursor:pointer; }
+    .v34-home-mini-toolbar { display:flex; gap:4px; margin:7px 0 4px; position:relative; z-index:2; }
+    .v34-home-mini-tf { border:1px solid #2b3d55; background:#0b1420; color:#8799b0; border-radius:var(--ox-radius-xs); min-width:31px; height:22px; padding:0 6px; font-size:7px; font-weight:800; }
+    .v34-home-mini-tf.active { color:var(--gold); border-color:#8c6927; background:#f7bd520c; }
+    .v34-home-mini-chart { height:78px; width:100%; border-radius:8px; overflow:hidden; background:#09111c; border:1px solid #1f3045; position:relative; }
+
+    .ox-auth-card { padding:14px; border-radius:var(--ox-radius-md); background:#0c1522; border:1px solid #26374e; }
+    .ox-auth-actions { display:grid; grid-template-columns:1fr 1fr; gap:7px; }
+    .ox-auth-actions button { min-height:38px; border:1px solid #52627a; border-radius:var(--ox-radius-sm); background:#101a28; color:#c1ccda; font-size:10px; font-weight:850; }
+    .ox-auth-actions button:last-child { color:var(--gold); border-color:#9a7126; background:#f7bd5212; }
+    .ox-auth-user { display:flex; align-items:center; gap:10px; margin-bottom:13px; }
+    .ox-auth-avatar { width:38px; height:38px; border-radius:var(--ox-radius-md); display:grid; place-items:center; color:#15120b; background:var(--gold); font-size:11px; font-weight:950; }
+    .ox-auth-user b { display:block; font-size:11px; color:var(--ink); word-break:break-all; }
+    .ox-auth-user small { display:block; color:var(--muted); font-size:8px; margin-top:3px; }
+    .ox-auth-logout { margin-bottom:10px; }
+
+    .market-unavailable-card { min-height:330px; display:flex; align-items:center; justify-content:center; gap:18px; margin:10px 0 30px; padding:28px; border:1px solid #2a3c54; border-radius:var(--ox-radius-lg); background:radial-gradient(circle at 15% 10%,#f7bd520b,transparent 40%),#0b131f; }
+    .market-unavailable-card[hidden] { display:none!important; }
+    .market-unavailable-icon { width:56px; height:56px; border-radius:var(--ox-radius-lg); display:grid; place-items:center; border:1px solid #8d6a28; color:var(--gold); background:#f7bd520c; font-weight:950; }
+    .market-unavailable-card h2 { margin:4px 0 6px; font-size:21px; }
+    .market-unavailable-card p { margin:0; max-width:520px; color:var(--muted); font-size:10px; line-height:1.6; }
+    body.market-data-unavailable .compact-summary, body.market-data-unavailable .top-summary { display:none!important; }
+
+    .market-switch-toast { position:fixed; left:50%; bottom:92px; transform:translate(-50%,14px); z-index:140; opacity:0; pointer-events:none; padding:8px 12px; border:1px solid #7c5c24; border-radius:var(--ox-radius-pill); background:#09111cee; color:var(--gold); font-size:10px; font-weight:850; box-shadow:0 10px 28px #0008; transition:.18s ease; }
+    .market-switch-toast.show { opacity:1; transform:translate(-50%,0); }
+
+    body.theme-light .watch-star { background:#f6f9fc; color:#63778f; border-color:#c8d4df; }
+    body.theme-light .watch-star.is-starred { color:#a66800; background:#fff6df; border-color:#c79635; }
+    body.theme-light .watch-metric, body.theme-light .v34-home-mini-chart, body.theme-light .v34-home-mini-tf, body.theme-light .ox-auth-card { background:#fff; border-color:#cbd7e3; }
+    body.theme-light .v34-home-mini-tf { color:#65778d; }
+    body.theme-light .v34-home-mini-tf.active { color:#9e6500; background:#fff6df; border-color:#c28b29; }
+    body.theme-light .ox-auth-actions button { background:#f5f8fb; color:#425870; border-color:#bdcad8; }
+    body.theme-light .ox-auth-actions button:last-child { color:#9e6500; background:#fff7e3; border-color:#c28b29; }
+    body.theme-light .market-unavailable-card { background:radial-gradient(circle at 15% 10%,#f2b83c18,transparent 40%),#fff; border-color:#cbd7e3; }
+    body.theme-light .market-switch-toast { background:#fffdf8f5; color:#925e00; border-color:#c89637; box-shadow:0 10px 28px #3341552b; }
+
+    @media(max-width:720px){
+      .watch-star{width:24px;height:24px;flex-basis:24px;font-size:14px;border-radius:7px}
+      .watch-metrics{gap:3px}.watch-metric{padding:4px}.watch-metric label{font-size:6px}.watch-metric strong{font-size:8px}
+      .v34-home-mini-chart{height:60px}.v34-home-mini-toolbar{margin-top:5px}.v34-home-mini-tf{height:20px;min-width:28px;font-size:6px}
+      .market-unavailable-card{min-height:260px;margin:5px 0 20px;padding:20px 15px;gap:12px}.market-unavailable-icon{width:45px;height:45px;border-radius:13px}.market-unavailable-card h2{font-size:17px}.market-unavailable-card p{font-size:8px}
+    }
+
+
+

@@ -1,0 +1,39 @@
+/* Shared approved palette for shadow-root tools; only active in light mode.
+   Inherited role variables keep lazy tools and theme changes in agreement. */
+:host([data-ox-theme="light"]) {
+ --tool-ink:var(--ox-light-ink,#30343b);--tool-muted:var(--ox-light-muted,#636b77);
+ --tool-line:var(--ox-light-line,#dde1e6);--tool-active:var(--ox-light-active,#e9d6ab);
+ --tool-accent-line:var(--ox-light-accent-line,#d8bc83);--tool-soft:var(--ox-light-accent-soft,#f6eddc);
+}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.card,.fund-card,.px-card,.px-board,.px-dialog,.detail-dialog,.oxb-card,.oxb-dialog,.cfx,.cfx-top,.cfx-panel,.cfx-detail) {
+ background:#fff!important;border-color:var(--tool-line)!important;color:var(--tool-ink)!important;
+ box-shadow:0 4px 18px #30343b08!important;
+}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.px-board,.px-card,.card,.fund-card) {border-color:var(--tool-accent-line)!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(button,input,select,textarea) {
+ color:var(--tool-ink)!important;border-color:var(--tool-line)!important;text-shadow:none!important;
+}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(input,select,textarea,.px-control,.input-unit,.search,.cfx-search) {background:#fff!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.tabs .active,.filters button.active,.primary,.strategy.active,button[aria-pressed="true"],button[aria-selected="true"],.px-option[aria-pressed="true"],.px-control[aria-expanded="true"],.cfx-icon.active) {
+ background:linear-gradient(135deg,var(--tool-soft),var(--tool-active))!important;
+ color:var(--tool-ink)!important;border-color:var(--tool-accent-line)!important;
+ box-shadow:inset 0 1px #ffffffb3!important;
+}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tw-radar-root .twr-mode-rail {background:#f6f7f9!important;border-color:var(--tool-line)!important;box-shadow:none!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tw-radar-root .twr-mode-rail button {color:var(--tool-muted)!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tw-radar-root .twr-mode-rail button.active {color:var(--tool-ink)!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tw-radar-root .twr-mode-indicator {background:linear-gradient(135deg,var(--tool-soft),var(--tool-active))!important;border-color:var(--tool-accent-line)!important;box-shadow:inset 0 1px #ffffffb3!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.px-track i,.px-load-track i,.mini-bar span) {background:var(--tool-active)!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.px-frame,.px-meta,.px-caption,.px-hint,.px-turnover,.muted,.cell-sub,.metric-label) {color:var(--tool-muted)!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) :is(.px-dialog,.detail-dialog,.oxb-dialog)::backdrop {background:#30343b30!important;backdrop-filter:blur(3px)}
+/* The market tool rail already names each tool; remove repeated title blocks. */
+:host([data-ox-theme="light"][data-ox-theme="light"]) .header>div:first-child:not(.toolbar) {display:none!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .header {justify-content:flex-end!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .header:not(:has(.toolbar)) {display:none!important}
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tws-title>div {display:none!important}
+
+:host([data-ox-theme="light"][data-ox-theme="light"]) .tw-radar-root .tw-stock-risk-icon.known {color:#efbd27!important;text-shadow:0 0 1px #a77900,0 0 5px #ffe36e66!important}
+
+:host([data-ox-theme="light"][data-ox-theme="light"][data-ox-theme="light"]) :is(.tabs .active,.filters button.active,.strategy.active,.tw-radar-root .twr-mode-indicator) {
+ background:linear-gradient(145deg,#eef0f3,#e6e8eb)!important;border-color:#d4d9e0!important;color:#30343b!important;box-shadow:inset 0 1px #ffffffb3!important;
+}

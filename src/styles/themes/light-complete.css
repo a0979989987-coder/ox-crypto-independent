@@ -1,0 +1,247 @@
+    /* ===== v3.6 refinement 2: T1 TOP10 LIVE + complete light theme ===== */
+    .brand-logo-svg {
+      display:block;
+      width:34px;
+      height:34px;
+      flex:0 0 34px;
+      color:#eef3f8;
+      overflow:visible;
+    }
+    #ox-live-text {
+      animation-duration: 62s !important;
+      will-change: transform;
+    }
+
+    body.theme-light .brand-logo-svg { color:#b97600 !important; }
+    body.theme-light .brand { color:#111827 !important; }
+    body.theme-light .nav-stats,
+    body.theme-light .live { color:#61738a !important; }
+
+    /* Make the light theme a true light UI rather than dark cards on a light canvas. */
+    body.theme-light main,
+    body.theme-light .strength-page,
+    body.theme-light .media-page,
+    body.theme-light .settings-page,
+    body.theme-light .v33-home-page { color:#111827 !important; }
+
+    body.theme-light .top-summary,
+    body.theme-light .compact-summary { color:#111827 !important; }
+    body.theme-light .metric-card,
+    body.theme-light .market-line-card,
+    body.theme-light .market-line-item {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+    }
+    body.theme-light .market-line-item label,
+    body.theme-light .metric-card label,
+    body.theme-light .metric-card small { color:#65778e !important; }
+
+    body.theme-light .panel,
+    body.theme-light .panel-head,
+    body.theme-light .chart-controls,
+    body.theme-light .scanner-tabs,
+    body.theme-light .scanner-body,
+    body.theme-light .chart-benchmark-bar {
+      border-color:#cbd7e4 !important;
+    }
+    body.theme-light .panel-head,
+    body.theme-light .chart-controls,
+    body.theme-light .scanner-tabs,
+    body.theme-light .chart-benchmark-bar {
+      background:#f7f9fc !important;
+      color:#111827 !important;
+    }
+    body.theme-light .panel-title,
+    body.theme-light .coin-title,
+    body.theme-light .coin-reason .setup-head { color:#111827 !important; }
+
+    body.theme-light .btn-tf,
+    body.theme-light .btn-act,
+    body.theme-light .alert-btn,
+    body.theme-light .pill {
+      background:#f2f6fa !important;
+      color:#52647b !important;
+      border-color:#c4d1df !important;
+    }
+    body.theme-light .btn-tf:hover,
+    body.theme-light .btn-act:hover,
+    body.theme-light .alert-btn:hover { color:#172033 !important; border-color:#8fa5bd !important; }
+    body.theme-light .btn-tf.active,
+    body.theme-light .tab-btn.active {
+      background:#fff5df !important;
+      color:#a86600 !important;
+      border-color:#c08b32 !important;
+    }
+    body.theme-light .tab-btn { color:#687a91 !important; }
+    body.theme-light .tab-badge { background:#e5edf5 !important; color:#42556e !important; }
+
+    body.theme-light .coin-card,
+    body.theme-light .trad-row { color:#111827 !important; border-color:#d6e0ea !important; }
+    body.theme-light .coin-card:hover,
+    body.theme-light .trad-row:hover { background:#f3f7fb !important; }
+    body.theme-light .trad-row.selected { background:#fff8e8 !important; }
+    body.theme-light .coin-reason,
+    body.theme-light .score-pill {
+      background:#f3f7fb !important;
+      color:#52647b !important;
+      border-color:#d3deea !important;
+    }
+    body.theme-light .score-pill { color:#536981 !important; }
+
+    body.theme-light .benchmark-bar { background:transparent !important; }
+    body.theme-light .benchmark-card {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+    }
+    body.theme-light button.benchmark-card:hover { background:#f4f8fb !important; border-color:#9eb0c3 !important; }
+    body.theme-light .benchmark-sub { color:#64758b !important; }
+
+    /* Radar quick stats / details were still dark in light mode. */
+    body.theme-light .chart-quickbar,
+    body.theme-light .detail-grid { background:#cbd7e4 !important; border-color:#cbd7e4 !important; }
+    body.theme-light .chart-quickitem,
+    body.theme-light .detail-cell {
+      background:#ffffff !important;
+      color:#111827 !important;
+    }
+    body.theme-light .chart-quickitem label,
+    body.theme-light .detail-cell label { color:#65778e !important; }
+    body.theme-light .detail-progress { background:#dfe7ef !important; }
+    body.theme-light .detail-reasons,
+    body.theme-light .alert-state-row { background:#ffffff !important; border-color:#d5dfe9 !important; }
+    body.theme-light .detail-reason { color:#52647b !important; }
+    body.theme-light .detail-reason.ok { color:#158a6d !important; }
+    body.theme-light .detail-reason.wait { color:#9f7516 !important; }
+    body.theme-light .alert-chip {
+      color:#536a83 !important;
+      background:#f3f7fb !important;
+      border-color:#c5d3e1 !important;
+    }
+    body.theme-light .extra-section .panel,
+    body.theme-light .extra-section .panel[style] {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+    }
+    body.theme-light .extra-section p { color:#5f7188 !important; }
+
+    /* Strength page */
+    body.theme-light .page-hero { border-color:#cbd7e4 !important; }
+    body.theme-light .page-hero h1,
+    body.theme-light .strength-head h2,
+    body.theme-light .strength-value { color:#111827 !important; }
+    body.theme-light .page-hero p,
+    body.theme-light .strength-head p { color:#60738a !important; }
+    body.theme-light .strength-card {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+      box-shadow:0 8px 24px #3341550d !important;
+    }
+    body.theme-light .strength-state {
+      background:#f4f8fb !important;
+      color:#52667f !important;
+      border-color:#c5d3e1 !important;
+    }
+    body.theme-light .strength-note {
+      color:#52647b !important;
+      border-color:#d8e1eb !important;
+    }
+    body.theme-light .strength-explain {
+      background:#ffffff !important;
+      color:#60738a !important;
+      border-color:#cbd7e4 !important;
+    }
+
+    /* Media page */
+    body.theme-light .media-card {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+      box-shadow:0 8px 24px #3341550d !important;
+    }
+    body.theme-light .media-intro,
+    body.theme-light .media-section { border-color:#d4dee8 !important; }
+    body.theme-light .media-intro h1,
+    body.theme-light .media-function-item b { color:#111827 !important; }
+    body.theme-light .media-intro p,
+    body.theme-light .media-section p,
+    body.theme-light .media-function-item span { color:#60738a !important; }
+    body.theme-light .media-function-item,
+    body.theme-light .media-social-links a {
+      background:#f5f8fb !important;
+      color:#33465f !important;
+      border-color:#d0dbe6 !important;
+    }
+    body.theme-light .media-links-placeholder { color:#60738a !important; border-color:#aebfd0 !important; }
+    body.theme-light .story-quote { color:#23344a !important; }
+
+    /* Settings */
+    body.theme-light .settings-card {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+      box-shadow:0 8px 24px #3341550d !important;
+    }
+    body.theme-light .settings-field,
+    body.theme-light .settings-switch { color:#1f2937 !important; border-color:#d6e0ea !important; }
+    body.theme-light .settings-hint,
+    body.theme-light .settings-switch small { color:#697b92 !important; }
+    body.theme-light .settings-field input::placeholder { color:#9aa8b8 !important; opacity:1; }
+
+    /* Command Center / home */
+    body.theme-light .v33-home-hero {
+      background:linear-gradient(145deg,#ffffff,#f5f8fc) !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+      box-shadow:0 10px 30px #33415512 !important;
+    }
+    body.theme-light .v33-home-hero h1,
+    body.theme-light .v33-hero-stat strong,
+    body.theme-light .v33-market-name,
+    body.theme-light .v33-market-value strong,
+    body.theme-light .v33-row-main b,
+    body.theme-light .v33-rank-symbol,
+    body.theme-light .v33-radar-cell strong,
+    body.theme-light .v33-action b { color:#111827 !important; }
+    body.theme-light .v33-home-hero p,
+    body.theme-light .v33-hero-stat label,
+    body.theme-light .v33-hero-stat small,
+    body.theme-light .v33-row-main small,
+    body.theme-light .v33-radar-cell label,
+    body.theme-light .v33-radar-cell small,
+    body.theme-light .v33-action small { color:#64768d !important; }
+    body.theme-light .v33-hero-stat,
+    body.theme-light .v33-card,
+    body.theme-light .v33-radar-cell,
+    body.theme-light .v33-action {
+      background:#ffffff !important;
+      color:#111827 !important;
+      border-color:#cbd7e4 !important;
+      box-shadow:0 6px 18px #3341550b !important;
+    }
+    body.theme-light .v33-list-head,
+    body.theme-light .v33-event-row,
+    body.theme-light .v33-watch-row,
+    body.theme-light .v33-rank-row { background:#ffffff !important; border-color:#d7e1eb !important; }
+    body.theme-light .v33-radar-summary { background:#d6e0ea !important; border-color:#cbd7e4 !important; }
+    body.theme-light .v33-event-icon { background:#f5f8fb !important; color:#a86600 !important; border-color:#c7d4e2 !important; }
+    body.theme-light .v33-meter { background:#dfe7ef !important; }
+
+    /* Toast and focus surfaces */
+    body.theme-light .toast {
+      background:#ffffff !important;
+      color:#1f2937 !important;
+      border-color:#c5d3e1 !important;
+      box-shadow:0 10px 28px #33415525 !important;
+    }
+
+    @media (max-width:720px) {
+      .brand-logo-svg { width:27px; height:27px; flex-basis:27px; }
+      #ox-live-text { animation-duration:62s !important; }
+    }
+
+  
+

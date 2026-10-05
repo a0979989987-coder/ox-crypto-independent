@@ -1,0 +1,552 @@
+/* ===== ox-v36-motion-system ===== */
+/* =========================================================
+   OX v3.6 — Apple-like Liquid Glass Motion System
+   UI motion only. No market / engine / scanner calculations.
+   ========================================================= */
+:root{
+  --motion-fast:160ms;
+  --motion-normal:240ms;
+  --motion-slow:340ms;
+  --ease-standard:cubic-bezier(.2,.8,.2,1);
+  --ease-smooth:cubic-bezier(.22,1,.36,1);
+  --ease-press:cubic-bezier(.3,.7,.4,1);
+  --global-light-x:20%;
+  --global-light-y:12%;
+  --global-scroll-progress:0;
+  --ox-bg-shift:0px;
+  --ox-bg-shift-neg:0px;
+}
+
+/* ---------- App page transitions ---------- */
+.app-view{
+  transform-origin:50% 18%;
+  will-change:auto;
+}
+.app-view.ox-view-leaving{
+  display:block!important;
+  pointer-events:none;
+  animation:oxViewLeave var(--motion-fast) var(--ease-standard) both;
+  will-change:transform,opacity,filter;
+}
+.app-view.ox-view-entering{
+  display:block!important;
+  animation:oxViewEnter 160ms var(--ease-smooth) both;
+  will-change:transform,opacity;
+}
+@keyframes oxViewLeave{
+  from{opacity:1;transform:translate3d(0,0,0) scale(1);filter:blur(0)}
+  to{opacity:.18;transform:translate3d(var(--ox-view-exit-x,0),3px,0) scale(.992);filter:blur(.7px)}
+}
+@keyframes oxViewEnter{
+  from{opacity:.75;transform:translate3d(var(--ox-view-enter-x,0),3px,0)}
+  58%{opacity:1}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* ---------- First-view card reveal (only once per page) ---------- */
+.ox-motion-card-in{
+  animation:oxCardIn 300ms var(--ease-smooth) both;
+  animation-delay:var(--ox-stagger,0ms);
+  will-change:transform,opacity;
+}
+@keyframes oxCardIn{
+  from{opacity:0;transform:translate3d(0,6px,0)}
+  to{opacity:1;transform:translate3d(0,0,0)}
+}
+
+/* ---------- Shared bottom navigation selection bubble ---------- */
+.app-dock{isolation:isolate;}
+.app-dock .ox-dock-indicator{
+  position:absolute;
+  left:0;
+  top:7px;
+  height:calc(100% - 14px);
+  width:48px;
+  border-radius:var(--ox-radius-pill);
+  pointer-events:none;
+  z-index:0;
+  opacity:0;
+  transform:translate3d(0,0,0);
+  background:
+    radial-gradient(100% 115% at 24% -18%,rgba(255,255,255,.13),transparent 48%),
+    linear-gradient(180deg,rgba(255,255,255,.065),rgba(92,165,255,.025)),
+    rgba(70,112,158,.055);
+  border:1px solid rgba(196,221,247,.09);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.09),0 7px 18px rgba(0,0,0,.10);
+  transition:
+    transform var(--motion-slow) var(--ease-smooth),
+    width var(--motion-slow) var(--ease-smooth),
+    opacity var(--motion-normal) var(--ease-standard),
+    background var(--motion-normal) var(--ease-standard);
+}
+.app-dock .dock-btn{z-index:2;}
+.app-dock .dock-btn.active:not(.dock-radar)::before{opacity:0!important;background:transparent!important;border-color:transparent!important;box-shadow:none!important;}
+.dock-btn .dock-icon,.dock-btn .dock-radar-orb{transition:scale var(--motion-normal) var(--ease-smooth),filter var(--motion-fast) ease,opacity var(--motion-fast) ease;}
+.dock-btn:active .dock-icon{scale:.91;}
+.dock-radar:active .dock-radar-orb{scale:.94;filter:brightness(1.07);}
+
+/* ---------- Scanner segmented sliding indicator ---------- */
+.scanner-tabs{position:relative;isolation:isolate;overflow:hidden;}
+.scanner-tabs .ox-segment-indicator{
+  position:absolute;
+  left:0;
+  top:5px;
+  bottom:5px;
+  width:42px;
+  z-index:0;
+  border-radius:var(--ox-radius-sm);
+  pointer-events:none;
+  background:
+    radial-gradient(120% 140% at 20% -30%,rgba(255,255,255,.14),transparent 46%),
+    linear-gradient(180deg,rgba(245,191,85,.105),rgba(245,191,85,.045));
+  border:1px solid rgba(245,191,85,.27);
+  box-shadow:inset 0 1px 0 rgba(255,242,214,.08),0 5px 13px rgba(0,0,0,.10);
+  transform:translate3d(0,0,0);
+  transition:transform var(--motion-normal) var(--ease-smooth),width var(--motion-normal) var(--ease-smooth),opacity var(--motion-fast) ease;
+}
+.scanner-tabs .tab-btn{position:relative;z-index:2;background:transparent!important;box-shadow:none!important;transition:color var(--motion-normal) ease,opacity var(--motion-normal) ease,scale var(--motion-fast) var(--ease-press)!important;}
+.scanner-tabs .tab-btn.active{background:transparent!important;border-color:transparent!important;box-shadow:none!important;color:var(--ox-gold,var(--gold))!important;}
+.scanner-tabs .tab-btn:active{scale:.96;}
+
+/* ---------- Unified press feedback ---------- */
+:where(button,.btn-act,.btn-tf,.alert-btn,.theme-choice,.v34-home-mini-tf,.v34-home-open-radar,.ox-control-refresh,.ox-menu-btn,.v33-action,.benchmark-card){
+  transition:
+    scale var(--motion-fast) var(--ease-press),
+    filter var(--motion-fast) ease,
+    border-color var(--motion-normal) ease,
+    background-color var(--motion-normal) ease,
+    color var(--motion-normal) ease,
+    opacity var(--motion-fast) ease!important;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+:where(button,.btn-act,.btn-tf,.alert-btn,.theme-choice,.v34-home-mini-tf,.v34-home-open-radar,.ox-control-refresh,.ox-menu-btn,.v33-action,.benchmark-card):active{
+  scale:.97;
+  filter:brightness(1.045);
+}
+@media(hover:hover){
+  :where(.metric-card,.benchmark-card,.strength-card,.settings-card,.v33-card,.v33-action,.media-function-item,.media-social-links a,.coin-card):hover{
+    transform:translate3d(0,-1px,0)!important;
+  }
+}
+
+/* ---------- Favorite star micro interaction ---------- */
+.watch-star{transition:scale var(--motion-fast) var(--ease-press),color var(--motion-fast) ease,border-color var(--motion-fast) ease,background var(--motion-fast) ease,filter var(--motion-fast) ease!important;}
+.watch-star:active{scale:.88;}
+.watch-star.ox-star-pop > span{animation:oxStarPop 260ms var(--ease-smooth) both;}
+.watch-star.ox-star-pop{filter:drop-shadow(0 0 7px rgba(245,191,85,.26));}
+@keyframes oxStarPop{
+  0%{transform:scale(.88) rotate(-5deg);opacity:.62}
+  55%{transform:scale(1.18) rotate(4deg);opacity:1}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+
+/* ---------- LONG / SHORT capsule crossfade ---------- */
+.direction-toggle-btn{
+  overflow:hidden;
+  transition:background var(--motion-normal) ease,border-color var(--motion-normal) ease,color var(--motion-normal) ease,scale var(--motion-fast) var(--ease-press)!important;
+}
+.direction-toggle-icon,.direction-toggle-text{display:inline-block;transition:transform var(--motion-normal) var(--ease-smooth),opacity var(--motion-fast) ease!important;}
+.direction-toggle-btn.ox-direction-swap .direction-toggle-icon{animation:oxDirectionIcon 230ms var(--ease-smooth) both;}
+.direction-toggle-btn.ox-direction-swap .direction-toggle-text{animation:oxDirectionText 230ms var(--ease-smooth) both;}
+@keyframes oxDirectionIcon{0%{opacity:.45;transform:translateY(3px) scale(.88)}55%{opacity:1;transform:translateY(-1px) scale(1.08)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes oxDirectionText{0%{opacity:.35;transform:translateY(2px)}100%{opacity:1;transform:translateY(0)}}
+
+/* ---------- Control Center: Apple-like drawer motion ---------- */
+.ox-control-overlay{
+  transition:opacity 280ms var(--ease-standard),background-color 280ms var(--ease-standard)!important;
+}
+.ox-control-panel{
+  transition:transform 350ms var(--ease-smooth),box-shadow 320ms ease,border-color 320ms ease!important;
+  will-change:transform;
+}
+body.ox-control-open main.wrap,
+body.ox-control-open > header,
+body.ox-control-open .ox-live-shell{
+  transform:scale(.995);
+  filter:brightness(.975);
+  transition:transform 330ms var(--ease-smooth),filter 280ms ease;
+  transform-origin:50% 18%;
+}
+.ox-control-overlay.is-open .ox-control-view.active > *{
+  animation:oxControlItemIn 300ms var(--ease-smooth) both;
+}
+.ox-control-overlay.is-open .ox-control-view.active > *:nth-child(2){animation-delay:22ms}
+.ox-control-overlay.is-open .ox-control-view.active > *:nth-child(3){animation-delay:44ms}
+.ox-control-overlay.is-open .ox-control-view.active > *:nth-child(4){animation-delay:66ms}
+.ox-control-overlay.is-open .ox-control-view.active > *:nth-child(5){animation-delay:88ms}
+.ox-control-overlay.is-open .ox-control-view.active > *:nth-child(n+6){animation-delay:108ms}
+@keyframes oxControlItemIn{from{opacity:0;transform:translate3d(4px,0,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+
+/* ---------- Scroll-driven liquid glass light ---------- */
+.ox-glass-dynamic{position:relative!important;isolation:isolate;overflow:hidden;--glass-depth-offset:0%;--shine-alpha:.085;}
+.ox-glass-dynamic > :not(.ox-motion-shine){position:relative;z-index:2;}
+.ox-motion-shine{
+  position:absolute!important;
+  inset:-1px!important;
+  z-index:1!important;
+  border-radius:inherit!important;
+  pointer-events:none!important;
+  opacity:.78;
+  background:
+    radial-gradient(circle at var(--glass-pointer-x,var(--global-light-x)) var(--glass-pointer-y,calc(var(--global-light-y) + var(--glass-depth-offset))),rgba(255,255,255,var(--shine-alpha)),transparent 27%),
+    linear-gradient(112deg,transparent 8%,rgba(184,220,255,.025) 42%,rgba(255,255,255,.050) 50%,transparent 61%);
+  transform:translate3d(0,calc(var(--global-scroll-progress) * 1px),0);
+  transition:opacity var(--motion-normal) ease,filter var(--motion-normal) ease;
+  mix-blend-mode:screen;
+}
+.ox-glass-dynamic:hover .ox-motion-shine{opacity:.98;filter:brightness(1.03);}
+body.theme-light .ox-motion-shine{mix-blend-mode:normal;opacity:.58;background:radial-gradient(circle at var(--glass-pointer-x,var(--global-light-x)) var(--glass-pointer-y,calc(var(--global-light-y) + var(--glass-depth-offset))),rgba(255,255,255,.62),transparent 27%),linear-gradient(112deg,transparent 8%,rgba(92,165,255,.035) 43%,rgba(255,255,255,.28) 50%,transparent 62%);}
+
+/* Background parallax is intentionally tiny. */
+body::before{transform:translate3d(0,var(--ox-bg-shift-neg),0);transition:opacity var(--motion-slow) ease;}
+body::after{transform:translate3d(0,var(--ox-bg-shift),0);transition:opacity var(--motion-slow) ease;}
+
+/* ---------- Subtle number updates ---------- */
+.ox-number-refresh{animation:oxNumberRefresh 230ms var(--ease-standard) both;}
+@keyframes oxNumberRefresh{0%{opacity:.66;transform:translateY(1px)}100%{opacity:1;transform:translateY(0)}}
+
+/* ---------- Liquidation row data refresh ---------- */
+.ox-liq-row-enter,.ox-liq-mobile-card.ox-liq-row-enter{animation:oxDataRowIn 260ms var(--ease-smooth) both;}
+@keyframes oxDataRowIn{from{opacity:.35;transform:translate3d(0,3px,0)}to{opacity:1;transform:translate3d(0,0,0)}}
+.ox-liq-bar i{transition:width 360ms var(--ease-smooth)!important;}
+
+/* ---------- Mobile: retain tactile motion, reduce expensive optics ---------- */
+@media(max-width:720px){
+  :root{--motion-slow:300ms;}
+  .ox-motion-shine{opacity:.48;--shine-alpha:.055;}
+  .ox-glass-dynamic:hover .ox-motion-shine{opacity:.48;filter:none;}
+  body::before,body::after{transform:none!important;}
+  .app-view.ox-view-leaving{filter:none;}
+  .app-view.ox-view-entering{filter:none;}
+  .ox-control-panel{transition-duration:320ms!important;}
+  body.ox-control-open main.wrap,body.ox-control-open > header,body.ox-control-open .ox-live-shell{filter:none;}
+}
+
+/* ---------- Automatic low-performance mode ---------- */
+html.ox-motion-lite .ox-motion-shine{opacity:.34!important;transform:none!important;}
+html.ox-motion-lite body::before,html.ox-motion-lite body::after{transform:none!important;}
+html.ox-motion-lite .dock-radar.active .dock-radar-orb.glass-orb{animation:none!important;}
+
+/* ---------- Reduced motion ---------- */
+@media(prefers-reduced-motion:reduce){
+  :root{--motion-fast:1ms;--motion-normal:1ms;--motion-slow:1ms;}
+  *,*::before,*::after{scroll-behavior:auto!important;}
+  .app-view.ox-view-leaving,.app-view.ox-view-entering,.ox-motion-card-in,.watch-star.ox-star-pop>span,.direction-toggle-btn.ox-direction-swap .direction-toggle-icon,.direction-toggle-btn.ox-direction-swap .direction-toggle-text,.ox-control-overlay.is-open .ox-control-view.active>*{animation:none!important;}
+  .ox-motion-shine{display:none!important;}
+  body::before,body::after{transform:none!important;}
+  .dock-radar.active .dock-radar-orb.glass-orb{animation:none!important;}
+  body.ox-control-open main.wrap,body.ox-control-open>header,body.ox-control-open .ox-live-shell{transform:none!important;filter:none!important;}
+}
+
+
+/* =====================================================================
+   OX v3.6 — Navigation repair + Premium BTC Hero Card
+   UI/layout only. Core OX Engine / radar / scanner logic is untouched.
+   ===================================================================== */
+
+/* --- Bottom navigation hardening: lock the five options to stable columns --- */
+.app-dock{
+  display:grid !important;
+  grid-template-columns:repeat(5,minmax(0,1fr)) !important;
+  grid-template-rows:1fr !important;
+}
+.app-dock > .dock-btn{
+  grid-row:1 !important;
+  min-width:0 !important;
+  pointer-events:auto !important;
+  touch-action:manipulation !important;
+  white-space:nowrap !important;
+}
+.app-dock > .dock-btn[data-view-target="home"]{grid-column:1 !important;}
+.app-dock > .dock-btn[data-view-target="strength"]{grid-column:2 !important;}
+.app-dock > .dock-btn[data-view-target="radar"]{grid-column:3 !important;}
+.app-dock > .dock-btn[data-view-target="data"]{grid-column:4 !important;}
+.app-dock > .dock-btn[data-view-target="media"]{grid-column:5 !important;}
+.app-dock > .ox-dock-indicator,
+.app-dock > .ox-motion-shine{
+  position:absolute !important;
+  grid-column:auto !important;
+  grid-row:auto !important;
+  pointer-events:none !important;
+}
+.app-dock .dock-btn > span:last-child{
+  overflow:hidden !important;
+  text-overflow:ellipsis !important;
+  max-width:100% !important;
+}
+
+/* --- Market layout: BTC remains the lead visual, side stack becomes supporting UI --- */
+.v34-home-market-layout{
+  
+  
+  
+}
+.btc-premium-hero{
+  position:relative !important;
+  isolation:isolate !important;
+  
+  
+  overflow:hidden !important;
+  border-color:rgba(245,191,85,.27) !important;
+  background:
+    radial-gradient(42% 80% at 88% 8%,rgba(245,191,85,.14),transparent 70%),
+    radial-gradient(65% 100% at 8% 100%,rgba(69,128,190,.09),transparent 72%),
+    linear-gradient(145deg,rgba(255,255,255,.060),rgba(255,255,255,.012) 50%,rgba(7,14,24,.30)),
+    rgba(7,16,27,.56) !important;
+  box-shadow:
+    0 18px 48px rgba(0,0,0,.32),
+    0 0 0 1px rgba(245,191,85,.035),
+    inset 0 1px 0 rgba(255,244,218,.13),
+    inset 0 -1px 0 rgba(0,0,0,.30) !important;
+}
+.btc-premium-hero::before{
+  content:"" !important;
+  position:absolute !important;
+  inset:0 !important;
+  z-index:0 !important;
+  pointer-events:none !important;
+  background:
+    radial-gradient(circle at var(--glass-pointer-x,22%) var(--glass-pointer-y,5%),rgba(255,255,255,.11),transparent 24%),
+    linear-gradient(115deg,transparent 4%,rgba(255,233,188,.028) 42%,rgba(255,255,255,.065) 49%,transparent 58%) !important;
+  opacity:.78 !important;
+}
+.btc-premium-hero > :not(.liquid-optics):not(.btc-premium-visual){
+  position:relative !important;
+  z-index:3 !important;
+}
+.btc-premium-visual{
+  position:absolute;
+  z-index:1;
+  right:-16px;
+  top:-18px;
+  width:36%;
+  min-width:190px;
+  max-width:300px;
+  aspect-ratio:1;
+  pointer-events:none;
+  opacity:.88;
+  transform:translate3d(0,0,0);
+  transition:transform var(--motion-slow,340ms) var(--ease-smooth,cubic-bezier(.22,1,.36,1)),opacity .24s ease;
+}
+.btc-premium-hero:hover .btc-premium-visual{transform:translate3d(-2px,2px,0);}
+.btc-premium-coin{
+  position:absolute;
+  inset:16%;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  transform:rotate(-10deg);
+  background:
+    radial-gradient(circle at 28% 20%,rgba(255,248,214,.85),transparent 9%),
+    radial-gradient(circle at 37% 31%,#f8d36f 0 4%,#bd7c18 30%,#6f410d 58%,#d9a136 74%,#6b3d0b 100%);
+  border:1px solid rgba(255,217,132,.48);
+  box-shadow:
+    0 0 48px rgba(245,191,85,.21),
+    0 10px 35px rgba(0,0,0,.34),
+    inset 0 2px 3px rgba(255,246,211,.54),
+    inset 0 -7px 14px rgba(77,42,5,.44);
+}
+.btc-premium-coin::before,
+.btc-premium-coin::after{
+  content:"";
+  position:absolute;
+  border-radius:50%;
+  pointer-events:none;
+}
+.btc-premium-coin::before{
+  inset:8%;
+  border:2px solid rgba(255,225,155,.34);
+  box-shadow:inset 0 0 0 5px rgba(62,34,3,.13),0 0 0 1px rgba(90,49,4,.28);
+}
+.btc-premium-coin::after{
+  inset:16%;
+  border:1px dashed rgba(255,228,166,.28);
+}
+.btc-premium-coin span{
+  position:relative;
+  z-index:2;
+  color:#3b2105;
+  font:900 clamp(55px,6.3vw,96px)/1 system-ui,-apple-system,sans-serif;
+  text-shadow:
+    1px 1px 0 rgba(255,231,168,.58),
+    -1px -1px 0 rgba(88,46,3,.45),
+    0 4px 8px rgba(0,0,0,.16);
+}
+.btc-premium-orbit{
+  position:absolute;
+  border:1px solid rgba(245,191,85,.13);
+  border-radius:50%;
+  transform:rotate(-18deg);
+}
+.btc-premium-orbit-a{inset:4% -8% 13% 8%;}
+.btc-premium-orbit-b{inset:19% -1% 1% 23%;opacity:.55;}
+
+.btc-premium-top{
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+  padding:16px 18px 8px;
+  min-height:96px;
+}
+.btc-premium-copy{min-width:0;max-width:66%;}
+.btc-premium-title-row{display:flex;align-items:center;gap:9px;}
+.btc-premium-icon{
+  width:31px;height:31px;border-radius:var(--ox-radius-sm);display:grid;place-items:center;
+  color:#291702;background:linear-gradient(145deg,#ffd86a,#b67516);
+  box-shadow:0 7px 18px rgba(245,191,85,.16),inset 0 1px 0 rgba(255,255,255,.48);
+  font-weight:950;font-size:20px;
+}
+.btc-premium-name{color:var(--ox-text-strong,#eef4fc);font-size:12px;font-weight:900;letter-spacing:.02em;}
+.btc-premium-name span{color:var(--muted);font-weight:720;margin-left:4px;}
+.btc-premium-name em{
+  display:inline-flex;align-items:center;height:17px;padding:0 6px;margin-left:6px;
+  border:1px solid rgba(245,191,85,.18);border-radius:var(--ox-radius-pill);
+  color:var(--gold);background:rgba(245,191,85,.055);font-size:7px;font-style:normal;
+}
+.btc-premium-pair{margin-top:1px;color:var(--muted);font-size:7px;font-weight:720;letter-spacing:.04em;}
+.btc-premium-price{margin-top:10px !important;gap:9px !important;}
+.btc-premium-price strong{font-size:36px !important;letter-spacing:-.035em;color:#f1f6fb !important;}
+.btc-premium-price span{font-size:11px !important;}
+.btc-premium-actions{}
+.btc-premium-state{
+  display:inline-flex;align-items:center;min-height:22px;padding:0 8px;border-radius:var(--ox-radius-pill);
+  border:1px solid rgba(245,191,85,.20);background:rgba(245,191,85,.055);color:#e8bd67;
+  font-size:7px;font-weight:850;white-space:nowrap;backdrop-filter:none !important;
+}
+.btc-premium-radar-btn{
+  min-height:29px !important;padding:0 9px !important;border-radius:var(--ox-radius-pill) !important;
+  font-size:7.5px !important;position:relative;z-index:5;
+}
+.btc-premium-period-row{
+  display:flex;align-items:center;gap:10px;
+  padding:0 18px 7px;
+}
+.btc-premium-toolbar{
+  min-height:28px !important;padding:2px !important;gap:2px !important;
+  width:max-content;border:1px solid rgba(141,173,208,.12) !important;border-radius:var(--ox-radius-sm) !important;
+  background:rgba(5,13,23,.31) !important;
+}
+.btc-premium-toolbar .v34-home-mini-tf{
+  min-width:38px !important;height:24px !important;border-radius:var(--ox-radius-xs) !important;border-color:transparent !important;
+  background:transparent !important;
+}
+.btc-premium-toolbar .v34-home-mini-tf.active{
+  color:var(--gold) !important;
+  border-color:rgba(245,191,85,.31) !important;
+  background:linear-gradient(180deg,rgba(245,191,85,.13),rgba(245,191,85,.055)) !important;
+  box-shadow:inset 0 1px 0 rgba(255,241,205,.09),0 4px 10px rgba(0,0,0,.12) !important;
+}
+.btc-premium-note{
+  min-width:0;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  color:#8194ac;font-size:7px;
+}
+.btc-premium-chart-wrap{
+  position:relative;
+  height:178px;
+  margin:0 12px;
+  border:1px solid rgba(105,145,188,.10);
+  border-radius:10px;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,rgba(5,12,21,.28),rgba(5,10,17,.06)),
+    rgba(4,10,18,.18);
+  cursor:pointer;
+}
+.btc-premium-chart-wrap::before{
+  content:"";position:absolute;inset:0;pointer-events:none;z-index:3;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+  border-radius:inherit;
+}
+.btc-premium-chart{
+  width:100% !important;
+  height:100% !important;
+  min-height:0 !important;
+  background:transparent !important;
+}
+.btc-premium-stats{
+  display:grid;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  
+  border-top:1px solid rgba(118,158,199,.10);
+  background:rgba(3,9,16,.18);
+}
+.btc-premium-stats>div{
+  min-width:0;padding:9px 12px 10px;border-right:1px solid rgba(118,158,199,.09);
+}
+.btc-premium-stats>div:last-child{border-right:0;}
+.btc-premium-stats small{
+  display:block;color:#71859e;font-size:6.5px;margin-bottom:2px;white-space:nowrap;
+}
+.btc-premium-stats strong{
+  display:block;color:#e8eff7;font-size:10px;font-weight:850;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.btc-premium-stats>div:last-child strong{color:var(--gold);}
+
+/* supporting cards stay visually subordinate */
+.v34-home-side-stack .v34-home-side-card{
+  opacity:.93;
+  box-shadow:0 10px 25px rgba(0,0,0,.16) !important;
+}
+
+/* Light mode still reads as premium material, not flat white */
+body.theme-light .btc-premium-hero{
+  background:
+    radial-gradient(42% 80% at 88% 8%,rgba(190,132,32,.10),transparent 70%),
+    radial-gradient(65% 100% at 8% 100%,rgba(92,165,255,.08),transparent 72%),
+    linear-gradient(145deg,rgba(255,255,255,.83),rgba(235,243,250,.50)),
+    rgba(248,251,254,.66) !important;
+  border-color:rgba(170,120,34,.24) !important;
+}
+body.theme-light .btc-premium-price strong{color:#101a2b !important;}
+body.theme-light .btc-premium-toolbar{background:rgba(235,242,248,.56) !important;}
+body.theme-light .btc-premium-chart-wrap{background:rgba(246,249,252,.46);}
+body.theme-light .btc-premium-stats{background:rgba(240,246,251,.46);border-top-color:rgba(71,102,136,.11);}
+body.theme-light .btc-premium-stats>div{border-right-color:rgba(71,102,136,.10);}
+body.theme-light .btc-premium-stats strong{color:#172235;}
+body.theme-light .btc-premium-note{color:#667a92;}
+body.theme-light .btc-premium-state{color:#9b6500;border-color:rgba(174,119,20,.22);background:rgba(245,191,85,.10);}
+
+/* desktop size target: hero card approx 330–370px, not trading-terminal height */
+@media(min-width:721px){
+  .btc-premium-hero{}
+  .v34-home-side-stack{}
+}
+
+/* Mobile: one large hero card first; supporting cards follow */
+@media(max-width:720px){
+  .v34-home-market-layout{}
+  .btc-premium-hero{border-radius:var(--ox-radius-lg) !important;}
+  .btc-premium-visual{width:43%;min-width:118px;max-width:165px;right:-14px;top:-5px;opacity:.72;}
+  .btc-premium-coin span{font-size:50px;}
+  .btc-premium-top{min-height:86px;padding:11px 10px 5px;gap:6px;}
+  .btc-premium-copy{max-width:68%;}
+  .btc-premium-icon{width:27px;height:27px;border-radius:var(--ox-radius-xs);font-size:17px;}
+  .btc-premium-name{font-size:10px;}
+  .btc-premium-name em{height:15px;font-size:6px;margin-left:4px;}
+  .btc-premium-pair{font-size:6px;}
+  .btc-premium-price{margin-top:8px !important;gap:6px !important;}
+  .btc-premium-price strong{font-size:27px !important;}
+  .btc-premium-price span{font-size:8px !important;}
+  .btc-premium-actions{}
+  .btc-premium-state{font-size:6px;min-height:19px;padding:0 6px;}
+  .btc-premium-radar-btn{min-height:25px !important;padding:0 7px !important;font-size:6px !important;}
+  .btc-premium-period-row{padding:0 10px 5px;gap:6px;}
+  .btc-premium-toolbar{min-height:25px !important;}
+  .btc-premium-toolbar .v34-home-mini-tf{min-width:32px !important;height:21px !important;font-size:6.5px !important;}
+  .btc-premium-note{font-size:5.8px;max-width:46%;}
+  .btc-premium-chart-wrap{height:154px;margin:0 7px;border-radius:8px;}
+  .btc-premium-stats{grid-template-columns:repeat(2,minmax(0,1fr));}
+  .btc-premium-stats>div{padding:7px 8px;border-bottom:1px solid rgba(118,158,199,.08);}
+  .btc-premium-stats>div:nth-child(2){border-right:0;}
+  .btc-premium-stats>div:nth-child(3),.btc-premium-stats>div:nth-child(4){border-bottom:0;}
+  .btc-premium-stats small{font-size:5.7px;}
+  .btc-premium-stats strong{font-size:8.5px;}
+  .v34-home-side-stack{}
+}
+@media(max-width:390px){
+  .btc-premium-chart-wrap{height:146px;}
+  .btc-premium-price strong{font-size:24px !important;}
+  .btc-premium-visual{width:41%;min-width:108px;}
+}
