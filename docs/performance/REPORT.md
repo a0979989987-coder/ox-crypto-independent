@@ -13,6 +13,8 @@
 
 ## 台股清理與保留項目
 
+續作核查補移除三份工具淺色 CSS 的 `.tw-radar-root` 分支；保留同一 `:is()` 的加密選擇器與原 specificity。這是無引用樣式整理，沒有以其行數作效能收益。冷啟動數據於這項 45 bytes 的 CSS 清理之前取得，沒有重標成清理後的量測。
+
 - 移除證交所／櫃買除權息、配息、假日及法說會解析器；清掉台股財經 feed registry、未使用雷達 adapter、泡泡及 K 線小圖的台股特例。共用工具列先獨立命名，再刪除台股雷達、卡片、風險等 CSS。
 - 移除已指向不存在台股資料的專用／舊雙市場測試腳本；保留仍在驗證 Crypto 隔離的負向測試。排程只保留加密新聞與國際總經工作，刪除 workflow 對已刪台股檔的觸發引用。
 - 保留聯準會、BLS、NYSE 交易時段、加密治理／網路事件；只移除其台股 market 標籤，事件 ID、數值、時間戳與來源不重造。
@@ -127,7 +129,7 @@ JS 欄的 — 表示原始 ResourceTiming 出現負 duration 的異常樣本，�
 
 - 基準：340/340 既有測試、四種桌面／手機尺寸深淺色介面組合通過。
 - 修改後：344/344 測試通過（刪除 2 項台股解析測試，新增 6 項去重、取消、快取、拆包、worker 淘汰與帳號隔離案例）。建置、100 個本機入口資產／171 個唯一 HTML ID 檢查通過。
-- 原始 extraction manifest 不被改寫；15 個已修改檔以獨立 reviewed digest ledger 精確驗證，其他原始檔仍比對原 SHA-256。
+- 原始 extraction manifest 不被改寫；18 個已修改檔以獨立 reviewed digest ledger 精確驗證，其他原始檔仍比對原 SHA-256。
 - 29 組完全相同 K 線的完整分類、58 次手繪查詢及 classify 開關後 worker 最終結果全數一致，見 [filter-parity.json](filter-parity.json)。
 - 桌面 1440 與手機 390：六工具、深淺色、新聞／行事曆／媒體／Google與Email入口通過；沒有頁面 JS 例外或台股請求。
 - 狀態保留、超過保留上限後恢復、快速換工具／幣種／週期、合成背景恢復及離線／上線訊號通過。工具列 320／375／390／430／600／1363 寬度不溢出且指示器對齊。
@@ -212,6 +214,9 @@ OX_BASELINE_ROOT=/path/to/baseline node scripts/compare-performance-results.mjs
 - 修改 `src/markets/crypto/analytics/market-live.js`
 - 修改 `src/markets/crypto/analytics/tools-charts.js`
 - 修改 `src/markets/crypto/bubbles/view.js`
+- 修改 `src/markets/crypto/bubbles/bubbles-light.css`
+- 修改 `src/markets/crypto/analytics/flow-light.css`
+- 修改 `src/markets/crypto/patterns/patterns-light.css`
 - 修改 `src/markets/crypto/patterns/charts.js`
 - 修改 `src/markets/crypto/patterns/index-cache.js`
 - 修改 `src/markets/crypto/patterns/source.js`

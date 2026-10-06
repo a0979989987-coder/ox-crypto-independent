@@ -90,6 +90,24 @@
       "sourceSha256": "5adec9d3f10059c10c1c1594a071958116a8d8f7f6f7788824b6c477999f7117",
       "sha256": "cf77fbb0e517d2ac83f1013ea9acb22500006354a7033279a224bac549fae4b4",
       "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/bubbles/bubbles-light.css",
+      "sourceSha256": "306237a373a8ac5334cbc9871dc72116f9f2ad2b22af9c64a5c6f66d3c8945cf",
+      "sha256": "380c3cd8ef21cc7952456be64e40e7e3fb659e7f1923bb20119e610bb41decc2",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-light.css",
+      "sourceSha256": "59d3164a14533c1c7c45245bb80f5a3187ea85ed1423b0c0c535a516e71e7191",
+      "sha256": "b77a677d00e264503a143637ac8070414f3966520bef53c8e7b26ddfbf5c63b8",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
+    },
+    {
+      "path": "src/markets/crypto/patterns/patterns-light.css",
+      "sourceSha256": "ae1a48cc3625a32ea89732354f13ada964265c949976ef2045f77712041eb0f3",
+      "sha256": "105bbe8ba29a88350ed6802893e876c2b848160b5119ad6aa3a62a42407198ef",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
     }
   ]
 }
