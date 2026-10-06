@@ -142,8 +142,8 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "2aa7e93ef38170ec0b615d3ba18c7381d799a3f23f45309ed442cb9ea19cc27b",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "a24d4ca1486c72220f8dc523ed658f7bb688112cc52d52c7df187bcc3587e50a",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Includes 320px CJK font layout validation; full toolbar controls retained."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",

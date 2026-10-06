@@ -89,3 +89,11 @@
  .cfx-content[data-mode=rotation]>.cfx-states button i,.cfx-content[data-mode=flow]>.cfx-states button i{width:5px;height:5px}
  .cfx-research-search{gap:6px}
 }
+/* Leave room for full-width CJK glyphs and the native period arrow on narrow phones. */
+@media(max-width:360px){
+ .cfx-research-toolbar{gap:2px;padding:7px 3px}
+ .cfx-research-toolbar button{padding:0 3px}
+ .cfx-research-toolbar .cfx-segment{padding:1px}
+ .cfx-research-toolbar .cfx-picker{padding:0 3px}
+ .cfx-research-toolbar .cfx-period-select{width:39px;min-width:39px;padding:0 1px}
+}
