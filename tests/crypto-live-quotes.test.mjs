@@ -48,3 +48,9 @@ test('many symbols do not repaint unaffected subscribers on each tick',()=>{
 test('policy gate prevents quote connections and pending renders, then resumes only when revealed',()=>{
  const h=harness(),values=[];h.target.blocked=true;h.events.get('bodyclass')();const feed=h.api.subscribe(['BTCUSDT'],q=>values.push(q));assert.equal(h.sockets.length,0);h.target.blocked=false;h.events.get('bodyclass')();const ws=h.sockets[0];ws.open();ws.push('BTCUSDT',12);h.target.blocked=true;h.events.get('bodyclass')();h.advance(16);assert.equal(values.length,0);assert.equal(ws.readyState,3);h.target.blocked=false;h.events.get('bodyclass')();h.advance(16);assert.equal(values.at(-1)[0].lastPr,12);feed.stop();
 });
+test('single-letter and Unicode listed tickers receive live updates without admitting URL-like symbols',()=>{
+ const h=harness(),updates=[];const feed=h.api.subscribe(['SUSDT','龙虾USDT','BTCUSDT','../USDT','A/USDT'],q=>updates.push(...q));const ws=h.sockets[0];ws.open();
+ assert.deepEqual(JSON.parse(ws.sent[0]).args.map(a=>a.instId),['SUSDT','龙虾USDT','BTCUSDT']);
+ ws.push('SUSDT',2);ws.push('龙虾USDT',3);h.advance(16);
+ assert.deepEqual(updates.map(q=>q.symbol),['SUSDT','龙虾USDT']);feed.stop();
+});

@@ -12,15 +12,18 @@ const {FEATURE_CATALOG}=await import(resolve(root,'server/account/feature-catalo
 await new Promise(r=>server.listen(Number(process.env.OX_E2E_PORT),'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
 const samples=[];
+const widths=(process.env.OX_BENCH_WIDTHS||'390,1440').split(',').map(Number),toolIds=(process.env.OX_BENCH_TOOLS||'radar,patterns,bubbles,heatmap,rotation,flow').split(',');
+const latency=Number(process.env.OX_BENCH_LATENCY||80),cpuRate=Number(process.env.OX_BENCH_CPU_RATE||1);
 try{
- for(const width of [390,1440])for(const tool of ['radar','patterns','bubbles','heatmap','rotation','flow']){
+ for(const width of widths)for(const tool of toolIds){
   const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW'});
   const {page,audit}=await preparePage(context,{width,height:900});
   const cdp=await context.newCDPSession(page);await cdp.send('Performance.enable');
+  if(cpuRate>1)await cdp.send('Emulation.setCPUThrottlingRate',{rate:cpuRate});
   await page.addInitScript(()=>performance.setResourceTimingBufferSize(10000));
   await page.route('**/api/v1/account/**',route=>{const endpoint=new URL(route.request().url()).pathname.split('/').at(-1);return route.fulfill({json:endpoint==='feature-access'?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:endpoint==='session'?{ok:true,user:null}:{configured:false}});});
   await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:[]}));
-  await page.route('https://api.bitget.com/**',async r=>{await new Promise(resolve=>setTimeout(resolve,80));return r.fulfill({headers:{'Timing-Allow-Origin':'*','Access-Control-Allow-Origin':'*'},json:fixtureBody(r.request().url())});});
+  await page.route('https://api.bitget.com/**',async r=>{await new Promise(resolve=>setTimeout(resolve,latency));return r.fulfill({headers:{'Timing-Allow-Origin':'*','Access-Control-Allow-Origin':'*'},json:fixtureBody(r.request().url())});});
   await routeSnapshots(page);
   const start=Date.now();await page.goto(testBase,{waitUntil:'domcontentloaded'});
   let openedMs=0,firstMs,effectiveMs,completeMs=null;
@@ -50,9 +53,10 @@ try{
   await cdp.send('HeapProfiler.collectGarbage');
   const resource=await page.evaluate(()=>performance.getEntriesByType('resource').map(r=>({name:r.name,start:r.startTime,end:r.responseEnd,duration:r.duration,bytes:r.encodedBodySize,transfer:r.transferSize})));
   const metrics=Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(m=>[m.name,m.value]));
+  const feedTimings=await page.evaluate(()=>globalThis.OXPublicFeed?.timings?.()||null);
   assert.deepEqual(audit.pageErrors,[]);
-  const sample={width,tool,openedMs,firstMs,effectiveMs,completeMs,resourceCount:resource.length,bytes:resource.reduce((n,r)=>n+r.bytes,0),marketRequestCount:resource.filter(r=>r.name.includes('api.bitget.com')).length,heap:metrics.JSHeapUsedSize,cpuMs:metrics.TaskDuration*1000,resource,errors:audit.pageErrors};
-  samples.push(sample);console.log(JSON.stringify({...sample,resource:undefined}));await context.close();
+  const sample={width,tool,openedMs,firstMs,effectiveMs,completeMs,resourceCount:resource.length,bytes:resource.reduce((n,r)=>n+r.bytes,0),marketRequestCount:resource.filter(r=>r.name.includes('api.bitget.com')).length,heap:metrics.JSHeapUsedSize,cpuMs:metrics.TaskDuration*1000,feedTimings,resource,errors:audit.pageErrors};
+  samples.push(sample);console.log(JSON.stringify({...sample,resource:undefined,feedTimings:undefined}));await context.close();
  }
- await writeFile(process.env.OX_BENCH_OUT||resolve(root,'docs/performance/cold-after.json'),JSON.stringify({conditions:{apiLatencyMs:80,fixtureSymbols:8,context:'new context for every tool; includes shell startup and concurrently active radar',navigation:'strength opens default patterns before requested tab; real application behavior',cache:'HTTP cache disabled by routing; empty storage and application caches each case',fresh:'effectiveMs requires fresh REST results; initial recorded snapshot is only firstMs',runs:1,browser:await browser.version(),heap:'main JS heap after forced GC; worker/GPU excluded',iphonePhysical:false},samples},null,2));
+ await writeFile(process.env.OX_BENCH_OUT||resolve(root,'docs/performance/cold-after.json'),JSON.stringify({conditions:{apiLatencyMs:latency,cpuRate,fixtureSymbols:8,context:'new context for every tool; includes shell startup and concurrently active radar',navigation:'strength opens default patterns before requested tab; real application behavior',cache:'HTTP cache disabled by routing; empty storage and application caches each case',fresh:'effectiveMs requires fresh REST results; initial recorded snapshot is only firstMs',runs:1,browser:await browser.version(),heap:'main JS heap after forced GC; worker/GPU excluded',iphonePhysical:false},samples},null,2));
 }finally{await browser.close();await new Promise(r=>server.close(r));}

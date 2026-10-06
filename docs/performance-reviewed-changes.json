@@ -88,8 +88,8 @@
     {
       "path": "src/core/public-feed.js",
       "sourceSha256": "5adec9d3f10059c10c1c1594a071958116a8d8f7f6f7788824b6c477999f7117",
-      "sha256": "cf77fbb0e517d2ac83f1013ea9acb22500006354a7033279a224bac549fae4b4",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "d50aa94e46c0e4b9bd68bdf089587402c1984390d63f14f5de1b16cb54fda019",
+      "reason": "Remove measured scan queue idle time; bounded adaptive transport with chart reserve, 429 cooldown, wake-on-return and queue/download diagnostics. Classification unchanged."
     },
     {
       "path": "src/markets/crypto/bubbles/bubbles-light.css",
@@ -126,6 +126,12 @@
       "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
       "sha256": "8d4d8bb070a4fc2c9c23b284abccd784f6a3440f23b95617ad159401238d2851",
       "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+    },
+    {
+      "path": "src/markets/crypto/scanner.js",
+      "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
+      "sha256": "cdde38aa42a058a952f3d8e13e5a4f9aeccd106b99fe8642cf574c848205b44d",
+      "reason": "Remove measured scan queue idle time; bounded adaptive transport with chart reserve, 429 cooldown, wake-on-return and queue/download diagnostics. Classification unchanged."
     }
   ]
 }

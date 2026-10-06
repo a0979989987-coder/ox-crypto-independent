@@ -81,13 +81,13 @@ async function refreshMarketTickers() {
   refreshingMarketTickers=true;state.radarLoadError=false;
   const loading=window.OXLoading?.begin('crypto','加密行情載入中',{views:['home','strength']});
   try {
-    const rawTickers = await BitgetAPI.fetchTickers();
+    // Independent metadata must not wait for the ticker response first.
+    const [rawTickers,catalog] = await Promise.all([BitgetAPI.fetchTickers(),!state.contracts.size?Promise.all([
+      BitgetAPI.fetchContracts(),BitgetAPI.fetchInstrumentMetadata()
+    ]):null]);
     if(state.activeMarket!=="crypto")return;
     if (!state.contracts.size) {
-      const [contractList, instrumentMetadata] = await Promise.all([
-        BitgetAPI.fetchContracts(),
-        BitgetAPI.fetchInstrumentMetadata()
-      ]);
+      const [contractList, instrumentMetadata] = catalog;
       if(state.activeMarket!=="crypto")return;
       const metaBySymbol = new Map((instrumentMetadata || []).map(m => [m.symbol, m]));
       state.instrumentCatalog.clear();
@@ -156,7 +156,8 @@ async function refreshMarketTickers() {
   } finally { refreshingMarketTickers=false;loading?.finish();if(state.activeMarket==='crypto'&&state.activeView==='radar')renderCurrentTab(); }
 }
 
-let radarPaintTimer=0, initialScanLoading=null, passCompleted=0, passFailed=0;
+let radarPaintTimer=0, initialScanLoading=null, passCompleted=0, passFailed=0, radarWake=null;
+function waitForRadar(ms){return new Promise(resolve=>{let timer;const done=()=>{clearTimeout(timer);if(radarWake===done)radarWake=null;resolve();};radarWake=done;timer=setTimeout(done,ms);});}
 function publishRadarProgress(immediate=false) {
   if (!immediate) {
     if (!radarPaintTimer) radarPaintTimer=setTimeout(()=>publishRadarProgress(true),100);
@@ -174,7 +175,7 @@ async function runScanQueueLoop() {
     // Keep the ranking data, but do not spend CPU scanning Crypto in the
     // background while another market, page, or browser tab is visible.
     if (document.hidden || state.activeMarket !== 'crypto' || !['home','radar'].includes(state.activeView)) {
-      await new Promise(r => setTimeout(r, document.hidden ? 15000 : 8000));
+      await waitForRadar(document.hidden ? 15000 : 8000);
       continue;
     }
     if (!state.scanQueue.length) {
@@ -195,7 +196,6 @@ async function runScanQueueLoop() {
     document.getElementById("scan-status").textContent = `輪巡 ${state.scanIndex}/${state.scanQueue.length}`;
     document.getElementById("dot").style.background = "#38c99b";
 
-    const batchStarted=performance.now();
     await Promise.allSettled(batchSymbols.map(async symbol => {
       const ticker = state.tickers.find(t => t.symbol === symbol);
       if (!ticker) return;
@@ -260,7 +260,9 @@ async function runScanQueueLoop() {
     }
     publishRadarProgress(true);
     // All tools share the public-feed scheduler and its 429 cooldown.
-    await new Promise(r=>setTimeout(r,state.radarSnapshotReady?Math.max(CONFIG.batchIntervalMs,1000):Math.max(0,1000-(performance.now()-batchStarted))));
+    // Rate limiting belongs to public-feed. Do not add 2.5 seconds of idle
+    // time to every batch; only rest between complete passes and yield CPU.
+    await waitForRadar(completed?Math.max(CONFIG.batchIntervalMs,1000):0);
   }
 }
 
@@ -479,5 +481,5 @@ if(typeof document!=='undefined')document.addEventListener('ox:timeframe-tier-ch
  state.scanIndex=0;rebuildTierLists();if(state.activeMarket==='crypto'&&state.activeView==='radar')renderCurrentTab();
 });
 
-function cancelHiddenCryptoScan(){if(document.hidden||state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView))globalThis.OXPublicFeed.cancel('radar-scan');}
+function cancelHiddenCryptoScan(){if(document.hidden||state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView))globalThis.OXPublicFeed.cancel('radar-scan');radarWake?.();}
 if(typeof document!=='undefined')for(const event of ['ox:viewchange','ox:marketchange','visibilitychange'])document.addEventListener(event,cancelHiddenCryptoScan);
