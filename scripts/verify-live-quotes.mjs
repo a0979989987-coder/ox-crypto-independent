@@ -26,7 +26,12 @@ try{for(const width of [390,1440]){
    }};
  });
  await page.evaluate(()=>switchAppView('strength'));
- const card=page.locator('#ox-crypto-tools-inline .px-card').filter({visible:true}).first();await card.waitFor({timeout:30000});await card.evaluate(el=>el.scrollIntoView({block:'center'}));
+ // Classification comparisons need the completed index; progressive ranking
+ // can legitimately replace or reorder the first card while it is filling.
+ await page.locator('#ox-crypto-tools-inline .px[data-index-state="ready"]').filter({visible:true}).waitFor({timeout:30000});
+ const first=page.locator('#ox-crypto-tools-inline .px-card').filter({visible:true}).first();await first.waitFor();
+ const resultKey=await first.getAttribute('data-result');
+ const card=page.locator('#ox-crypto-tools-inline .px-card[data-result="'+resultKey+'"]').filter({visible:true});await card.evaluate(el=>el.scrollIntoView({block:'center'}));
  const symbol=(await card.getAttribute('data-result')).split(':')[0];
  await page.waitForFunction(symbol=>window.__quoteSockets.some(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).op==='subscribe'&&JSON.parse(s).args.some(a=>a.channel==='ticker'&&a.instId===symbol))),symbol);
  const before=await card.evaluate(el=>({tier:el.dataset.tier,ox:el.querySelector('.px-energy strong').textContent}));
