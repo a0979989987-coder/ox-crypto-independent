@@ -257,3 +257,13 @@ OX_BASELINE_ROOT=/path/to/baseline node scripts/compare-performance-results.mjs
 環境回復：僅將本專案上述兩個 env target 還原為 production；不改值，其餘環境／共用資料不動。程式回復可 revert 該預覽修復提交。
 
 續作驗證：346/346 完整單測通過、build/check 與 19 個 reviewed hashes 檢查通過。用本專案既有公開 DB 連線，在沒有 session secret/origin 的真實 handler 上執行 catalog GET，實際回覆 200 / ok=true / 18 個功能，crypto.radar=public。這是實際 Supabase 公開 RPC 的唯讀查詢；未寫入後台設定。Vercel SSO 的工具存取 403 仍獨立存在，因此不能宣稱已以自動化瀏覽器完成受保護預覽驗收。
+
+## 真實政策 + 瀏覽器續驗（2026-10-06）
+
+最新實作提交 1ecc13d 的完整 GitHub CI 已通過（build/check/extraction、346 單測、介面、狀態及故障回歸）：https://github.com/a0979989987-coder/ox-crypto-independent/actions/runs/37411980937 。
+
+新增 scripts/verify-live-preview-policy.mjs 與 [live-policy-browser.json](live-policy-browser.json)。手機390與桌面1440均以未配置登入的實際 handler 讀取真實公開Supabase catalog：200、18功能、雷達public；前端 OXFeatures.ready=true、沒有功能阻擋，雷達與畫板／泡泡／熱力圖／輪動／主動買賣全部可進入，頁面 JS 例外零。沒有傳 production session secret 或 origin，沒有執行政策寫入。
+
+此輪僅政策來自實際後台；行情是8幣fixture、WebSocket為模擬。本機 assets／handler 與 Playwright 路由串接，不是受保護 Vercel 預覽的實際 HTTP 瀏覽器驗收。第一次公開政策讀取7030ms，第二個新瀏覽器 context 為196ms（同一Node程序的HTTP連線可能復用），不能當作裝置冷啟動或正式API SLA。首次政策等待仍是真正依賴，不以永久快取或預設公開绕過；既有10秒前端逾時及人工重試保留。
+
+重現：只提供既有 OX_SUPABASE_URL／OX_SUPABASE_PUBLISHABLE_KEY，設定 OX_VERIFY_LIVE_POLICY=1、可選 OX_TEST_BROWSER，再執行 node scripts/verify-live-preview-policy.mjs。不需登入密鑰。此測試有明確 live opt-in，不讓一般CI自動讀真實資料。

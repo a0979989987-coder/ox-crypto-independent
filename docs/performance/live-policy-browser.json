@@ -1,0 +1,38 @@
+{
+  "conditions": {
+    "policy": "actual existing public Supabase catalog RPC, read-only",
+    "sessionSecrets": false,
+    "market": "8 synthetic quote symbols and simulated WebSocket",
+    "surface": "local site assets + real server handler; protected Vercel preview not browser-verified",
+    "iphonePhysical": false,
+    "browser": "138.0.7204.0"
+  },
+  "results": [
+    {
+      "width": 390,
+      "policy": {
+        "status": 200,
+        "ok": true,
+        "count": 18,
+        "radarMode": "public",
+        "requestMs": 7030
+      },
+      "radarAndFiveToolsAccessible": true,
+      "loginConfigured": false,
+      "pageErrors": []
+    },
+    {
+      "width": 1440,
+      "policy": {
+        "status": 200,
+        "ok": true,
+        "count": 18,
+        "radarMode": "public",
+        "requestMs": 196
+      },
+      "radarAndFiveToolsAccessible": true,
+      "loginConfigured": false,
+      "pageErrors": []
+    }
+  ]
+}
