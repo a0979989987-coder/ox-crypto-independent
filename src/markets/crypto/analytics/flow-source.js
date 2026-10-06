@@ -7,16 +7,16 @@ const pause = (ms, signal) => new Promise((resolve, reject) => {
   const id = setTimeout(() => { signal.removeEventListener('abort', abort); resolve(); }, ms);
   signal.addEventListener('abort', abort, { once: true });
 });
-async function json(path, signal) {
-  const body=await globalThis.OXPublicFeed.json(API+path,{signal,owner:'analytics',priority:20});
+async function json(path, signal, transport) {
+  const body=await globalThis.OXPublicFeed.json(API+path,{signal,owner:transport?.owner||'analytics',priority:transport?.priority??20});
   if (body.code !== '00000' || !Array.isArray(body.data)) throw new Error('Bitget 暫時無法提供完整資料');
   return body;
 }
-export async function refreshFlow(period, { signal, onProgress = () => {}, onPartial = () => {} }) {
+export async function refreshFlow(period, { signal, onProgress = () => {}, onPartial = () => {}, transport = {owner:'analytics',priority:20} }) {
   if (!PERIODS[period]) throw new Error('Unsupported period');
   const [instruments, tickers] = await Promise.all([
-    json('/api/v3/market/instruments?category=USDT-FUTURES', signal),
-    json('/api/v2/mix/market/tickers?productType=USDT-FUTURES', signal)
+    json('/api/v3/market/instruments?category=USDT-FUTURES', signal, transport),
+    json('/api/v2/mix/market/tickers?productType=USDT-FUTURES', signal, transport)
   ]);
   const universe = cryptoUniverse(instruments.data, tickers.data);
   if (!universe.length) throw new Error('目前沒有可驗證的 Crypto 合約');
@@ -25,7 +25,7 @@ export async function refreshFlow(period, { signal, onProgress = () => {}, onPar
     if (i) await pause(1100, signal); // published 1 request/sec/IP. Never flood from every frame.
     const symbol = universe[i].symbol;
     const path = `/api/v2/mix/market/taker-buy-sell?symbol=${encodeURIComponent(symbol)}&period=${period}`;
-    try { snapshot.flows[period][symbol] = { path, response: await json(path, signal) }; }
+    try { snapshot.flows[period][symbol] = { path, response: await json(path, signal, transport) }; }
     catch (error) { if (error.name === 'AbortError') throw error; snapshot.flows[period][symbol] = { path, error: error.message }; }
     onPartial({...snapshot,flows:{[period]:{...snapshot.flows[period]}},scan:{done:i+1,total:universe.length,complete:false}});
     onProgress(i + 1, universe.length);

@@ -51,8 +51,8 @@ try{
   const before=requests.length;await tool(page,'patterns');assert.equal(await root.getAttribute('data-retention-probe'),'original');assert.ok(await board.evaluate(c=>c.toDataURL()).then(s=>s.length>100));assert.equal(requests.slice(before).some(u=>u.includes('/candles?')),false,'return must not start full scan');assert.equal(await active(page,'[data-action="undo"]').isEnabled(),true,'drawing preserved');
   await tool(page,'bubbles');await active(page,'select[aria-label="泡泡數量"]').selectOption('30');await active(page,'[data-action="in"]').click();
   const bubbleBefore=await active(page,'canvas').getAttribute('data-zoom');await tool(page,'heatmap');await active(page,'.cfx-heat-list button').first().waitFor();await active(page,'[data-control="period"]').selectOption('1h');
-  await tool(page,'rotation');await active(page,'.cfx-replay').waitFor();await active(page,'[data-action="zoom-in"]').click();
-  await tool(page,'flow');await active(page,'.cfx-flow-data').waitFor();await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
+  await tool(page,'rotation');await active(page,'[data-action="replay-toggle"]').click();await active(page,'.cfx-replay').waitFor();await active(page,'[data-action="zoom-in"]').click();
+  await tool(page,'flow');await active(page,'.cfx-research-panel').waitFor();await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
   // All tools visited exceeds the retained-view budget: small preferences restore on remount.
   await tool(page,'bubbles');await active(page,'.oxb-asset-grid button').first().waitFor();assert.equal(await active(page,'select[aria-label="泡泡數量"]').inputValue(),'30');
   await tool(page,'heatmap');await active(page,'.cfx-heat-list button').first().waitFor();assert.equal(await active(page,'[data-control="period"]').inputValue(),'1h');
@@ -69,7 +69,7 @@ try{
   await context.setOffline(true);await context.setOffline(false);
   await page.evaluate(()=>{Object.defineProperty(document,'hidden',{configurable:true,value:false});document.dispatchEvent(new Event('visibilitychange'));window.dispatchEvent(new Event('online'));});
   await page.evaluate(()=>switchAppView('strength'));await active(page,'.px-board').waitFor();
-  await page.screenshot({path:`docs/performance/screenshots/retained-${width}.png`});assert.deepEqual(audit.pageErrors,[]);assert.equal(requests.some(u=>/\/api\/v1\/tw\/|\/data\/tw-/.test(u)),false);
+  assert.deepEqual(audit.pageErrors,[]);assert.equal(requests.some(u=>/\/api\/v1\/tw\/|\/data\/tw-/.test(u)),false);
   reports.push({width,retainedHosts:hosts,stateRestore:true,rapidNavigation:true,syntheticVisibilityAndReconnect:true,errors:audit.pageErrors});await context.close();
  }
  for(const kind of ['css','module','worker','slow429']){

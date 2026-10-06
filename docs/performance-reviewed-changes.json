@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "19972ec6ad2f97e6a47405e036eb6edd9c6e5907168a0508eaec8ddc99ee38eb",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "0f729af82a0860e30bc432b46622302a40020f0ffe8802c202945164f7a786bb",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "14af585f8072a8584e47d0a1b6b4d06b36bca54cc9a79a256d02a2bafd6e7acf",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "bde8b6f9bbacbb57b99df966276ea032b043e727a94e0cdefa5d861a66a79336",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -40,8 +40,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
       "sourceSha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad",
-      "sha256": "ab1fc218c981dfc34db9cbfc646733a3e496c99943591d1eff962d88cc97c8e6",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "e06d0aa697c97e053681b677a22ea3101e8ffd40dccea72d74a1fb1d48942bcc",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
       "path": "src/markets/crypto/patterns/worker.js",
@@ -52,8 +52,8 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "a27d408edbd1385def51e94b2e6590235eed5fb40ef6720294bc89e56fc0fcb7",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+      "sha256": "d0c568b175df64a5fb1e815a4b7d72b5ad81c6091f9bd234a090c1a66d5b3cad",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
@@ -100,8 +100,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-light.css",
       "sourceSha256": "59d3164a14533c1c7c45245bb80f5a3187ea85ed1423b0c0c535a516e71e7191",
-      "sha256": "b77a677d00e264503a143637ac8070414f3966520bef53c8e7b26ddfbf5c63b8",
-      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
+      "sha256": "abfa9cec57b33432655e24b505d928f12b0a0df63f06db1f2e686ad20d97d479",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
       "path": "src/markets/crypto/patterns/patterns-light.css",
@@ -132,6 +132,24 @@
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
       "sha256": "cdde38aa42a058a952f3d8e13e5a4f9aeccd106b99fe8642cf574c848205b44d",
       "reason": "Remove measured scan queue idle time; bounded adaptive transport with chart reserve, 429 cooldown, wake-on-return and queue/download diagnostics. Classification unchanged."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-model.js",
+      "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
+      "sha256": "906089b0b1ebe29cf0f99d6d3d550e5182ad506be99d2b3fb3fb3b7f6e6ddfe4",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow.css",
+      "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
+      "sha256": "a24d4ca1486c72220f8dc523ed658f7bb688112cc52d52c7df187bcc3587e50a",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Includes 320px CJK font layout validation; full toolbar controls retained."
+    },
+    {
+      "path": "src/markets/crypto/patterns/patterns.css",
+      "sourceSha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c",
+      "sha256": "19ebaab9e9c7d5d85f2ee904bf17e185c477d8661a3c97018238b20a38239523",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     }
   ]
 }

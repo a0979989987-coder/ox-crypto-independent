@@ -80,13 +80,15 @@ const prepareModule = async (kind, path, signal) => {
 const warmJobs = [
   { id:'bubbles-assets', features:['bubbles'], run:async signal => (await prepareModule('bubbles','../markets/crypto/bubbles/view.js',signal)).preloadBubblesStyles() },
   { id:'analytics-assets', features:['heatmap','rotation','flow'], run:async signal => (await prepareModule('analytics','../markets/crypto/analytics/flow-view.js',signal)).preloadAnalyticsStyles() },
+  { id:'news-assets', features:['news.calendar','news.feed'], run:signal => window.OXNews.preload({signal}) },
   { id:'patterns-assets', features:['patterns'], run:async signal => (await prepareModule('patterns','../markets/crypto/patterns/view.js',signal)).preloadPatternStyles() },
   { id:'flow-snapshot', features:['flow'], data:true, run:() => modules.get('analytics').preloadFlowSnapshot() },
   { id:'analytics-market', features:['heatmap','rotation'], data:true, repeatMs:300000, run:signal => modules.get('analytics').preloadAnalyticsMarket(signal) },
-  { id:'patterns-index', features:['patterns'], data:true, repeatMs:60000, run:signal => modules.get('patterns').preloadPatternSearch({signal}) }
+  { id:'patterns-index', features:['patterns'], data:true, repeatMs:60000, run:signal => modules.get('patterns').preloadPatternSearch({signal}) },
+  { id:'flow-market', features:['flow'], data:true, repeatMs:300000, run:signal => modules.get('analytics').preloadFlowMarket(signal) }
 ];
 const warmup = createToolWarmup({ jobs:warmJobs, enabled:() => !document.hidden && document.body.dataset.market === 'crypto', eligible:job => {
-  if (document.hidden || document.body.dataset.market !== 'crypto' || !job.features.some(id => window.OXFeatures?.canPreload?.('crypto.'+id))) return false;
+  if (document.hidden || document.body.dataset.market !== 'crypto' || !job.features.some(id => window.OXFeatures?.canPreload?.(id.includes('.')?id:'crypto.'+id))) return false;
   const feed = globalThis.OXPublicFeed?.stats();
   if (feed?.priorityActive || feed?.priorityQueued) return false;
   // Do not move initial chart/radar waiting into a wave of speculative work.

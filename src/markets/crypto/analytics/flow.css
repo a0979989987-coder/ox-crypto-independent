@@ -36,3 +36,64 @@
 .cfx-zoom button{width:30px;min-width:30px;height:30px;padding:5px}
 .cfx-zoom button svg{display:block;width:17px;height:17px}
 @media(max-width:600px){.cfx-toolbar-compact{gap:4px}.cfx-settings-dialog{max-height:75dvh}.cfx-chart-meta{flex-wrap:wrap;margin-bottom:5px}}
+/* Research tools share the full-width panel and compact controls used by the independent stock layout. */
+.cfx-research-panel{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--panel);flex:none}
+.cfx-research-toolbar{display:flex;align-items:center;gap:6px;padding:10px;white-space:nowrap;border-bottom:1px solid var(--line)}
+.cfx-segment{display:flex;align-items:center;gap:2px;background:var(--bg);padding:3px;border:1px solid var(--line);border-radius:9px}
+.cfx-research-toolbar button,.cfx-bottom-actions button,.cfx-picker-actions button{min-height:30px;padding:0 9px;font-size:11px;border-radius:7px;white-space:nowrap}
+.cfx-segment button[aria-pressed=true]{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:inherit}
+.cfx-picker,.cfx-replay-toggle{border:1px solid var(--line);background:var(--bg)}
+.cfx-research-toolbar .cfx-picker{margin-left:auto}
+.cfx-research-panel>.cfx-plot{height:620px;min-height:500px;width:100%;border:0;background:var(--bg)}
+.cfx-research-panel .cfx-chart-meta{font-size:10px;padding:9px 12px;margin:0;gap:10px}
+.cfx-research-panel .cfx-chart-meta time{color:var(--muted);white-space:nowrap}
+.cfx-bottom-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border-top:1px solid var(--line);flex-wrap:wrap}
+.cfx-bottom-tools{display:flex;gap:2px;align-items:center}
+.cfx-bottom-tools button{padding:0 6px;min-width:27px;color:inherit}
+.cfx-bottom-tools svg{width:15px;height:15px}
+.cfx-research-panel .cfx-replay{display:flex;flex-direction:column;gap:10px;padding:10px}
+.cfx-replay-controls{display:flex;align-items:center;gap:8px;width:100%}
+.cfx-replay-controls button,.cfx-replay-controls select{height:30px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font-size:11px}
+.cfx-replay-controls button:last-child{margin-left:auto}
+.cfx-research-panel .cfx-replay input{width:100%;min-width:0;accent-color:#a5aaa9}
+.cfx-research-panel .cfx-rotation-table{height:620px;max-height:620px;overflow:auto;padding:8px 12px}
+.cfx-research-panel .cfx-table small{display:block;font-size:10px}
+.cfx-content[data-mode=rotation]>.cfx-states,.cfx-content[data-mode=flow]>.cfx-states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:12px 0 8px}
+.cfx-content[data-mode=rotation]>.cfx-states button,.cfx-content[data-mode=flow]>.cfx-states button{justify-content:center;padding:7px 5px;min-height:32px;gap:5px}
+.cfx-research-search{display:flex;align-items:center;gap:10px;margin:4px 0 10px}
+.cfx-research-search .cfx-search{flex:1;min-width:0}
+.cfx-research-search input{width:100%;min-width:0}
+.cfx-research-search>span{font-size:10px;color:var(--muted);max-width:48%}
+.cfx-content[data-mode=rotation]>.cfx-sidebar,.cfx-content[data-mode=flow]>.cfx-sidebar{border:1px solid var(--line);border-radius:12px;padding:12px;margin-top:8px;max-height:none;overflow:auto}
+.cfx-picker-dialog{max-width:520px}
+.cfx-picker-actions{display:flex;align-items:center;gap:6px;margin:12px 0;font-size:12px}
+.cfx-picker-actions>span{margin-right:auto;color:var(--muted)}
+.cfx-picker-list{display:grid;gap:6px;max-height:52dvh;overflow:auto}
+.cfx-picker-list label{display:flex;align-items:center;gap:10px;padding:11px;border:1px solid var(--line);border-radius:9px;cursor:pointer}
+.cfx-picker-list input{accent-color:#a5aaa9;width:16px;height:16px}
+.cfx-picker-list small{margin-left:auto;color:var(--muted)}
+@media(max-width:600px){
+ .cfx-research-toolbar{gap:3px;padding:7px 5px}
+ .cfx-research-toolbar button{padding:0 5px;font-size:10px;min-height:29px}
+ .cfx-research-toolbar .cfx-segment{padding:2px;gap:0;border-radius:7px}
+ .cfx-research-toolbar .cfx-picker{margin-left:auto;padding:0 5px}
+ .cfx-research-toolbar .cfx-period-select{width:45px;min-width:45px;padding:0 3px;height:31px;font-size:10px}
+ .cfx-research-panel>.cfx-plot{height:clamp(500px,74svh,760px);min-height:500px}
+ .cfx-research-panel .cfx-rotation-table{height:clamp(500px,74svh,760px);max-height:760px}
+ .cfx-research-panel .cfx-chart-meta{font-size:9px;padding:7px 8px;gap:4px;flex-wrap:wrap}
+ .cfx-bottom-actions{padding:7px 5px;gap:3px;flex-wrap:nowrap}
+ .cfx-bottom-actions .cfx-segment button{padding:0 5px;font-size:9px}
+ .cfx-bottom-tools{gap:0}
+ .cfx-bottom-tools button{padding:0 4px;min-width:24px;font-size:10px}
+ .cfx-content[data-mode=rotation]>.cfx-states button,.cfx-content[data-mode=flow]>.cfx-states button{font-size:9px;gap:3px;padding:6px 2px}
+ .cfx-content[data-mode=rotation]>.cfx-states button i,.cfx-content[data-mode=flow]>.cfx-states button i{width:5px;height:5px}
+ .cfx-research-search{gap:6px}
+}
+/* Leave room for full-width CJK glyphs and the native period arrow on narrow phones. */
+@media(max-width:360px){
+ .cfx-research-toolbar{gap:2px;padding:7px 3px}
+ .cfx-research-toolbar button{padding:0 3px}
+ .cfx-research-toolbar .cfx-segment{padding:1px}
+ .cfx-research-toolbar .cfx-picker{padding:0 3px}
+ .cfx-research-toolbar .cfx-period-select{width:39px;min-width:39px;padding:0 1px}
+}

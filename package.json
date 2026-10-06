@@ -15,7 +15,8 @@
     "build:tools": "node scripts/build-toolkit.mjs",
     "test:performance": "node scripts/performance-regression.mjs",
     "benchmark:tools": "node scripts/benchmark-tools.mjs",
-    "test:quotes": "node scripts/verify-live-quotes.mjs"
+    "test:quotes": "node scripts/verify-live-quotes.mjs",
+    "test:news-rotation": "node scripts/verify-news-rotation.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

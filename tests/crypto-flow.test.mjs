@@ -25,3 +25,11 @@ test('only adjacent complete source periods create a point; open period is omitt
 test('a source failure remains missing, not a zero-valued healthy market', () => {
  const s=data([]);s.flows['1h'].BTCUSDT={error:'HTTP 429'};const m=buildFlow(s);assert.equal(m.rows.length,0);assert.equal(m.expected,1);assert.equal(m.excluded.length,1);
 });
+
+test('replay uses only closed consecutive source periods and retains the current cohort',async()=>{
+ const {buildFlowHistory}=await import('../src/markets/crypto/analytics/flow-model.js');
+ const snapshot=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../previews/data/crypto-flow-snapshot.json',import.meta.url),'utf8'));
+ const current=buildFlow(snapshot,'1h'),history=buildFlowHistory(snapshot,'1h');
+ assert.deepEqual(history.frames.at(-1).rows,current.rows);
+ for(const frame of history.frames){assert.deepEqual(frame.rows.map(r=>r.symbol),current.rows.map(r=>r.symbol));assert.ok(frame.ts<=current.target);assert.equal(frame.ts%3600000,0);for(const row of frame.rows)assert.ok(Number.isFinite(row.x)&&Number.isFinite(row.y));}
+});

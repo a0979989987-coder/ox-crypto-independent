@@ -1,6 +1,7 @@
 export const MARKET_NAMES = {crypto:'加密',all:'新聞總頁'};
 export const CATEGORY_NAMES = {
   "macro": "國際財經數據",
+  "conference": "產業會議／活動",
   "holiday": "休市／交易日",
   "exchange": "交易所事件",
   "unlock": "代幣解鎖",
@@ -22,7 +23,8 @@ export const MARKET_CATEGORIES = {
     "macro",
     "regulation",
     "holiday",
-    "exchange"
+    "exchange",
+    "conference"
   ],
   "all": [
     "unlock",
@@ -34,7 +36,8 @@ export const MARKET_CATEGORIES = {
     "macro",
     "regulation",
     "holiday",
-    "exchange"
+    "exchange",
+    "conference"
   ]
 };
 export const SOURCE_CATALOG = [
@@ -55,14 +58,6 @@ export const SOURCE_CATALOG = [
     "status": "not-connected"
   },
   {
-    "id": "decrypt",
-    "name": "Decrypt",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
     "id": "cryptoslate",
     "name": "CryptoSlate",
     "markets": [
@@ -73,30 +68,6 @@ export const SOURCE_CATALOG = [
   {
     "id": "theblock",
     "name": "The Block",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
-    "id": "panews",
-    "name": "PANews",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
-    "id": "foresight",
-    "name": "Foresight News",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
-    "id": "blockbeats",
-    "name": "BlockBeats",
     "markets": [
       "crypto"
     ],
@@ -135,32 +106,8 @@ export const SOURCE_CATALOG = [
     "status": "not-connected"
   },
   {
-    "id": "binance",
-    "name": "Binance 官方公告",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
-    "id": "coinbase",
-    "name": "Coinbase 官方公告",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
     "id": "kraken",
     "name": "Kraken 交易所",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
-    "id": "okx",
-    "name": "OKX 官方公告",
     "markets": [
       "crypto"
     ],
@@ -247,14 +194,6 @@ export const SOURCE_CATALOG = [
     "status": "not-connected"
   },
   {
-    "id": "ecb",
-    "name": "歐洲央行",
-    "markets": [
-      "crypto"
-    ],
-    "status": "not-connected"
-  },
-  {
     "id": "sec",
     "name": "美國證券交易委員會",
     "markets": [
@@ -269,8 +208,32 @@ export const SOURCE_CATALOG = [
       "crypto"
     ],
     "status": "not-connected"
+  },
+  {
+    "id": "fed-calendar",
+    "name": "美國聯準會・政策會議排程",
+    "markets": [
+      "crypto"
+    ],
+    "status": "not-connected"
+  },
+  {
+    "id": "bea-calendar",
+    "name": "美國 BEA・GDP／PCE 排程",
+    "markets": [
+      "crypto"
+    ],
+    "status": "not-connected"
+  },
+  {
+    "id": "foresight-calendar",
+    "name": "Foresight News・區塊鏈日曆",
+    "markets": [
+      "crypto"
+    ],
+    "status": "not-connected"
   }
 ];
 export const TIME_CHOICES = [['3', '3 小時'], ['24', '24 小時'], ['168', '1 週'], ['720', '30 日']];
-export const EVENT_PROVIDERS = {"macro":["bls-calendar"],"holiday":["nyse-calendar"],"exchange":["nyse-calendar"],"governance":["aave-governance"],"network":["bitcoin-core","ethereum-upgrades"],"unlock":["aptos"]};
+export const EVENT_PROVIDERS = {"macro":["bls-calendar","fed-calendar","bea-calendar"],"holiday":["nyse-calendar"],"exchange":["nyse-calendar"],"governance":["aave-governance"],"network":["bitcoin-core","ethereum-upgrades","foresight-calendar"],"unlock":["aptos","foresight-calendar"],"listing":["foresight-calendar"],"airdrop":["foresight-calendar"],"burn":["foresight-calendar"],"regulation":["foresight-calendar"],"conference":["foresight-calendar"]};
 export function sourceName(item) { return SOURCE_CATALOG.find(s => s.id === (item.sourceId || item.id))?.name || item.source || item.name || item.sourceId || '來源待確認'; }

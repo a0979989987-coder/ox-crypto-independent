@@ -15,7 +15,8 @@ const originalURLs={name:'original-module-urls',setup(b){
 const shell=await build({metafile:true,stdin:{contents,resolveDir:root,sourcefile:'toolkit-entry.js',loader:'js'},bundle:true,format:'iife',globalName:'OXRuntimeBundle',platform:'browser',minify:true,legalComments:'eof',outfile:resolve(root,'src/generated/runtime.js'),plugins:[originalURLs]});
 if(Object.keys(shell.metafile.inputs).some(path=>/markets\/crypto\/(?:patterns|bubbles)\/|analytics\/flow-view/.test(path)))throw Error('The shell must not statically include tool modules');
 for(const [index,path] of entries.entries())await build({entryPoints:[resolve(root,'src/markets',path)],bundle:true,format:'esm',platform:'browser',minify:true,legalComments:'eof',outfile:resolve(root,`src/generated/tool-${['patterns','bubbles','analytics'][index]}.js`),plugins:[originalURLs]});
+await build({entryPoints:[resolve(root,'src/components/news/workspace.js')],bundle:true,format:'esm',platform:'browser',minify:true,legalComments:'eof',outfile:resolve(root,'src/generated/tool-news.js'),plugins:[originalURLs]});
 const output=resolve(root,'src/generated/runtime.js');
 const code=await readFile(output,'utf8');
 await writeFile(output,"if(globalThis.OXRuntimeError)throw globalThis.OXRuntimeError;\nif(!globalThis.OXRuntimeInitialized){globalThis.OXRuntimeInitialized=true;try{\n"+code+"\nglobalThis.OXToolModules=OXRuntimeBundle.tools;}catch(error){globalThis.OXRuntimeError=error;throw error;}}\n");
-console.log('Built shell, three independent tools, and pattern worker');
+console.log('Built shell, four independent tools, and pattern worker');

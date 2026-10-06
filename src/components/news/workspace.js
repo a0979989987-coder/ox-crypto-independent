@@ -3,10 +3,11 @@ import { MARKET_NAMES, CATEGORY_NAMES, MARKET_CATEGORIES, TIME_CHOICES, sourceNa
 import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, eventCategory, importance, matchesImportance, newsBase, filterNews, hotWords, ranking, sourcesFor, coverage, safeLink, plain, agendaDays, inMarket, upcomingEventDays } from './model.js?v=20261005-load16';
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
 import { node, button, anchoredPanel, modal } from './layers.js';
-const fmt = value => Number.isFinite(Date.parse(value)) ? new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', dateStyle: 'short', timeStyle: 'short', hour12: false }).format(new Date(value)) : '時間待確認';
-const label = item => item.titleZh || item.title || '標題資料未提供';
+const newsDateFormatter = new Intl.DateTimeFormat('zh-TW', { timeZone:'Asia/Taipei', dateStyle:'short', timeStyle:'short', hour12:false });
+const fmt = value => Number.isFinite(Date.parse(value)) ? newsDateFormatter.format(new Date(value)) : '時間待確認';
+const label = item => item.titleZh || (/[\u4e00-\u9fff]/.test(item.title||'') ? item.title : '中文翻譯準備中');
 const calendarTone = category => ({ macro: 'red', regulation: 'red', unlock: 'yellow', 'dividend-preview': 'yellow', payment: 'yellow', dividend: 'green', earnings: 'blue', exchange: 'blue', listing: 'blue', network: 'blue', governance: 'green', airdrop: 'green', burn: 'gray', holiday: 'gray' }[category] || 'gray');
-const statusLabel = item => item.announcementStatus === 'cancelled' ? '已取消' : item.announcementStatus === 'estimated' || item.kind === 'token-unlock' && item.date ? '預估排程' : item.announcementStatus === 'preview' ? '預告' : item.status === 'confirmed' || item.announcementStatus === 'confirmed' ? '已公告' : '狀態待確認';
+const statusLabel = item => item.announcementStatus === 'cancelled' ? '已取消' : item.announcementStatus === 'estimated' || item.kind === 'token-unlock' && item.date ? '預估排程' : item.announcementStatus === 'announced' ? '媒體所列排程' : item.announcementStatus === 'preview' ? '預告' : item.status === 'confirmed' || item.announcementStatus === 'confirmed' ? '已公告' : '狀態待確認';
 const sourceState = source => source.access === 'authorization-required' ? '需取得授權' : source.status === 'not-connected' ? '尚未接入' : source.status === 'error' ? '更新失敗' : source.lastSuccessAt && Date.now() - Date.parse(source.lastSuccessAt) > 18 * 3600000 ? '資料過期' : source.status === 'ready' && source.count === 0 ? '成功・零篇' : source.status === 'ready' ? source.access==='public-aggregated-rss'?'聚合接入':'已接入' : '尚未載入';
 function link(text, url) { const safe = safeLink(url); if (!safe) return null; const a = node('a', '', text); a.href = safe; a.target = '_blank'; a.rel = 'noopener noreferrer'; return a; }
 function fieldList(fields) { const list = node('dl', 'oxn-fields'); for (const [name, value] of fields) { list.append(node('dt', '', name), node('dd', '', value === null || value === undefined || value === '' ? '資料未提供' : plain(value))); } return list; }
@@ -94,7 +95,7 @@ export function mountNewsWorkspace(host, api) {
         form.append(from,node('span','','至'),to,apply,message);form.hidden=true;form.addEventListener('submit',e=>{e.preventDefault();apply.click();});body.append(actions,tags,form,node('p','oxn-caption','本週從週一開始；自訂日期包含起訖日。依台北時間與新聞發布時間篩選。'));sync();
       }), 'oxn-pill');
       const source = button('來源', '多選新聞來源', () => {
-        const available = sourcesFor(data.snapshot, scope()).filter(s => !s.id.includes('calendar') && !['aptos', 'aave-governance'].includes(s.id));
+        const available = sourcesFor(data.snapshot, scope()).filter(s => (s.status === 'ready' || s.count > 0) && !s.id.includes('calendar') && !['aptos', 'aave-governance','ethereum-upgrades'].includes(s.id));
         multi(source, '來源', 'sources', available.map(s => ({ id: s.id, label: s.name, disabled: s.status === 'not-connected', hint: `${sourceState(s)}${s.scopeLabel?'・'+s.scopeLabel:s.aggregator ? '・聚合入口' : ''}`, description:s.message })), null, '公開標題與原文連結，非全文轉載；聚合接入不代表官方 API。中央通訊社 RSS 限個人／非營利的非商業用途；來源失敗保留最後成功資料。');
       }, 'oxn-pill');
       const words = button('關鍵字', '搜尋與熱門關鍵字', () => showPanel(words, '關鍵字', (body, layer) => {
@@ -199,12 +200,12 @@ export function mountNewsWorkspace(host, api) {
     const identity=node('span','oxn-event-icon',icon);
     if(flag==='🇺🇸'){const img=node('img');img.src=new URL('../../assets/flags/us.svg',import.meta.url).href;img.alt='美國國旗';img.width=28;img.height=20;identity.replaceChildren(img);}
     if(!flag&&symbol&&typeof OX_COIN_LOGOS!=='undefined'){ const path=OX_COIN_LOGOS[String(symbol).toLowerCase()];if(path){const img=node('img');img.src=new URL(path,document.baseURI).href;img.alt=symbol;img.width=28;img.height=28;img.addEventListener('error',()=>identity.replaceChildren(document.createTextNode(icon)),{once:true});identity.replaceChildren(img);} }
-    const meta=node('div','oxn-event-meta');meta.append(identity,node('time','',item.date?item.originalTimezone==='America/New_York'?'美東交易日':item.allDay?'全天':'時間待公布':fmt(item.occursAt)),node('span','oxn-event-type',CATEGORY_NAMES[eventCategory(item)]||'事件'),rating);
+    const meta=node('div','oxn-event-meta');meta.append(identity,node('time','',item.date?item.originalTimezone==='America/New_York'?(eventCategory(item)==='macro'?'美東日期・時間待公布':'美東交易日'):item.allDay?'全天':'時間待公布':fmt(item.occursAt)),node('span','oxn-event-type',CATEGORY_NAMES[eventCategory(item)]||'事件'),rating);
     b.append(meta,title);
     const facts=[];
     if(['dividend','dividend-preview','payment'].includes(eventCategory(item))) { if(item.cashDividend!=null)facts.push(`現金股利 ${item.cashDividend} 元／股`);if(item.stockDividend!=null)facts.push(`股票股利 ${item.stockDividend} 元／股`);if(item.paymentDate)facts.push(`發放 ${item.paymentDate}`); }
     if(eventCategory(item)==='earnings'&&item.location)facts.push(item.location);
-    if(eventCategory(item)==='governance'&&item.proposalTitle)facts.push(item.proposalTitle);
+    if(eventCategory(item)==='governance'&&item.proposalTitle)facts.push(item.proposalTitleZh||'治理提案內容翻譯準備中');
     if(item.descriptionZh||item.description)facts.push(plain(item.descriptionZh||item.description));
     if(facts.length)b.append(node('p','oxn-event-summary',facts.join(' · ')));
 
@@ -251,7 +252,7 @@ export function mountNewsWorkspace(host, api) {
     const body = node('div', 'oxn-article-body');
     if(item.translationMethod==='machine-title-only')body.append(node('small','oxn-caption','標題機器翻譯・原文保留供核對'));
     if (item.summaryZh) { body.append(node('small', 'oxn-caption', item.summaryType === 'system' ? '系統整理' : '來源摘要'), node('p', '', plain(item.summaryZh))); } else body.append(node('p', 'oxn-caption', item.translationStatus === 'translated' ? '來源未提供摘要，可點下方閱讀原文。' : '來源尚未提供繁中內容，可點下方閱讀原文。'));
-    if (item.titleZh && item.title && item.title !== item.titleZh) body.append(node('p', 'oxn-original', item.title));
+    if (item.titleZh && item.title && item.title !== item.titleZh) { const originalTitle=node('details','oxn-original');originalTitle.append(node('summary','','查看原文標題'),node('p','',item.title));body.append(originalTitle); }
     if(item.aggregation)body.append(node('p','oxn-caption',`公開標題由 ${item.aggregation} 聚合 · ${item.publisher?`原始發布者：${item.publisher}`:`入口來源：${sourceName(item)}`}；非官方 API，不轉載全文。`));
     const actions = node('div', 'oxn-article-actions'), original = link(item.aggregation?'前往聚合連結／原文':'閱讀原文', item.link); if (original) actions.append(original);
     const read = button((api.preferences().read || []).includes(item.id) ? '標為未讀' : '標為已讀', '', () => { const set = new Set(api.preferences().read || []); set.has(item.id) ? set.delete(item.id) : set.add(item.id); api.save({ read: [...set] }); read.textContent = set.has(item.id) ? '標為未讀' : '標為已讀'; row.classList.toggle('is-read', set.has(item.id)); });
@@ -305,7 +306,7 @@ export function mountNewsWorkspace(host, api) {
         box.append(node('small', 'oxn-caption', `公布：${item.releasedAt ? fmt(item.releasedAt) : '待公布'} · 更新：${item.updatedAt ? fmt(item.updatedAt) : '待更新'}`));
         detail.body.append(box);
       }
-      if (category === 'governance') detail.body.append(fieldList([['議案原文（翻譯待補）', item.proposalTitle], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
+      if (category === 'governance') detail.body.append(fieldList([['治理議案', item.proposalTitleZh || '中文翻譯準備中'], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
       if (item.eventTimeType) detail.body.append(node('p', 'oxn-caption', item.eventTimeType === 'software-release-publication' ? '此時間為官方軟體版本發布時間，不是主網硬分叉生效時間。' : item.eventTimeType));
       if (category === 'unlock') { const counter = node('p', 'oxn-countdown', api.unlockCountdown(item)); detail.body.append(counter); if (item.status === 'confirmed' && item.occursAt && !item.date) countdown = setInterval(() => { counter.textContent = api.unlockCountdown(item); }, 1000); }
       if (item.scheduleBasis) detail.body.append(node('p', 'oxn-caption', item.scheduleBasis));
@@ -313,7 +314,7 @@ export function mountNewsWorkspace(host, api) {
       for (const [name, url] of [['簡報', item.presentationUrl], ['直播', item.liveUrl || item.livestreamUrl], ['官方月表', item.documentUrl]]) { const a = link(name, url); if (a) detail.body.append(a); }
       if (item.impact?.evidence) detail.body.append(node('p', 'oxn-caption', item.impact.reason));
       detail.body.append(node('p', 'oxn-caption', `${sourceName(item)}・資料更新 ${item.updatedAt ? fmt(item.updatedAt) : '時間未提供'}・${statusLabel(item)}`));
-      if (item.title !== item.titleZh) detail.body.append(node('p', 'oxn-original', item.title));
+      if (item.title !== item.titleZh) {const original=node('details','oxn-original');original.append(node('summary','','查看原文標題'),node('p','',item.proposalTitle||item.title));detail.body.append(original);}
     } else {
       detail = modal(`${route.day}・當日事件`, api.back); const events = (data.snapshot?.events || []).filter(e => eventDay(e) === route.day && inMarket(e, scope()) && (state.categories === null || state.categories.includes(eventCategory(e))) && matchesImportance(e, state.importance));
       detail.body.append(node('p', 'oxn-caption', `台北時間・符合目前篩選 ${events.length} 件`));

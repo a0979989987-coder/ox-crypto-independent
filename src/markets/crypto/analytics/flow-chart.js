@@ -4,11 +4,11 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
   const life=new AbortController(),signal=life.signal,onAbort=()=>life.abort();parentSignal?.addEventListener('abort',onAbort,{once:true});if(parentSignal?.aborted)life.abort();
   const ctx = canvas.getContext('2d');
   let rows = [], selected = '', filter = '', all = [], points = [], labelHits = [], width = 0, height = 0, zoom = 1, pan = { x: 0, y: 0 }, raf = 0;
-  let settings = {}, interactive = true, drag = null, pinch = null; const pointers = new Map();
+  let settings = {}, interactive = true, active = true, drag = null, pinch = null; const pointers = new Map();
   canvas.style.touchAction = 'none';
   const draw = () => {
     const light=document.body.classList.contains('theme-light');
-    raf = 0; labelHits = []; if (!width || !height) return;
+    raf = 0; labelHits = []; if (!active || !width || !height) return;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) { canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
@@ -40,7 +40,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 12, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 12, 'right');
     for (const trail of settings.trails || []) { if (selected && trail.symbol !== selected) continue; const pts=trail.points; ctx.strokeStyle=(trail.color || '#bbc5c4')+'70';ctx.lineWidth=1.2;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();pts.slice(0,-1).forEach((p,i)=>{ctx.fillStyle=(trail.color || '#bbc5c4')+'80';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2+i*.3,0,Math.PI*2);ctx.fill();}); }
     const max = Math.max(...all.map(r => r.turnover), 1);
-    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 15 : 23) : radiusMax * Math.sqrt(row.turnover / max) }));
+    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 29 : 42) : Math.max(4,radiusMax * Math.sqrt(row.turnover / max)) }));
     const sorted = [...points].sort((a, b) => b.r - a.r);
     for (const p of sorted) {
       const active = !filter || p.row.state.id === filter; const chosen = p.row.symbol === selected;
@@ -58,7 +58,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       if (filter && p.row.state.id !== filter) continue;
       const chosen = p.row.symbol === selected;
       if (!settings.rotation && !chosen && p.r < (width < 600 ? 11 : 12)) continue;
-      if(settings.rotation) {
+      if(settings.rotation && p.r < 26) {
         const labelWidth=width<600?77:88,labelHeight=36;
         const vert=p.r+labelHeight/2+10,side=p.r+labelWidth/2+8;const candidates=[[0,-vert],[0,vert],[side,0],[-side,0],[side*.8,-vert*.8],[-side*.8,-vert*.8],[side*.8,vert*.8],[-side*.8,vert*.8],[0,-vert*1.7],[0,vert*1.7]];
         const pointInView=p.x>=m.l&&p.x<=m.l+pw&&p.y>=m.t&&p.y<=m.t+ph;
@@ -72,17 +72,19 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
         ctx.fillStyle=light?(chosen?'#edf2f8':'#ffffffed'):(chosen?'#273a40f5':'#17252ded');ctx.fillRect(box.l,box.t,labelWidth,labelHeight);
         ctx.strokeStyle=chosen?(light?'#8d712e':'#e7ede4'):p.row.state.color+'50';ctx.lineWidth=.6;ctx.strokeRect(box.l,box.t,labelWidth,labelHeight);
         ctx.font='12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle=light?'#374151':'#eceee5';ctx.fillText(p.row.base,box.x,box.y-2);
-        ctx.font='10px Inter,sans-serif';ctx.fillStyle=p.row.state.color;ctx.fillText(signed(p.row.x,2)+'pp',box.x,box.y+12);
+        ctx.font='10px Inter,sans-serif';ctx.fillStyle=p.row.state.color;ctx.fillText(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12);
         continue;
       }
-      ctx.font = `600 ${chosen || p.r > 26 ? 15 : 12}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
+      let fontSize = settings.rotation ? (width < 600 ? 11 : 14) : (chosen || p.r > 26 ? 15 : 12);
+      ctx.font = `600 ${fontSize}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
+      while(settings.rotation && fontSize>8 && ctx.measureText(p.row.base).width>p.r*1.8){fontSize--;ctx.font=`600 ${fontSize}px Inter, -apple-system, sans-serif`;}
       const w = Math.max(ctx.measureText(p.row.base).width + 12, 52), h = p.r > 26 || chosen ? 36 : 18;
       const b = { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h / 2, b: p.y + h / 2 };
       if (b.l < m.l || b.r > m.l + pw || b.t < m.t || b.b > m.t + ph) continue;
       if (!chosen && boxes.some(o => b.l < o.r + 5 && b.r > o.l - 5 && b.t < o.b + 5 && b.b > o.t - 5)) continue;
       boxes.push(b); ctx.textAlign = 'center'; ctx.fillStyle = light?'#374151':'#f0eee8';
       ctx.fillText(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
-      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ctx.fillText(signed(p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
+      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ctx.fillText(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
     }
     ctx.restore(); ctx.font = '11px Inter, -apple-system, sans-serif'; ctx.fillStyle = light?'#616d7c':'#909a9d';
     for (let i = -nt; i <= nt; i++) {
@@ -93,7 +95,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     ctx.textAlign = 'left'; ctx.fillStyle = light?'#616d7c':'#a5adad'; ctx.fillText(settings.axisY || '占比變化（百分點）', m.l, 20);
     ctx.textAlign = 'center'; ctx.fillText(settings.axisX || '主動買賣占比（%）', m.l + pw / 2, height - 7);
   };
-  const schedule = () => { if (!raf) raf = requestAnimationFrame(draw); };
+  const schedule = () => { if (active && !raf) raf = requestAnimationFrame(draw); };
   const resize = new ResizeObserver(entries => { const r = entries[0].contentRect; width = r.width; height = r.height; schedule(); }); resize.observe(canvas);
   const local = e => { const r = canvas.getBoundingClientRect(); return { x: e.clientX - r.left, y: e.clientY - r.top }; };
   canvas.addEventListener('pointerdown', e => { const p = local(e); pointers.set(e.pointerId, p); canvas.setPointerCapture(e.pointerId); if(pointers.size===1)drag = { ...p, px: pan.x, py: pan.y, moved: false }; if (pointers.size === 2) { const [a, b] = [...pointers.values()]; pinch = { d: Math.hypot(a.x - b.x, a.y - b.y), z: zoom }; } }, { signal });
@@ -109,10 +111,11 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
   document.addEventListener('ox:themechange',schedule,{signal});
   return {
     update(next, options = {}) { settings = options; all = next; rows = next; selected = options.selected || ''; filter = options.filter || ''; schedule(); },
-    setInteractive() { interactive = true; canvas.style.touchAction = 'none'; },
+    setInteractive(value=true) { interactive = value; canvas.style.touchAction = value?'none':'pan-y'; },
+    setActive(value){active=value;if(!value){cancelAnimationFrame(raf);raf=0;pointers.clear();drag=pinch=null;}else schedule();},
     reset() { zoom = 1; pan = { x: 0, y: 0 }; onZoom(zoom); schedule(); },
     zoom(delta) { zoom = clamp(zoom + delta, 1, 5); onZoom(zoom); schedule(); },
-    getViewport(){return {zoom,pan:{...pan}};},restoreViewport(view){if(view&&[view.zoom,view.pan?.x,view.pan?.y].every(Number.isFinite)){zoom=view.zoom;pan={...view.pan};schedule();}},
+    getViewport(){return {zoom,pan:{...pan}};},restoreViewport(view){if(view&&[view.zoom,view.pan?.x,view.pan?.y].every(Number.isFinite)){zoom=clamp(view.zoom,1,5);pan={...view.pan};onZoom(zoom);schedule();}},
     destroy() {parentSignal?.removeEventListener('abort',onAbort);life.abort(); document.removeEventListener('ox:themechange',schedule);resize.disconnect(); cancelAnimationFrame(raf); pointers.clear(); }
   };
 }

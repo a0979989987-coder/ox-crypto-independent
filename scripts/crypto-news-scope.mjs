@@ -2,7 +2,7 @@ import { pathToFileURL } from 'node:url';
 import { resolve } from 'node:path';
 import { readFile, writeFile } from 'node:fs/promises';
 
-const cryptoSources = new Set(['coindesk','cointelegraph','decrypt','cryptoslate','theblock','panews','foresight','blockbeats','odaily','blocktempo','abmedia','bitget','binance','coinbase','kraken','okx','ethereum','bitcoin-core','aptos','aave-governance','fed','bls-cpi','bls-jobs','nyse-calendar','ethereum-upgrades','bls-calendar','ecb','sec','cftc']);
+const cryptoSources = new Set(['coindesk','cointelegraph','decrypt','cryptoslate','theblock','panews','foresight','blockbeats','odaily','blocktempo','abmedia','bitget','binance','coinbase','kraken','okx','ethereum','bitcoin-core','aptos','aave-governance','fed','bls-cpi','bls-jobs','nyse-calendar','ethereum-upgrades','bls-calendar','fed-calendar','bea-calendar','foresight-calendar','ecb','sec','cftc']);
 export function projectCryptoSnapshot(snapshot) {
   const keep = item => item.market === 'crypto' || item.markets?.includes('crypto');
   const scope = item => ({...item, ...(item.markets ? {markets:['crypto']} : {}), ...(item.assets ? {assets:item.assets.filter(a=>a.market==='crypto')} : {})});

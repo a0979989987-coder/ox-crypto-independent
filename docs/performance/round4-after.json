@@ -1,0 +1,71 @@
+{
+  "conditions": {
+    "apiLatencyMs": 80,
+    "news": 385,
+    "events": 369,
+    "fixtureMarketSymbols": 8,
+    "heap": "JS heap only; excludes workers/GPU; not a physical iPhone"
+  },
+  "runs": [
+    {
+      "target": "after",
+      "width": 390,
+      "warm": false,
+      "firstNewsMs": 240,
+      "newsReturnMs": 51,
+      "newsRequests": 11,
+      "rotationEntryMs": 589,
+      "periodChangeMs": 74,
+      "sameCanvas": true,
+      "jsCssBodyBytes": 1859502,
+      "jsCssRequests": 116,
+      "heapAfterGc": 8658472,
+      "errors": []
+    },
+    {
+      "target": "after",
+      "width": 390,
+      "warm": true,
+      "firstNewsMs": 77,
+      "newsReturnMs": 46,
+      "newsRequests": 4,
+      "rotationEntryMs": 523,
+      "periodChangeMs": 42,
+      "sameCanvas": true,
+      "jsCssBodyBytes": 1859502,
+      "jsCssRequests": 116,
+      "heapAfterGc": 8953972,
+      "errors": []
+    },
+    {
+      "target": "after",
+      "width": 1440,
+      "warm": false,
+      "firstNewsMs": 222,
+      "newsReturnMs": 57,
+      "newsRequests": 13,
+      "rotationEntryMs": 534,
+      "periodChangeMs": 76,
+      "sameCanvas": true,
+      "jsCssBodyBytes": 1859502,
+      "jsCssRequests": 116,
+      "heapAfterGc": 8635976,
+      "errors": []
+    },
+    {
+      "target": "after",
+      "width": 1440,
+      "warm": true,
+      "firstNewsMs": 108,
+      "newsReturnMs": 53,
+      "newsRequests": 3,
+      "rotationEntryMs": 535,
+      "periodChangeMs": 36,
+      "sameCanvas": true,
+      "jsCssBodyBytes": 1859502,
+      "jsCssRequests": 116,
+      "heapAfterGc": 9046516,
+      "errors": []
+    }
+  ]
+}

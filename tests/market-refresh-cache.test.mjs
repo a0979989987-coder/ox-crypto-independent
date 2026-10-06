@@ -33,3 +33,8 @@ test('a complete flag cannot hide a changed symbol pool or unprocessed members',
   const cache=createMarketRefreshCache(async()=>next,{now:()=>1000000});await assert.rejects(cache.refresh(snapshot),/完整觀察池/);assert.equal(cache.stats().cached,0);
  }
 });
+
+test('same taker period shares a refresh while different periods remain separate, bounded and foreground-promoted',async()=>{
+ let calls=0,finish,transport;const cache=createMarketRefreshCache(async(seed,options)=>{calls++;transport=options.transport;return new Promise(r=>finish=()=>r({...seed,scan:{done:20,total:20,complete:true},stamp:1000}));},{keyFor:s=>s.period,isFresh:(v,now)=>v?.scan?.complete&&now-v.stamp<300000,validate:v=>assert.equal(v.scan.done,20),maxPools:3,now:()=>1000});
+ const c=new AbortController(),warm=cache.refresh({period:'1h'},{signal:c.signal,priority:-20});await Promise.resolve();const foreground=cache.refresh({period:'1h'},{priority:20});c.abort();await assert.rejects(warm,{name:'AbortError'});assert.equal(transport.priority,20);finish();await foreground;await cache.refresh({period:'1h'});assert.equal(calls,1);assert.equal(cache.stats().cached,1);
+});
