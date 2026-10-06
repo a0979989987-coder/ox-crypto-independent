@@ -110,3 +110,5 @@ Resource Timing 的傳輸大小與 duration 累加；請求可以重疊，時間
 程式回復：只 revert 本輪 PR 的 merge commit（使用 `git revert -m 1 <merge SHA>`），保留後續新聞與其他新變更；不要用舊版本整包覆蓋。正式站快速回復點為第一輪已驗證 deployment `dpl_787b6KPjkScWQ5CGF2Wxjp76mApz`，該操作只限本專案。
 
 雲端驗證：GitHub Actions run `37420874707`（產品 commit `ffcd1865065e12c7c414fb36f86b7fa8633a2579`）完整成功。Vercel 預覽 `dpl_3zcMSrNsXRRDy8x46Xmuz9oZ4Jui` Ready；已授權瀏覽器看到真實雷達、畫板全 478 幣結果、泡泡圖，切回畫板保留 T1 選取。沒有捕獲應用程式 warn/error（瀏覽器擴充套件自己的 metadata 錯誤另計）。匿名 HTTP 讀取預覽會取得 Vercel 登入頁，不能用 HTTP 200 當成功；未變更 Deployment Protection。
+
+後續 CI run `37421353330` 在報價測試捲動時碰到雷達漸進更新替換 DOM，其他階段通過。已修正測試：在操作當下重新定位捲動元素、等待實際訂閱建立，保留報價延遲、分類不變、零 K 線請求及正向控制斷言；不停止產品掃描，也不放寬斷言。本機手機／桌面重測通過。

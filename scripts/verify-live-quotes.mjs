@@ -26,7 +26,7 @@ try{for(const width of [390,1440]){
    }};
  });
  await page.evaluate(()=>switchAppView('strength'));
- const card=page.locator('#ox-crypto-tools-inline .px-card').filter({visible:true}).first();await card.waitFor({timeout:30000});await card.scrollIntoViewIfNeeded();
+ const card=page.locator('#ox-crypto-tools-inline .px-card').filter({visible:true}).first();await card.waitFor({timeout:30000});await card.evaluate(el=>el.scrollIntoView({block:'center'}));
  const symbol=(await card.getAttribute('data-result')).split(':')[0];
  await page.waitForFunction(symbol=>window.__quoteSockets.some(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).op==='subscribe'&&JSON.parse(s).args.some(a=>a.channel==='ticker'&&a.instId===symbol))),symbol);
  const before=await card.evaluate(el=>({tier:el.dataset.tier,ox:el.querySelector('.px-energy strong').textContent}));
@@ -34,8 +34,12 @@ try{for(const width of [390,1440]){
  await assert.doesNotReject(()=>card.locator('.px-change').filter({hasText:'+12.34%'}).waitFor({timeout:1500}));const patternLatencyMs=Date.now()-started;
  assert.equal(await card.getAttribute('data-tier'),before.tier);assert.equal(await card.locator('.px-energy strong').textContent(),before.ox);
  await page.evaluate(symbol=>window.__activeQuoteSocket.push(symbol,.01,1,window.__pushStamp-1),symbol);assert.equal(await card.locator('.px-change').textContent(),'+12.34%');
- await page.evaluate(()=>{switchAppView('radar');eval("state.currentTab='surge'");renderCurrentTab();});const radar=page.locator('#screener-list .coin-card[data-symbol="BTCUSDT"]');await radar.waitFor();await radar.scrollIntoViewIfNeeded();
- await page.waitForTimeout(600);const radarBefore=requests.length,radarStart=Date.now();await page.evaluate(()=>{const ws=window.__quoteSockets.findLast(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).args?.some(a=>a.channel==='ticker'&&a.instId==='BTCUSDT')));ws.push('BTCUSDT',-.0567,123456,Date.now()+2000);});
+ await page.evaluate(()=>{switchAppView('radar');eval("state.currentTab='surge'");renderCurrentTab();});const radar=page.locator('#screener-list .coin-card[data-symbol="BTCUSDT"]');await radar.waitFor();
+ // Progressive scans replace cards; do not hold a stale element while
+ // Playwright waits for scroll-animation stability. Resolve the locator at
+ // scroll time, then verify the actual quote subscription and visible text.
+ await radar.evaluate(el=>el.scrollIntoView({block:'center'}));
+ await page.waitForFunction(()=>window.__quoteSockets.some(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).op==='subscribe'&&JSON.parse(s).args.some(a=>a.channel==='ticker'&&a.instId==='BTCUSDT'))));const radarBefore=requests.length,radarStart=Date.now();await page.evaluate(()=>{const ws=window.__quoteSockets.findLast(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).args?.some(a=>a.channel==='ticker'&&a.instId==='BTCUSDT')));ws.push('BTCUSDT',-.0567,123456,Date.now()+2000);});
  await radar.locator('.turnover-change').filter({hasText:'-5.67%'}).waitFor({timeout:1500});assert.match(await radar.locator('.turnover-price').textContent(),/123.?456/);const quoteCandleCalls=await page.evaluate(()=>window.__quoteCandleCalls);assert.deepEqual(quoteCandleCalls,[],'ticker delivery and rendering must not enqueue candle downloads');
  const radarLatencyMs=Date.now()-radarStart,concurrentBackgroundCandleRequests=requests.slice(radarBefore).filter(u=>u.includes('/candles?')).length;
  // Positive control: prove this assertion would catch a candle request made
