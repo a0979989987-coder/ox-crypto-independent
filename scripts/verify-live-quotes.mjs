@@ -1,0 +1,31 @@
+import assert from 'node:assert/strict';
+import {chromium} from 'playwright';
+import {createRequire} from 'node:module';
+import {writeFile} from 'node:fs/promises';
+import {FEATURE_CATALOG} from '../server/account/feature-catalog.js';
+import {fixtureBody,routeSnapshots} from './performance-fixtures.mjs';
+process.env.OX_E2E_PORT='4308';
+const {server,preparePage,testBase}=createRequire(import.meta.url)('./e2e-check.cjs');
+await new Promise(r=>server.listen(4308,'127.0.0.1',r));
+const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
+const results=[];
+try{for(const width of [390,1440]){
+ const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW'}),{page,audit}=await preparePage(context,{width,height:900});const requests=[];page.on('request',r=>requests.push(r.url()));
+ await page.addInitScript(()=>{window.__quoteSockets=[];class WS extends EventTarget{static OPEN=1;static CLOSED=3;constructor(url){super();this.url=url;this.readyState=0;this.sent=[];window.__quoteSockets.push(this);queueMicrotask(()=>{this.readyState=1;this.onopen?.();this.dispatchEvent(new Event('open'));});}send(s){this.sent.push(s);}close(){this.readyState=3;this.onclose?.();this.dispatchEvent(new Event('close'));}push(symbol,change,price,ts){this.onmessage?.({data:JSON.stringify({arg:{instType:'USDT-FUTURES',channel:'ticker',instId:symbol},data:[{symbol,lastPr:price,change24h:change,quoteVolume:123456789,ts}],ts})});}}window.WebSocket=WS;});
+ await page.route('**/api/v1/account/**',r=>{const endpoint=new URL(r.request().url()).pathname.split('/').at(-1);return r.fulfill({json:endpoint==='feature-access'?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:endpoint==='session'?{ok:true,user:null}:{configured:false}});});
+ await page.route('https://api.bitget.com/**',r=>r.fulfill({json:fixtureBody(r.request().url())}));await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:[]}));await routeSnapshots(page);
+ await page.goto(testBase,{waitUntil:'networkidle'});await page.evaluate(()=>switchAppView('strength'));
+ const card=page.locator('#ox-crypto-tools-inline .px-card').filter({visible:true}).first();await card.waitFor({timeout:30000});await card.scrollIntoViewIfNeeded();
+ const symbol=(await card.getAttribute('data-result')).split(':')[0];
+ await page.waitForFunction(symbol=>window.__quoteSockets.some(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).op==='subscribe'&&JSON.parse(s).args.some(a=>a.channel==='ticker'&&a.instId===symbol))),symbol);
+ const before=await card.evaluate(el=>({tier:el.dataset.tier,ox:el.querySelector('.px-energy strong').textContent,canvas:el.querySelector('canvas')}));
+ const started=Date.now();await page.evaluate(symbol=>{const ws=window.__quoteSockets.findLast(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).args?.some(a=>a.channel==='ticker'&&a.instId===symbol)));window.__activeQuoteSocket=ws;window.__pushStamp=Date.now()+1000;ws.push(symbol,.1234,123456,window.__pushStamp);},symbol);
+ await assert.doesNotReject(()=>card.locator('.px-change').filter({hasText:'+12.34%'}).waitFor({timeout:1500}));const patternLatencyMs=Date.now()-started;
+ assert.equal(await card.getAttribute('data-tier'),before.tier);assert.equal(await card.locator('.px-energy strong').textContent(),before.ox);
+ await page.evaluate(symbol=>window.__activeQuoteSocket.push(symbol,.01,1,window.__pushStamp-1),symbol);assert.equal(await card.locator('.px-change').textContent(),'+12.34%');
+ await page.evaluate(()=>{switchAppView('radar');eval("state.currentTab='surge'");renderCurrentTab();});const radar=page.locator('#screener-list .coin-card[data-symbol="BTCUSDT"]');await radar.waitFor();await radar.scrollIntoViewIfNeeded();
+ await page.waitForTimeout(600);const radarBefore=requests.length,radarStart=Date.now();await page.evaluate(()=>{const ws=window.__quoteSockets.findLast(ws=>ws.readyState===1&&ws.sent.some(s=>s!=='ping'&&JSON.parse(s).args?.some(a=>a.channel==='ticker'&&a.instId==='BTCUSDT')));ws.push('BTCUSDT',-.0567,123456,Date.now()+2000);});
+ await radar.locator('.turnover-change').filter({hasText:'-5.67%'}).waitFor({timeout:1500});assert.match(await radar.locator('.turnover-price').textContent(),/123.?456/);assert.equal(requests.slice(radarBefore).filter(u=>u.includes('/candles?')).length,0);
+ results.push({width,simulatedTickerPush:true,patternLatencyMs,radarLatencyMs:Date.now()-radarStart,classificationUntouched:true,extraCandleRequests:0,errors:audit.pageErrors});assert.deepEqual(audit.pageErrors,[]);await context.close();
+}}finally{await browser.close();await new Promise(r=>server.close(r));}
+await writeFile('docs/performance/live-quotes-browser.json',JSON.stringify({note:'Browser timings use injected WebSocket ticker messages and fixed HTTP fixtures; not a physical iPhone or protected Vercel preview.',results},null,2)+'\n');console.log(JSON.stringify(results));

@@ -52,8 +52,8 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "f7089fdbd30cfbfb70bd7782f4c05beabfce36b2ebab1e065dfd7c914b507e58",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "571c88d6c15d1a986881b404d28b7a55903371bcb8d0c4192a9449c3f7e4c914",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
@@ -114,6 +114,18 @@
       "sourceSha256": "cccd5494dc81ad8586124f909705e2a83ecaf10a76fd3e313f05522cfe633cab",
       "sha256": "1a64911d9085f445cd21ea5374232ae0552388e5a5d7b50f93604f452525fc01",
       "reason": "Public catalog reads are independent of login/session configuration; preview uses existing public DB endpoint/key. Policy validity and login enforcement remain unchanged."
+    },
+    {
+      "path": "src/markets/crypto/api.js",
+      "sourceSha256": "422644421259ef776f8da824dbfe90141e71f9bc44d1134d2d5e1d1552b72cd5",
+      "sha256": "12ad65eafcc95626e793e81a1f836bbb148dfd3e5913d5ff82f472a716aed2d9",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+    },
+    {
+      "path": "src/markets/crypto/presentation.js",
+      "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
+      "sha256": "8d4d8bb070a4fc2c9c23b284abccd784f6a3440f23b95617ad159401238d2851",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
     }
   ]
 }

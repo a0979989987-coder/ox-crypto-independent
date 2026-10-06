@@ -267,3 +267,21 @@ OX_BASELINE_ROOT=/path/to/baseline node scripts/compare-performance-results.mjs
 此輪僅政策來自實際後台；行情是8幣fixture、WebSocket為模擬。本機 assets／handler 與 Playwright 路由串接，不是受保護 Vercel 預覽的實際 HTTP 瀏覽器驗收。第一次公開政策讀取7030ms，第二個新瀏覽器 context 為196ms（同一Node程序的HTTP連線可能復用），不能當作裝置冷啟動或正式API SLA。首次政策等待仍是真正依賴，不以永久快取或預設公開绕過；既有10秒前端逾時及人工重試保留。
 
 重現：只提供既有 OX_SUPABASE_URL／OX_SUPABASE_PUBLISHABLE_KEY，設定 OX_VERIFY_LIVE_POLICY=1、可選 OX_TEST_BROWSER，再執行 node scripts/verify-live-preview-policy.mjs。不需登入密鑰。此測試有明確 live opt-in，不讓一般CI自動讀真實資料。
+
+## 即時跳價修復（2026-10-06，續作）
+
+使用者回報畫板／雷達的幣種數字變慢。原雷達 ticker HTTP cadence 是 15 秒；保留畫板後，卡片漲跌及成交額仍綁定 scanUniverse 的行情快照，而分類新鮮度允許不重新掃描，導致數字停留。這些數字不應依靠重新分類才能更新。
+
+新增 src/markets/crypto/live-quotes.js：一條 Bitget 公開 ticker WebSocket，共用訂閱、最多100個可見/目前幣種與240筆快取，500ms合併訂閱變更，RAF只送出有變更的幣種。更新畫板漲跌／成交額、雷達漲跌／價格／成交額與基準／目前價格。分類、OX分數、排名、K線歷史與完整掃描集合不被報價推送改寫；主圖OHLC仍使用原CryptoLiveCandles，不拿ticker編造K線。
+
+離開工具／背景／功能權限遮罩時停止不必要訂閱；共享訂閱解除不會取消其他消費者。過期或亂序資料、已結束socket的訊息不可覆蓋新資料。報價新鮮度15秒；沿用原行情HTTP供應快照回退，不增加HTTP輪詢排程。斷線最多5次連續失敗重試，online／可見恢復可重試，不無限重整。需要登入的功能依既有前端及後端政策，未修改帳號授權或資料庫設定。
+
+scripts/verify-live-quotes.mjs（npm run test:quotes）在390與1440瀏覽器注入固定ticker訊息，畫板29ms、雷達31ms顯示更新，分级與OX不變、額外K線請求0、JS例外0，見live-quotes-browser.json。這是推送收到後的模擬UI延遲，不是Bitget網路延遲或實體iPhone驗收；原版同條件推送顯示延遲未量測，15秒為程式設定值。沒有將此輪冒充完整冷啟動的重測。
+
+獨立Node WebSocket唯讀探測：12秒內收到12筆BTCUSDT ticker，觀察到達間隔93–121ms（連線時間包含在12秒）；所有筆價格相同，不能由此宣稱真實價格每幾百毫秒變動或已在線上預覽驗收。測試不需要金鑰。自動測試另涵蓋共用socket、離開隔離、乱序REST／push、隱藏恢復、有限重試、快取上限、合併訂閱、只更新受影響訂閱及權限遮罩。
+
+Vercel重查：專案metadata與deployment aliases已可讀；deployment events仍403，錯誤明示缺少ox-lab scope授權。未關閉SSO或修改其他站點。受保護預覽的真實browser／帳號流程仍待驗收，正式站維持原部署。
+
+回復方式：revert 本次即時跳價修復提交，移除新增ticker script及其展示掛接，回復原HTTP cadence／卡片快照；其他效能清理及預覽政策修復可保持。回復不涉及共享DB或環境金鑰。
+
+本次最終驗證：355/355單測、build/check、71來源檔案／21 reviewed hashes、390/1440深淺色介面及完整performance故障／切換回歸通過。新ticker script原始5194 bytes（未壓縮）；本輪新增串流的下載與記憶體前後量測尚未重跑，不沿用舊冷啟動数字宣稱此版更快。
