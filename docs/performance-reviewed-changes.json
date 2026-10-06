@@ -4,7 +4,7 @@
     {
       "path": "src/markets/crypto/bubbles/view.js",
       "sourceSha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894",
-      "sha256": "a774b9f10e934ff2365a91f15b34c482a15c20ed3c7c75d3970165895a6ff02e",
+      "sha256": "b40d1836991601f77e053f304416296374ed43361dbbae598e38e3f34a887cb5",
       "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
     },
     {
@@ -16,7 +16,7 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "a96bb22a9ee31d0f6e2fd2e260a4a15d3d9823992e2a2fa44394d50cd4136810",
+      "sha256": "14af585f8072a8584e47d0a1b6b4d06b36bca54cc9a79a256d02a2bafd6e7acf",
       "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
     },
     {
@@ -28,13 +28,13 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "1cf443999cd758e7d86cbe49836fc399d803031ecc1f91fef694b7bc66668eb6",
+      "sha256": "915b541db8e185f92c8fd562036af0864bb5fcfff6da6c485f2411b347bb19cf",
       "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "4d75f4ab27f6163e66165c17f0adc14d6e4d3d7ced7e0f5bec9eb2a7ff02c223",
+      "sha256": "a1ea2d2cb3aa434174339edb91021e3380b94a3d3b78687b581c1470d3d5d188",
       "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
     },
     {
@@ -52,7 +52,7 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "571c88d6c15d1a986881b404d28b7a55903371bcb8d0c4192a9449c3f7e4c914",
+      "sha256": "a27d408edbd1385def51e94b2e6590235eed5fb40ef6720294bc89e56fc0fcb7",
       "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
     },
     {
@@ -88,7 +88,7 @@
     {
       "path": "src/core/public-feed.js",
       "sourceSha256": "5adec9d3f10059c10c1c1594a071958116a8d8f7f6f7788824b6c477999f7117",
-      "sha256": "d50aa94e46c0e4b9bd68bdf089587402c1984390d63f14f5de1b16cb54fda019",
+      "sha256": "ad8787d9629900dea34f4656889dd39e29843b932415be92e659b26c1e75ecbb",
       "reason": "Remove measured scan queue idle time; bounded adaptive transport with chart reserve, 429 cooldown, wake-on-return and queue/download diagnostics. Classification unchanged."
     },
     {

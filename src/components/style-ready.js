@@ -1,7 +1,7 @@
 import { loadStyle } from './style-resource.js?v=20261005-stable18';
 export function preloadToolStyles(href) {
   return Promise.all([href, String(href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261005-load16'),
-    new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5', import.meta.url).href].map(loadStyle));
+    new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5', import.meta.url).href].map(url => loadStyle(url, { priority: 'low' })));
 }
 // Inject complete, shared CSS text instead of relying on shadow-link load
 // events, which can be late or missed when Safari restores a cached view.

@@ -46,3 +46,9 @@ test('diagnostic history is bounded',async()=>{
  for(let i=0;i<260;i++)await f.json('https://market.test/'+i);
  assert.equal(f.timings().length,240);
 });
+test('speculative preparation uses at most one slot while charts can start immediately',async()=>{
+ const started=[],releases=[];const f=feed({intervalMs:0,fetcher:async url=>{started.push(url);await new Promise(r=>releases.push(r));return response(url);}});
+ const first=f.json('https://market.test/warm-a',{priority:-20}),second=f.json('https://market.test/warm-b',{priority:-10});
+ const chart=f.json('https://market.test/chart',{priority:100});assert.equal(started.length,2);assert.ok(started[1].endsWith('/chart'));
+ releases.shift()();releases.shift()();await Promise.all([first,chart]);await new Promise(r=>setImmediate(r));assert.equal(started.length,3);releases.shift()();await second;
+});

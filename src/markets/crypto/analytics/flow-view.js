@@ -3,8 +3,9 @@ import { buildRotation, heatmapRows, ROTATION_STATES, TOOL_PERIODS } from './too
 import { createFlowChart } from './flow-chart.js?v=20261001-loading1';
 import { createToolChart } from './tools-charts.js?v=20261005-graytop5';
 import { refreshFlow } from './flow-source.js';
-import { revealStyledShadow } from '../../../components/style-ready.js?v=20261005-stable18';
+import { revealStyledShadow, preloadToolStyles } from '../../../components/style-ready.js?v=20261005-stable18';
 import { refreshMarket } from './market-live.js';
+import { createMarketRefreshCache } from './market-cache.js';
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const paths={close:'<path d="m6 6 12 12M18 6 6 18"/>',back:'<path d="m10 5-7 7 7 7M3 12h18"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',reset:'<path d="M3 4v6h6M4 10a8 8 0 1 1 1 8"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/>',search:'<circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',play:'<path d="m8 4 12 8-12 8Z"/>',pause:'<path d="M8 4v16M16 4v16"/>',settings:'<path d="M4 7h16M4 17h16M8 4v6M16 14v6"/>',refresh:'<path d="M4 4v6h6M4 10a8 8 0 1 1 1 8"/>',plus:'<path d="M5 12h14M12 5v14"/>',minus:'<path d="M5 12h14"/>'};
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
@@ -18,10 +19,18 @@ const color=v=>v>=0?'positive':'negative';
 const time=t=>new Date(t).toLocaleTimeString('zh-TW',{timeZone:'Asia/Taipei',hour:'2-digit',minute:'2-digit',hour12:false});
 const TABS=[['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
 let cachedMarket=null,cachedFlow=null;const latestFlows=new Map();
-function loadCached(url,kind){
+const marketRefresh=createMarketRefreshCache(refreshMarket);
+export const preloadAnalyticsStyles=()=>preloadToolStyles(cssURL.href);
+export const preloadFlowSnapshot=()=>loadCached(snapshotURL,'flow','low');
+export async function preloadAnalyticsMarket(signal) {
+ const snapshot=await loadCached(marketURL,'market','low');
+ const next=await marketRefresh.refresh(snapshot,{signal,owner:'analytics-preload',priority:-20});
+ cachedMarket=Promise.resolve(next);
+}
+function loadCached(url,kind,priority='high'){
  const current=kind==='market'?cachedMarket:cachedFlow;
  if(current)return current;
- const next=fetch(url,{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();}).catch(e=>{if(kind==='market')cachedMarket=null;else cachedFlow=null;throw e;});
+ const next=fetch(url,{signal:AbortSignal.timeout(12000),priority}).then(r=>{if(!r.ok)throw Error('HTTP '+r.status);return r.json();}).catch(e=>{if(kind==='market')cachedMarket=null;else cachedFlow=null;throw e;});
  if(kind==='market')cachedMarket=next;else cachedFlow=next;
  return next;
 }
@@ -37,7 +46,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(Date.now()-Number(market.requestTime)<5*60000)return;
   marketRequest=new AbortController();lastMarketAttempt=Date.now();notice('正在更新 Bitget 觀察池…');
   const loading=window.OXLoading?.begin('crypto','更新熱力圖與板塊',{signal:marketRequest.signal,total:market.tickers.length,done:0,views:['strength'],target:q('[data-slot="loading"]')});
-  try{const next=await refreshMarket(market,{signal:marketRequest.signal,onPartial:next=>{if(life.signal.aborted||suspended||marketRequest?.signal.aborted)return;partialMarket=next;if(next.scan.done===1||next.scan.done%5===0)render();},onProgress:(n,total)=>{loading?.update(n,total);if(n===total||n%5===0)notice(`Bitget 更新 ${n}/${total} 幣…`);}});
+  try{const next=await marketRefresh.refresh(market,{signal:marketRequest.signal,onPartial:next=>{if(life.signal.aborted||suspended||marketRequest?.signal.aborted)return;partialMarket=next;if(next.scan.done===1||next.scan.done%5===0)render();},onProgress:(n,total)=>{loading?.update(n,total);if(n===total||n%5===0)notice(`Bitget 更新 ${n}/${total} 幣…`);}});
    if(!life.signal.aborted&&!suspended){market=next;partialMarket=null;cachedMarket=Promise.resolve(next);render();}
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted)notice(`即時更新失敗：${e.message}；目前顯示有時間戳的快照。`);}
   finally{const cancelled=marketRequest?.signal.aborted;marketRequest=null;loading?.finish();if(cancelled&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}

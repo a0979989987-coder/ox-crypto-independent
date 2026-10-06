@@ -60,6 +60,7 @@ if (section) {
     nav.hidden = !active();
     if (!active()) { delete section.dataset.cryptoTool; unmount(); return; }
     if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync)){unmount();return;}
+    if(section.dataset.cryptoTool!==selected)document.dispatchEvent(new CustomEvent('ox:crypto-toolchange',{detail:{tool:selected}}));
     section.dataset.cryptoTool=selected; positionIndicator();requestAnimationFrame(positionIndicator);
     if(selected==='strength'){unmount();return;}
     slot.hidden = false;

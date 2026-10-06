@@ -1,6 +1,7 @@
 import { marketRouter } from "./marketRouter.js?v=20261002-nav6";
 import './storage-migrations.js?v=20261004-markets2';
 import { loadToolModule } from '../components/load-tool-module.js';
+import { createToolWarmup } from '../components/tool-warmup.js';
 import { cryptoModule } from "../markets/crypto/index.js";
 
 export function bootOXModules(modules = []) {
@@ -69,16 +70,34 @@ const restoreMarketView = () => {
 if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", restoreMarketView, { once: true });
 else restoreMarketView();
 
-// Public Crypto board warms gradually after initial paint; protected tools never preload.
-let cryptoWarmTimer=0,warmModule=null;
-const warmAllowed=()=>!document.hidden&&document.body.dataset.market==='crypto'&&document.body.dataset.view!=='strength'&&window.OXFeatures?.canPreload?.('crypto.patterns');
-const scheduleCryptoWarm=()=>{clearTimeout(cryptoWarmTimer);if(!warmAllowed()){warmModule?.stopPatternPreload();return;}cryptoWarmTimer=setTimeout(async()=>{
-  if(!warmAllowed())return;
-  if(globalThis.OXPublicFeed?.stats().priorityActive){scheduleCryptoWarm();return;}
-  try{warmModule=await loadToolModule(new URL('../markets/crypto/patterns/view.js',import.meta.url).href,{current:warmAllowed});if(warmAllowed())void warmModule.preloadPatternSearch();}catch{/* Foreground loading has finite recovery UI. */}
-},2500);};
-document.addEventListener('ox:feature-policy-ready',scheduleCryptoWarm);
-document.addEventListener('ox:marketchange',scheduleCryptoWarm);
-document.addEventListener('ox:viewchange',scheduleCryptoWarm);
-document.addEventListener('visibilitychange',scheduleCryptoWarm);
-scheduleCryptoWarm();
+// Replace the pattern-only timer with one staged preparation queue. Jobs only
+// use public policy, shared loaders and the existing public market transport.
+const modules = new Map();
+const prepareModule = async (kind, path, signal) => {
+  const module = await loadToolModule(new URL(path, import.meta.url).href, { current: () => !signal.aborted });
+  modules.set(kind, module); return module;
+};
+const warmJobs = [
+  { id:'bubbles-assets', features:['bubbles'], run:async signal => (await prepareModule('bubbles','../markets/crypto/bubbles/view.js',signal)).preloadBubblesStyles() },
+  { id:'analytics-assets', features:['heatmap','rotation','flow'], run:async signal => (await prepareModule('analytics','../markets/crypto/analytics/flow-view.js',signal)).preloadAnalyticsStyles() },
+  { id:'patterns-assets', features:['patterns'], run:async signal => (await prepareModule('patterns','../markets/crypto/patterns/view.js',signal)).preloadPatternStyles() },
+  { id:'flow-snapshot', features:['flow'], data:true, run:() => modules.get('analytics').preloadFlowSnapshot() },
+  { id:'analytics-market', features:['heatmap','rotation'], data:true, repeatMs:300000, run:signal => modules.get('analytics').preloadAnalyticsMarket(signal) },
+  { id:'patterns-index', features:['patterns'], data:true, repeatMs:60000, run:signal => modules.get('patterns').preloadPatternSearch({signal}) }
+];
+const warmup = createToolWarmup({ jobs:warmJobs, enabled:() => !document.hidden && document.body.dataset.market === 'crypto', eligible:job => {
+  if (document.hidden || document.body.dataset.market !== 'crypto' || !job.features.some(id => window.OXFeatures?.canPreload?.('crypto.'+id))) return false;
+  const feed = globalThis.OXPublicFeed?.stats();
+  if (feed?.priorityActive || feed?.priorityQueued) return false;
+  // Do not move initial chart/radar waiting into a wave of speculative work.
+  if (typeof state === 'undefined' || !state.candleData?.length || !state.tickers?.length) return false;
+  if (document.body.dataset.view === 'radar' && !state.analyzedCache?.size && !state.radarSnapshotReady) return false;
+  if (job.data && document.body.dataset.view === 'strength') return false;
+  if (job.data && !modules.has(job.id === 'patterns-index' ? 'patterns' : 'analytics')) return false;
+  const loading = document.querySelector('#ox-crypto-tools-inline > .ox-tool-loading');
+  return !loading || loading.hidden || document.body.dataset.view !== 'strength';
+} });
+globalThis.OXToolWarmup = Object.freeze({ stats:warmup.stats });
+for (const event of ['ox:feature-policy-ready','ox:marketchange','ox:viewchange','visibilitychange','online']) document.addEventListener(event, () => warmup.poke());
+document.addEventListener('ox:crypto-toolchange', () => warmup.poke({interaction:true}));
+for (const event of ['pointerdown','keydown','wheel']) document.addEventListener(event, () => warmup.poke({interaction:true}), {passive:true});

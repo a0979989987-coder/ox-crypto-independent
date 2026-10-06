@@ -18,6 +18,7 @@
   function pump(){clearTimeout(wake);wake=0;if(active.size>=concurrency)return;queue.sort((a,b)=>b.priority-a.priority||a.id-b.id);const now=Date.now();let next=Infinity;
    for(const job of [...queue]){if(active.size>=concurrency)break;if(job.done)continue;
     if(concurrency>1&&job.priority<100&&active.size>=concurrency-1)continue;
+    if(job.priority<0&&[...active].some(current=>current.priority<0))continue;
     const host=hosts.get(job.host)||{next:0,cool:0,interval:intervalMs,successes:0};hosts.set(job.host,host);const at=Math.max(host.next,host.cool);if(at>now){next=Math.min(next,at);continue;}
     queue.splice(queue.indexOf(job),1);host.next=now+host.interval;job.queueMs+=now-job.queuedAt;job.started=now;active.add(job);run(job,host);
    }
@@ -44,7 +45,7 @@
    });
   }
   function cancel(owner){for(const job of [...queue,...active])for(const reader of [...job.readers])if(reader.owner===owner)reader.cancel();}
-  return Object.freeze({json,cancel,timings:()=>timings.map(row=>({...row})),stats:()=>({queued:queue.length,active:active.size,priorityActive:[...active].filter(j=>j.priority>=100).length,cached:cache.size,hits,merged}),create:createPublicFeed});
+  return Object.freeze({json,cancel,timings:()=>timings.map(row=>({...row})),stats:()=>({queued:queue.length,active:active.size,priorityActive:[...active].filter(j=>j.priority>=100).length,priorityQueued:queue.filter(j=>j.priority>=100).length,cached:cache.size,hits,merged}),create:createPublicFeed});
  }
  globalThis.OXPublicFeed=createPublicFeed();
 })();
