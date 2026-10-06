@@ -1,0 +1,48 @@
+{
+  "baseline": "9eedb0da676d93a898c058b6c264452e09a7263d",
+  "flows": [
+    {
+      "period": "15m",
+      "rows": 15,
+      "expected": 20,
+      "excluded": 5,
+      "identical": true
+    },
+    {
+      "period": "1h",
+      "rows": 14,
+      "expected": 20,
+      "excluded": 6,
+      "identical": true
+    },
+    {
+      "period": "4h",
+      "rows": 15,
+      "expected": 20,
+      "excluded": 5,
+      "identical": true
+    }
+  ],
+  "patterns": [
+    {
+      "path": "src/markets/crypto/patterns/matcher.js",
+      "identical": true,
+      "sha256": "9203a6b79a60f7989f962d5315a0bc0eca633d8bd6d103e1d0c0e2c9be4808bc"
+    },
+    {
+      "path": "src/markets/crypto/patterns/worker.js",
+      "identical": true,
+      "sha256": "0d958f1fbe9ed35b02afb2b9ed914091b160d688412709962e6bd998d2dafc09"
+    },
+    {
+      "path": "src/markets/crypto/patterns/source.js",
+      "identical": true,
+      "sha256": "9c54fefb932f2b937c9a46023c84a417921925c9ef41784bceb9824b3935ec52"
+    },
+    {
+      "path": "src/generated/pattern-worker.js",
+      "identical": true,
+      "sha256": "3a108253373cc527b436182ae563ec6476cafe82a96db3bc35cc5d5f0b67df3d"
+    }
+  ]
+}

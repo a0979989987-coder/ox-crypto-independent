@@ -26,4 +26,5 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run test:e2e
       - run: npm run test:performance
+      - run: npm run test:news-rotation
       - run: npm run test:quotes

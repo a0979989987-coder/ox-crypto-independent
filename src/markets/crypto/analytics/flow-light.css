@@ -114,3 +114,8 @@
 :host([data-ox-theme="light"]) .chart>path[stroke="#e5e9e8"]{stroke:#8d712e}
 
 :host([data-ox-theme="light"]) :is(.ox-loading-label,.ox-loading-count,.ox-loading-detail){color:#616d7c!important}
+
+:host([data-ox-theme="light"]) .cfx{--bg:#fff;--panel:#f7f8fa;--line:#b8c1cc;--muted:#616d7c}
+:host([data-ox-theme="light"]) .cfx-research-panel,:host([data-ox-theme="light"]) .cfx-bottom-actions,:host([data-ox-theme="light"]) .cfx-research-toolbar{border-color:#b8c1cc!important}
+:host([data-ox-theme="light"]) .cfx-segment,:host([data-ox-theme="light"]) .cfx-picker,:host([data-ox-theme="light"]) .cfx-replay-toggle,:host([data-ox-theme="light"]) .cfx-replay-controls button,:host([data-ox-theme="light"]) .cfx-replay-controls select{background:#fff!important;color:#374151!important;border-color:#b8c1cc!important}
+:host([data-ox-theme="light"]) .cfx-segment button[aria-pressed=true]{background:#eef1f5!important}

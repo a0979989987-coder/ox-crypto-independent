@@ -117,3 +117,12 @@
 .px-local-loading .ox-loading{display:flex;gap:0}
 .px-local-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
 .px-local-loading .ox-loading-count,.px-local-loading .ox-loading-label{display:none}
+
+/* The status is internal; the docked scan button carries progress. */
+.px-status-row[hidden]{display:none!important}
+.px-scan-error{margin:6px 0 10px;font-size:11px;color:#cd9399}
+.px-refresh-glyph{inset:auto;left:50%;top:50%;width:20px;height:20px;transform:translate(-50%,-50%)}
+.px-refresh-glyph svg{width:20px;height:20px;margin:0;padding:0;animation:none!important}
+.px-scan-sweep{transform-origin:12px 12px;transform-box:view-box}
+.px-refresh-pill.is-scanning .px-scan-sweep{animation:px-refresh-spin 2.4s linear infinite}
+@media(prefers-reduced-motion:reduce){.px-refresh-pill.is-scanning .px-scan-sweep{animation:none}}

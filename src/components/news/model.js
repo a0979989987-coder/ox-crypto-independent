@@ -2,8 +2,9 @@ import { SOURCE_CATALOG, MARKET_CATEGORIES, EVENT_PROVIDERS } from './config.js?
 export const validDate = value => { if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return false; const date = new Date(`${value}T00:00:00Z`); return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value; };
 export const safeLink = value => { try { const u = new URL(value); return u.protocol === 'https:' && !u.username && !u.password ? u.href : null; } catch { return null; } };
 export const plain = value => String(value ?? '').replace(/<[^>]*>/g, '').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g, '').trim();
+const dayFormatter = new Intl.DateTimeFormat('en-CA', { timeZone:'Asia/Taipei', year:'numeric', month:'2-digit', day:'2-digit' });
 export function taipeiDay(value = new Date()) {
-  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(new Date(value));
+  const parts = dayFormatter.formatToParts(new Date(value));
   const part = name => parts.find(p => p.type === name).value;
   return `${part('year')}-${part('month')}-${part('day')}`;
 }
@@ -39,15 +40,22 @@ export function defaultState() { return { tab: 'calendar', calendarView: 'month'
 export const inMarket = (item, scope) => Boolean(item.markets?.includes('crypto') && (scope === 'all' || scope === 'crypto') &&
   (!(item.kind === 'event' || item.date || item.occursAt) || !eventCategory(item) || MARKET_CATEGORIES.crypto?.includes(eventCategory(item))));
 export function upcomingEventDays(snapshot, scope, state, start) {
-  return Array.from({ length: 8 }, (_, index) => {
-    const date = new Date(start + 'T12:00:00Z'); date.setUTCDate(date.getUTCDate() + index);
-    const day = date.toISOString().slice(0, 10);
-    const events = (snapshot?.events || []).filter(item => eventDay(item) === day && inMarket(item, scope) &&
-      (state.categories === null || state.categories.includes(eventCategory(item))) && matchesImportance(item, state.importance))
-      .sort((a, b) => (a.occursAt || '').localeCompare(b.occursAt || '') || (a.titleZh || a.title || '').localeCompare(b.titleZh || b.title || ''));
-    return { date: day, events, index };
-  }).filter(day => day.index === 0 || day.events.length);
+  const indexed = new Map();
+  const end = new Date(start + 'T12:00:00Z'); end.setUTCDate(end.getUTCDate()+7);
+  const last = end.toISOString().slice(0,10);
+  for (const item of snapshot?.events || []) {
+    const day=eventDay(item);
+    if(!day || day<start || day>last || !inMarket(item,scope) || state.categories!==null&&!state.categories.includes(eventCategory(item)) || !matchesImportance(item,state.importance))continue;
+    if(!indexed.has(day))indexed.set(day,[]);indexed.get(day).push(item);
+  }
+  return Array.from({length:8},(_,index)=>{
+    const date=new Date(start+'T12:00:00Z');date.setUTCDate(date.getUTCDate()+index);
+    const day=date.toISOString().slice(0,10);
+    const events=(indexed.get(day)||[]).sort((a,b)=>(a.occursAt||'').localeCompare(b.occursAt||'')||(a.titleZh||a.title||'').localeCompare(b.titleZh||b.title||''));
+    return {date:day,events,index};
+  }).filter(day=>day.index===0||day.events.length);
 }
+
 export function canonicalURL(value) {
   const safe = safeLink(value); if (!safe) return null;
   const url = new URL(safe); for (const key of [...url.searchParams.keys()]) if (/^(utm_|fbclid|gclid|ref$)/i.test(key)) url.searchParams.delete(key);
@@ -141,10 +149,12 @@ export function sourcesFor(snapshot, scope) {
 }
 export function coverage(snapshot, scope, month) {
   const sources = sourcesFor(snapshot, scope), categories = MARKET_CATEGORIES[scope];
+  const knownCounts=new Map();
+  for(const e of snapshot?.events||[])if(inMarket(e,scope)&&eventDay(e)?.slice(0,7)===month){const type=eventCategory(e);knownCounts.set(type,(knownCounts.get(type)||0)+1);}
   const categoryCoverage = categories.map(category => {
     const spans = (snapshot?.eventCoverage || []).filter(c => c.category === category && (scope === 'all' || c.markets?.includes(scope)));
     const covered = spans.some(c => c.from?.slice(0, 7) <= month && c.to?.slice(0, 7) >= month && c.complete === true);
-    const known = (snapshot?.events || []).filter(e => inMarket(e, scope) && eventCategory(e) === category && eventDay(e)?.slice(0, 7) === month).length;
+    const known = knownCounts.get(category)||0;
     const connected = sources.filter(s => EVENT_PROVIDERS[category]?.includes(s.id) && s.status !== 'not-connected');
     return { category, covered, known, spans, connected };
   });

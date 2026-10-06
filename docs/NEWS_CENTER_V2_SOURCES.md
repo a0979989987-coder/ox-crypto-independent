@@ -1,50 +1,54 @@
 # 加密獨立版新聞來源與限制
 
-2026-10-06：已移除台股來源與解析器；以下來源條款、國際總經與加密事件說明保留。下列 2026-10-02 筆數是歷史快照紀錄，非目前即時統計。
+2026-10-06 更新：快照 2026-10-06T08:49:45.788Z。保存 385 篇中文新聞、0 篇待譯、369 筆事件；2026 年 10 月共 23 筆。數量是保存總量，畫面另套用時間、來源、重要性與去重篩選。
 
-查核／快照時間：2026-10-02T03:12:18.549Z（台北 11:12）。現有正式 main 排程為六小時收集，非即時串流；本次預覽使用部署所附快照，不會因 main 排程而更新。新版收集器僅在未來驗收、合併後才進入正式排程。
+收集排程維持每六小時，只保存公開標題、發布時間與原始連結；不轉載文章全文、照片或第三方摘要。繁中標題按精確 ID、來源與原文保存，治理提案另按精確原文保存中文標題。既有人工翻譯优先；沒有翻譯 API 金鑰，未新增付費服務。
 
-只保存 RSS 標題、原文連結與發布時間；不抓全文、照片或來源摘要。人工核對的繁中標題以精確 ID、来源與原文綁定，未譯標示待補；沒有自動翻譯服務金鑰。公開可讀 feed 的技術驗證不代表取得全文、商業轉授權或完整歷史資料庫。原文權利保留，未付費或替使用者訂閱。
+本輪補接 Bitget 官方公告、Odaily 公開 RSS；補接聯準會 FOMC、BEA GDP／PCE 官方排程與 Foresight News 公開區塊鏈日曆。Bitget 公告發布時間只用於新聞，不推定維護、上架或解鎖生效時間。Foresight 為媒體彙整，與官方確認分開標示，午夜占位僅作日期；日期矛盾、季度占位、已延期或未逐一核對的法律生效項目均不收錄。
 
-快照：243 篇已譯／原生繁中、37 篇待譯、200 個累積真實來源事件。篇數是去重／時間篩選前的保存總量，UI 按發布時間、來源、市場及去重結果另算。
+| 來源 ID | 實測狀態 | 本次回應篇／件數 | 公開接口 |
+|---|---|---:|---|
+| odaily | ready | 10 | https://rss.odaily.news/rss/newsflash |
+| theblock | ready | 19 | https://www.theblock.co/rss.xml |
+| cryptoslate | ready | 10 | https://cryptoslate.com/feed/ |
+| abmedia | ready | 0 | https://abmedia.io/feed |
+| blocktempo | ready | 2 | https://www.blocktempo.com/feed/ |
+| coindesk | ready | 25 | https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml |
+| cointelegraph | ready | 30 | https://cointelegraph.com/rss |
+| fed | ready | 15 | https://www.federalreserve.gov/feeds/press_monetary.xml |
+| bls-cpi | ready | 12 | https://www.bls.gov/feed/cpi.rss |
+| bls-jobs | ready | 12 | https://www.bls.gov/feed/empsit.rss |
+| sec | ready | 1 | https://www.sec.gov/news/pressreleases.rss |
+| ethereum | ready | 50 | https://blog.ethereum.org/en/feed.xml |
+| kraken | ready | 10 | https://blog.kraken.com/feed |
+| cftc | ready | 2 | https://www.cftc.gov/RSS/RSSGP/rssgp.xml |
+| bitcoin-core | ready | 10 | https://github.com/bitcoin/bitcoin/releases.atom |
+| bitget | ready | 9 | https://api.bitget.com/api/v2/public/annoucements?language=zh_CN |
+| fed-calendar | ready | 48 | https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm |
+| bea-calendar | ready | 9 | https://www.bea.gov/news/schedule |
+| foresight-calendar | ready | 19 | https://api.foresightnews.pro/v1/calendar.ics |
+| nyse-calendar | ready | 34 | https://www.nyse.com/trade/hours-calendars |
+| ethereum-upgrades | ready | 1 | https://blog.ethereum.org/2026/09/17/glamsterdam-testnet-announcement |
+| aptos | ready | 1 | https://aptosnetwork.com/currents/aptos-tokenomics-overview |
+| bls-calendar | ready | 53 | https://www.bls.gov/schedule/news_release/current_year.asp |
+| aave-governance | ready | 200 | https://hub.snapshot.org/graphql |
 
-| 來源 | 市場 | 本版狀態 | 最近回應篇／件數 | 接入或缺口 |
-|---|---|---|---:|---|
-| CoinDesk | crypto | ready | 25 | https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml |
-| Cointelegraph | crypto | ready | 30 | https://cointelegraph.com/rss |
-| Decrypt | crypto | not-connected | — | RSS 回應已實測；官方服務條款限制自動收集，移除文章且不啟用。https://decrypt.co/terms-of-service |
-| The Block | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| PANews | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Foresight News | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| BlockBeats | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Odaily | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 動區動趨 BlockTempo | crypto | ready | 4 | https://www.blocktempo.com/feed/ |
-| 鏈新聞 ABMedia | crypto | ready | 5 | https://abmedia.io/feed |
-| Bitget 官方公告 | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Binance 官方公告 | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Coinbase 官方公告 | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Kraken 交易所 | crypto | error | — | 官方 feed 返回 HTTP 200 HTML SiteUnavailable，不是 RSS；保留最後成功快照並顯示更新失敗。 |
-| OKX 官方公告 | crypto | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 以太坊基金會 | crypto | ready | 50 | https://blog.ethereum.org/feed.xml |
-| 比特幣核心開發團隊 | crypto | ready | 10 | 官方 GitHub releases Atom。僅正式軟體發布事件，候選版不當作已發生升級；不推定主網硬分叉時間。 |
-| Aptos 基金會 | crypto | ready | 1 | 重新核對官方 tokenomics；主網 2022-10-12 與四年週年規則推算日期。標示預估、僅日期、無數量／時秒／完成宣稱。https://aptosnetwork.com/currents/aptos-tokenomics-overview |
-| Aave 治理（Snapshot） | crypto | ready | 0 | 官方 aave.eth Snapshot GraphQL 查詢成功但返回 0 筆；只代表本次來源回應，不代表整個加密市場没有治理投票。 |
-| 美國聯準會 | us | ready | 15 | https://www.federalreserve.gov/feeds/press_monetary.xml |
-| 美國勞工統計局・物價 | us | ready | 12 | https://www.bls.gov/feed/cpi.rss |
-| 美國勞工統計局・就業 | us | ready | 12 | https://www.bls.gov/feed/empsit.rss |
-| 美國勞工統計局・行事曆 | crypto / tw / us | ready | 53 | 官方公开資料回應已驗證，事件覆蓋依來源範圍。 |
-| 歐洲央行 | us | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 美國證券交易委員會 | us / crypto | ready | 25 | https://www.sec.gov/news/pressreleases.rss |
-| 美國商品期貨交易委員會 | us / crypto | ready | 10 | https://www.cftc.gov/RSS/RSSGP/rssgp.xml |
+來源選單只呈現已接入的新聞源或仍有保存文章的來源；事件排程供應者不混入新聞來源篩選。成功返回零筆與連線失敗仍分開記錄，來源回應有限，不代表全網或完整 30 日資料庫。
 
-## 官方接口
+移除的未接入選項：Decrypt、PANews、BlockBeats、Binance、Coinbase、OKX、未接入的 Foresight 新聞、歐洲央行。Decrypt 公開 RSS 可讀，但未取得自動收集所需許可，不啟用；PANews RSS 本輪返回 522；BlockBeats 公開文件所列接口返回 Missing API key。其餘未驗證到本輪可使用的公開 feed，不顯示可選入口，不宣稱已接入。
 
-- BLS：https://www.bls.gov/schedule/news_release/current_year.asp；只解析已核對的發布類別，保留過去月份、America/New_York 夏令時間；前值／預期／實值來源沒有提供。
-- CoinDesk 官方 RSS 說明：https://www.coindesk.com/coindesk-news/2021/09/17/coindesk-rss
-- Snapshot：https://docs.snapshot.box/tools/graphql-api；Aave 官方治理：https://www.aave.com/docs/ecosystem/governance。
+第三方原文、來源權利及限制保留：
 
-## 待接入事件
+- Decrypt 條款：https://decrypt.co/terms-of-service（未啟用）。
+- CoinDesk 官方 RSS：https://www.coindesk.com/coindesk-news/2021/09/17/coindesk-rss
+- Odaily 發布者 RSS 文件：https://github.com/ODAILY/RSS
+- Bitget 公告接口文件：https://www.bitget.com/docs/catalog/classic-common-notice/classic-common-notice
+- Foresight 公開日曆入口：https://foresightnews.pro/article/detail/4
+- BlockBeats 文件：https://www.theblockbeats.info/apiDoc（要求 API key，未啟用）。
+- PANews RSS 設定：https://www.panewslab.com/zh-hant/rss（本輪 feed 不可用）。
+- Snapshot GraphQL：https://docs.snapshot.box/tools/graphql-api；Aave 官方治理：https://www.aave.com/docs/ecosystem/governance。
+- Tokenomist：https://tokenomist.ai/pricing（需金鑰與授權，未購買或接入）。
 
-- Tokenomist：https://tokenomist.ai/pricing。已查核付費／商用 API 分級；無 API key、方案授權與配額，未購買或宣稱接通。
-- 交易所上架／下架／維護、空投快照／申領、排程銷毀／回購、指定監管／ETF 生效日期：尚無已驗證排程供應，保留類別與狀態，不從新聞推定日曆日期。
-- RSS 現有文章範圍受每來源保留筆數限制；累積歷史不等於完整 30 日或全網覆蓋。熱詞／提及排行只統計目前快照的市場、時間與來源子集。
+FOMC 會議日只按官方日曆列日期；尚未正式公布的會議紀要日期依官方三週規則標成推估，無虛構公布時刻。BEA 精確時刻按 America/New_York 夏令時間轉換。事件覆蓋標示仍是部分來源，未把日曆空白解讀為無事件。
+
+本輪翻譯端點實測 429；停止此輪連續請求，未完成項目不標為翻譯完成。已收錄存量由精確綁定的核對翻譯補齊；日後若服務不可用，保留待譯狀態與原始來源，前端主內容不直接顯示英文待譯標題。

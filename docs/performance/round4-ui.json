@@ -1,0 +1,62 @@
+[
+  {
+    "width": 320,
+    "theme": "dark",
+    "plotHeight": 666,
+    "toolbarFits": true,
+    "sameCanvas": true,
+    "continuousReplay": true,
+    "statePreserved": true,
+    "newsEntryMs": 126,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "dark",
+    "plotHeight": 666,
+    "toolbarFits": true,
+    "sameCanvas": true,
+    "continuousReplay": true,
+    "statePreserved": true,
+    "newsEntryMs": 85,
+    "errors": []
+  },
+  {
+    "width": 390,
+    "theme": "light",
+    "plotHeight": 666,
+    "toolbarFits": true,
+    "sameCanvas": true,
+    "continuousReplay": true,
+    "statePreserved": true,
+    "newsEntryMs": 219,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "theme": "dark",
+    "plotHeight": 620,
+    "toolbarFits": true,
+    "sameCanvas": true,
+    "continuousReplay": true,
+    "statePreserved": true,
+    "newsEntryMs": 135,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "theme": "light",
+    "plotHeight": 620,
+    "toolbarFits": true,
+    "sameCanvas": true,
+    "continuousReplay": true,
+    "statePreserved": true,
+    "newsEntryMs": 230,
+    "errors": []
+  },
+  {
+    "fault": "news-module",
+    "failedCalls": 1,
+    "recovered": true
+  }
+]

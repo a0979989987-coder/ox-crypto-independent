@@ -9,10 +9,12 @@ import { XMLParser } from 'fast-xml-parser';
 import { CRYPTO_ASSETS, identifyAssets, governanceEvents, spansFor } from './news-providers.mjs';
 import { nyseCalendar, ethereumUpgradeCalendar } from './news-official-calendar.mjs';
 import { translateHeadlines } from './news-translation.mjs';
+import { bitgetAnnouncements, fedMeetingCalendar, beaReleaseCalendar, foresightCalendar } from './news-live-providers.mjs';
 
 // Public publisher and explicitly identified aggregation feeds. Only dated
 // headlines and source links are retained; article bodies are never republished.
 export const FEEDS = [
+  { id: 'odaily', name: 'Odaily 星球日報', url: 'https://rss.odaily.news/rss/newsflash', hosts:['www.odaily.news','odaily.news'], markets:['crypto'], verified:'publisher-feed' },
 
   { id: 'theblock', name: 'The Block', url: 'https://www.theblock.co/rss.xml', markets: ['crypto'], verified: 'publisher-feed' },
   { id: 'cryptoslate', name: 'CryptoSlate', url: 'https://cryptoslate.com/feed/', markets: ['crypto'], verified: 'publisher-feed' },
@@ -30,7 +32,7 @@ export const FEEDS = [
   { id: 'bitcoin-core', name: 'Bitcoin Core', url: 'https://github.com/bitcoin/bitcoin/releases.atom', markets: ['crypto'] }
 ];
 const OFFICIAL_HOSTS = new Set(['abmedia.io', 'www.blocktempo.com', 'www.coindesk.com', 'cointelegraph.com', 'decrypt.co', 'www.federalreserve.gov', 'www.bls.gov', 'www.ecb.europa.eu', 'www.theblock.co', 'cryptoslate.com', 'www.sec.gov', 'blog.ethereum.org', 'blog.kraken.com', 'www.cftc.gov']);
-OFFICIAL_HOSTS.add('news.google.com');
+for (const host of ['news.google.com','www.odaily.news','odaily.news','www.bitget.com','www.bea.gov']) OFFICIAL_HOSTS.add(host);
 
 const parser = new XMLParser({ ignoreAttributes: false, processEntities: true, trimValues: true });
 const array = value => value == null ? [] : Array.isArray(value) ? value : [value];
@@ -87,7 +89,7 @@ export function normalizeFeed(xml, feed) {
     const publishedAt = iso(rawDate);
     if (!title || !link || !verifiedForFeed(link, feed) || !publishedAt) return null;
     if (feed.id === 'kraken' && /VIP château|APY on AUSD|Pre-IPO Challenge/i.test(title)) return null;
-    if (['abmedia','blocktempo','decrypt'].includes(feed.id) && !cryptoRelevant(title)) return null;
+    if (['abmedia','blocktempo','decrypt','odaily'].includes(feed.id) && !cryptoRelevant(title)) return null;
     if (['sec','cftc'].includes(feed.id) && !/bitcoin|crypto|digital asset|spot etf|exchange.traded fund/i.test(title)) return null;
     const relevantMarkets = feed.markets;
     return { id: hash(feed.aggregator ? `${feed.id}:${link}` : link), title, link, publishedAt, source: feed.name, sourceId: feed.id,
@@ -106,7 +108,7 @@ export function migrateAggregateHeadline(item) {
 }
 
 export function cryptoRelevant(title) {
-  return /bitcoin|ethereum|crypto|blockchain|token|stablecoin|defi|nft|web3|solana|coinbase|binance|bitget|kraken|bitcoin|比特幣|以太|加密|區塊鏈|代幣|穩定幣|空投|主網|鏈上|交易所|幣安|幣圈|\b(?:BTC|ETH|SOL|XRP|USDT|USDC|ETF)\b/i.test(title);
+  return /bitcoin|ethereum|crypto|blockchain|token|stablecoin|defi|nft|web3|solana|coinbase|binance|bitget|kraken|bitcoin|比特幣|比特币|以太|加密|區塊鏈|区块链|代幣|代币|穩定幣|稳定币|空投|主網|主网|鏈上|链上|交易所|幣安|币安|幣圈|币圈|Bithumb|Zcash|Strategy|Strive|日本央行|\b(?:BTC|ETH|SOL|XRP|USDT|USDC|ETF)\b/i.test(title);
 }
 
 export async function fetchText(url) {
@@ -204,13 +206,20 @@ export async function collect() {
   const sources = results.map((result, i) => result.status === 'fulfilled'
     ? { id: FEEDS[i].id, name: FEEDS[i].name, markets: FEEDS[i].markets, status: 'ready', count: result.value.items.length, lastSuccessAt: stamp, lastAttemptAt: stamp, access: FEEDS[i].aggregator?'public-aggregated-rss':FEEDS[i].portal?'public-portal-rss':'public-rss-headlines-links', aggregator:Boolean(FEEDS[i].aggregator||FEEDS[i].portal), usage:FEEDS[i].usage, termsUrl:FEEDS[i].termsUrl, scopeLabel:FEEDS[i].scopeLabel, endpoint: FEEDS[i].url }
     : { ...old?.sources?.find(s => s.id === FEEDS[i].id), id: FEEDS[i].id, name: FEEDS[i].name, markets: FEEDS[i].markets, endpoint: FEEDS[i].url, scopeLabel:FEEDS[i].scopeLabel, status: 'error', lastAttemptAt: stamp, message: String(result.reason?.message || '來源請求失敗').slice(0, 100) });
+  try {
+    const items=bitgetAnnouncements(JSON.parse(await fetchText('https://api.bitget.com/api/v2/public/annoucements?language=zh_CN')),stamp);
+    results.push({status:'fulfilled',value:{items}});sources.push({id:'bitget',name:'Bitget 官方公告',markets:['crypto'],status:'ready',count:items.length,lastSuccessAt:stamp,lastAttemptAt:stamp,endpoint:'https://api.bitget.com/api/v2/public/annoucements?language=zh_CN',access:'public-announcement-headlines-links'});
+  } catch(error) { sources.push({...old?.sources?.find(s=>s.id==='bitget'),id:'bitget',status:'error',lastAttemptAt:stamp,message:String(error.message).slice(0,100)}); }
   const allOldNews = [...(old?.news || []), ...(old?.pendingNews || [])].filter(item => item.sourceId !== 'decrypt').map(migrateAggregateHeadline).map(item => ['fed','bls-cpi','bls-jobs'].includes(item.sourceId) ? {...item,markets:['crypto']} : item);
   // Append to history rather than replacing yesterday with today's RSS window.
   const articles = new Map(allOldNews.map(item => [item.id, item]));
   results.forEach(result => { if (result.status === 'fulfilled') result.value.items.forEach(item => articles.set(item.id, item)); });
   const catalog = [];
-  const news = [...articles.values()].filter(item => !['abmedia','blocktempo','decrypt'].includes(item.sourceId) || cryptoRelevant(item.title)).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 6000).map(item => localize({ ...item, contentType: item.contentType || (/sponsored|APY|challenge|giveaway|獎池|限時優惠|抽獎|贊助|業配/i.test(item.title) ? 'promotion' : 'news'), assets: identifyAssets(item.titleZh || item.title, item.markets, catalog) }, allOldNews));
+  const news = [...articles.values()].filter(item => !['abmedia','blocktempo','decrypt','odaily'].includes(item.sourceId) || cryptoRelevant(item.title)).sort((a, b) => b.publishedAt.localeCompare(a.publishedAt)).slice(0, 6000).map(item => localize({ ...item, contentType: item.contentType || (/sponsored|APY|challenge|giveaway|獎池|限時優惠|抽獎|贊助|業配/i.test(item.title) ? 'promotion' : 'news'), assets: identifyAssets(item.titleZh || item.title, item.markets, catalog) }, allOldNews));
   const providers = [
+    ['fed-calendar',async()=>fedMeetingCalendar(await fetchText('https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm'),stamp)],
+    ['bea-calendar',async()=>beaReleaseCalendar(await fetchText('https://www.bea.gov/news/schedule'),stamp)],
+    ['foresight-calendar',async()=>foresightCalendar(await fetchText('https://api.foresightnews.pro/v1/calendar.ics'),stamp)],
     ['nyse-calendar',async()=>nyseCalendar(await fetchText('https://www.nyse.com/trade/hours-calendars'),stamp)],
     ['ethereum-upgrades',async()=>ethereumUpgradeCalendar(await fetchText('https://blog.ethereum.org/2026/09/17/glamsterdam-testnet-announcement'),stamp)],
     ['aptos', async () => {
@@ -233,6 +242,8 @@ export async function collect() {
   eventResults.forEach((result, i) => {
     const id = providers[i][0];
     if (result.status === 'fulfilled') {
+      // Replace this provider's published schedule so withdrawn/postponed entries cannot linger.
+      if (['fed-calendar','bea-calendar','foresight-calendar'].includes(id)) for (const [key,item] of events) if(item.sourceId===id)events.delete(key);
       const items = result.value.items.map(item => item.titleZh ? item : localize(item, old?.events)); items.forEach(item => events.set(item.id, item));
       sources.push({ id, status: 'ready', count: items.length, lastSuccessAt: stamp, lastAttemptAt: stamp,
         ...(result.value.items.warnings?.length ? { partial: true, message: '部分月份公告格式尚未接入；只收錄解析成功的官方月表。' } : {}) });
@@ -247,7 +258,13 @@ export async function collect() {
   }
   // Fill fresh English titles on each collection run; retain exact-title
   // translations on later runs so opening the page never waits for translation.
-  const translation = await translateHeadlines(news);
+  const eventItems=[...events.values()];
+  for(const item of eventItems)if(item.proposalTitle){const reviewed=REVIEWED_V2.find(e=>e.translationField==='proposalTitle'&&e.sourceId===item.sourceId&&e.title===item.proposalTitle);const previous=old?.events?.find(e=>e.id===item.id&&e.sourceId===item.sourceId&&e.proposalTitle===item.proposalTitle);item.proposalTitleZh=reviewed?.titleZh||previous?.proposalTitleZh||null;}
+  const proposals=new Map();
+  for(const item of eventItems) if(item.proposalTitle && !item.proposalTitleZh){if(!proposals.has(item.proposalTitle))proposals.set(item.proposalTitle,{title:item.proposalTitle});}
+  const translation = await translateHeadlines([...news,...eventItems,...proposals.values()],{limit:500,concurrency:4});
+  for(const item of eventItems)if(proposals.get(item.proposalTitle)?.titleZh)item.proposalTitleZh=proposals.get(item.proposalTitle).titleZh;
+  for(const item of eventItems)if(!item.proposalTitleZh&&item.proposalTitle){const previous=old?.events?.find(e=>e.id===item.id&&e.proposalTitle===item.proposalTitle);if(previous?.proposalTitleZh)item.proposalTitleZh=previous.proposalTitleZh;}
   const translations = news.filter(item => item.translationStatus !== 'pending');
   const pendingNews = news.filter(item => item.translationStatus === 'pending');
   if (!news.length && !events.size) throw Error('No verified source data; snapshot not replaced');

@@ -3,12 +3,13 @@
   const SAVED_KEY = 'ox-news-preferences-v1';
   const initialNewsHash = /^#news(?:\/[^?]*)?(?:\?|$)/.test(location.hash || '') ? location.hash : '';
   let restoringInitialRoute = Boolean(initialNewsHash);
-  const state = { snapshot: null, candidate: null, pending: null, lastError: null, request: 0, previous: null, route: {}, navigating: false, workspace: null, scope: null };
+  const state = { snapshot: null, candidate: null, pending: null, lastError: null, request: 0, previous: null, route: {}, navigating: false, workspace: null, scope: null, loadedAt:0, workspaceError:null };
   const markets = ['crypto'];
   const currentMarket = () => markets.includes(document.body.dataset.market) ? document.body.dataset.market : 'crypto';
   const preferences = () => { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '{}'); } catch { return {}; } };
   const save = patch => { try { localStorage.setItem(SAVED_KEY, JSON.stringify({ ...preferences(), ...patch })); } catch {} };
-  const dayKey = now => { const p = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(now); return ['year', 'month', 'day'].map(n => p.find(t => t.type === n).value).join('-'); };
+  const dayFormatter=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
+  const dayKey = now => { const p = dayFormatter.formatToParts(now); return ['year', 'month', 'day'].map(n => p.find(t => t.type === n).value).join('-'); };
   function unlockCountdown(item, now = new Date()) {
     if (item.date && /^\d{4}-\d{2}-\d{2}$/.test(item.date)) {
       const days = Math.round((Date.parse(`${item.date}T00:00:00Z`) - Date.parse(`${dayKey(now)}T00:00:00Z`)) / 86400000);
@@ -19,26 +20,32 @@
     if (!seconds) return '預定時間已到，待官方確認實際解鎖';
     return `倒數 ${Math.floor(seconds / 86400)} 天 ${String(Math.floor(seconds / 3600) % 24).padStart(2, '0')}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   }
-  function refresh(force = false) {
+  let workspaceModule=null, workspaceAttempt=0;
+  function loadWorkspace() {
+    if(state.workspaceError)return Promise.reject(state.workspaceError);
+    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261006-news4&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
+    return workspaceModule;
+  }
+  function refresh(force = false, {priority='high'}={}) {
     if (state.pending) return state.pending;
-    if (state.snapshot && !force) return Promise.resolve(state.snapshot);
+    if (state.snapshot && !force && Date.now()-state.loadedAt<300000) return Promise.resolve(state.snapshot);
     const request = ++state.request, controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
-    state.pending = fetch(`data/news.json${force ? `?t=${Date.now()}` : ''}`, { signal: controller.signal, cache: force ? 'reload' : 'default' })
+    state.pending = fetch(`data/news.json${force ? `?t=${Date.now()}` : ''}`, { signal: controller.signal, cache: force ? 'reload' : 'default', priority })
       .then(async response => { if (!response.ok) throw Error(`HTTP ${response.status}`); const data = await response.json(); if (data.schemaVersion !== 1 || !Array.isArray(data.news) || !Array.isArray(data.events)) throw Error('新聞資料格式不正確'); return data; })
-      .then(data => { if (request !== state.request) return state.snapshot; state.lastError = null;
+      .then(data => { if (request !== state.request) return state.snapshot; state.lastError = null; state.loadedAt=Date.now();
         if (state.snapshot && data.generatedAt !== state.snapshot.generatedAt) state.candidate = data;
         else if (!state.snapshot) state.snapshot = data;
-        render(); refreshMacro(force); return state.snapshot;
+        render(); refreshMacro(force,priority); return state.snapshot;
       }).catch(error => { if (request === state.request) { state.lastError = error; render(); } return state.snapshot; })
-      .finally(() => { clearTimeout(timeout); state.pending = null; });
+      .finally(() => { clearTimeout(timeout); state.pending = null; render(); });
     render(); return state.pending;
   }
   let macroPending = false;
-  async function refreshMacro(force) {
+  async function refreshMacro(force,priority='high') {
     if (macroPending) return; macroPending = true;
     try {
-      const [response, { mergeMacroResults }] = await Promise.all([fetch(`data/macro-results.json${force ? `?t=${Date.now()}` : ''}`, { cache: force ? 'reload' : 'default', signal: AbortSignal.timeout(8000) }), import('./macro.js?v=20261005-weeklist4')]);
+      const [response, { mergeMacroResults }] = await Promise.all([fetch(`data/macro-results.json${force ? `?t=${Date.now()}` : ''}`, { cache: force ? 'reload' : 'default', signal: AbortSignal.timeout(8000), priority }), import('./macro.js?v=20261005-weeklist4')]);
       if (!response.ok) return;
       const supplement = await response.json();
       if (state.snapshot) state.snapshot = mergeMacroResults(state.snapshot, supplement);
@@ -56,7 +63,14 @@
     const scope = document.body.dataset.newsMode === '1' ? 'all' : currentMarket();
     const host = document.querySelector(`[data-news-surface="${scope === 'all' ? 'all' : 'market'}"]`);
     if (!host) return;
-    const { mountNewsWorkspace } = await import('./workspace.js?v=20261005-stable18');
+    let mountNewsWorkspace;
+    try { ({mountNewsWorkspace}=await loadWorkspace()); }
+    catch(error) {
+      if(token!==generation||!host.isConnected)return;
+      host.replaceChildren();const message=document.createElement('p'), retry=document.createElement('button');
+      message.textContent='資訊介面暫時無法載入，請重試。';retry.textContent='重試';
+      retry.addEventListener('click',()=>{state.workspaceError=null;workspaceAttempt++;void render();},{once:true});host.append(message,retry);return;
+    }
     if (token !== generation || !host.isConnected) return;
     if (state.scope !== scope || state.workspace?.host !== host) {
       state.workspace?.destroy(); state.scope = scope;
@@ -134,7 +148,13 @@
     else if (entry?.oxView) { state.previous = entry.oxPrevious; switchTo(entry.oxView, entry.oxMarket); render(); if (!state.route.day && !state.route.event) requestAnimationFrame(() => window.scrollTo?.(0, entry.oxScroll || 0)); }
     else if (document.body.dataset.newsMode === '1' || currentView() === 'data') restore(state.previous);
   });
-  window.OXNews = Object.freeze({ open, openMarket, close, refresh, render, unlockCountdown });
+  async function preload({signal}={}) {
+    if(signal?.aborted)return;
+    await loadWorkspace();
+    if(signal?.aborted)return;
+    await refresh(false,{priority:'low'});
+  }
+  window.OXNews = Object.freeze({ open, openMarket, close, refresh, render, unlockCountdown, preload });
   const restoreInitialRoute = () => setTimeout(() => {
     const [path, query = ''] = initialNewsHash.split('?'), market = path.split('/')[1];
     if (markets.includes(market)) openMarket({ historyEntry: false, market }); else open({ historyEntry: false, previous: history.state?.oxPrevious });

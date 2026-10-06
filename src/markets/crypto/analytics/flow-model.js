@@ -25,7 +25,7 @@ export function cryptoUniverse(instruments, tickers, limit = 20) {
     .sort((a, b) => Number(b.usdtVolume) - Number(a.usdtVolume)).slice(0, limit)
     .map(t => ({ ...t, baseCoin: bySymbol.get(t.symbol).baseCoin }));
 }
-export function buildFlow(snapshot, period = '1h') {
+export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}={}) {
   const interval = PERIODS[period];
   if (!interval) throw new Error('Unsupported period');
   const entries = snapshot.flows?.[period] || {};
@@ -46,7 +46,7 @@ export function buildFlow(snapshot, period = '1h') {
     pairs.set(ticker.symbol, valid);
   }
   // Largest common cohort first, newest period second; report excluded symbols, never zero-fill.
-  const target = [...candidates].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] || null;
+  const target = requestedTarget ?? ([...candidates].sort((a, b) => b[1] - a[1] || b[0] - a[0])[0]?.[0] || null);
   const rows = universe.flatMap(t => {
     const pair = pairs.get(t.symbol)?.get(target); if (!pair) return [];
     const [current, previous] = pair; const x = pressure(current), old = pressure(previous), y = x - old;
@@ -56,6 +56,16 @@ export function buildFlow(snapshot, period = '1h') {
   });
   return { rows, target, period, excluded: universe.filter(t => !rows.some(r => r.symbol === t.symbol)).map(t => t.symbol), expected: universe.length };
 }
+// Replay retains the current cohort and uses only consecutive, closed periods.
+export function buildFlowHistory(snapshot,period='1h',wantedFrames=8) {
+  const current=buildFlow(snapshot,period);if(!current.target)return {frames:[],current,period};
+  const frames=[];
+  for(let i=wantedFrames-1;i>=0;i--){const model=buildFlow(snapshot,period,{target:current.target-i*PERIODS[period]});
+    if(current.rows.every(r=>model.rows.some(previous=>previous.symbol===r.symbol)))frames.push({...model,rows:model.rows.filter(r=>current.rows.some(c=>c.symbol===r.symbol)),ts:model.target});
+  }
+  return {frames,current,period};
+}
+const dateFormatter=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
 export const signed = (value, digits = 1) => Number.isFinite(value) ? `${value > 0 ? '+' : ''}${value.toFixed(digits)}` : '—';
 export const compact = value => !Number.isFinite(value) ? '—' : value >= 1e9 ? `${(value / 1e9).toFixed(2)}B` : value >= 1e6 ? `${(value / 1e6).toFixed(1)}M` : value >= 1e3 ? `${(value / 1e3).toFixed(1)}K` : value.toFixed(1);
-export const dateLabel = ts => ts ? new Intl.DateTimeFormat('zh-TW', { timeZone: 'Asia/Taipei', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hour12: false }).format(new Date(ts)) : '—';
+export const dateLabel = ts => ts ? dateFormatter.format(new Date(ts)) : '—';
