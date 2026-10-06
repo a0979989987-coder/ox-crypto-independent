@@ -5,18 +5,22 @@
       "width": 390,
       "simulatedTickerPush": true,
       "patternLatencyMs": 29,
-      "radarLatencyMs": 31,
+      "radarLatencyMs": 44,
       "classificationUntouched": true,
-      "extraCandleRequests": 0,
+      "quoteTriggeredCandleRequests": 0,
+      "concurrentBackgroundCandleRequests": 0,
+      "requestAttributionPositiveControl": true,
       "errors": []
     },
     {
       "width": 1440,
       "simulatedTickerPush": true,
-      "patternLatencyMs": 29,
-      "radarLatencyMs": 31,
+      "patternLatencyMs": 10,
+      "radarLatencyMs": 38,
       "classificationUntouched": true,
-      "extraCandleRequests": 0,
+      "quoteTriggeredCandleRequests": 0,
+      "concurrentBackgroundCandleRequests": 0,
+      "requestAttributionPositiveControl": true,
       "errors": []
     }
   ]
