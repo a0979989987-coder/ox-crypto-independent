@@ -4,7 +4,7 @@ globalThis.OXCryptoQuotes = (() => {
   const subscribers=new Set(),cache=new Map(),dirty=new Set();
   let socket=null,subscribed=new Set(),retry=null,watchdog=null,raf=null,attempts=0,lastMessage=0,lastPing=0,channelTimer=null,lastSync=-Infinity;
   const blocked=()=>!!document.body?.classList.contains('ox-feature-blocked');
-  const validSymbol=s=>typeof s==='string'&&/^[A-Z0-9]{2,32}USDT$/.test(s);
+  const validSymbol=s=>typeof s==='string'&&/^[\p{L}\p{N}]{1,32}USDT$/u.test(s);
   const desired=()=>new Set([...new Set([...subscribers].flatMap(s=>[...s.symbols]))].slice(0,100));
   const fresh=s=>{const q=cache.get(s);return q&&Math.max(Date.now()-q.ts,Date.now()-q.received)<=15000?q:null;};
   function flush(){raf=null;if(document.hidden||blocked())return;const changed=new Set(dirty);dirty.clear();for(const s of subscribers){const quotes=[...s.symbols].filter(k=>changed.has(k)).map(fresh).filter(Boolean);if(quotes.length)try{s.callback(quotes);}catch(e){console.error('Quote rendering failed',e);}}}

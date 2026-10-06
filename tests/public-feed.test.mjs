@@ -26,3 +26,23 @@ test('subscriber timeout does not release a still-needed shared request',async()
  let release;const f=feed({intervalMs:1,fetcher:()=>new Promise(r=>release=()=>r(response(9)))});
  const a=f.json('https://market.test/shared',{timeoutMs:8}),b=f.json('https://market.test/shared',{timeoutMs:500});await assert.rejects(a,{name:'TimeoutError'});assert.equal(f.stats().active,1);release();assert.equal(await b,9);assert.equal(f.stats().active,0);
 });
+test('default throughput stays below the public API rate while retaining chart capacity',async()=>{
+ const starts=[],releases=[];const f=feed({fetcher:async url=>{starts.push(Date.now());await new Promise(r=>releases.push(r));return response(url);}});
+ const work=Array.from({length:6},(_,i)=>f.json('https://market.test/batch'+i,{priority:0}));
+ await new Promise(r=>setTimeout(r,430));assert.equal(starts.length,5);
+ const chart=f.json('https://market.test/chart',{priority:100});await new Promise(r=>setTimeout(r,90));assert.equal(starts.length,6);
+ assert.ok(starts.slice(1).every((t,i)=>t-starts[i]>=70));
+ while(releases.length)releases.shift()();await new Promise(r=>setTimeout(r,90));while(releases.length)releases.shift()();await Promise.all([...work,chart]);
+});
+test('rate limiting reduces the following start rate and diagnostics separate waiting from downloading',async()=>{
+ const starts=[];let count=0;const f=feed({intervalMs:12,concurrency:1,cooldownMs:25,fetcher:async()=>{starts.push(Date.now());await new Promise(r=>setTimeout(r,6));return count++===0?{status:429,ok:false,headers:{get:()=>null}}:response(1);}});
+ await f.json('https://market.test/a',{owner:'radar-scan'});await f.json('https://market.test/b');
+ assert.ok(starts[2]-starts[1]>=21,'after cooling it must not immediately return to the original rate');
+ const a=f.timings()[0];assert.equal(a.attempts,2);assert.equal(a.status,200);assert.ok(a.queueMs>=20);assert.ok(a.downloadMs>=10);assert.equal(a.owner,'radar-scan');
+ a.owner='mutated';assert.equal(f.timings()[0].owner,'radar-scan','diagnostic callers cannot mutate internal records');
+});
+test('diagnostic history is bounded',async()=>{
+ const f=feed({intervalMs:0,fetcher:async()=>response()});
+ for(let i=0;i<260;i++)await f.json('https://market.test/'+i);
+ assert.equal(f.timings().length,240);
+});
