@@ -1,8 +1,9 @@
 import { METRICS, bubbleRows, metricText, largeTradeFlow } from './model.js?v=20261001-bubbles3';
 import { fetchCaps, fetchQuotes, fetchLargeTrades, pause } from './source.js?v=20261001-bubbles3';
 import { BubbleField } from './field.js?v=20261002-finance4';
-import { revealStyledShadow } from '../../../components/style-ready.js?v=20261005-stable18';
+import { revealStyledShadow, preloadToolStyles } from '../../../components/style-ready.js?v=20261005-stable18';
 const css=new URL('./bubbles.css?v=20261005-weeklist4',import.meta.url);
+export const preloadBubblesStyles=()=>preloadToolStyles(css.href);
 const DIRECTIONS=[['both','多空'],['long','看多'],['short','看空']];
 const icon=(name)=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${{both:'M8 19V5m-4 4 4-4 4 4M16 5v14m-4-4 4 4 4-4',long:'M12 20V4m-6 6 6-6 6 6',short:'M12 4v16m-6-6 6 6 6-6',close:'m6 6 12 12M18 6 6 18',reset:'M3 4v6h6M4 10a8 8 0 1 1 1 8',cycle:'m7 8 3-3 3 3M10 5v9m7 2-3 3-3-3m3 3V10',filter:'M4 5h16l-6 7v6l-4 2v-8Z',chevron:'m7 9 5 5 5-5',check:'m5 12 4 4L19 6'}[name]||''}"/></svg>`;
 const directionIcon=(direction)=>icon(direction==='long'?'long':direction==='short'?'short':'both');

@@ -1,11 +1,11 @@
 import { withDeadline } from './resource-deadline.js';
 export function createStyleLoader(fetcher = fetch, timeoutMs = 15000) {
   const resources = new Map(), failed = new Set();
-  return function loadStyle(href) {
+  return function loadStyle(href, { priority = 'high' } = {}) {
     const url = String(href);
     if (!resources.has(url)) {
       const task = withDeadline(async signal => {
-        const response = await fetcher(url, { signal, cache: failed.has(url) ? 'reload' : 'default', priority: 'high' });
+        const response = await fetcher(url, { signal, cache: failed.has(url) ? 'reload' : 'default', priority });
         if (!response.ok) throw Error(`樣式下載失敗（${response.status}）`);
         const css = await response.text();
         if (!css.trim() || /<(?:!doctype|html|body)\b/i.test(css)) throw Error('樣式檔案無效');

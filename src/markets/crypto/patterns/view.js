@@ -1,5 +1,5 @@
 import { PATTERNS, patternById, TIMEFRAMES as CRYPTO_TIMEFRAMES } from './catalog.js?v=patterns5d-20260929';
-import { revealStyledShadow } from '../../../components/style-ready.js?v=20261005-stable18';
+import { revealStyledShadow, preloadToolStyles } from '../../../components/style-ready.js?v=20261005-stable18';
 import { queryFromStrokes, normalize, sortMatches, patternCounts, prepareCandles, indexPrepared, matchPrepared, rankPatternMatches, browsePatternEntries, classificationCurrent } from './matcher.js?v=20261002-rank8';
 import * as cryptoSource from './source.js?v=20261002-rank8';
 import * as cryptoCache from './index-cache.js?v=20261002-rank8';
@@ -24,12 +24,14 @@ export function storePatternSession(cache,market,sessionKey,value){
 }
 // Warm real observations without mounting a hidden UI or competing with live charts.
 let warmController=null,warmTask=null,warmAt=0;
+export const preloadPatternStyles=()=>preloadToolStyles(new URL('./patterns.css?v=20261006-perf1',import.meta.url).href);
 export function stopPatternPreload(){warmController?.abort();}
-export function preloadPatternSearch(){
+export function preloadPatternSearch({signal:externalSignal}={}){
   if(warmTask)return warmTask;
-  if(document.hidden||document.body.dataset.market!=='crypto'||!window.OXFeatures?.canPreload?.('crypto.patterns')||Date.now()-warmAt<60000)return Promise.resolve();
+  if(externalSignal?.aborted||document.hidden||document.body.dataset.market!=='crypto'||!window.OXFeatures?.canPreload?.('crypto.patterns')||Date.now()-warmAt<60000)return Promise.resolve();
   let worker;try{worker=new Worker(new URL('../../../generated/pattern-worker.js?v=20261006-perf1',import.meta.url),{type:'module'});}catch{return Promise.resolve();}
   const controller=warmController=new AbortController(),signal=controller.signal;
+  const cancel=()=>controller.abort();externalSignal?.addEventListener('abort',cancel,{once:true});
   let serial=0,pending=new Map();
   const rejectAll=error=>{for(const job of pending.values())job.reject(error);pending.clear();};
   worker.onmessage=({data})=>{const job=pending.get(data.id);pending.delete(data.id);if(job)data.error?job.reject(Error(data.error)):job.resolve(data.result);};
@@ -43,7 +45,7 @@ export function preloadPatternSearch(){
       const indexed=await new Promise((resolve,reject)=>{const id=++serial,timer=setTimeout(()=>{controller.abort();},8000);pending.set(id,{resolve:value=>{clearTimeout(timer);resolve(value);},reject:error=>{clearTimeout(timer);reject(error);}});worker.postMessage({type:'index',id,key:data.symbol+':'+data.frame,candles:data.candles});});
       if(!signal.aborted)await cryptoCache.saveIndex({...data,classic:indexed.classic},indexed.matches);
     }});warmAt=Date.now();
-  }catch(error){if(error.name!=='AbortError')warmAt=Date.now();}finally{worker.terminate();rejectAll(new DOMException('Aborted','AbortError'));if(warmController===controller)warmController=null;warmTask=null;}})();
+  }catch(error){if(error.name!=='AbortError')warmAt=Date.now();}finally{externalSignal?.removeEventListener('abort',cancel);worker.terminate();rejectAll(new DOMException('Aborted','AbortError'));if(warmController===controller)warmController=null;warmTask=null;}})();
   return warmTask;
 }
 export function mountPatternSearch(host,options={}){

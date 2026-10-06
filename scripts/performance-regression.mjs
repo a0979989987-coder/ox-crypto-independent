@@ -9,9 +9,9 @@ const {server,preparePage,testBase}=createRequire(import.meta.url)('./e2e-check.
 await new Promise(r=>server.listen(4305,'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
 const reports=[];await mkdir('docs/performance/screenshots',{recursive:true});
-async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,limited=false,slow=false}={}){
- const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',hasTouch:width<600});const {page,audit}=await preparePage(context,{width,height:900});let requests=[],blocked=cssFail,failModule=moduleFail,limitedCalls=0;
- page.on('request',r=>requests.push(r.url()));
+async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,limited=false,slow=false,stayRadar=false}={}){
+ const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',hasTouch:width<600});const {page,audit}=await preparePage(context,{width,height:900});let requests=[],timeline=[],blocked=cssFail,failModule=moduleFail,limitedCalls=0;
+ page.on('request',r=>{requests.push(r.url());timeline.push({url:r.url(),at:Date.now()});});
  await page.route('**/api/v1/account/**',route=>{const endpoint=new URL(route.request().url()).pathname.split('/').at(-1);return route.fulfill({json:endpoint==='feature-access'?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:endpoint==='session'?{ok:true,user:null}:{configured:false}});});
  await page.route('https://api.bitget.com/**',async r=>{if(limited&&++limitedCalls===1)return r.fulfill({status:429,headers:{'Retry-After':'1'}});await new Promise(resolve=>setTimeout(resolve,slow?350:40));return r.fulfill({json:fixtureBody(r.request().url())});});
  await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:[]}));await routeSnapshots(page);
@@ -19,15 +19,30 @@ async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,li
  if(cssFail)await page.route('**/patterns-light.css*',r=>blocked?r.fulfill({status:503,body:'unavailable'}):r.continue());
  if(moduleFail)await page.route('**/src/generated/tool-bubbles.js*',r=>failModule?r.abort('failed'):r.continue());
  await page.goto(testBase,{waitUntil:'domcontentloaded'});await page.locator('#view-radar .coin-card').first().waitFor({timeout:30000});
- await page.evaluate(()=>switchAppView('strength'));
- return {page,context,audit,requests,unblock(){blocked=failModule=false;},calls:()=>limitedCalls};
+ if(!stayRadar)await page.evaluate(()=>switchAppView('strength'));
+ return {page,context,audit,requests,timeline,unblock(){blocked=failModule=false;},calls:()=>limitedCalls};
 }
 const tool=(p,id)=>p.locator('#ox-crypto-tools-nav [data-crypto-tool="'+id+'"]').click();
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
 try{
  for(const width of [390,1440]){
+  const {page,context,audit,requests,timeline}=await pageFor(width,{stayRadar:true});
+  await page.waitForFunction(()=>OXToolWarmup.stats().every(job=>job.status==='ready'),null,{timeout:35000});
+  const starts=timeline.filter(r=>/tool-(?:bubbles|analytics|patterns)\.js/.test(r.url));
+  assert.deepEqual(starts.map(r=>/tool-(\w+)/.exec(r.url)[1]),['bubbles','analytics','patterns']);
+  assert.ok(starts.slice(1).every((r,i)=>r.at-starts[i].at>=650),'each tool leaves an idle gap');
+  assert.equal(await page.locator('#ox-crypto-tools-inline').evaluate(el=>[...el.children].filter(h=>h.shadowRoot).length),0,'preparation never builds hidden charts');
+  const before=requests.length;await page.evaluate(()=>switchAppView('strength'));
+  await tool(page,'heatmap');await active(page,'.cfx[data-scan-state="complete"]').waitFor();
+  await tool(page,'rotation');await active(page,'.cfx[data-scan-state="complete"]').waitFor();
+  assert.equal(requests.slice(before).filter(u=>u.includes('granularity=15m')&&u.includes('limit=200')).length,0,'both tools reuse the same fresh complete pool');
+  for(const id of ['bubbles','patterns','rotation','bubbles'])await tool(page,id);
+  await active(page,'.oxb-asset-grid button').first().waitFor();assert.equal(await active(page,'.cfx:not(.oxb),.px').count(),0,'old async work cannot replace latest tool');
+  assert.deepEqual(audit.pageErrors,[]);reports.push({width,stagedWarmup:true,order:starts.map(r=>/tool-(\w+)/.exec(r.url)[1]),noOffscreenCharts:true,sharedFreshPool:true});await context.close();
+ }
+ for(const width of [390,1440]){
   const {page,context,audit,requests}=await pageFor(width);const root=active(page,'.px');await root.waitFor();await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return h?.shadowRoot.querySelector('.px')?.dataset.indexState==='ready';},{},{timeout:35000});
-  assert.equal(requests.some(u=>/tool-bubbles|tool-analytics/.test(u)),false,'other tools must remain unloaded');
+  assert.ok((await page.evaluate(()=>OXToolWarmup.stats().filter(j=>j.status==='running').length))<=1,'background preparation is sequential while a foreground tool is open');
   await root.evaluate(el=>el.dataset.retentionProbe='original');
   // The actual drawing canvas and its preferences must survive a neighbouring tool.
   const board=active(page,'.px-board canvas');await board.scrollIntoViewIfNeeded();const box=await board.boundingBox();await page.mouse.move(box.x+20,box.y+70);await page.mouse.down();await page.mouse.move(box.x+box.width*.35,box.y+30);await page.mouse.move(box.x+box.width*.65,box.y+80);await page.mouse.move(box.x+box.width-20,box.y+30);await page.mouse.up();
@@ -60,7 +75,7 @@ try{
  for(const kind of ['css','module','worker','slow429']){
   const setup=await pageFor(390,{cssFail:kind==='css',moduleFail:kind==='module',workerFail:kind==='worker',limited:kind==='slow429',slow:kind==='slow429'}),{page,context,requests}=setup;
   if(kind==='css'){await active(page,'.ox-style-loading button').waitFor({timeout:15000});assert.ok(requests.filter(u=>u.includes('patterns-light.css')).length<=2);setup.unblock();await active(page,'.ox-style-loading button').click();await active(page,'.px-card').first().waitFor({timeout:25000});}
-  else if(kind==='module'){await tool(page,'bubbles');await active(page,'.ox-tool-load-error button').waitFor({timeout:10000});assert.equal(requests.filter(u=>u.includes('tool-bubbles.js')).length,2);setup.unblock();await active(page,'.ox-tool-load-error button').click();await active(page,'.oxb-asset-grid button').first().waitFor();}
+  else if(kind==='module'){const before=requests.filter(u=>u.includes('tool-bubbles.js')).length;await tool(page,'bubbles');await active(page,'.ox-tool-load-error button').waitFor({timeout:10000});const calls=requests.filter(u=>u.includes('tool-bubbles.js')).length;assert.ok(calls-before>=1&&calls-before<=2&&calls<=4,'shared warm/foreground module attempts remain bounded');setup.unblock();await active(page,'.ox-tool-load-error button').click();await active(page,'.oxb-asset-grid button').first().waitFor();}
   else {await active(page,'.px-card').first().waitFor({timeout:35000});await active(page,'.px[data-index-state="ready"]').waitFor({timeout:45000});}
   reports.push({fault:kind,recovered:true});await context.close();
  }
