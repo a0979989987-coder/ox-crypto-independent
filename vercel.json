@@ -4,5 +4,6 @@
       "maxDuration": 60
     }
   },
-  "buildCommand": "npm run build:tools && npm run check"
+  "buildCommand": "npm run build:tools && npm run check",
+  "outputDirectory": "."
 }
