@@ -1,6 +1,6 @@
 import { marketRouter } from "./marketRouter.js?v=20261002-nav6";
 import './storage-migrations.js?v=20261004-markets2';
-import { preloadPatternSearch, stopPatternPreload } from "../markets/crypto/patterns/view.js";
+import { loadToolModule } from '../components/load-tool-module.js';
 import { cryptoModule } from "../markets/crypto/index.js";
 
 export function bootOXModules(modules = []) {
@@ -70,8 +70,13 @@ if (document.readyState === "loading") document.addEventListener("DOMContentLoad
 else restoreMarketView();
 
 // Public Crypto board warms gradually after initial paint; protected tools never preload.
-let cryptoWarmTimer=0;
-const scheduleCryptoWarm=()=>{clearTimeout(cryptoWarmTimer);if(document.hidden||document.body.dataset.market!=='crypto'||document.body.dataset.view==='strength'||!window.OXFeatures?.canPreload?.('crypto.patterns')){stopPatternPreload();return;}cryptoWarmTimer=setTimeout(()=>{if(!document.hidden&&document.body.dataset.market==='crypto'&&document.body.dataset.view!=='strength')void preloadPatternSearch();},2000);};
+let cryptoWarmTimer=0,warmModule=null;
+const warmAllowed=()=>!document.hidden&&document.body.dataset.market==='crypto'&&document.body.dataset.view!=='strength'&&window.OXFeatures?.canPreload?.('crypto.patterns');
+const scheduleCryptoWarm=()=>{clearTimeout(cryptoWarmTimer);if(!warmAllowed()){warmModule?.stopPatternPreload();return;}cryptoWarmTimer=setTimeout(async()=>{
+  if(!warmAllowed())return;
+  if(globalThis.OXPublicFeed?.stats().priorityActive){scheduleCryptoWarm();return;}
+  try{warmModule=await loadToolModule(new URL('../markets/crypto/patterns/view.js',import.meta.url).href,{current:warmAllowed});if(warmAllowed())void warmModule.preloadPatternSearch();}catch{/* Foreground loading has finite recovery UI. */}
+},2500);};
 document.addEventListener('ox:feature-policy-ready',scheduleCryptoWarm);
 document.addEventListener('ox:marketchange',scheduleCryptoWarm);
 document.addEventListener('ox:viewchange',scheduleCryptoWarm);

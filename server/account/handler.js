@@ -30,6 +30,17 @@ export function createAccountHandler({ env = process.env, clientFactory = create
     const json = (code, body) => res.status(code).json(body);
     const clear = () => res.setHeader('Set-Cookie', ['access', 'refresh', 'flow'].map(k => cookie(k, '')));
     if (endpoint === 'config' && req.method === 'GET') return json(200, { configured, providerConnectionVerified: false, databaseConnected: false });
+    // Public policy reads need only the public database connection. Preview
+    // deployments deliberately do not receive production session secrets/origin.
+    // Never infer a public policy when the authoritative catalog cannot be read.
+    if (endpoint === 'feature-access') {
+      if (req.method !== 'GET') return json(405, { ok: false });
+      if (!/^https:\/\/[^/]+\.supabase\.co$/.test(url || '') || !key) return json(503, { ok: false, code: 'FEATURE_POLICY_NOT_CONFIGURED' });
+      try {
+        const reader = clientFactory(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+        return json(200, await featureCatalog(reader));
+      } catch { return json(503, { ok: false, code: 'FEATURE_POLICY_UNAVAILABLE' }); }
+    }
     if (!configured) return json(503, { ok: false, code: 'AUTH_PROVIDER_NOT_CONFIGURED', message: '正式登入服務尚未設定。' });
     const origin = env.OX_ACCOUNT_ORIGIN;
     if (!['config', 'google', 'callback', 'email', 'verify', 'session', 'logout', 'bitget-link', 'admin-review', 'feature-access', 'feature-admin', 'bitget-admin-lookup'].includes(endpoint)) return json(404, { ok: false });
@@ -66,11 +77,6 @@ export function createAccountHandler({ env = process.env, clientFactory = create
     };
     try {
       client = clientFactory(url, key, { auth: { flowType: 'pkce', persistSession: true, autoRefreshToken: false, detectSessionInUrl: false, storage } });
-      if (endpoint === 'feature-access') {
-        // Public catalog must not inherit transient PKCE/session storage.
-        const policyReader=clientFactory(url,key,{auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}});
-        return json(200,await featureCatalog(policyReader));
-      }
       if (endpoint === 'google') {
         const returnTo = safeReturn(body.returnTo);
         const { data, error } = await client.auth.signInWithOAuth({ provider: 'google', options: { redirectTo: origin + '/api/v1/account/callback', skipBrowserRedirect: true } });

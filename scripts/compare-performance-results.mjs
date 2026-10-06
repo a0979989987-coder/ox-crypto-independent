@@ -1,0 +1,20 @@
+import assert from 'node:assert/strict';
+import {readFile,mkdir,writeFile} from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+import {resolve} from 'node:path';
+import {preparation,shortBars} from '../tests/classic-fixtures.mjs';
+const fixedNow=Date.now();Date.now=()=>fixedNow;
+const baseline=process.env.OX_BASELINE_ROOT;if(!baseline)throw Error('Set OX_BASELINE_ROOT to the read-only bf244e2 checkout');
+const before=await import(pathToFileURL(resolve(baseline,'src/markets/crypto/patterns/matcher.js'))),after=await import('../src/markets/crypto/patterns/matcher.js');
+const snapshot=JSON.parse(await readFile(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url)));
+const cases=[['long',preparation()],['short',shortBars(preparation())],['low-volume',preparation({volume:false})],['scaled',preparation({scale:.0001})],...Object.entries(snapshot.candles).map(([symbol,{response}])=>[symbol,response.data.map(r=>({time:Number(r[0])/1000,open:+r[1],high:+r[2],low:+r[3],close:+r[4],volume:+r[5],quoteVolume:+r[6]}))])];
+let classifications=0,sketches=0;
+for(const [name,candles] of cases){const a=before.prepareCandles(candles),b=after.prepareCandles(candles);assert.deepEqual(after.indexPrepared(b),before.indexPrepared(a),name+' full classification');classifications++;
+ for(const points of [[{x:0,y:1},{x:.3,y:0},{x:.5,y:.6},{x:.7,y:.1},{x:1,y:.9}],[{x:0,y:0},{x:.5,y:1},{x:1,y:.1}]]){assert.deepEqual(after.matchPrepared(b,{points,mode:'sketch'}),before.matchPrepared(a,{points,mode:'sketch'}),name+' sketch');sketches++;}}
+const source=await import('../src/markets/crypto/patterns/source.js'),now=Date.now(),step=3600000,boundary=Math.floor(now/step)*step;
+const candles=preparation().map((c,i)=>({...c,time:(boundary-(72-i)*step)/1000}));
+source.primeCandleCache({symbol:'PARITYUSDT',frame:'1H',serverTime:now,candles,source:'Bitget'});
+const universe={tickers:[{symbol:'PARITYUSDT',usdtVolume:'900000000',change24h:'.01'}],serverTime:now},runs=[];
+for(const classify of [true,false]){let indexed;const result=await source.scanUniverse(universe,['1H'],{classify,signal:new AbortController().signal,onProgress(){},onSeries:data=>{assert.equal(data.classic===null,!classify);indexed=after.indexPrepared(after.prepareCandles(data.candles));}});assert.equal(result.done,1);assert.equal(result.failed,0);runs.push(indexed);}assert.deepEqual(runs[0],runs[1]);
+const output={baseline:'bf244e2d8ebef7e875ddeee8444f108bf40a10af',classifications,sketches,scanPathParity:true,allEqual:true,source:'identical recorded 200-candle market snapshot plus explicit synthetic positive/negative fixtures'};
+await mkdir('docs/performance',{recursive:true});await writeFile('docs/performance/filter-parity.json',JSON.stringify(output,null,2));console.log(output);

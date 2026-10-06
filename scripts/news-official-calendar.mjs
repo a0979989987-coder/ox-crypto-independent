@@ -2,7 +2,7 @@ import { validDate } from '../src/components/news/model.js';
 const text = html => String(html).replace(/<style\b[^>]*>[\s\S]*?<\/style>/gi,'').replace(/<[^>]*>/g,' ').replace(/&#x27;|&#39;|&rsquo;/g,"'").replace(/&nbsp;|&#160;/g,' ').replace(/\s+/g,' ').trim();
 const cells = row => [...row.matchAll(/<t[dh]\b[^>]*>([\s\S]*?)<\/t[dh]>/gi)].map(m=>text(m[1]));
 const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-const make = (sourceId,sourceUrl,id,title,extra,updatedAt) => ({id,sourceId,sourceUrl,link:sourceUrl,title,titleZh:title,translationStatus:'translated',kind:'event',markets:extra.category==='network'?['crypto']:['crypto','tw'],status:'confirmed',announcementStatus:'confirmed',impact:{stars:null,ruleVersion:'unassessed-v1',reason:'官方未提供重要性分級'},updatedAt,...extra});
+const make = (sourceId,sourceUrl,id,title,extra,updatedAt) => ({id,sourceId,sourceUrl,link:sourceUrl,title,titleZh:title,translationStatus:'translated',kind:'event',markets:['crypto'],status:'confirmed',announcementStatus:'confirmed',impact:{stars:null,ruleVersion:'unassessed-v1',reason:'官方未提供重要性分級'},updatedAt,...extra});
 export function nyseCalendar(html,updatedAt){
  const rows=[...html.matchAll(/<tr\b[^>]*>([\s\S]*?)<\/tr>/gi)].map(m=>cells(m[1]));const header=rows.find(r=>r[0]==='Holiday');if(!header)throw Error('NYSE holiday table missing');const events=[];
  const names={"New Year's Day":'元旦','New Year’s Day':'元旦','Martin Luther King, Jr. Day':'馬丁路德金恩紀念日',"Washington's Birthday":'華盛頓誕辰','Good Friday':'耶穌受難日','Memorial Day':'陣亡將士紀念日','Juneteenth National Independence Day':'六月節','Independence Day':'獨立紀念日','Labor Day':'勞動節','Thanksgiving Day':'感恩節','Christmas Day':'聖誕節'};

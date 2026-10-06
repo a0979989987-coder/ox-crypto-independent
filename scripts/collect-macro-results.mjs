@@ -15,7 +15,7 @@ export function easternTime(date, hour = 8, minute = 30) {
   return new Date(guess.getTime() + ((hour - localHour + 24) % 24) * 3600000).toISOString();
 }
 function base(metric, date, title, sourceUrl, stamp) {
-  return { id: `macro:${metric}:${date}`, category: 'macro', kind: 'event', country: '美國', sourceId: metric === 'fed-rate' ? 'fed' : 'bls-calendar', source: metric === 'fed-rate' ? 'Federal Reserve' : 'U.S. BLS', markets: ['crypto','tw'], title, titleZh: title, metric, occursAt: easternTime(date), releasedAt: easternTime(date), updatedAt: stamp, status: 'confirmed', previous: null, consensus: null, actual: null, sourceUrl, impact: { stars: 5, ruleVersion: 'official-major-macro-v1', evidence: sourceUrl, reason: '官方重大經濟數據／貨幣政策決策，重要性 5 星。' } };
+  return { id: `macro:${metric}:${date}`, category: 'macro', kind: 'event', country: '美國', sourceId: metric === 'fed-rate' ? 'fed' : 'bls-calendar', source: metric === 'fed-rate' ? 'Federal Reserve' : 'U.S. BLS', markets: ['crypto'], title, titleZh: title, metric, occursAt: easternTime(date), releasedAt: easternTime(date), updatedAt: stamp, status: 'confirmed', previous: null, consensus: null, actual: null, sourceUrl, impact: { stars: 5, ruleVersion: 'official-major-macro-v1', evidence: sourceUrl, reason: '官方重大經濟數據／貨幣政策決策，重要性 5 星。' } };
 }
 export function parseBlsResult(html, metric, stamp = new Date().toISOString()) {
   const pre = html.match(/<pre\b[^>]*>([\s\S]*?)<\/pre>/i)?.[1];

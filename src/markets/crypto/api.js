@@ -108,6 +108,7 @@ const BitgetAPI = {
   async fetchTickers() {
     const json = await fetchBitgetJSON(`${CONFIG.apiBase}/tickers?productType=${CONFIG.productType}`);
     if (json.code !== "00000" || !Array.isArray(json.data)) throw new Error("Ticker 格式錯誤");
+    globalThis.OXCryptoQuotes?.seed(json.data,Number(json.requestTime));
     return json.data;
   },
 

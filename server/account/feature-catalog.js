@@ -1,4 +1,6 @@
-// Product-only allowlist. Identity/admin/private records are never configurable.
+// Shared database RPC compatibility contract: retain all 18 IDs, including seven
+// legacy Taiwan IDs. This catalog only describes policy; it never loads market data.
+// The independent frontend exposes 11 IDs. Do not migrate shared tables here.
 export const FEATURE_CATALOG = Object.freeze([
   ['crypto.home','加密首頁','public_source'],['crypto.radar','加密篩選雷達','public_source'],
   ['crypto.patterns','加密形態搜尋','public_source'],['crypto.bubbles','加密泡泡圖','public_source'],
@@ -11,7 +13,6 @@ export const FEATURE_CATALOG = Object.freeze([
   ['news.calendar','經濟／市場行事曆','public_snapshot'],['media','交易媒體','public_source']
 ].map(([id,label,boundary])=>Object.freeze({id,label,boundary})));
 export const FEATURE_IDS = new Set(FEATURE_CATALOG.map(f=>f.id));
-export const TW_API_FEATURES = Object.freeze({home:'tw.home',radar:'tw.radar',research:'tw.rotation',etf:'tw.etf',outlook:'news.calendar'});
 export function validCatalog(rows) {
   return Array.isArray(rows)&&rows.length===FEATURE_CATALOG.length&&new Set(rows.map(f=>f?.id)).size===rows.length&&rows.every(f=>FEATURE_IDS.has(f.id)&&['public','login'].includes(f.mode)&&typeof f.version==='string');
 }

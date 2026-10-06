@@ -12,7 +12,10 @@
     "verify:extraction": "node scripts/verify-crypto-preservation.mjs",
     "test:news-v2": "node --test tests/news-v2.test.mjs tests/news-navigation.test.mjs tests/news-time.test.mjs",
     "test:light-theme": "node scripts/independent-ui-check.mjs",
-    "build:tools": "node scripts/build-toolkit.mjs"
+    "build:tools": "node scripts/build-toolkit.mjs",
+    "test:performance": "node scripts/performance-regression.mjs",
+    "benchmark:tools": "node scripts/benchmark-tools.mjs",
+    "test:quotes": "node scripts/verify-live-quotes.mjs"
   },
   "devDependencies": {
     "@electric-sql/pglite": "^0.5.8",

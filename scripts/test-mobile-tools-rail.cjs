@@ -18,7 +18,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--port','4197']);
       window.rail=createToolsRail({tabs:[['patterns','型態搜尋'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']],selected:'patterns',label:'Crypto',equal:true,mobileCompact:true,onSelect(id){window.selected=id;}});
       document.body.append(rail.element);
     });
-    await page.waitForFunction(()=>!!window.rail.shadow.querySelector('link').sheet);
+    await page.waitForFunction(()=>!window.rail.shadow.querySelector('.ox-style-loading'));
     for(const width of [320,375,390,430,600,1363]) {
       await page.setViewportSize({width,height:844});
       await page.waitForTimeout(100);
@@ -42,7 +42,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--port','4197']);
       assert.equal(await page.evaluate(()=>window.selected),'flow');
       await page.waitForTimeout(400);
       assert(await page.evaluate(()=>{
-        const shadow=window.rail.shadow,rail=shadow.querySelector('.twr-mode-rail'),button=shadow.querySelector('.active');
+        const shadow=window.rail.shadow,rail=shadow.querySelector('.ox-mode-rail'),button=shadow.querySelector('.active');
         return Math.abs(parseFloat(rail.style.getPropertyValue('--mode-x'))-button.offsetLeft)<1&&Math.abs(parseFloat(rail.style.getPropertyValue('--mode-width'))-button.offsetWidth)<1;
       }));
       console.log('PASS',width,'all tabs fit, centered, clickable, indicator aligned');

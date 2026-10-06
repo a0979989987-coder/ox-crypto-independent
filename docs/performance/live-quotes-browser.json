@@ -1,0 +1,27 @@
+{
+  "note": "Browser timings use injected WebSocket ticker messages and fixed HTTP fixtures; not a physical iPhone or protected Vercel preview.",
+  "results": [
+    {
+      "width": 390,
+      "simulatedTickerPush": true,
+      "patternLatencyMs": 29,
+      "radarLatencyMs": 44,
+      "classificationUntouched": true,
+      "quoteTriggeredCandleRequests": 0,
+      "concurrentBackgroundCandleRequests": 0,
+      "requestAttributionPositiveControl": true,
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "simulatedTickerPush": true,
+      "patternLatencyMs": 10,
+      "radarLatencyMs": 38,
+      "classificationUntouched": true,
+      "quoteTriggeredCandleRequests": 0,
+      "concurrentBackgroundCandleRequests": 0,
+      "requestAttributionPositiveControl": true,
+      "errors": []
+    }
+  ]
+}

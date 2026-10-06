@@ -1,7 +1,7 @@
 // Keep recovery usable even when the tool's stylesheet could not be loaded.
 export function showToolLoadError(host,error,retry) {
   host.replaceChildren();
-  const box=document.createElement('div');
+  const box=document.createElement('div');box.className='ox-tool-load-error';
   box.setAttribute('role','status');
   box.style.cssText='display:grid;gap:12px;justify-items:center;padding:24px 16px;max-width:100%;box-sizing:border-box;overflow-wrap:anywhere';
   const title=document.createElement('p');title.textContent='工具暫時無法載入';title.style.margin='0';

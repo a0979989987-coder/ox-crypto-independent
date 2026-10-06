@@ -10,7 +10,7 @@ const executablePath=process.env.OX_TEST_BROWSER||process.env.OX_BROWSER_PATH;
 const browser=await chromium.launch({headless:true,...(executablePath?{executablePath}:{})});
 const reports=[];
 try {
- for(const width of [390,1440])for(const policyDelay of [0,700])for(const feature of ['crypto.radar','crypto.patterns','tw.patterns']){
+ for(const width of [390,1440])for(const policyDelay of [0,700])for(const feature of ['crypto.radar','crypto.patterns']){
   const context=await browser.newContext({locale:'zh-TW',viewport:{width,height:844}});
   const {page,audit}=await preparePage(context,{width,height:844});
   await page.route('**/api/v1/account/**',async route=>{
@@ -29,8 +29,8 @@ try {
   await page.waitForFunction(()=>OXFeatures.ready&&OXModules);
   const [market,tool]=feature.split('.'),view=tool==='radar'?'radar':'strength';
   try {await page.waitForFunction(({market,view})=>document.body.dataset.market===market&&document.body.dataset.view===view,{market,view},{timeout:4000});}
-  catch(error){console.log(JSON.stringify({width,policyDelay,feature,errors:audit.pageErrors,actual:await page.evaluate(()=>({market:document.body.dataset.market,view:document.body.dataset.view,returning:OXFeatures.returning,selected:OXFeatures.selectedTool('tw'),url:location.href}))}));throw error;}
-  if(tool==='patterns')await page.locator(market==='tw'?'#ox-tw-patterns .px-board':'#ox-crypto-tools-inline .px-board').waitFor({timeout:5000});
+  catch(error){console.log(JSON.stringify({width,policyDelay,feature,errors:audit.pageErrors,actual:await page.evaluate(()=>({market:document.body.dataset.market,view:document.body.dataset.view,returning:OXFeatures.returning,selected:OXFeatures.selectedTool('crypto'),url:location.href}))}));throw error;}
+  if(tool==='patterns')await page.locator('#ox-crypto-tools-inline .px-board').waitFor({timeout:5000});
   else await page.waitForFunction(()=>globalThis.eval('state.candleData.length')>0,{timeout:5000});
   assert.deepEqual(audit.pageErrors,[],`${feature}: direct entry must wait for chart initialization`);
   assert.equal(await page.evaluate(()=>new URL(location.href).searchParams.has('ox_feature')),false);

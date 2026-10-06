@@ -12,7 +12,7 @@ async function json(path, signal) {
   if (body.code !== '00000' || !Array.isArray(body.data)) throw new Error('Bitget 暫時無法提供完整資料');
   return body;
 }
-export async function refreshFlow(period, { signal, onProgress = () => {} }) {
+export async function refreshFlow(period, { signal, onProgress = () => {}, onPartial = () => {} }) {
   if (!PERIODS[period]) throw new Error('Unsupported period');
   const [instruments, tickers] = await Promise.all([
     json('/api/v3/market/instruments?category=USDT-FUTURES', signal),
@@ -27,8 +27,10 @@ export async function refreshFlow(period, { signal, onProgress = () => {} }) {
     const path = `/api/v2/mix/market/taker-buy-sell?symbol=${encodeURIComponent(symbol)}&period=${period}`;
     try { snapshot.flows[period][symbol] = { path, response: await json(path, signal) }; }
     catch (error) { if (error.name === 'AbortError') throw error; snapshot.flows[period][symbol] = { path, error: error.message }; }
+    onPartial({...snapshot,flows:{[period]:{...snapshot.flows[period]}},scan:{done:i+1,total:universe.length,complete:false}});
     onProgress(i + 1, universe.length);
   }
+  snapshot.scan={done:universe.length,total:universe.length,complete:true};
   snapshot.captureCompletedAt = new Date().toISOString();
   return snapshot;
 }

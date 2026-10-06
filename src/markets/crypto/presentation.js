@@ -1,7 +1,7 @@
 function renderBenchmarkBar() {
   if (!document.getElementById("bench-btc-price")) return;
-  const btc = state.btcTicker;
-  const eth = state.ethTicker;
+  const btc = globalThis.OXCryptoQuotes?.get("BTCUSDT") || state.btcTicker;
+  const eth = globalThis.OXCryptoQuotes?.get("ETHUSDT") || state.ethTicker;
   if (btc) {
     document.getElementById("bench-btc-price").textContent = fmtPrice(btc.lastPr);
     const e = document.getElementById("bench-btc-change"); e.textContent = fmtPct(btc.change24h); e.className = num(btc.change24h) >= 0 ? "positive" : "negative";
@@ -22,7 +22,7 @@ function renderBenchmarkBar() {
 }
 
 function updateQuickStats() {
-  const ticker = state.tickers.find(t => t.symbol === state.symbol);
+  const ticker = globalThis.OXCryptoQuotes?.get(state.symbol) || state.tickers.find(t => t.symbol === state.symbol);
   if (!ticker) return;
   const chg = document.getElementById("quick-change");
   chg.textContent = fmtPct(ticker.change24h); chg.className = num(ticker.change24h) >= 0 ? "positive" : "negative";
@@ -94,7 +94,7 @@ function updateRadarMarketGlow() {
     delete radar.dataset.glowLevel;
     return;
   }
-  const ticker = state.tickers.find(t => t.symbol === state.symbol);
+  const ticker = globalThis.OXCryptoQuotes?.get(state.symbol) || state.tickers.find(t => t.symbol === state.symbol);
   if (!ticker) {
     delete radar.dataset.priceDirection;
     delete radar.dataset.glowLevel;
@@ -111,13 +111,13 @@ function updateRadarMarketGlow() {
 }
 
 function updateHeaderHUD() {
-  const ticker = state.tickers.find(t => t.symbol === state.symbol);
+  const ticker = globalThis.OXCryptoQuotes?.get(state.symbol) || state.tickers.find(t => t.symbol === state.symbol);
   updateRadarMarketGlow();
   if (!ticker) return;
 
   document.getElementById("ticker-pair").textContent = `${ticker.symbol} · Bitget`;
   const live=state.chartLiveQuote;
-  const price=live?.symbol===state.symbol && live.period===state.period && Date.now()-live.received<15000 ? live.price : ticker.lastPr;
+  const price=live?.symbol===state.symbol && live.period===state.period && Date.now()-live.received<15000 && live.received>=(ticker.ts||0) ? live.price : ticker.lastPr;
   document.getElementById("price").textContent = fmtPrice(price);
   const focusPrice = document.getElementById("chart-focus-price");
   if (focusPrice) focusPrice.textContent = fmtPrice(price);
@@ -173,3 +173,40 @@ function switchSymbol(symbol) {
 
 
 /* ===== v3.6 feature pack: watchlist / local account / market architecture / home BTC mini chart ===== */
+
+
+// Observe card membership once, reuse one stream, and patch numbers only.
+// Rankings, chart instances and filter results are unaffected by quote pushes.
+document.addEventListener('DOMContentLoaded',()=>{
+  const list=document.getElementById('screener-list');if(!list)return;
+  let subscription=null,observer=null;
+  const visible=new Set();
+  const change=(el,value)=>{if(!el)return;el.textContent=fmtPct(value);el.classList.toggle('positive',value>=0);el.classList.toggle('negative',value<0);};
+  function paint(quotes){
+    if(state.activeView!=='radar'&& !document.body.classList.contains('chart-focus'))return;
+    const bySymbol=new Map(quotes.map(q=>[q.symbol,q]));
+    for(const card of visible){const q=bySymbol.get(card.dataset.symbol);if(!q)continue;
+      card.querySelectorAll('.coin-change,.turnover-change').forEach(el=>change(el,q.change24h));
+      const price=card.querySelector('.turnover-price,.watch-metric:first-child strong');if(price)price.textContent=fmtPrice(q.lastPr);
+      change(card.querySelector('.watch-metric:nth-child(2) strong'),q.change24h);
+      const volume=card.querySelector('.coin-volume-value');if(volume)volume.textContent=fmtCryptoVolume(q.usdtVolume).replaceAll(',','');
+      const turnover=card.querySelector('.turnover-volume');if(turnover)turnover.textContent='24H '+fmtCryptoVolume(q.usdtVolume)+' USDT';
+    }
+    if(bySymbol.has('BTCUSDT')||bySymbol.has('ETHUSDT'))renderBenchmarkBar();
+    if(bySymbol.has(state.symbol)){updateHeaderHUD();updateQuickStats();}
+  }
+  function sync(){
+    const enabled=window.OXFeatures?.ready&&!document.body.classList.contains('ox-feature-blocked')&&state.activeMarket==='crypto'&&(state.activeView==='radar'||document.body.classList.contains('chart-focus'));
+    if(!enabled){subscription?.stop();subscription=null;return;}
+    const symbols=[state.symbol,'BTCUSDT','ETHUSDT',...[...visible].map(c=>c.dataset.symbol)];
+    if(subscription)subscription.update(symbols);else subscription=globalThis.OXCryptoQuotes?.subscribe(symbols,paint);
+  }
+  function cards(){
+    observer?.disconnect();visible.clear();
+    observer=new IntersectionObserver(entries=>{for(const e of entries)e.isIntersecting?visible.add(e.target):visible.delete(e.target);sync();},{rootMargin:'150px'});
+    list.querySelectorAll('.coin-card[data-symbol]').forEach(card=>{const r=card.getBoundingClientRect();if(r.bottom>-150&&r.top<innerHeight+150)visible.add(card);observer.observe(card);});sync();
+  }
+  new MutationObserver(cards).observe(list,{childList:true});
+  new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-view','data-market','class']});
+  document.addEventListener('ox:feature-policy-ready',sync);document.addEventListener('ox:viewchange',sync);document.addEventListener('ox:marketchange',sync);cards();
+});

@@ -24,7 +24,7 @@ export async function readIndex(frames,now=Date.now()){
   const db=await database();
   if(db)await Promise.all(frames.map(frame=>new Promise(resolve=>{
     let r;try{r=db.transaction('series').objectStore('series').index('frame').getAll(frame);}catch{return resolve();}
-    r.onsuccess=()=>{for(const e of r.result)if(seriesCurrent(e,now)||e.data?.frame==='1W')memory.set(e.key,e);resolve();};r.onerror=()=>resolve();
+    r.onsuccess=()=>{for(const e of r.result)if(seriesCurrent(e,now)||e.data?.frame==='1W'){memory.set(e.key,e);while(memory.size>1000)memory.delete(memory.keys().next().value);}resolve();};r.onerror=()=>resolve();
   })));
   return [...memory.values()].filter(e=>frames.includes(e.data.frame)&&(seriesCurrent(e,now)||e.data.frame==='1W'));
 }
@@ -37,5 +37,5 @@ export async function saveIndex(data,matches){
 }
 export async function pruneIndex(now=Date.now()){
   const db=await database();if(!db)return;
-  try{const tx=db.transaction('series','readwrite'),r=tx.objectStore('series').openCursor();r.onsuccess=()=>{const c=r.result;if(!c)return;if(c.value.savedAt<now-86400000||c.value.version!==INDEX_VERSION)c.delete();c.continue();};tx.onerror=()=>{};}catch{}
+  try{const tx=db.transaction('series','readwrite'),store=tx.objectStore('series'),r=store.openCursor(),recent=[];r.onsuccess=()=>{const c=r.result;if(!c){recent.sort((a,b)=>b.at-a.at);for(const old of recent.slice(1500))store.delete(old.key);return;}if(c.value.savedAt<now-86400000||c.value.version!==INDEX_VERSION)c.delete();else recent.push({key:c.key,at:c.value.savedAt});c.continue();};tx.onerror=()=>{};}catch{}
 }

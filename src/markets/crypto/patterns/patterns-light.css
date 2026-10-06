@@ -78,7 +78,7 @@
 :host([data-ox-theme="light"]) .px-to-radar:hover {border-color:rgba(156,169,185,0.8)!important;box-shadow:inset 0 1px rgba(100,116,139,0.15),0 0 14px rgba(100,116,139,0.082)!important}
 
 :host([data-ox-theme="light"]){color-scheme:light;color:var(--ox-light-ink,#374151);--bg:#ffffff;--panel:#ffffff;--ink:#374151;--muted:#616d7c;--line:#d7dee7;--green:#176ed0;--red:#d13c5b}
-:host([data-ox-theme="light"]) :is(.cfx,.px,.tw-radar-root){--bg:#ffffff;--panel:#ffffff;--line:#d7dee7;--muted:#616d7c;--green:#176ed0;--red:#d13c5b;color:#374151!important}
+:host([data-ox-theme="light"]) :is(.cfx,.px){--bg:#ffffff;--panel:#ffffff;--line:#d7dee7;--muted:#616d7c;--green:#176ed0;--red:#d13c5b;color:#374151!important}
 :host([data-ox-theme="light"]) :is(input,select,textarea,option){color-scheme:light!important;accent-color:#8d712e;color:#374151!important;background-color:#ffffff!important;border-color:#d7dee7!important}
 :host([data-ox-theme="light"]) :is(button,a,input,select,textarea,canvas):focus-visible{outline:2px solid #8d712e!important;outline-offset:3px}
 :host([data-ox-theme="light"]) :is(button[aria-pressed="true"],button[aria-selected="true"],button[aria-checked="true"],button.active){background:linear-gradient(135deg,#f8f9fb,#f0f3f7)!important;color:#526174!important;border-color:#b7a579!important;box-shadow:inset 0 1px #fff,0 2px 8px #8d712e10!important;text-shadow:none!important}

@@ -13,3 +13,16 @@ test('radar/pattern/chart work share start rate and chart has queued priority',a
 test('429 cools the whole host, retries once, and cancellation removes departed work',async()=>{const times=[];const f=feed({intervalMs:1,concurrency:1,cooldownMs:20,fetcher:async url=>{times.push({url,at:Date.now()});return times.length===1?{status:429,ok:false,headers:{get:()=>null}}:response();}});const a=f.json('https://market.test/a');const cancelled=f.json('https://market.test/old',{owner:'departed'});f.cancel('departed');await assert.rejects(cancelled,{name:'AbortError'});await a;assert.equal(times.length,2);assert.ok(times[1].at-times[0].at>=18);assert.equal(f.stats().queued,0);});
 test('stalled body is bounded and does not consume all future capacity',async()=>{let calls=0;const f=feed({intervalMs:1,concurrency:1,fetcher:async()=>++calls===1?{ok:true,status:200,json:()=>new Promise(()=>{})}:response(7)});await assert.rejects(f.json('https://market.test/stalled',{timeoutMs:12}),{name:'TimeoutError'});assert.equal(await f.json('https://market.test/recovered'),7);});
 test('persistent 429 is finite and never becomes an empty market result',async()=>{let calls=0;const f=feed({intervalMs:1,cooldownMs:5,fetcher:async()=>{calls++;return {status:429,ok:false,headers:{get:()=>null}};}});await assert.rejects(f.json('https://market.test/radar'),{status:429});assert.equal(calls,2);});
+test('one subscriber leaving never cancels another; equivalent query order is merged',async()=>{
+ let calls=0,release,upstream;const barrier=new Promise(r=>release=r),f=feed({intervalMs:1,fetcher:async(_url,{signal})=>{calls++;upstream=signal;await barrier;return response({price:42});}});
+ const controller=new AbortController();const a=f.json('https://market.test/candles?a=1&b=2',{signal:controller.signal,owner:'hidden'}),b=f.json('https://market.test/candles?b=2&a=1',{owner:'chart',priority:100});controller.abort();await assert.rejects(a,{name:'AbortError'});assert.equal(upstream.aborted,false);release();assert.equal((await b).price,42);assert.equal(calls,1);assert.equal(f.stats().merged,1);
+});
+test('cache respects expiry and range; bounded cache never stores errors',async()=>{
+ let calls=0;const f=feed({intervalMs:1,maxCache:2,fetcher:async()=>response(++calls)});
+ const read=range=>f.json('https://market.test/candles?limit='+range,{maxAgeMs:25});
+ assert.equal(await read(100),1);assert.equal(await read(100),1);assert.equal(await read(200),2);assert.equal(await read(300),3);assert.equal(f.stats().cached,2);await new Promise(r=>setTimeout(r,30));assert.equal(await read(200),4);assert.equal(await read(100),5);
+});
+test('subscriber timeout does not release a still-needed shared request',async()=>{
+ let release;const f=feed({intervalMs:1,fetcher:()=>new Promise(r=>release=()=>r(response(9)))});
+ const a=f.json('https://market.test/shared',{timeoutMs:8}),b=f.json('https://market.test/shared',{timeoutMs:500});await assert.rejects(a,{name:'TimeoutError'});assert.equal(f.stats().active,1);release();assert.equal(await b,9);assert.equal(f.stats().active,0);
+});
