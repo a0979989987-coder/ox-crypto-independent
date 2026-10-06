@@ -129,7 +129,7 @@ JS 欄的 — 表示原始 ResourceTiming 出現負 duration 的異常樣本，�
 
 - 基準：340/340 既有測試、四種桌面／手機尺寸深淺色介面組合通過。
 - 修改後：344/344 測試通過（刪除 2 項台股解析測試，新增 6 項去重、取消、快取、拆包、worker 淘汰與帳號隔離案例）。建置、100 個本機入口資產／171 個唯一 HTML ID 檢查通過。
-- 原始 extraction manifest 不被改寫；18 個已修改檔以獨立 reviewed digest ledger 精確驗證，其他原始檔仍比對原 SHA-256。
+- 原始 extraction manifest 不被改寫；19 個已修改檔以獨立 reviewed digest ledger 精確驗證，其他原始檔仍比對原 SHA-256。
 - 29 組完全相同 K 線的完整分類、58 次手繪查詢及 classify 開關後 worker 最終結果全數一致，見 [filter-parity.json](filter-parity.json)。
 - 桌面 1440 與手機 390：六工具、深淺色、新聞／行事曆／媒體／Google與Email入口通過；沒有頁面 JS 例外或台股請求。
 - 狀態保留、超過保留上限後恢復、快速換工具／幣種／週期、合成背景恢復及離線／上線訊號通過。工具列 320／375／390／430／600／1363 寬度不溢出且指示器對齊。
@@ -245,3 +245,15 @@ OX_BASELINE_ROOT=/path/to/baseline node scripts/compare-performance-results.mjs
 - 新增 `src/generated/tool-patterns.js`
 - 新增 `tests/performance-retention.test.mjs`
 - 新增 `docs/performance/`：本報告、原始量測、篩選比對及合成測試截圖。
+
+## 預覽權限設定載入修復（續作）
+
+使用者手機已進入預覽，但 OX 顯示「功能設定暫時無法確認」。查核 Vercel env metadata：全部帳號設定原僅 production target，preview 未配備公開政策連線；原 handler 在讀取政策前要求完整登入設定。正式站權限 API 實際回覆 crypto.radar 為 public，並非後台重新鎖定。
+
+修復：feature-access GET 獨立初始化不含 session/PKCE 的公開 client，只要求既有 OX_SUPABASE_URL／OX_SUPABASE_PUBLISHABLE_KEY。這兩個 env 的 target 擴展到本專案 preview，值保持原樣；其餘 secret/origin／Bitget env 仍 production-only。沒有變更其他專案、資料庫政策、OAuth 或登入密鑰。政策仍即時讀 RPC，保留 18 IDs、原 mode/version，拒絕不完整政策；API 無快取且 POST 405。預覽登入本身仍未配置，需登入的功能繼續阻擋，不偽裝帳號驗收通過。
+
+新增 tests/preview-feature-policy.test.mjs：未配置登入仍能讀真實 catalog、login 模式不被解鎖、只初始化一次 policy client、不傳 session/cookie、未配置／RPC 錯誤／缺少 ID 仍 503、POST 405；原登入回歸亦通過。此修復在冷啟動量測之後，沒有重標為新的效能基準。
+
+環境回復：僅將本專案上述兩個 env target 還原為 production；不改值，其餘環境／共用資料不動。程式回復可 revert 該預覽修復提交。
+
+續作驗證：346/346 完整單測通過、build/check 與 19 個 reviewed hashes 檢查通過。用本專案既有公開 DB 連線，在沒有 session secret/origin 的真實 handler 上執行 catalog GET，實際回覆 200 / ok=true / 18 個功能，crypto.radar=public。這是實際 Supabase 公開 RPC 的唯讀查詢；未寫入後台設定。Vercel SSO 的工具存取 403 仍獨立存在，因此不能宣稱已以自動化瀏覽器完成受保護預覽驗收。

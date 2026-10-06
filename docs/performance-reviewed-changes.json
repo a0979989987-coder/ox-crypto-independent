@@ -108,6 +108,12 @@
       "sourceSha256": "ae1a48cc3625a32ea89732354f13ada964265c949976ef2045f77712041eb0f3",
       "sha256": "105bbe8ba29a88350ed6802893e876c2b848160b5119ad6aa3a62a42407198ef",
       "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
+    },
+    {
+      "path": "server/account/handler.js",
+      "sourceSha256": "cccd5494dc81ad8586124f909705e2a83ecaf10a76fd3e313f05522cfe633cab",
+      "sha256": "1a64911d9085f445cd21ea5374232ae0552388e5a5d7b50f93604f452525fc01",
+      "reason": "Public catalog reads are independent of login/session configuration; preview uses existing public DB endpoint/key. Policy validity and login enforcement remain unchanged."
     }
   ]
 }
