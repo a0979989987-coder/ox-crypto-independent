@@ -7,7 +7,7 @@ const {server,preparePage,testBase}=createRequire(import.meta.url)('./e2e-check.
 await new Promise(resolve=>server.listen(Number(process.env.OX_E2E_PORT),'127.0.0.1',resolve));
 const browser=await chromium.launch({headless:true,executablePath:process.env.OX_TEST_BROWSER||'C:/Program Files/Google/Chrome/Application/chrome.exe'});
 try{
- for(const width of [390,1440])for(const market of ['tw','crypto']){
+ for(const width of [390,1440])for(const market of ['crypto']){
   const context=await browser.newContext({viewport:{width,height:844}}),{page}=await preparePage(context,{width,height:844});
   await page.route('**/api/v1/account/**',async route=>{
    const path=new URL(route.request().url()).pathname.split('/').at(-1);
@@ -15,7 +15,7 @@ try{
    return route.fulfill({json:path==='config'?{configured:true}:path==='session'?{ok:true,user:null}:{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}});
   });
   await page.goto(testBase+'/#news/'+market);await page.waitForFunction(()=>OXFeatures.ready);
-  await page.locator('.oxn-title').filter({hasText:market==='tw'?'台股新聞':'加密新聞'}).waitFor({state:'attached',timeout:8000});
+  await page.locator('.oxn-title').filter({hasText:'加密新聞'}).waitFor({state:'attached',timeout:8000});
   assert.equal(await page.locator('.oxn-root').isVisible(),true,'News workspace visible');
   assert.equal(await page.evaluate(()=>document.body.dataset.market),market);
   assert.equal(new URL(page.url()).hash,'#news/'+market);

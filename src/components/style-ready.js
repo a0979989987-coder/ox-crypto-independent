@@ -24,7 +24,7 @@ export function guardStyledContent(container, main, links, signal, selector = 'm
   // palette (or a partial stylesheet) has arrived.
   // Preserve link nodes for tools that still attach layout listeners to them.
   // Complete CSS is applied atomically through the adjacent style placeholder.
-  const sheets=links.map(link=>{const style=document.createElement('style'),href=link.href;link.disabled=true;link.before(style);return {style,href};});
+  const sheets=links.map(link=>{const style=document.createElement('style'),href=link.dataset?.oxHref||link.href;link.disabled=true;link.before(style);return {style,href};});
   let run=0,finished=false;
   async function prepare(attempt = 0) {
     const generation=++run;retry.hidden=true;message.textContent='介面載入中…';
@@ -62,8 +62,8 @@ export function revealStyledShadow(shadow, signal, selector = 'main', minHeight 
   shadow.append(mobile);
   const syncTheme=()=>{shadow.host.dataset.oxTheme=document.body.classList.contains('theme-light')?'light':'dark';};
   syncTheme();document.addEventListener('ox:themechange',syncTheme,{signal});
-  const light=document.createElement('link');light.rel='stylesheet';light.href=sheet.href.replace(/\.css(?:\?.*)?$/, '-light.css?v=20261005-load16');
-  const roles=document.createElement('link');roles.rel='stylesheet';roles.href=new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5',import.meta.url).href;
+  const light=document.createElement('link');light.rel='stylesheet';light.dataset.oxHref=(sheet.dataset.oxHref||sheet.href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261005-load16');
+  const roles=document.createElement('link');roles.rel='stylesheet';roles.dataset.oxHref=new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5',import.meta.url).href;
   shadow.append(light,roles);
   return guardStyledContent(shadow,main,[sheet,light,roles],signal,selector,minHeight);
 }

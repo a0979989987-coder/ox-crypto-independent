@@ -97,15 +97,15 @@ export function classicScore(ticker,candles,tickers){
   const signals=['long','short'].map(side=>globalThis.OXCryptoLiquidity.apply(evaluateClassic(candles,{side}),ticker?.usdtVolume));
   return signals.filter(s=>s.eligible).sort(compareClassic)[0]?.qualityScore ?? null;
 }
-export async function scanUniverse(universe,frames,{signal,onSeries,onProgress,concurrency=4,transport={}}){
+export async function scanUniverse(universe,frames,{signal,onSeries,onProgress,concurrency=4,transport={},classify=true}){
   let cursor=0,done=0,failed=0,coinsDone=0;const total=universe.tickers.length*frames.length,coinsTotal=universe.tickers.length;
   const jobs=universe.tickers.map(ticker=>async()=>{
     for(const frame of frames){
       if(signal.aborted)throw abortError();
       try{
         const data=await fetchSeries(ticker.symbol,frame,signal,universe.serverTime,transport);
-        const classic=Object.fromEntries(['long','short'].map(side=>[side,compactClassic(globalThis.OXCryptoLiquidity.apply(evaluateClassic(data.candles,{side,frame,now:universe.serverTime}),ticker.usdtVolume))]));
-        const chosen=Object.values(classic).filter(s=>s.eligible).sort(compareClassic)[0];
+        const classic=classify?Object.fromEntries(['long','short'].map(side=>[side,compactClassic(globalThis.OXCryptoLiquidity.apply(evaluateClassic(data.candles,{side,frame,now:universe.serverTime}),ticker.usdtVolume))])):null;
+        const chosen=Object.values(classic||{}).filter(s=>s.eligible).sort(compareClassic)[0];
         await onSeries({...data,ticker,classic,oxScore:chosen?.qualityScore??null,quoteTime:universe.serverTime,turnover:Number(ticker.usdtVolume),change:Number(ticker.change24h)*100});
       }catch(e){if(signal.aborted)throw e;failed++;}
       done++;onProgress({done,total,failed,coinsDone,coinsTotal});

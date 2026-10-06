@@ -17,9 +17,8 @@
  function defaultTarget(market,view){
   // Radar lists publish available rows during scans. Background data tasks
   // must not append a loading animation to those lists.
-  if(view==='radar'&&['crypto','tw'].includes(market))return null;
+  if(view==='radar'&&market==='crypto')return null;
   if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'.ox-home-t1':':not(*)');
-  if(market==='tw')return document.querySelector(view==='radar'?'.twcr-scanner':':not(*)');
   return null;
  }
  function paint(){

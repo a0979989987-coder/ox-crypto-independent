@@ -32,7 +32,7 @@ try{
       await page.waitForFunction(t=>document.querySelector('#view-strength .strength-page').dataset.cryptoTool===t,tool);
       if(tool==='patterns')await page.locator('#ox-crypto-tools-inline .px-board').waitFor();
       else if(tool==='bubbles')await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
-      else if(tool!=='strength')await page.locator('#ox-crypto-tools-inline .cfx-content').waitFor();
+      else if(tool!=='strength')await page.locator('#ox-crypto-tools-inline .cfx-content').filter({visible:true}).waitFor();
       assert.equal(await page.locator('#ox-crypto-tools-loading .ox-tool-load-error').count(),0);
     }
     await page.evaluate(()=>OXNews.openMarket());

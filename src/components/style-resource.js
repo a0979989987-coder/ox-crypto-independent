@@ -20,4 +20,5 @@ export function createStyleLoader(fetcher = fetch, timeoutMs = 15000) {
     return resources.get(url);
   };
 }
-export const loadStyle = createStyleLoader();
+// Shared public CSS cache across independently bundled tools.
+export const loadStyle = globalThis.__OXPublicStyleLoader ??= createStyleLoader();

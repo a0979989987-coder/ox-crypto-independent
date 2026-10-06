@@ -1,0 +1,9 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ox-crypto-independent@4.0.0-rc.2 test:e2e
+> node scripts/independent-ui-check.mjs
+
+{"theme":"dark","width":390,"cryptoTools":6,"radar":true,"calendar":true,"news":true,"media":true,"accountEntry":true,"taiwanRequests":0,"runtimeErrors":[],"localHttpErrors":[]}
+{"theme":"dark","width":1440,"cryptoTools":6,"radar":true,"calendar":true,"news":true,"media":true,"accountEntry":true,"taiwanRequests":0,"runtimeErrors":[],"localHttpErrors":[]}
+{"theme":"light","width":390,"cryptoTools":6,"radar":true,"calendar":true,"news":true,"media":true,"accountEntry":true,"taiwanRequests":0,"runtimeErrors":[],"localHttpErrors":[]}
+{"theme":"light","width":1440,"cryptoTools":6,"radar":true,"calendar":true,"news":true,"media":true,"accountEntry":true,"taiwanRequests":0,"runtimeErrors":[],"localHttpErrors":[]}

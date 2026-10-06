@@ -1,0 +1,39 @@
+npm warn Unknown env config "http-proxy". This will stop working in the next major version of npm.
+
+> ox-crypto-independent@4.0.0-rc.2 test:performance
+> node scripts/performance-regression.mjs
+
+[
+  {
+    "width": 390,
+    "retainedHosts": 2,
+    "stateRestore": true,
+    "rapidNavigation": true,
+    "syntheticVisibilityAndReconnect": true,
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "retainedHosts": 3,
+    "stateRestore": true,
+    "rapidNavigation": true,
+    "syntheticVisibilityAndReconnect": true,
+    "errors": []
+  },
+  {
+    "fault": "css",
+    "recovered": true
+  },
+  {
+    "fault": "module",
+    "recovered": true
+  },
+  {
+    "fault": "worker",
+    "recovered": true
+  },
+  {
+    "fault": "slow429",
+    "recovered": true
+  }
+]

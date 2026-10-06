@@ -1,5 +1,5 @@
 function currentLocalAccountEmail() { return window.OXAuth?.user?.email || ""; }
-function watchStorageKey() { return "ox-watchlist"; }
+function watchStorageKey() { const id=window.OXAuth?.user?.id;return id?"ox-watchlist:user:"+encodeURIComponent(id):"ox-watchlist"; }
 function getWatchlistRecords() { try { const v = JSON.parse(localStorage.getItem(watchStorageKey()) || "[]"); return Array.isArray(v) ? v.filter(x => x && x.symbol) : []; } catch { return []; } }
 function isWatchlisted(symbol) { return getWatchlistRecords().some(x => x.symbol === symbol); }
 function syncWatchBadge() { const el = document.getElementById("badge-watch"); if (el) el.textContent = getWatchlistRecords().length; }
@@ -18,8 +18,9 @@ function toggleWatchSymbol(symbol) {
   renderCurrentTab();
 }
 
-// OX Account V1 has no Auth provider yet. Preserve legacy hooks without
-// creating a client-side identity, password store, or session.
+// Identity is owned by OXAuth. Preserve legacy UI hooks without duplicating sessions.
+// Guest watchlists stay local; signed-in accounts never inherit another account's list.
+document.addEventListener("ox:accountchange",()=>{syncWatchBadge();renderCurrentTab();});
 const AccountStore = Object.freeze({
   loadUsers: () => ({}), collectPrefs: () => ({}), applyPrefs: () => {}, capturePrefs: () => {},
   register: async () => { throw new Error("OX Account 驗證服務尚未連接"); },

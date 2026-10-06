@@ -7,3 +7,8 @@ test('late successful import initializes once and never starts a retry timer',as
 test('manual retry escapes rejected module keys with a finite pair of requests',async()=>{const calls=[];const options={pause:async()=>{},importer:async url=>{calls.push(url);throw TypeError('persistent fetch failure');}};for(let n=0;n<2;n++)await assert.rejects(loadToolModule('https://fixture.test/manual-only.js?v=1',options));assert.equal(new Set(calls).size,4);assert.equal(calls.length,4);});
 
 test('module evaluation errors are not replayed and cannot duplicate top-level side effects',async()=>{let calls=0;await assert.rejects(loadToolModule('https://fixture.test/evaluation-only.js',{pause:async()=>{},importer:async()=>{calls++;throw TypeError('Cannot read properties of undefined');}}));assert.equal(calls,1);});
+test('independent tool URL loads only its own bundle and shares subscribers',async()=>{
+ let release,calls=0,active=true,seen='';const module={mountCryptoBubbles(){}};const barrier=new Promise(r=>release=r),options={importer:async url=>{calls++;seen=url;await barrier;return module;}};
+ const a=loadToolModule('https://fixture.test/src/markets/crypto/bubbles/view.js?v=old',{...options,current:()=>active});
+ const b=loadToolModule('https://fixture.test/src/markets/crypto/bubbles/view.js?v=new',options);await Promise.resolve();active=false;release();await assert.rejects(a,{name:'AbortError'});assert.equal(await b,module);assert.match(seen,/\/src\/generated\/tool-bubbles\.js/);assert.equal(calls,1);
+});

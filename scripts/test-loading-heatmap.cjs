@@ -20,7 +20,7 @@ const server=spawn(process.execPath,['scripts/dev-server.mjs','--port',String(po
  // Cold CSS must cloak the entire menu, including before its styles arrive.
  await page.route('**/radar-ui.css*',async r=>{await new Promise(resolve=>setTimeout(resolve,700));await r.continue();});
  await page.evaluate(async()=>{const {createToolsRail}=await import('/src/components/strength/tools-rail.js?v=20261001-loading1');window.rail=createToolsRail({tabs:[['a','工具 A'],['b','工具 B']],selected:'a',label:'測試工具',onSelect(){}});document.body.append(rail.element);});
- assert.equal(await page.locator('.tw-radar-root').isVisible(),false);assert.equal(await page.locator('.ox-style-loading .ox-loading-ring').count(),1);await page.locator('.tw-radar-root').waitFor({state:'visible'});
+ assert.equal(await page.locator('.ox-tool-root').isVisible(),false);assert.equal(await page.locator('.ox-style-loading .ox-loading-ring').count(),1);await page.locator('.ox-tool-root').waitFor({state:'visible'});
  await page.setViewportSize({width:390,height:844});await page.goto(base+'/previews/crypto-flow.html');await page.locator('.cfx-heatmap').count();await page.locator('nav [data-tab="heatmap"]').click();await page.locator('.cfx-heatmap canvas').waitFor({state:'visible'});
  assert.deepEqual(await page.locator('nav [data-tab]').evaluateAll(es=>es.map(e=>e.dataset.tab)),['heatmap','rotation','flow']);
  await page.locator('[data-action="heat-in"]').click();await page.waitForTimeout(100);assert.ok(Number(await page.locator('.cfx-heatmap canvas').getAttribute('data-zoom'))>1);

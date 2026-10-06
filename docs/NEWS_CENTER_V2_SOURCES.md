@@ -1,4 +1,6 @@
-# News 2.0 來源與限制
+# 加密獨立版新聞來源與限制
+
+2026-10-06：已移除台股來源與解析器；以下來源條款、國際總經與加密事件說明保留。下列 2026-10-02 筆數是歷史快照紀錄，非目前即時統計。
 
 查核／快照時間：2026-10-02T03:12:18.549Z（台北 11:12）。現有正式 main 排程為六小時收集，非即時串流；本次預覽使用部署所附快照，不會因 main 排程而更新。新版收集器僅在未來驗收、合併後才進入正式排程。
 
@@ -8,28 +10,6 @@
 
 | 來源 | 市場 | 本版狀態 | 最近回應篇／件數 | 接入或缺口 |
 |---|---|---|---:|---|
-| 臺灣證券交易所 | tw | ready | 50 | https://www.twse.com.tw/rwd/zh/news/feed?type=rss |
-| 證券櫃檯買賣中心 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 科技新報 | tw | ready | 25 | https://technews.tw/feed/ |
-| DIGITIMES／電子時報 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Yahoo | tw | not-connected | — | 聚合入口；尚未驗證本專案可用接口與原始媒體識別，未啟用。 |
-| 鉅亨網 | tw | not-connected | — | 官方條款禁止未經授權轉載；企業新聞交付需合作契約，沒有帳密。https://www.cnyes.com/cnyes_about/cnyes_sos01.html |
-| 玩股網 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Google 新聞 | tw | not-connected | — | 聚合入口；尚未驗證適用本專案的官方資料介面及條件，不抓未授權內部 API。 |
-| 自由時報 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 中央社 | tw | not-connected | — | 官方提供新聞授權服務，沒有本專案的授權合約／交付帳密。https://www.cna.com.tw/about/product.aspx |
-| 經濟日報 | tw | not-connected | — | 已有新聞授權流程，未取得本專案內容授權。https://udndata.com/faq/authority.html |
-| 工商時報 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| CMoney 投資網誌 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 中時新聞網 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 168 財經 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 金十數據 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Investing | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| Forex Factory | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| MoneyDJ 理財網 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| PChome 股市 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 東森財經新聞網 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| MSN 財經 | tw | not-connected | — | 聚合入口；尚未驗證本專案可用接口與原始媒體識別，未啟用。 |
 | CoinDesk | crypto | ready | 25 | https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml |
 | Cointelegraph | crypto | ready | 30 | https://cointelegraph.com/rss |
 | Decrypt | crypto | not-connected | — | RSS 回應已實測；官方服務條款限制自動收集，移除文章且不啟用。https://decrypt.co/terms-of-service |
@@ -56,19 +36,9 @@
 | 歐洲央行 | us | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
 | 美國證券交易委員會 | us / crypto | ready | 25 | https://www.sec.gov/news/pressreleases.rss |
 | 美國商品期貨交易委員會 | us / crypto | ready | 10 | https://www.cftc.gov/RSS/RSSGP/rssgp.xml |
-| 證交所・除權息預告 | tw | ready | 57 | 官方公开資料回應已驗證，事件覆蓋依來源範圍。 |
-| 證交所・交易日曆 | tw | ready | 27 | 官方公开資料回應已驗證，事件覆蓋依來源範圍。 |
-| 櫃買中心・除權息預告 | tw | ready | 29 | 官方公开資料回應已驗證，事件覆蓋依來源範圍。 |
-| 櫃買中心・除權息結果 | tw | ready | 3 | 官方公开資料回應已驗證，事件覆蓋依來源範圍。 |
-| 證交所・法說會月表 | tw | ready・部分月份 | 17 | 解析官方公開 DOCX 月表，分清報到与法說時間。9 月更新版為 PDF，本版尚未解析；資料涵蓋只指已解析月表與累積記錄，不宣稱所有法說。 |
-| 公開資訊觀測站・法說會 | tw | not-connected | — | 尚未完成官方接入方式、可用欄位與授權條件的完整驗證；未啟用，沒有造資料。 |
-| 公開資訊觀測站・配息 | tw | not-connected | — | 實測 t187ap45_L 股利表，不含可靠除息交易日／現金發放日，不能依股東會日生成事件。 |
 
 ## 官方接口
 
-- TWSE OpenAPI：https://openapi.twse.com.tw/v1/swagger.json；TWT48U_ALL 只有預告，缺配發／發放日保留缺值；holidaySchedule 為年度公開日曆。
-- TPEx：https://www.tpex.org.tw/openapi/swagger.json；tpex_exright_prepost 與 tpex_exright_daily 的預告／已公布结果分開。
-- 法說來源：https://www.twse.com.tw/news/eventList?response=json →官方公開活動详情→官方 staticFiles DOCX。不是參考站內部接口；ZIP/XML 有大小、格式及實體宣告檢查。
 - BLS：https://www.bls.gov/schedule/news_release/current_year.asp；只解析已核對的發布類別，保留過去月份、America/New_York 夏令時間；前值／預期／實值來源沒有提供。
 - CoinDesk 官方 RSS 說明：https://www.coindesk.com/coindesk-news/2021/09/17/coindesk-rss
 - Snapshot：https://docs.snapshot.box/tools/graphql-api；Aave 官方治理：https://www.aave.com/docs/ecosystem/governance。
@@ -77,5 +47,4 @@
 
 - Tokenomist：https://tokenomist.ai/pricing。已查核付費／商用 API 分級；無 API key、方案授權與配額，未購買或宣稱接通。
 - 交易所上架／下架／維護、空投快照／申領、排程銷毀／回購、指定監管／ETF 生效日期：尚無已驗證排程供應，保留類別與狀態，不從新聞推定日曆日期。
-- 現金發放日、歷年配息、殖利率、填息：沒有足夠官方日期／價格／歷史樣本。本版不產生數值或統計。
 - RSS 現有文章範圍受每來源保留筆數限制；累積歷史不等於完整 30 日或全網覆蓋。熱詞／提及排行只統計目前快照的市場、時間與來源子集。

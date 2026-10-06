@@ -1,0 +1,95 @@
+{
+  "baseline": "bf244e2d8ebef7e875ddeee8444f108bf40a10af",
+  "files": [
+    {
+      "path": "src/markets/crypto/bubbles/view.js",
+      "sourceSha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894",
+      "sha256": "a774b9f10e934ff2365a91f15b34c482a15c20ed3c7c75d3970165895a6ff02e",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-chart.js",
+      "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
+      "sha256": "19972ec6ad2f97e6a47405e036eb6edd9c6e5907168a0508eaec8ddc99ee38eb",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-view.js",
+      "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
+      "sha256": "a96bb22a9ee31d0f6e2fd2e260a4a15d3d9823992e2a2fa44394d50cd4136810",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/tools-charts.js",
+      "sourceSha256": "fca2a60f8bfd5f8cd7f2c9140f7eec50175c4bbd71f20b77fd9100184c2a86f8",
+      "sha256": "7df34ca9a83dc0c9a743200259a005e165f189de694b623d3ad051f65c5c07e4",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/market-live.js",
+      "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
+      "sha256": "1cf443999cd758e7d86cbe49836fc399d803031ecc1f91fef694b7bc66668eb6",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/entry.js",
+      "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
+      "sha256": "4d75f4ab27f6163e66165c17f0adc14d6e4d3d7ced7e0f5bec9eb2a7ff02c223",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/analytics/flow-source.js",
+      "sourceSha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad",
+      "sha256": "ab1fc218c981dfc34db9cbfc646733a3e496c99943591d1eff962d88cc97c8e6",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/patterns/worker.js",
+      "sourceSha256": "ab3285ed2ca7895ee4a9ccb0c07e2743264166b108ce9c54753fd50ede529fce",
+      "sha256": "0d958f1fbe9ed35b02afb2b9ed914091b160d688412709962e6bd998d2dafc09",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/patterns/view.js",
+      "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
+      "sha256": "f7089fdbd30cfbfb70bd7782f4c05beabfce36b2ebab1e065dfd7c914b507e58",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/patterns/charts.js",
+      "sourceSha256": "53bcea4fdde642bbd0723dc979f240022b40c565b178eb834b861b98d1493d06",
+      "sha256": "8c43cd5f6d94c095a9631aa2a8b543e8e1a3d1d0948c3579ea7f7b8817ad55e3",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/patterns/source.js",
+      "sourceSha256": "754eaef2c72407b872c0a1701e8efe8a2e1d992eb46eacd9ee2e4ca668494d0d",
+      "sha256": "9c54fefb932f2b937c9a46023c84a417921925c9ef41784bceb9824b3935ec52",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/markets/crypto/patterns/index-cache.js",
+      "sourceSha256": "0e53061cdf7ef3e491cc68d2fad69a9e9c0d26c9aca8bb2dceb29f0d57a4e73e",
+      "sha256": "23ac142d7591e1f27d278c4759c3fdf8ed5740fb2eaa1c9f006473d6d915a604",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "server/account/feature-catalog.js",
+      "sourceSha256": "f6804a8cb687fb3a61570436bc8e2f366d2e6c83fbfcd13727df39bc80a83b67",
+      "sha256": "9edf6358768f487e3ed6502c46f81984aea5c0758581b028c975ed3d1250ee0b",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "server/account/feature-access.js",
+      "sourceSha256": "7148b8bbda0679c541f75edd770a5d2e47a2ec8c716a9db8360a05c6273099fa",
+      "sha256": "faeac289eabff7a8b9d85f081cd86738786ef7c24a5495e67bf56548ae023816",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    },
+    {
+      "path": "src/core/public-feed.js",
+      "sourceSha256": "5adec9d3f10059c10c1c1594a071958116a8d8f7f6f7788824b6c477999f7117",
+      "sha256": "cf77fbb0e517d2ac83f1013ea9acb22500006354a7033279a224bac549fae4b4",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+    }
+  ]
+}

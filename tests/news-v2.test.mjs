@@ -2,10 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { monthGrid, eventDay, taipeiDay, importance, monthEvents, defaultState, newsBase, filterNews, ranking, dedupe, hotWords, safeLink, validDate, sourcesFor, coverage, agendaDays, upcomingEventDays } from '../src/components/news/model.js';
 import { MARKET_CATEGORIES } from '../src/components/news/config.js';
-import { identifyAssets, rocDate, nullableNumber, dividends, holidays, governanceEvents } from '../scripts/news-providers.mjs';
+import { identifyAssets, governanceEvents } from '../scripts/news-providers.mjs';
 import { parseBlsCalendar, normalizeFeed } from '../scripts/collect-news.mjs';
 import { readFile } from 'node:fs/promises';
-import { conferenceEvents, documentXML } from '../scripts/news-conferences.mjs';
 const now = Date.parse('2026-10-02T02:00:00Z');
 // Explicit test fixtures. These records are never consumed by the collector or product.
 const article = (id, hours, extra = {}) => ({ id, title: 'Test verified article', titleZh: '測試新聞', sourceId: 'abmedia', link: `https://abmedia.io/${id}`, publishedAt: new Date(now - hours * 3600000).toISOString(), markets: ['crypto'], ...extra });
@@ -53,13 +52,11 @@ test('all sources, no sources and multiple source identities are different', () 
   assert.equal(newsBase(snapshot, 'crypto', state, {}, now).length, 2); state.sources = []; assert.equal(newsBase(snapshot, 'crypto', state, {}, now).length, 0);
   state.sources = ['ethereum']; assert.equal(newsBase(snapshot, 'crypto', state, {}, now)[0].sourceId, 'ethereum');
 });
-test('canonical reposts and repeated asset mentions count once, valid stock IDs do not match years', () => {
+test('canonical reposts and repeated crypto asset mentions count once', () => {
   const asset = { id: 'crypto:bitcoin', market: 'crypto', symbol: 'BTC', name: '比特幣' };
   const a = article('a', 1, { title: 'Bitcoin ETF decision arrives today', assets: [asset, asset] }), b = { ...a, id: 'b', link: `${a.link}?utm_source=yahoo` };
   assert.equal(dedupe([a,b]).length, 1); assert.equal(ranking(dedupe([a,b]))[0].count, 1);
-  const catalog = [{ id: 'tw:2026', market: 'tw', symbol: '2026', name: '虛構測試公司', aliases: [] }];
-  assert.equal(identifyAssets('2026 年的市場', ['tw'], catalog).length, 0);
-  assert.equal(identifyAssets('虛構測試公司（2026）', ['tw'], catalog).length, 1);
+
 });
 test('asset matching uses market identities and rejects ambiguous ordinary acronyms', () => {
   assert.equal(identifyAssets('Bitcoin 與 BTC 今日', ['crypto']).filter(a => a.symbol === 'BTC').length, 1);
@@ -79,12 +76,6 @@ test('source missing, failed and successfully empty states remain distinguishabl
   const sources = sourcesFor(snapshot, 'crypto'); assert.equal(sources.find(s => s.id === 'abmedia').count, 0); assert.equal(sources.find(s => s.id === 'ethereum').status, 'error'); assert.equal(sources.find(s => s.id === 'theblock').status, 'not-connected');
   assert.equal(coverage(snapshot, 'crypto', '2025-01').complete, false);
 });
-test('TWSE date conversion and missing fields never invent midnight or zero dividends', () => {
-  assert.equal(rocDate('1151008'), '2026-10-08'); assert.equal(rocDate('1150230'), null); assert.equal(nullableNumber(''), null); assert.equal(nullableNumber('0.0'), 0);
-  const [item] = dividends([{ Date: '1151008', Code: '2330', Name: '台積電', CashDividend: '' }], '2026-10-02');
-  assert.equal(item.occursAt, null); assert.equal(item.cashDividend, null); assert.equal(item.announcementStatus, 'preview');
-  assert.equal(holidays([{ Date:'1150101',Name:'開國紀念日' }])[0].date, '2026-01-01');
-});
 test('BLS historical release days remain queryable and DST retains exact times', () => {
   const html = '<tr><td class="date-cell"><p>Friday, January 9, 2026</p></td><td class="time-cell"><p>08:30 AM</p></td><td class="desc-cell"><p><strong>Employment Situation</strong> for December 2025</p></td></tr>';
   assert.equal(parseBlsCalendar(html, now)[0].occursAt, '2026-01-09T13:30:00.000Z');
@@ -102,13 +93,6 @@ test('preview collection is isolated from production writes and does not alter g
   const workflow = await readFile(new URL('../.github/workflows/news-preview.yml', import.meta.url),'utf8'); assert.match(workflow,/contents: read/); assert.doesNotMatch(workflow,/git push|HEAD:main|schedule:/);
   const quick = await readFile(new URL('../src/components/navigation/market-quick-switch.js', import.meta.url),'utf8'); const declared=quick.slice(quick.indexOf('const MARKETS'),quick.indexOf('const MENU_ID')); assert.match(declared,/id: "crypto"/);assert.doesNotMatch(declared,/id: "tw"/);assert.doesNotMatch(declared,/id: "us"|id: "news"/);
   assert.doesNotMatch(await readFile(new URL('../src/core/config.js',import.meta.url),'utf8'),/"us"/);
-});
-test('official conference table uses meeting time after registration and validates dates', () => {
-  const row = values => `<w:tr>${values.map(v => `<w:tc><w:p><w:r><w:t>${v}</w:t></w:r></w:p></w:tc>`).join('')}</w:tr>`;
-  const xml = `<w:document>${row(['1','9908','測試公司','10月2日','14:00~15:30','101 1F',''])}${row(['14:00~15:30','14:00~14:30','14:30~15:30'])}${row(['2','9908','測試公司','2月30日','14:00~15:30','101 1F',''])}</w:document>`;
-  const events = conferenceEvents(xml, { year: 2026, url: 'https://www.twse.com.tw/' });
-  assert.equal(events.length, 1); assert.equal(events[0].occursAt, '2026-10-02T06:30:00.000Z'); assert.match(events[0].registrationNote,/包含報到/);
-  assert.throws(() => documentXML(Buffer.from('not-a-document'))); assert.throws(() => conferenceEvents('<!DOCTYPE doc>',{}));
 });
 test('headline aliases aggregate into the verified asset name and media does not get official confidence', async () => {
   const { impact, cryptoRelevant } = await import('../scripts/collect-news.mjs');

@@ -6,7 +6,7 @@ const section = document.querySelector('#view-strength .strength-page');
 if (section) {
   const tabs = [['patterns','型態搜尋'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
   let selected = globalThis.OXFeatures?.selectedTool?.('crypto')||'patterns';
-  const rail = createToolsRail({ tabs, selected, label:'Crypto 指標分類', attribute:'data-crypto-tool', equal:true, mobileCompact:true, onSelect(id){selected=id;unmount();sync();} });
+  const rail = createToolsRail({ tabs, selected, label:'Crypto 指標分類', attribute:'data-crypto-tool', equal:true, mobileCompact:true, onSelect(id){if(id===selected)return;unmount();selected=id;sync();} });
   const nav = rail.element; nav.id='ox-crypto-tools-nav'; nav.hidden=true;
   const ns = rail.shadow;
   section.prepend(nav);
@@ -23,7 +23,9 @@ if (section) {
   const anchor = section.querySelector('.strength-compare-panel');
   if (anchor) anchor.after(slot); else section.prepend(slot);
   let host = document.createElement('div');const loading = document.createElement('div');loading.className='ox-tool-loading';loading.hidden=true;slot.append(host,loading);
-  let instance = null, pending = false, generation = 0, observer = null, dialog = null;
+  const retained=new Map(),savedStates=new Map(),scrolls=new Map();
+  let mountedTool=null;
+  let instance = null, pending = false, generation = 0, observer = null, scrollObserver=null, dialog = null;
   let previousOverflow = '';
   const active = () => (document.body.dataset.market || 'crypto') === 'crypto' && document.body.dataset.view === 'strength';
   function exitFocus() {
@@ -43,36 +45,47 @@ if (section) {
     dialog.addEventListener('cancel', e => { e.preventDefault(); instance?.closeInner(); });
     dialog.showModal();
   }
+  function evict(id,clearPrivate=false){const entry=retained.get(id);if(!entry)return;savedStates.set(id,entry.instance.getState?.());entry.instance.destroy();if(clearPrivate)entry.instance.clearPrivateState?.();entry.host.remove();retained.delete(id);}
+  function trim(){const cap=matchMedia('(max-width:700px)').matches?2:3;for(const [id,entry] of retained){if(id!==mountedTool&&(retained.size>cap||Date.now()-entry.at>120000))evict(id);}}
   function unmount() {
-    generation++; pending = false; observer?.disconnect(); observer = null;
-    exitFocus(); instance?.destroy(); instance = null; loading.hidden=true;slot.hidden = true;
-    const fresh=document.createElement('div');host.replaceWith(fresh);host=fresh;
+    generation++; pending=false;observer?.disconnect();observer=null;scrollObserver?.disconnect();scrollObserver=null;exitFocus();
+    if(instance&&mountedTool){if(active())scrolls.set(mountedTool,window.scrollY);instance.suspend?.();retained.set(mountedTool,{host,instance,at:Date.now()});host.hidden=true;host.style.display='none';}
+    instance=null;mountedTool=null;loading.hidden=true;slot.hidden=true;trim();
   }
+  setInterval(trim,30000);
+  document.addEventListener('scroll',()=>{if(mountedTool&&instance&&active())scrolls.set(mountedTool,window.scrollY);},{passive:true});
+  function restoreScroll(id){const token=generation,root=host.shadowRoot?.querySelector('main,.oxb-shell');const restore=()=>{if(token===generation&&mountedTool===id&&active())window.scrollTo(0,scrolls.get(id)||0);};requestAnimationFrame(restore);if(root?.hasAttribute('aria-busy')){scrollObserver=new MutationObserver(()=>{if(!root.hasAttribute('aria-busy')){scrollObserver?.disconnect();scrollObserver=null;requestAnimationFrame(restore);}});scrollObserver.observe(root,{attributes:true,attributeFilter:['aria-busy']});}}
+
   async function sync() {
     nav.hidden = !active();
     if (!active()) { delete section.dataset.cryptoTool; unmount(); return; }
-    if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync))return;
-    section.dataset.cryptoTool=selected; positionIndicator();
+    if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync)){unmount();return;}
+    section.dataset.cryptoTool=selected; positionIndicator();requestAnimationFrame(positionIndicator);
     if(selected==='strength'){unmount();return;}
     slot.hidden = false;
     if (instance || pending) return;
+    const retainedEntry=retained.get(selected);
+    if(retainedEntry){host=retainedEntry.host;instance=retainedEntry.instance;mountedTool=selected;host.hidden=false;host.style.removeProperty('display');retainedEntry.at=Date.now();instance.resume?.();const focusedRoot=host.shadowRoot?.querySelector('.cfx');if(focusedRoot){observer=new MutationObserver(syncFocus);observer.observe(focusedRoot,{attributes:true,attributeFilter:['class']});}restoreScroll(selected);return;}
+    host=document.createElement('div');slot.insertBefore(host,loading);const mountHost=host,id=selected;
+    const restore=savedStates.get(id);
+
     pending = true;loading.hidden=false;loading.innerHTML=window.OXLoading?.markup('工具載入中')||'工具載入中…';const token = ++generation;
     try {
       if(selected==='bubbles'){
         const { mountCryptoBubbles } = await loadToolModule(new URL('../bubbles/view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
         if(token!==generation||!active())return;
-        instance=mountCryptoBubbles(host);
+        instance=mountCryptoBubbles(mountHost,{restore});
         return;
       }
       if(selected==='patterns'){
         const { mountPatternSearch } = await loadToolModule(new URL('../patterns/view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
         if(token!==generation||!active())return;
-        instance=mountPatternSearch(host);
+        instance=mountPatternSearch(mountHost,{restore});
         return;
       }
       const { mountCryptoFlow } = await loadToolModule(new URL('./flow-view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
       if (token !== generation || !active()) return;
-      instance = mountCryptoFlow(host, { initialTab:selected, autoRefresh:true, onExit() { ns.querySelector('[data-crypto-tool="strength"]').click(); } });
+      instance = mountCryptoFlow(mountHost, { initialTab:id,restore, autoRefresh:true, onExit() { ns.querySelector('[data-crypto-tool="strength"]').click(); } });
       const style = document.createElement('style');
       style.textContent = ':host{display:block}.cfx{min-height:0;border:1px solid #344248;border-radius:14px;overflow:hidden}.cfx-top{display:none}.cfx.focused .cfx-top{display:flex;height:38px;padding:0 12px}.cfx-back,.cfx-brand,.cfx-source-badge,.cfx-tabs{display:none}.cfx-tabs{padding:0 12px;gap:18px}.cfx-content{padding:12px 10px}.cfx.focused{border:0;border-radius:0}.cfx.focused .cfx-brand{display:flex}';
       host.shadowRoot.append(style);
@@ -81,8 +94,11 @@ if (section) {
     } catch (error) {
       console.warn('[OX Crypto tool]',error);
       if (token === generation) showToolLoadError(loading,error,()=>{unmount();sync();});
-    } finally { if (token === generation) { pending = false;if(instance)loading.hidden=true; } }
+    } finally { if(token!==generation)mountHost.remove();if (token === generation) { pending = false;if(instance){mountedTool=id;retained.set(id,{host:mountHost,instance,at:Date.now()});loading.hidden=true;trim();restoreScroll(id);}else if(token!==generation)mountHost.remove(); } }
   }
+  let accountId=window.OXAuth?.user?.id||null;
+  document.addEventListener('ox:accountchange',()=>{const next=window.OXAuth?.user?.id||null;if(next===accountId)return;accountId=next;unmount();for(const id of [...retained.keys()])evict(id,true);savedStates.clear();scrolls.clear();sync();});
+  document.addEventListener('ox:feature-policy-ready',sync);
   document.addEventListener('ox:marketchange', sync);
   document.addEventListener('ox:viewchange', sync);
   sync();

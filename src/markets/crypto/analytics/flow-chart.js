@@ -1,6 +1,7 @@
 import { signed } from './flow-model.js';
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
-export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal }) {
+export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:parentSignal }) {
+  const life=new AbortController(),signal=life.signal,onAbort=()=>life.abort();parentSignal?.addEventListener('abort',onAbort,{once:true});if(parentSignal?.aborted)life.abort();
   const ctx = canvas.getContext('2d');
   let rows = [], selected = '', filter = '', all = [], points = [], labelHits = [], width = 0, height = 0, zoom = 1, pan = { x: 0, y: 0 }, raf = 0;
   let settings = {}, interactive = true, drag = null, pinch = null; const pointers = new Map();
@@ -111,6 +112,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal })
     setInteractive() { interactive = true; canvas.style.touchAction = 'none'; },
     reset() { zoom = 1; pan = { x: 0, y: 0 }; onZoom(zoom); schedule(); },
     zoom(delta) { zoom = clamp(zoom + delta, 1, 5); onZoom(zoom); schedule(); },
-    destroy() { document.removeEventListener('ox:themechange',schedule);resize.disconnect(); cancelAnimationFrame(raf); pointers.clear(); }
+    getViewport(){return {zoom,pan:{...pan}};},restoreViewport(view){if(view&&[view.zoom,view.pan?.x,view.pan?.y].every(Number.isFinite)){zoom=view.zoom;pan={...view.pan};schedule();}},
+    destroy() {parentSignal?.removeEventListener('abort',onAbort);life.abort(); document.removeEventListener('ox:themechange',schedule);resize.disconnect(); cancelAnimationFrame(raf); pointers.clear(); }
   };
 }
