@@ -69,6 +69,7 @@ try{
     assert(openingFutureSpace.pixels>=openingFutureSpace.labelWidth+24,'opening BTC must leave visible drawing room beyond its price label');
     assert(openingFutureSpace.pixels<=openingFutureSpace.labelWidth+54,'default whitespace must remain compact');
     await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().setVisibleLogicalRange({from:30,to:65}),chart);
+    await page.waitForFunction(s=>{const range=document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange();return range?.from===30&&range.to===65;},chart);
     const manualRange=await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart);
     await page.evaluate(()=>switchAppView('home'));await page.evaluate(()=>switchAppView('radar'));
     await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
