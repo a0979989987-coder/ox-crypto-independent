@@ -59,11 +59,12 @@ try{
    const chart=market==='tw'?'#tw-radar-chart':'#chart',box=market==='tw'?'.twcr-chart-box':'#view-radar .chart-box';
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
    // The existing compact layout exposes expand after folding its scanner panel.
-   await page.locator(market==='tw'?'.twcr-chart-box [data-action="fold"]':'#radar-scanner-toggle').click();
+   await page.locator(market==='tw'?'.twcr-chart-box .chart-controls [data-action="fold"]':'#radar-scanner-toggle').click();
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
-   await page.waitForFunction(m=>document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
+   await page.waitForFunction(m=>!!document.fullscreenElement||document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
    const toolbar=page.locator(box+' .chart-drawing-tools');
+   const foldedBefore=await page.locator(market==='tw'?'.tw-chart-radar':'#view-radar').getAttribute('class');await toolbar.locator('[data-action="fold"]').click();await toolbar.locator('[data-action="fold"]').click();assert.equal(await page.locator(market==='tw'?'.tw-chart-radar':'#view-radar').getAttribute('class'),foldedBefore,'folding drawing tools must not change the candidate panel');
    await toolbar.locator('[data-action="menu"]').click();await toolbar.locator('[data-draw="trend"]').click();
    const rect=await page.locator(chart).boundingBox();
    const a={x:rect.x+rect.width*.32,y:rect.y+rect.height*.32},b={x:rect.x+rect.width*.62,y:rect.y+rect.height*.62};
@@ -98,8 +99,8 @@ try{
    const text=await editor.evaluate(el=>getComputedStyle(el).color);assert.equal(text,theme==='light'?'rgb(38, 53, 68)':'rgb(238, 234, 226)');
    await page.screenshot({path:resolve(artifacts,`${market}-mounted-${width}-${theme}.png`)});
    await inspector.locator('[data-action="close"]').click();await toolbar.locator('[data-action="cursor"]').click();
-   // One Escape exits focus after drawing/selection has already been cleared.
-   await page.keyboard.press('Escape');await page.waitForFunction(m=>!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
+   // The existing close control exits both CSS focus and native desktop fullscreen.
+   await page.locator(market==='tw'?'.twcr-chart-box [data-action="exit"]':'#btn-chart-exit-overlay').click();await page.waitForFunction(m=>!document.fullscreenElement&&!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
    assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    results.push({market,width,theme,touch,actualApp:true,realChart:true,creation:true,selection:true,drag:true,settings:true,focusExit:true,errors});console.log(JSON.stringify(results.at(-1)));
   }catch(e){await page.screenshot({path:resolve(artifacts,`${market}-mounted-failure-${width}.png`)});console.error(errors,await page.evaluate(()=>({errors:window.__oxRuntimeAudit?.duplicateListeners,classes:document.body.className,chart:document.querySelector('#tw-radar-chart,#chart')?.__chartQA?.rows.length,status:document.querySelector('.twcr-status')?.textContent})));throw e;}

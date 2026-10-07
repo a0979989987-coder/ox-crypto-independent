@@ -183,7 +183,7 @@ window.OXChartDrawings = function mountChartDrawings({box,chartEl,state,market='
   }
   function renderList(){const list=toolbar.querySelector('.drawing-object-list');list.innerHTML=`<strong>圖形清單</strong>`+(current().length?current().map(d=>`<div class="drawing-object-row"><button type="button" data-object="${escape(d.id)}" aria-pressed="${d.id===selectedId}"><i style="background:${/^#[a-f0-9]{6}$/i.test(d.color)?d.color:prefs.color}"></i><span>${escape(d.name||TYPES[d.type]||'圖形')}<small>${escape(d.originPeriod||'')} ${d.visibility==='period'?'· 僅此週期':''}</small></span></button><button type="button" data-hide="${escape(d.id)}" aria-label="${d.hidden?'顯示':'隱藏'}圖形">${d.hidden?'○':'◉'}</button><button type="button" data-lock="${escape(d.id)}" aria-label="${d.locked?'解鎖':'鎖定'}圖形">${d.locked?'▣':'□'}</button></div>`).join(''):'<small>此標的尚無畫線</small>');}
   function action(event){
-    const button=event.target.closest('button');if(!button)return;
+    const button=event.target.closest('button');if(!button)return;event.stopPropagation();
     if(button.dataset.draw){flushStyle();cancel();tool=tool===button.dataset.draw?null:button.dataset.draw;selectedId=null;panel=null;}
     else if(button.dataset.object){const d=current().find(d=>d.id===button.dataset.object);if(d){if(d.hidden)change(()=>d.hidden=false);choose(d);panel='settings';}}
     else if(button.dataset.hide){const d=current().find(d=>d.id===button.dataset.hide);if(d)change(()=>{d.hidden=!d.hidden;if(d.hidden&&selectedId===d.id)selectedId=null;});}
