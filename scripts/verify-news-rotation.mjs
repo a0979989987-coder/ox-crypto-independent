@@ -148,7 +148,7 @@ try{
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   await verifyExpandedResearch(page);
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
-  const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
+  const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=220&&plot.height<=620,'research plot leaves room for replay controls');if(width<600)assert.ok(plot.height<=500,'mobile plot uses the compact default height');assert.ok(plot.width<=width);
   assert.equal(await active(page,'.cfx-chart-meta').count(),0,'removed coverage text leaves no metadata panel');
   const periods=await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value));for(const period of ['15m','30m','1h','2h','4h','6h','12h','1d'])assert.ok(periods.includes(period));
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
@@ -173,6 +173,8 @@ try{
   await active(page,'[data-action="replay-toggle"]').click();
   assert.deepEqual(await active(page,'[data-control="period"]').evaluate(el=>[...el.options].filter(o=>o.value.startsWith('range:')).map(o=>o.text)),['最近七天','最近一個月','最近一季','最近一年']);
   assert.ok(await active(page,'.cfx-replay').evaluate(e=>Math.abs(e.getBoundingClientRect().top-e.parentElement.querySelector('.cfx-plot').getBoundingClientRect().bottom)<2),'replay controls follow the plot without empty space');
+  await active(page,'.cfx-stage-times time[aria-current="step"]').waitFor();
+  const stages=await active(page,'[data-slot="replay-stage"]').textContent();assert.match(stages,/目前第 \d+\/\d+ 期 · UTC\+8/,'replay shows the current period');assert.ok(await active(page,'.cfx-stage-times time').count()<=3,'timeline shows adjacent periods');
   const playAlignment=await active(page,'[data-action="play"]').evaluate(b=>{const r=b.getBoundingClientRect(),s=b.querySelector('svg').getBoundingClientRect();return {x:Math.abs(s.x+s.width/2-r.x-r.width/2),y:Math.abs(s.y+s.height/2-r.y-r.height/2)};});assert.ok(playAlignment.x<.6&&playAlignment.y<.6,'replay icon is centered inside its button');
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
