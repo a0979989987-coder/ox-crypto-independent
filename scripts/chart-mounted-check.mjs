@@ -54,6 +54,8 @@ try{
   }
   try{
    await page.goto(`http://127.0.0.1:4296${basePath}/`,{waitUntil:'domcontentloaded'});
+   if(market==='crypto'){await page.waitForFunction(()=>typeof switchAppView==='function'&&OXFeatures.ready);await page.evaluate(()=>switchAppView('radar'));}
+   else{await page.locator('[data-twr-mode="chart"]').click();}
    const chart=market==='tw'?'#tw-radar-chart':'#chart',box=market==='tw'?'.twcr-chart-box':'#view-radar .chart-box';
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
@@ -98,7 +100,7 @@ try{
    await page.keyboard.press('Escape');await page.waitForFunction(m=>!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
    assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    results.push({market,width,theme,touch,actualApp:true,realChart:true,creation:true,selection:true,drag:true,settings:true,focusExit:true,errors});console.log(JSON.stringify(results.at(-1)));
-  }catch(e){await page.screenshot({path:resolve(artifacts,`${market}-mounted-failure-${width}.png`)});console.error(await page.evaluate(()=>({errors:window.__oxRuntimeAudit?.duplicateListeners,classes:document.body.className,chart:document.querySelector('#tw-radar-chart,#chart')?.__chartQA?.rows.length,status:document.querySelector('.twcr-status')?.textContent})));throw e;}
+  }catch(e){await page.screenshot({path:resolve(artifacts,`${market}-mounted-failure-${width}.png`)});console.error(errors,await page.evaluate(()=>({errors:window.__oxRuntimeAudit?.duplicateListeners,classes:document.body.className,chart:document.querySelector('#tw-radar-chart,#chart')?.__chartQA?.rows.length,status:document.querySelector('.twcr-status')?.textContent})));throw e;}
   await context.close();
  }
 }finally{await browser.close();await new Promise(r=>server.close(r));await writeFile(resolve(artifacts,'mounted-results.json'),JSON.stringify(results,null,2));}
