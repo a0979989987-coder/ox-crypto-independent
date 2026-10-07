@@ -5,7 +5,7 @@ import { runInNewContext } from 'node:vm';
 
 function harness(){
   const source=readFileSync(new URL('../src/components/chart/workspace.js',import.meta.url),'utf8');
-  const fn=source.slice(source.indexOf('window.OXChartGestures ='),source.indexOf('\nfunction applyChartFutureSpace('));
+  const fn=readFileSync(new URL('../src/components/chart/gestures.js',import.meta.url),'utf8')+source.slice(source.indexOf('function enableMobileChartPriceGestures('),source.indexOf('\nfunction applyChartFutureSpace('));
   const listeners=new Map(),prices=[],table={rows:[{},{}]};
   let logical={from:0,to:100};
   const ts={getVisibleLogicalRange:()=>({...logical}),setVisibleLogicalRange:r=>{logical={...r};},width:()=>300,height:()=>26};

@@ -1,0 +1,43 @@
+name: Chart drawing interactions
+on:
+  push:
+    branches: [main, 'fix/chart-editing-*']
+    paths:
+      - 'src/components/chart/**'
+      - 'src/styles/components/chart-drawings.css'
+      - 'scripts/chart-editing-check.mjs'
+      - 'scripts/chart-mounted-check.mjs'
+      - '.github/workflows/chart-editing.yml'
+permissions:
+  contents: read
+concurrency:
+  group: chart-editing-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  chart:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run check
+      - run: node --test tests/chart*.test.mjs
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/chart-editing-check.mjs
+        env:
+          OX_CHART_MARKET: crypto
+      - run: node scripts/chart-mounted-check.mjs
+        env:
+          OX_CHART_MARKET: crypto
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chart-interactions
+          path: chart-check-artifacts/
+          retention-days: 7
