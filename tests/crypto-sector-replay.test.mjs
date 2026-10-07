@@ -6,24 +6,30 @@ import { buildRotation } from '../src/markets/crypto/analytics/tools-model.js';
 import { readFileSync } from 'node:fs';
 
 const recorded=JSON.parse(readFileSync(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url)));
-test('24 overlapping groups retain all requested candidates; only online crypto USDT contracts enter a group',()=>{
- assert.equal(SECTOR_GROUPS.length,24);
- assert.deepEqual(SECTOR_GROUPS.find(g=>g.id==='pow').bases,['BTC','LTC','BCH','DOGE','KAS','ETC']);
+test('31 overlapping groups and 226 topics retain candidates; only online crypto USDT contracts enter a group',()=>{
+ assert.equal(SECTOR_GROUPS.length,31);
+ assert.equal(SECTOR_GROUPS.reduce((count,group)=>count+group.topics.length,0),226);
+ assert.ok(['BTC','LTC','BCH','DOGE','KAS','ETC'].every(base=>SECTOR_GROUPS.find(g=>g.id==='pow').bases.includes(base)));
+ assert.ok(SECTOR_GROUPS.find(g=>g.id==='meme').topics.find(t=>t.name==='青蛙系').candidates.includes('PEPE'));
  const instrument=(base,status='online')=>({symbol:base+'USDT',baseCoin:base,quoteCoin:'USDT',symbolType:'crypto',type:'perpetual',status});
  const quote=base=>({symbol:base+'USDT',usdtVolume:'5000'});
- const pool=verifiedSectorUniverse(['BTC','DOGE','ETH','UNI','FET','LINK','XRP','ZK'].map(base=>instrument(base)).concat(instrument('MORPHO','offline')),
-  ['BTC','DOGE','ETH','UNI','FET','LINK','XRP','ZK','MORPHO'].map(quote));
- assert.equal(pool.sectors.length,24);
- assert.deepEqual(pool.sectors.find(s=>s.id==='ai').members,['FETUSDT']);
+ const pool=verifiedSectorUniverse(['BTC','DOGE','ETH','UNI','FET','LINK','XRP','ZK','BEAM','RIF','HONEY','VELO'].map(base=>instrument(base)).concat(instrument('MORPHO','offline')),
+  ['BTC','DOGE','ETH','UNI','FET','LINK','XRP','ZK','MORPHO','BEAM','RIF','HONEY','VELO'].map(quote));
+ assert.equal(pool.sectors.length,31);
+ assert.ok(pool.sectors.find(s=>s.id==='ai').members.includes('FETUSDT'));
+ assert.equal(pool.sectors.find(s=>s.id==='meme').topics.find(t=>t.name==='狗系').members.includes('DOGEUSDT'),true);
  assert.ok(pool.sectors.find(s=>s.id==='meme').members.includes('DOGEUSDT'));
  assert.ok(pool.sectors.find(s=>s.id==='pow').members.includes('DOGEUSDT'));
- assert.ok(pool.sectors.find(s=>s.id==='lending').requestedBases.includes('MORPHO'));
+ assert.ok(pool.sectors.find(s=>s.id==='defi').requestedBases.includes('MORPHO'));
  assert.ok(!pool.symbols.includes('MORPHOUSDT'));
+ for(const ticker of ['BEAM','RIF','HONEY','VELO'])assert.ok(!pool.symbols.includes(ticker+'USDT'),'unresolved homonyms cannot be misclassified');
+ assert.ok(pool.sectors.find(s=>s.id==='privacy').topics.find(t=>t.name==='隱私貨幣').candidates.includes('BEAM'));
+ assert.ok(pool.sectors.find(s=>s.id==='gamefi').topics.find(t=>t.name==='遊戲公鏈／基礎設施').candidates.includes('BEAM'));
  assert.equal(new Set(pool.symbols).size,pool.symbols.length);
 });
 test('old recorded snapshot gains a full selectable catalog without inventing unrecorded market data',()=>{
  const expanded=withSectorCatalog(recorded);
- assert.equal(expanded.sectors.length,24);
+ assert.equal(expanded.sectors.length,31);
  assert.equal(expanded.tickers.length,recorded.tickers.length);
  assert.equal(Object.keys(expanded.candles).length,Object.keys(recorded.candles).length);
  const {frames}=buildRotation(expanded,'1h');

@@ -14,24 +14,14 @@ def get(url):
 def bg(path):return get(BASE+path)
 with concurrent.futures.ThreadPoolExecutor(max_workers=2) as pool:
  a=pool.submit(bg,'/api/v3/market/instruments?category=USDT-FUTURES');b=pool.submit(bg,'/api/v2/mix/market/tickers?productType=USDT-FUTURES');instruments=a.result();tickers=b.result()
-# The browser and capture job share the exact same 24-group taxonomy.
-groups=json.loads(subprocess.check_output(['node','--input-type=module','-e',"import {SECTOR_GROUPS} from './src/markets/crypto/analytics/sector-taxonomy.js';console.log(JSON.stringify(SECTOR_GROUPS))"],cwd=ROOT))
-inst={r['symbol']:r for r in instruments['data'] if r.get('symbolType')=='crypto' and r.get('type')=='perpetual' and r.get('quoteCoin')=='USDT' and r.get('status')=='online'}
-quotes={r['symbol']:r for r in tickers['data'] if float(r.get('usdtVolume') or 0)>0}
-sectors=[];symbols={'BTCUSDT'};errors=[]
-for group in groups:
- members=[]
- for base in group['bases']:
-  for candidate in (['FET','ASI'] if base=='FET/ASI' else [base]):
-   symbol=candidate+'USDT'
-   if inst.get(symbol,{}).get('baseCoin')==candidate and symbol in quotes:
-    members.append(symbol);symbols.add(symbol);break
- sectors.append({'id':group['id'],'name':group['name'],'members':members,'requestedBases':group['bases'],'source':'https://www.bitget.com/docs/catalog/market/market-data','mapping':'OX editorial overlap; Bitget verified contracts and tickers'})
- print(group['name'],len(members),'/',len(group['bases']),flush=True)
-if 'BTCUSDT' not in inst or 'BTCUSDT' not in quotes:raise ValueError('BTC benchmark unavailable')
-symbols=['BTCUSDT']+sorted(symbols-{'BTCUSDT'})
+# Use the same verifier as the browser, including the ambiguous ticker guard.
+verifier="import {verifiedSectorUniverse} from './src/markets/crypto/analytics/sector-taxonomy.js';import{readFileSync}from'node:fs';const [i,t]=JSON.parse(readFileSync(0,'utf8'));console.log(JSON.stringify(verifiedSectorUniverse(i,t)))"
+verified=json.loads(subprocess.check_output(['node','--input-type=module','-e',verifier],input=json.dumps([instruments['data'],tickers['data']]).encode(),cwd=ROOT))
+sectors=verified['sectors'];symbols=verified['symbols'];errors=[]
+if not any(t['symbol']=='BTCUSDT' for t in verified['tickers']):raise ValueError('BTC benchmark unavailable')
+for group in sectors:print(group['name'],len(group['members']),'/',len(group['requestedBases']),flush=True)
 prior=json.loads((ROOT/'previews/data/crypto-tools-snapshot.json').read_text())
-result={'schemaVersion':3,'kind':'recorded','source':'Bitget; OX editorial groups; archived CoinGecko market-cap metadata','capturedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'requestTime':tickers['requestTime'],'sectors':sectors,'taxonomyVersion':'ox-crypto-24-20261007','coins':prior.get('coins',{}),'instruments':[inst[s] for s in symbols],'tickers':[quotes[s] for s in symbols],'candles':{},'trades':{},'funding':{},'ratios':{},'errors':errors}
+result={'schemaVersion':4,'kind':'recorded','source':'Bitget; OX editorial topics; archived CoinGecko market-cap metadata','capturedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'requestTime':tickers['requestTime'],'sectors':sectors,'taxonomyVersion':'ox-crypto-31-topics-20261007','coins':prior.get('coins',{}),'instruments':verified['instruments'],'tickers':verified['tickers'],'candles':{},'trades':{},'funding':{},'ratios':{},'errors':errors}
 def candles(symbol):
  path=f'/api/v2/mix/market/candles?symbol={symbol}&productType=USDT-FUTURES&granularity=15m&limit=200'
  try:

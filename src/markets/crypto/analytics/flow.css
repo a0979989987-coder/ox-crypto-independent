@@ -97,3 +97,11 @@
  .cfx-research-toolbar .cfx-picker{padding:0 3px}
  .cfx-research-toolbar .cfx-period-select{width:39px;min-width:39px;padding:0 1px}
 }
+.cfx-picker-group{border:1px solid var(--line);border-radius:9px}
+.cfx-picker-group>label{border:0}
+.cfx-picker-group details{padding:0 11px 8px}
+.cfx-picker-group summary{cursor:pointer;color:var(--muted);font-size:11px;min-height:30px;padding-top:7px}
+.cfx-topic-list{display:grid;gap:8px;max-height:48dvh;overflow:auto}
+.cfx-topic{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:11px;line-height:1.65}
+.cfx-topic b{font-size:12px}.cfx-topic small{margin-left:8px;color:var(--muted)}
+.cfx-topic .verified{color:#eceee8}.cfx-topic .candidate{color:var(--muted)}

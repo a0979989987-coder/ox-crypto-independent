@@ -16,8 +16,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "3207429e87fe28801522ecc964882c910f0c087bc57d105bcb5024071d6dd77e",
-      "reason": "24-sector Bitget-verified market universe and continuous replay, preserving the source and authentication boundaries."
+      "sha256": "7452b4609a7a46210ced224cdb0ee7faab3da4722a64972164bb8e8f679ecc61",
+      "reason": "31 first-level groups and 226 searchable second-level topics, verified market coverage and continuous replay."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -29,7 +29,7 @@
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
       "sha256": "b7a7807b9654d9faaabd85aebd138b7b42672fdc9a61e07cd07c8bfd451b5060",
-      "reason": "24-sector Bitget-verified market universe and continuous replay, preserving the source and authentication boundaries."
+      "reason": "31 first-level groups and 226 searchable second-level topics, verified market coverage and continuous replay."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
@@ -142,8 +142,8 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "a24d4ca1486c72220f8dc523ed658f7bb688112cc52d52c7df187bcc3587e50a",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Includes 320px CJK font layout validation; full toolbar controls retained."
+      "sha256": "478326e6a2289464eebcd1a450b2ed824f067cb4acb791552790973d1ac4aa4d",
+      "reason": "Two-level crypto-only topic picker styles; no shared or Taiwan styling."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",
