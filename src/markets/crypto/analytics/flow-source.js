@@ -12,15 +12,15 @@ async function json(path, signal, transport) {
   if (body.code !== '00000' || !Array.isArray(body.data)) throw new Error('Bitget 暫時無法提供完整資料');
   return body;
 }
-export async function refreshFlow(period, { signal, onProgress = () => {}, onPartial = () => {}, transport = {owner:'analytics',priority:20} }) {
+export async function refreshFlow(period, { signal, mode='volume', analyses=new Map(), onProgress = () => {}, onPartial = () => {}, transport = {owner:'analytics',priority:20} }) {
   if (!PERIODS[period]) throw new Error('Unsupported period');
   const [instruments, tickers] = await Promise.all([
     json('/api/v3/market/instruments?category=USDT-FUTURES', signal, transport),
     json('/api/v2/mix/market/tickers?productType=USDT-FUTURES', signal, transport)
   ]);
-  const universe = cryptoUniverse(instruments.data, tickers.data);
+  const universe = cryptoUniverse(instruments.data, tickers.data, 50, mode, analyses);
   if (!universe.length) throw new Error('目前沒有可驗證的 Crypto 合約');
-  const snapshot = { schemaVersion: 1, kind: 'fetched', source: 'Bitget', market: 'USDT-FUTURES', capturedAt: new Date().toISOString(), tickerRequestTime: tickers.requestTime, instruments: instruments.data, tickers: universe, flows: { [period]: {} } };
+  const snapshot = { schemaVersion: 1, kind: 'fetched', source: 'Bitget', market: 'USDT-FUTURES', mode, limit:50, capturedAt: new Date().toISOString(), tickerRequestTime: tickers.requestTime, instruments: instruments.data, tickers: universe, flows: { [period]: {} } };
   for (let i = 0; i < universe.length; i++) {
     if (i) await pause(1100, signal); // published 1 request/sec/IP. Never flood from every frame.
     const symbol = universe[i].symbol;

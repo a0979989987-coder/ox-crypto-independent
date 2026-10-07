@@ -19,18 +19,19 @@ export function classify(x, y) {
   if (x === 0 || y === 0) return { id: 'neutral', name: '中性／持平', color: '#a5aaa9', direction: '—' };
   return STATES[x > 0 ? (y > 0 ? 0 : 1) : (y > 0 ? 2 : 3)];
 }
-export function cryptoUniverse(instruments, tickers, limit = 20) {
+export function cryptoUniverse(instruments, tickers, limit = 50, mode = 'volume', analyses = new Map()) {
   // Require explicit asset metadata. Never silently treat stocks or unknown instruments as crypto.
   const bySymbol = new Map(instruments.filter(i => i.symbolType === 'crypto' && i.type === 'perpetual' && i.status === 'online' && i.quoteCoin === 'USDT').map(i => [i.symbol, i]));
-  return tickers.filter(t => bySymbol.has(t.symbol) && finite(t.usdtVolume) > 0)
-    .sort((a, b) => Number(b.usdtVolume) - Number(a.usdtVolume)).slice(0, limit)
+  const scored = t => finite(analyses?.get?.(t.symbol)?.oxScore);
+  return tickers.filter(t => bySymbol.has(t.symbol) && finite(t.usdtVolume) > 0 && (mode !== 'score' || scored(t) !== null))
+    .sort((a, b) => (mode === 'gain' ? (finite(b.change24h) ?? -Infinity) - (finite(a.change24h) ?? -Infinity) : mode === 'score' ? scored(b) - scored(a) : Number(b.usdtVolume) - Number(a.usdtVolume)) || Number(b.usdtVolume) - Number(a.usdtVolume) || a.symbol.localeCompare(b.symbol)).slice(0, limit)
     .map(t => ({ ...t, baseCoin: bySymbol.get(t.symbol).baseCoin }));
 }
 export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}={}) {
   const interval = PERIODS[period];
   if (!interval) throw new Error('Unsupported period');
   const entries = snapshot.flows?.[period] || {};
-  const universe = cryptoUniverse(snapshot.instruments || [], snapshot.tickers || []);
+  const universe = snapshot.tickers?.length && snapshot.mode ? snapshot.tickers : cryptoUniverse(snapshot.instruments || [], snapshot.tickers || [], snapshot.limit || 50);
   const pairs = new Map(); const candidates = new Map();
   for (const ticker of universe) {
     const response = entries[ticker.symbol]?.response;
@@ -53,7 +54,7 @@ export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}
     const [current, previous] = pair; const x = pressure(current), old = pressure(previous), y = x - old;
     return [{ symbol: t.symbol, base: t.baseCoin, price: finite(t.lastPr), change24h: finite(t.change24h) === null ? null : Number(t.change24h) * 100,
       turnover: Number(t.usdtVolume), tickerTime: Number(t.ts || snapshot.tickerRequestTime), x, y, previous: old,
-      buy: Number(current.buyVolume), sell: Number(current.sellVolume), ts: target, state: classify(x, y) }];
+      buy: Number(current.buyVolume), sell: Number(current.sellVolume), netNotional: (Number(current.buyVolume)-Number(current.sellVolume))*Number(t.lastPr), ts: target, state: classify(x, y) }];
   });
   return { rows, target, period, excluded: universe.filter(t => !rows.some(r => r.symbol === t.symbol)).map(t => t.symbol), expected: universe.length };
 }

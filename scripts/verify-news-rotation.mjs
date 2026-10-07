@@ -39,6 +39,13 @@ try{
   assert.match(await active(page,'[data-topic-group="meme"] .cfx-topic').first().textContent(),/DOGE/);
   await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();
   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rotation-table').waitFor();await active(page,'[data-action="view-bubbles"]').click();
+  if(width===390&&theme==='dark'){
+   await active(page,'[data-action="settings"]').first().click();
+   assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'false');
+   await active(page,'[data-action="trails"]').click();assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'true');
+   await active(page,'[data-action="trails"]').click();assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'false');
+   await active(page,'[data-action="close-settings"]').click();
+  }
   await active(page,'[data-action="replay-toggle"]').click();
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
@@ -48,12 +55,22 @@ try{
   assert.equal(await canvas.getAttribute('data-identity'),'original','period switch updates canvas');
   await tool(page,'heatmap');await active(page,'.cfx-heatmap canvas').waitFor();await tool(page,'rotation');assert.equal(await canvas.getAttribute('data-identity'),'original','return to retained tool preserves canvas');
   if(width===390&&theme==='dark'){
-   await tool(page,'flow');await active(page,'.cfx-research-panel').waitFor();
+   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
+   const member=active(page,'.cfx-sidebar [data-open-chart]').first(),symbol=await member.getAttribute('data-open-chart');await member.click();
+   await page.locator('#view-radar[data-selected-symbol]').waitFor();assert.equal(await page.locator('#view-radar').getAttribute('data-selected-symbol'),symbol,'sector member opens the correct radar K line');
+   await page.evaluate(()=>switchAppView('strength'));await tool(page,'flow');
+   await active(page,'.cfx-research-panel').waitFor();
    const flowCanvas=active(page,'.cfx-plot canvas');await flowCanvas.evaluate(c=>c.dataset.identity='flow-original');
    await active(page,'[data-action="zoom-in"]').click();
    await active(page,'.cfx[data-scan-state="partial"]').waitFor({timeout:10000});
    await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:20000});
    assert.ok(await active(page,'.cfx-flow-symbols button').count()>1,'ETH and other valid symbols stay visible alongside BTC');
+   const modes=await active(page,'[data-control="flow-mode"]').evaluate(el=>[...el.options].map(o=>o.value));assert.deepEqual(modes,['volume','gain','net','score']);
+   await active(page,'[data-control="flow-mode"]').selectOption('gain');await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:60000});
+   await active(page,'[data-action="picker"]').click();assert.ok(await active(page,'[data-item]').count()>1);await active(page,'[data-action="close-picker"]').click();
+   await active(page,'[data-control="flow-mode"]').selectOption('volume');await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:60000});
+   await active(page,'[data-action="view-rank"]').click();await active(page,'[data-flow-detail]').first().click();
+   assert.ok(await active(page,'.cfx-asset-dialog [data-open-chart]').count()>0,'flow detail links to the K line');await active(page,'[data-action="close-asset"]').click();await active(page,'[data-action="view-bubbles"]').click();
    assert.ok((await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value))).includes('1d'));
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original','partial/final batches update the same canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),'150%');
    await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-table tbody tr').first().waitFor();await active(page,'[data-watch]').first().click();await active(page,'[data-action="scope-watch"]').click();assert.equal(await active(page,'.cfx-table tbody tr').count(),1);

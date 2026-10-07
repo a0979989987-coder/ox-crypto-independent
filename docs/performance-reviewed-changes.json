@@ -10,13 +10,13 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "38f8574a2ec1f80dc6bb44d7fec98a8c2f5b47901753817ff0b318fa7425b546",
+      "sha256": "21d938b3ebd48b290faf6d27fbbef9b2d24bc2d3a2d40551143b14fdac03dd9c",
       "reason": "Tide chart axis spacing, visible replay paths and readable labels on desktop/mobile."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "5ebce61498c6bdb4e18b5bdf5905feb2a5681620dfa843407efc7439f3d48afa",
+      "sha256": "81674b2f93a8b2141dce273a986af9e4c1355d5a65cdfb4e6a7efac2d16ce2b6",
       "reason": "Tide controls, daily demand loading, replay paths, placement and honest coverage labels."
     },
     {
@@ -40,7 +40,7 @@
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
       "sourceSha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad",
-      "sha256": "e06d0aa697c97e053681b677a22ea3101e8ffd40dccea72d74a1fb1d48942bcc",
+      "sha256": "1f66e7a5a2a73ccf48d71a1568fe79b9d360ca86dd36dff5383785579cc074cb",
       "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
@@ -136,13 +136,13 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "03b65859ba729a910e22d3f5df81b193ce49789b4be230ff3091d7bf926b2184",
+      "sha256": "577225aa93fe895c319faceb3c4ebb677741347e1986f520dc8b09cf13c4dfe8",
       "reason": "Bitget-supported taker pressure periods and verified multi-coin replay."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "f5c516d4f0031b0fba992b641fa3e3386bf8e01346deed9fdbe3d9791b072f8f",
+      "sha256": "0d042fbe910511ade3260a53803810f98fe05a44b3aad37f9071327a65ad47cf",
       "reason": "Tide chart caption below canvas, enlarged plot and compact coin list for mobile."
     },
     {

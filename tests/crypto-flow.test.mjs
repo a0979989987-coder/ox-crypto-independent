@@ -17,9 +17,20 @@ test('unknown asset types, stocks and offline contracts never leak into Crypto',
  const ins=['crypto','stock',undefined].map((symbolType,i)=>({symbol:`S${i}`,baseCoin:`S${i}`,symbolType,type:'perpetual',status:'online',quoteCoin:'USDT'}));
  assert.deepEqual(cryptoUniverse(ins,ins.map(i=>({symbol:i.symbol,usdtVolume:100}))).map(i=>i.symbol),['S0']);
 });
+test('flow modes select up to 50 verified contracts and never fabricate OX scores',()=>{
+ const ins=Array.from({length:55},(_,i)=>({symbol:`C${i}USDT`,baseCoin:`C${i}`,symbolType:'crypto',type:'perpetual',status:'online',quoteCoin:'USDT'}));
+ const tickers=ins.map((r,i)=>({symbol:r.symbol,usdtVolume:String(i+1),change24h:String((55-i)/100)}));
+ assert.equal(cryptoUniverse(ins,tickers).length,50);
+ assert.equal(cryptoUniverse(ins,tickers,50,'volume')[0].symbol,'C54USDT');
+ assert.equal(cryptoUniverse(ins,tickers,50,'gain')[0].symbol,'C0USDT');
+ const scores=new Map([['C0USDT',{oxScore:88}],['C1USDT',{oxScore:97}]]);
+ assert.deepEqual(cryptoUniverse(ins,tickers,50,'score',scores).map(r=>r.symbol),['C1USDT','C0USDT']);
+ assert.deepEqual(cryptoUniverse(ins,tickers,50,'score',new Map()),[]);
+});
 test('only adjacent complete source periods create a point; open period is omitted', () => {
  const s=data([{ts:hour,buyVolume:3,sellVolume:1},{ts:hour*2,buyVolume:1,sellVolume:3},{ts:hour*3,buyVolume:2,sellVolume:2},{ts:hour*4,buyVolume:100,sellVolume:0}]);
  const m=buildFlow(s);assert.equal(m.target,hour*3);assert.equal(m.rows[0].x,0);assert.equal(m.rows[0].y,50);assert.equal(m.rows[0].change24h,1);
+ assert.equal(m.rows[0].netNotional,0,'net estimate comes from actual taker volume difference');
  const g=buildFlow(data([{ts:hour,buyVolume:1,sellVolume:1},{ts:hour*3,buyVolume:1,sellVolume:1}]));assert.equal(g.rows.length,0);assert.deepEqual(g.excluded,['BTCUSDT']);
 });
 test('a source failure remains missing, not a zero-valued healthy market', () => {

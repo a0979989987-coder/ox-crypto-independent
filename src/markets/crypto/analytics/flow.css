@@ -41,6 +41,9 @@
 .cfx-research-toolbar{display:flex;align-items:center;gap:6px;padding:10px;white-space:nowrap;border-bottom:1px solid var(--line)}
 .cfx-segment{display:flex;align-items:center;gap:2px;background:var(--bg);padding:3px;border:1px solid var(--line);border-radius:9px}
 .cfx-research-toolbar button,.cfx-bottom-actions button,.cfx-picker-actions button{min-height:30px;padding:0 9px;font-size:11px;border-radius:7px;white-space:nowrap}
+.cfx-flow-mode{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.cfx-flow-mode select{max-width:260px;min-height:32px;color:inherit}
+.cfx-open-chart{display:block;width:100%;min-height:42px;margin:12px 0 0;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;text-align:center}
 .cfx-segment button[aria-pressed=true]{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:inherit}
 .cfx-picker,.cfx-replay-toggle{border:1px solid var(--line);background:var(--bg)}
 .cfx-research-toolbar .cfx-picker{margin-left:auto}

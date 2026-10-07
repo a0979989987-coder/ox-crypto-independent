@@ -56,6 +56,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       ctx.strokeStyle=(trail.color || '#bbc5c4')+(selected?'ef':'ae');ctx.lineWidth=selected?2.5:1.7;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();
       pts.slice(0,-1).forEach(p=>{ctx.fillStyle=light?'#334149c9':'#15252bdb';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2.3,0,Math.PI*2);ctx.fill();});
     }
+    // Text uses a subtle outline for contrast, without a box around every sector.
+    const ink=(value,x,y,tone=light?'#28343c':'#f0f2ea')=>{ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle=light?'#f5f7f1e8':'#0b151be8';ctx.strokeText(value,x,y);ctx.fillStyle=tone;ctx.fillText(value,x,y);};
     // Labels may be suppressed on overlap; the measured coordinates never move.
     const boxes = [];
     for (const p of [...points].sort((a, b) => Number(b.row.symbol === selected) - Number(a.row.symbol === selected) || b.r - a.r)) {
@@ -73,10 +75,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
         boxes.push(box);labelHits.push({...box,symbol:p.row.symbol});
         const displaced=Math.hypot(box.x-p.x,box.y-p.y)>14;
         if(displaced){ctx.strokeStyle=p.row.state.color+'a0';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(box.x,box.y);ctx.stroke();}
-        ctx.fillStyle=light?(chosen?'#edf2f8':'#ffffffed'):(chosen?'#273a40f5':'#17252ded');ctx.fillRect(box.l,box.t,labelWidth,labelHeight);
-        ctx.strokeStyle=chosen?(light?'#8d712e':'#e7ede4'):p.row.state.color+'50';ctx.lineWidth=.6;ctx.strokeRect(box.l,box.t,labelWidth,labelHeight);
-        ctx.font='12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle=light?'#374151':'#eceee5';ctx.fillText(p.row.base,box.x,box.y-2);
-        ctx.font='10px Inter,sans-serif';ctx.fillStyle=p.row.state.color;ctx.fillText(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12);
+        ctx.font='600 12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ink(p.row.base,box.x,box.y-2);
+        ctx.font='10px Inter,sans-serif';ink(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12,light?'#475b61':'#c4d9d5');
         continue;
       }
       let fontSize = settings.rotation ? (width < 600 ? 11 : 14) : (chosen || p.r > 26 ? 15 : 12);
@@ -86,9 +86,9 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       const b = { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h / 2, b: p.y + h / 2 };
       if (b.l < m.l || b.r > m.l + pw || b.t < m.t || b.b > m.t + ph) continue;
       if (!chosen && boxes.some(o => b.l < o.r + 5 && b.r > o.l - 5 && b.t < o.b + 5 && b.b > o.t - 5)) continue;
-      boxes.push(b);ctx.fillStyle=light?'#ffffffd9':'#122027d9';ctx.fillRect(b.l,b.t,w,h);ctx.textAlign = 'center'; ctx.fillStyle = light?'#25313d':'#f9f8f2';
-      ctx.fillText(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
-      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ctx.fillText(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
+      boxes.push(b);ctx.textAlign = 'center';
+      ink(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
+      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ink(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
     }
     ctx.restore(); ctx.font = `${width<600?10:11}px Inter, -apple-system, sans-serif`; ctx.fillStyle = light?'#616d7c':'#909a9d';
     for (let i = -nt; i <= nt; i++) {
