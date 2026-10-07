@@ -4,10 +4,21 @@ const RADAR_RETAIN_MS=2*60*60*1000;
 const RADAR_SNAPSHOT_KEY = 'ox-radar-snapshot-v8-liquidity';
 // Scan active liquid markets first; eligibility and final T1/T2/T3 ranking
 // still use the unchanged structural/volume engine after fetching candles.
-function orderCryptoScanTickers(tickers){return [...tickers].sort((a,b)=>
+function orderCryptoScanTickers(tickers){const sorted=[...tickers].sort((a,b)=>
   Number(['BTCUSDT','ETHUSDT'].includes(b.symbol))-Number(['BTCUSDT','ETHUSDT'].includes(a.symbol))||
   Number(num(b.usdtVolume)>=3000000)-Number(num(a.usdtVolume)>=3000000)||
-  Math.abs(num(b.change24h))-Math.abs(num(a.change24h))||num(b.usdtVolume)-num(a.usdtVolume));}
+  Math.abs(num(b.change24h))-Math.abs(num(a.change24h))||num(b.usdtVolume)-num(a.usdtVolume));
+ const benchmarks=sorted.filter(t=>['BTCUSDT','ETHUSDT'].includes(t.symbol));
+ const rest=sorted.filter(t=>!['BTCUSDT','ETHUSDT'].includes(t.symbol));
+ const up=rest.filter(t=>num(t.change24h)>=0),down=rest.filter(t=>num(t.change24h)<0),balanced=[];
+ for(let i=0;i<Math.max(up.length,down.length);i++){if(up[i])balanced.push(up[i]);if(down[i])balanced.push(down[i]);}
+ return [...benchmarks,...balanced];}
+
+// Refill a completed slot immediately; a slow symbol must not hold the next
+// liquid candidates behind an entire fixed batch.
+async function scanCryptoPool(next,scan,limit=3){
+ await Promise.allSettled(Array.from({length:limit},async()=>{let symbol;while((symbol=next())!==null){await scan(symbol);await new Promise(resolve=>setTimeout(resolve,0));}}));
+}
 function restoreRadarSnapshot() {
   if (state.radarSnapshotChecked) return;
   state.radarSnapshotChecked = true;
@@ -188,15 +199,17 @@ async function runScanQueueLoop() {
     const remaining = state.scanQueue.length-state.scanIndex;
     const extraFrames=globalThis.OXTierFilters?.get('crypto').enabled?globalThis.OXTierFilters.get('crypto').rules.filter(r=>!['1H','4H','1D'].includes(r.frame)).length:0;
     const batchLimit=Math.min(CONFIG.queueBatchSize,Math.max(1,Math.floor(20/(3+extraFrames))));
-    for (let i = 0; i < Math.min(batchLimit, remaining); i++) {
-      batchSymbols.push(state.scanQueue[state.scanIndex]);
-      state.scanIndex++;
-    }
+    const nextScan=()=>{
+      if(document.hidden||state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView)||state.scanIndex>=state.scanQueue.length)return null;
+      const symbol=state.scanQueue[state.scanIndex++];batchSymbols.push(symbol);
+      document.getElementById("scan-status").textContent=`輪巡 ${state.scanIndex}/${state.scanQueue.length}`;
+      return symbol;
+    };
 
     document.getElementById("scan-status").textContent = `輪巡 ${state.scanIndex}/${state.scanQueue.length}`;
     document.getElementById("dot").style.background = "#38c99b";
 
-    await Promise.allSettled(batchSymbols.map(async symbol => {
+    await scanCryptoPool(nextScan,async symbol => {
       const ticker = state.tickers.find(t => t.symbol === symbol);
       if (!ticker) return;
 
@@ -241,9 +254,9 @@ async function runScanQueueLoop() {
           !['t1','t2','t3'].some(tier=>['long','short'].some(side=>state.tierMapBySide?.[side]?.[tier]?.length));
         publishRadarProgress(firstCandidate);
       } catch (e) {if(state.activeMarket==='crypto'&&['home','radar'].includes(state.activeView))passFailed++;} finally { const n=(initialScanLoading?.done||0)+1;if(initialScanLoading){initialScanLoading.done=n;initialScanLoading.update(n,state.scanQueue.length);} }
-    }));
+    },Math.min(3,batchLimit));
 
-    if(state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView)){state.scanIndex=Math.max(0,state.scanIndex-batchSymbols.length);continue;}
+    if(document.hidden||state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView)){state.scanIndex=Math.max(0,state.scanIndex-Math.min(3,batchSymbols.length));continue;}
     const completed = state.scanIndex >= state.scanQueue.length;
     // A completed pass persists the snapshot; visible rows are published as
     // their own analysis completes, even while another request is pending.

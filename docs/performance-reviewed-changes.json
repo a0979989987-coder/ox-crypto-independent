@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "f874700065e3416c534bfcaaa19a464f455ea0ac1ad8ed3d0170cb557b569518",
-      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
+      "sha256": "79bd09d92380d1887a13979a727514e842f3db8dbb80e72ab079bc357cb0ac7e",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "00c61c77fecefc9f1ac5435304388411bdc2099c723dafdbf28d0964f2f29bbe",
-      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
+      "sha256": "ec150b80aecd27de2981edd854e1aacf4ffb5a957e4d118484af995e18d525ab",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -28,14 +28,14 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "cfafd3fa3067d97428102d94ff6e46b8433c0f59ac17ab23f24bc120bb99d2c7",
-      "reason": "Bounded on-demand full verified-universe daily candle scan."
+      "sha256": "f93376a6f4b698de33776acd19ac82612d3a949f913039fcd572575b8aeb7e5a",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "a1ea2d2cb3aa434174339edb91021e3380b94a3d3b78687b581c1470d3d5d188",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "6d0a6a8d9a77520f818b783cc685f3a62e5c778938dc02eef9f7848ba1da0d03",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
@@ -118,8 +118,8 @@
     {
       "path": "src/markets/crypto/api.js",
       "sourceSha256": "422644421259ef776f8da824dbfe90141e71f9bc44d1134d2d5e1d1552b72cd5",
-      "sha256": "12ad65eafcc95626e793e81a1f836bbb148dfd3e5913d5ff82f472a716aed2d9",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+      "sha256": "2677965045ee0087994687ee531aa18b4b901d31624dcca93712792c62339c1a",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/presentation.js",
@@ -130,8 +130,8 @@
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "cdde38aa42a058a952f3d8e13e5a4f9aeccd106b99fe8642cf574c848205b44d",
-      "reason": "Remove measured scan queue idle time; bounded adaptive transport with chart reserve, 429 cooldown, wake-on-return and queue/download diagnostics. Classification unchanged."
+      "sha256": "84a6c5a5398b1d80e8e2240146f11b72dc7e75b866de19db292489a61a6d31fd",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
@@ -142,8 +142,8 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "f76d250289a20a8b54b0dc42ffd4652eeb6d939a208887eaa55727911ef6c36a",
-      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
+      "sha256": "527a564b6dc3c6b1ced419033dbda93d55ba748165483b04f261f49d67d25b5b",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",

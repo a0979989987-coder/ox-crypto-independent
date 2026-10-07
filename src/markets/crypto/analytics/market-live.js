@@ -49,11 +49,27 @@ export async function refreshDailyCandles(snapshot,{signal,onProgress=()=>{},onP
   const dailyCandles={};
   for(let i=0;i<symbols.length;i++){
     if(i)await delay(160,signal);
-    const symbol=symbols[i],path=`/api/v2/mix/market/candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=32`;
-    try{const response=await bitget(path,signal,transport);dailyCandles[symbol]=response.data.length>=3?{path,response}:{path,error:'日 K 線不足'};}
+    const count=Math.min(370,Math.max(32,(snapshot.historyDays||7)+3));
+    const symbol=symbols[i],path=`/api/v2/mix/market/candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=${Math.min(200,count)}`;
+    try{
+      const response=await bitget(path,signal,transport);let data=response.data;
+      // Providers can return fewer candles than the requested page size.
+      // Keep paging backwards until the requested calendar window is covered.
+      for(let page=0;data.length<count&&data.length&&page<6;page++){
+        const oldest=Math.min(...data.map(row=>Number(row[0])));
+        const olderPath=`/api/v2/mix/market/history-candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=200&endTime=${oldest-1}`;
+        let older;
+        try{older=await bitget(olderPath,signal,transport);}
+        catch(error){if(error.name==='AbortError')throw error;break;}
+        const combined=[...new Map([...older.data,...data].map(row=>[Number(row[0]),row])).values()].sort((a,b)=>Number(a[0])-Number(b[0])).slice(-count);
+        if(!older.data.length||Math.min(...combined.map(row=>Number(row[0])))>=oldest)break;
+        data=combined;
+      }
+      dailyCandles[symbol]=data.length>=3?{path,response:{...response,data}}:{path,error:'日 K 線不足'};
+    }
     catch(error){if(error.name==='AbortError')throw error;dailyCandles[symbol]={path,error:error.message};}
     onPartial({dailyCandles:{...dailyCandles},scan:{done:i+1,total:symbols.length,complete:false}});
     onProgress(i+1,symbols.length);
   }
-  return {dailyCandles,scan:{done:symbols.length,total:symbols.length,complete:true},captureCompletedAt:new Date().toISOString()};
+  return {dailyCandles,historyDays:snapshot.historyDays||7,scan:{done:symbols.length,total:symbols.length,complete:true},captureCompletedAt:new Date().toISOString()};
 }

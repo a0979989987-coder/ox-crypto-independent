@@ -54,6 +54,13 @@ async function verifySectorDialog(page,width,theme){
 try{
  for(const [width,theme] of [[320,'dark'],[390,'dark'],[390,'light'],[1440,'dark'],[1440,'light']]){
   const {page,context,audit,requests}=await setup(width,theme);
+  for(const id of ['patterns','bubbles','strength','heatmap','rotation']){
+   await tool(page,id);
+   if(id==='strength')await page.locator('.strength-compare-panel').waitFor();
+   else await active(page,id==='patterns'?'.px-board':id==='bubbles'?'.oxb-shell':'.cfx').waitFor();
+   const gap=await page.evaluate(id=>{const nav=document.querySelector('#ox-crypto-tools-nav'),content=document.querySelector(id==='strength'?'.strength-compare-panel':'#ox-crypto-tools-inline');return content.getBoundingClientRect().top-nav.getBoundingClientRect().bottom;},id);
+   assert.ok(Math.abs(gap-4)<=1,`${id} content gap is 4px at ${width}px, received ${gap}`);
+  }
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
   const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
@@ -77,8 +84,17 @@ try{
    await active(page,'[data-action="close-settings"]').click();
   }
   await active(page,'[data-action="replay-toggle"]').click();
+  assert.deepEqual(await active(page,'[data-control="replay-range"]').evaluate(el=>[...el.options].filter(o=>o.value!=='current').map(o=>o.text)),['最近七天','最近一個月','最近一季','最近一年']);
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
+  if(width===390&&theme==='dark'){
+   for(const range of ['7d','1m','3m','1y']){
+    await active(page,'[data-control="replay-range"]').selectOption(range);
+    assert.equal(await active(page,'[data-control="period"]').inputValue(),'1d');
+    assert.equal(await active(page,'[data-control="replay-range"]').inputValue(),range);
+   }
+   await active(page,'[data-control="replay-range"]').selectOption('current');
+  }
   assert.equal(await canvas.getAttribute('data-identity'),'original','controls and replay never replace the canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),zoom);
   await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
   if(width===390&&theme==='dark'){await active(page,'[data-control="period"]').selectOption('1d');try{await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return /有效 \d+\/31/.test(h?.shadowRoot.querySelector('[data-slot="rotation-coverage"]')?.textContent||'')&&h?.shadowRoot.querySelector('[data-action="play"]')?.disabled===false;},{},{timeout:35000});}catch(error){const detail=await active(page,'.cfx-research-panel').evaluate(el=>({coverage:el.querySelector('[data-slot="rotation-coverage"]')?.textContent,notice:el.closest('.cfx').querySelector('.cfx-notice')?.textContent,period:el.querySelector('[data-control="period"]')?.value,playDisabled:el.querySelector('[data-action="play"]')?.disabled}));throw new Error(`日線回歸：${JSON.stringify(detail)}；請求 ${requests.filter(u=>u.includes('1Dutc')).length}；瀏覽器錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}await active(page,'[data-control="period"]').selectOption('1h');}
@@ -108,6 +124,7 @@ try{
    await active(page,'[data-action="view-bubbles"]').click();
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original');
    await active(page,'[data-action="replay-toggle"]').click();
+  assert.deepEqual(await active(page,'[data-control="replay-range"]').evaluate(el=>[...el.options].filter(o=>o.value!=='current').map(o=>o.text)),['最近七天','最近一個月','最近一季','最近一年']);
    await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const v=Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.value);return v>0&&v%1>0;});
    await active(page,'[data-action="play"]').click();
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original','主動買賣回放沿用畫布');

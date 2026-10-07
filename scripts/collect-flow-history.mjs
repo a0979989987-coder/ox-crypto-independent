@@ -1,0 +1,10 @@
+import {readFile,writeFile} from 'node:fs/promises';
+import {refreshFlow} from '../src/markets/crypto/analytics/flow-source.js';
+import {retainDailyFlow} from '../src/markets/crypto/analytics/flow-history.js';
+const path=new URL('../previews/data/crypto-flow-history.json',import.meta.url);
+const archive=JSON.parse(await readFile(path,'utf8'));
+const snapshot=await refreshFlow('1d',{signal:AbortSignal.timeout(240000),mode:'volume'});
+const updated=retainDailyFlow(archive,snapshot);
+if(!Object.values(updated.symbols).some(rows=>rows.length))throw Error('No verified daily taker history');
+await writeFile(path,JSON.stringify(updated)+'\n');
+console.log('Saved public Bitget daily observations for',Object.keys(updated.symbols).length,'symbols');
