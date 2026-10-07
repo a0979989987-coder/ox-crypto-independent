@@ -19,6 +19,29 @@ export function classify(x, y) {
   if (x === 0 || y === 0) return { id: 'neutral', name: '中性／持平', color: '#a5aaa9', direction: '—' };
   return STATES[x > 0 ? (y > 0 ? 0 : 1) : (y > 0 ? 2 : 3)];
 }
+// Aggregate only complete, consecutive taker buckets from the same venue.
+// Summed buy/sell quantities preserve the pressure formula; missing buckets
+// stay missing. A native response takes precedence when it is available.
+export function flowPeriodSnapshot(snapshot,period) {
+  if(!snapshot||Object.values(snapshot.flows?.[period]||{}).some(e=>e.response?.data?.length))return snapshot;
+  const step=PERIODS[period];
+  const from=Object.keys(PERIODS).filter(p=>PERIODS[p]<step&&step%PERIODS[p]===0&&Object.values(snapshot.flows?.[p]||{}).some(e=>e.response?.data?.length)).sort((a,b)=>PERIODS[a]-PERIODS[b])[0];
+  if(!from)return snapshot;
+  const bar=PERIODS[from],offset=(16*3600000)%step,entries={};
+  for(const [symbol,entry] of Object.entries(snapshot.flows[from])){
+    const response=entry.response;if(!response?.data)continue;
+    const sourceTime=Number(response.requestTime),records=new Map(response.data.filter(r=>Number(r.ts)+bar<=sourceTime&&pressure(r)!==null).map(r=>[Number(r.ts),r]));
+    const starts=new Set([...records.keys()].map(ts=>Math.floor((ts-offset)/step)*step+offset)),data=[];
+    for(const ts of [...starts].sort((a,b)=>a-b)){
+      if(ts+step>sourceTime)continue;
+      let buyVolume=0,sellVolume=0,complete=true;
+      for(let t=ts;t<ts+step;t+=bar){const row=records.get(t);if(!row){complete=false;break;}buyVolume+=Number(row.buyVolume);sellVolume+=Number(row.sellVolume);}
+      if(complete)data.push({ts,buyVolume,sellVolume});
+    }
+    if(data.length>=2)entries[symbol]={response:{...response,data}};
+  }
+  return {...snapshot,derivedFrom:from,flows:{...snapshot.flows,[period]:entries}};
+}
 export function cryptoUniverse(instruments, tickers, limit = 50, mode = 'volume', analyses = new Map()) {
   // Require explicit asset metadata. Never silently treat stocks or unknown instruments as crypto.
   const bySymbol = new Map(instruments.filter(i => i.symbolType === 'crypto' && i.type === 'perpetual' && i.status === 'online' && i.quoteCoin === 'USDT').map(i => [i.symbol, i]));

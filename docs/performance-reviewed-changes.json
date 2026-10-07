@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "19385fb3663ba75d72983044144129fbe86b407f5b3d4c84fc9375ab40921d01",
-      "reason": "Reviewed full-width unframed research charts, in-plot coordinates and unified period/replay controls; verified with responsive browser and data regressions."
+      "sha256": "d9eb13d41feed4a8ddeb5b4c4e2feff578a67ea94284f12381735a9a543995c5",
+      "reason": "User requested larger readable bubbles and labels; preserve true coordinates and centered text."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "2eeeaad54aaa73d24f0326ccaea6ee86c70cb77ea8e6f90af40e521237c0319c",
-      "reason": "Reviewed single rounded research frame, atomic closed-cohort publication, stable paused replay, centered mobile dialogs and unframed exit targets; verified with staged-refresh and Chromium/WebKit responsive browser regressions."
+      "sha256": "1b9b11b508d8caecff25c38272d72f88c29630224cb87a8af73113414c1aff26",
+      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -28,8 +28,8 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "195d83e699d97bfe87d8de6f533e14312828a91127549879d15e5485c0784e5c",
-      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
+      "sha256": "cdd5def40ba43daefda245b01e65ac10ec8dbdb13a5ccd6187da2e5addb1da54",
+      "reason": "User requested faster native period loads; use five workers under the existing shared rate limiter."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
@@ -136,14 +136,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "2d0408b338cb14a47d012d190e92085dd9a7b8f8bff83099b8a324c14695c660",
-      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
+      "sha256": "2b2a3ea8b7daa0818b087a644871f5ac293665d4566a77595f6f8985160a710a",
+      "reason": "User requested faster period loading; aggregate only complete real venue taker buckets."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "16d1ed2b0c29be574f014fd1049c769d007070221ca0c222b1f26b111351116c",
-      "reason": "Reviewed single rounded research frame, atomic closed-cohort publication, stable paused replay, centered mobile dialogs and unframed exit targets; verified with staged-refresh and Chromium/WebKit responsive browser regressions."
+      "sha256": "359cacbd9bb53af573e0cc8cc6e3bf9d51957011c583a896ca1ccf4cf993bd55",
+      "reason": "User requested chart height that leaves replay transport visible on mobile."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",

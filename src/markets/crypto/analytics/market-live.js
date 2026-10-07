@@ -8,18 +8,14 @@ async function bitget(path, signal, transport) {
   if (body.code !== '00000' || !Array.isArray(body.data)) throw new Error('Bitget 資料格式不符');
   return body;
 }
-const delay=(ms,signal)=>new Promise((resolve,reject)=>{
-  const id=setTimeout(()=>{signal.removeEventListener('abort',abort);resolve();},ms);
-  function abort(){clearTimeout(id);reject(new DOMException('Aborted','AbortError'));}
-  if(signal.aborted)abort();else signal.addEventListener('abort',abort,{once:true});
-});
-// Three workers keep one slow coin from holding the whole chart hostage.
+// The shared public feed already spaces starts and backs off on 429. Five
+// workers fill its background slots while reserving the sixth for interaction.
 async function scanSymbols(symbols,signal,visit,onDone){
  let cursor=0,done=0;
- await Promise.all(Array.from({length:Math.min(3,symbols.length)},async()=>{
+ await Promise.all(Array.from({length:Math.min(5,symbols.length)},async()=>{
   while(cursor<symbols.length){if(signal.aborted)throw new DOMException('Aborted','AbortError');
    const symbol=symbols[cursor++];await visit(symbol);if(signal.aborted)throw new DOMException('Aborted','AbortError');
-   onDone(++done,symbols.length);if(cursor<symbols.length)await delay(160,signal);
+   onDone(++done,symbols.length);
   }
  }));
 }

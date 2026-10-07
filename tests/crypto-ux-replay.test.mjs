@@ -3,9 +3,9 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
 import {strengthBubbleRadius,bubbleLabelLayout} from '../src/markets/crypto/analytics/flow-chart.js';
-import {replayWindow,replayCoverage} from '../src/markets/crypto/analytics/replay-ranges.js';
+import {replayWindow,replayCoverage,replayStages} from '../src/markets/crypto/analytics/replay-ranges.js';
 import {retainDailyFlow,mergeFlowHistory} from '../src/markets/crypto/analytics/flow-history.js';
-import {buildFlowHistory} from '../src/markets/crypto/analytics/flow-model.js';
+import {buildFlowHistory,flowPeriodSnapshot} from '../src/markets/crypto/analytics/flow-model.js';
 import {buildRotation} from '../src/markets/crypto/analytics/tools-model.js';
 import {freshPeriodCandles} from '../src/markets/crypto/analytics/market-live.js';
 import {createMarketRefreshCache} from '../src/markets/crypto/analytics/market-cache.js';
@@ -13,8 +13,45 @@ import {localizeNewsText} from '../src/components/news/localization.js';
 test('rotation strength sizes remain readable and taker sell strength matches buy strength',()=>{
  for(const mobile of [true,false]){
   const radii=[-10,-5,0,5,10].map(x=>strengthBubbleRadius({x},{rotation:true,domain:10,mobile}));
-  assert.ok(radii[0]>=10);assert.ok(radii.at(-1)<=(mobile?34:50));assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));assert.ok(radii.at(-1)/radii[2]>=2,'strength changes have a visibly wider size range');
+  assert.ok(radii[0]>=(mobile?26:30));assert.ok(radii.at(-1)<=(mobile?44:60));assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));assert.ok(radii.at(-1)-radii[0]>=18,'strength remains visible while weak bubbles keep readable labels');
   assert.equal(strengthBubbleRadius({x:-70},{mobile}),strengthBubbleRadius({x:70},{mobile}));
+ }
+});
+test('weak mobile coin labels and values stay legible at the default radius',()=>{
+ const r=strengthBubbleRadius({x:0},{mobile:true});
+ const layout=bubbleLabelLayout((text,size)=>text.length*size*.62,'BTC','+0.0%',r,true);
+ assert.ok(layout.nameSize>=12);assert.ok(layout.valueSize>=10);
+});
+test('replay stages highlight the actual current frame at both ends and across midnight',()=>{
+ const first=Date.UTC(2026,9,6,14),frames=Array.from({length:5},(_,i)=>({ts:first+i*3600000}));
+ const start=replayStages(frames,0,'1h'),middle=replayStages(frames,2.9,'1h'),end=replayStages(frames,4,'1h');
+ assert.equal(start[0].current,true);assert.equal(end.at(-1).current,true);
+ assert.deepEqual(middle.map(s=>s.label),['10/06 23:00','10/07 00:00','10/07 01:00']);
+ assert.equal(middle.find(s=>s.current).ts,frames[2].ts);
+ assert.equal(replayStages(frames,0,'1d')[0].label,'10/06');
+ assert.deepEqual(replayStages([],0,'1h'),[]);
+});
+test('coarser taker periods sum real closed buckets without filling gaps or overwriting native data',()=>{
+ const bar=900000,start=Date.UTC(2026,9,6),now=start+20*bar;
+ const data=Array.from({length:21},(_,i)=>({ts:start+i*bar,buyVolume:i+1,sellVolume:1}));
+ const entry=rows=>({response:{requestTime:now,data:rows}});
+ const snapshot={mode:'volume',tickers:[{symbol:'BTCUSDT',baseCoin:'BTC'}],flows:{'15m':{BTCUSDT:entry(data)}}};
+ const derived=flowPeriodSnapshot(snapshot,'1h'),rows=derived.flows['1h'].BTCUSDT.response.data;
+ assert.equal(rows.length,5);assert.equal(rows[0].buyVolume,10);assert.equal(rows[0].sellVolume,4);
+ assert.equal(buildFlowHistory(derived,'1h').frames.length,4);
+ assert.equal(derived.derivedFrom,'15m');assert.equal(snapshot.flows['1h'],undefined);
+ const missing=flowPeriodSnapshot({...snapshot,flows:{'15m':{BTCUSDT:entry(data.filter((_,i)=>i!==6))}}},'1h');
+ assert.ok(missing.flows['1h'].BTCUSDT.response.data.every(r=>r.ts!==start+4*bar));
+ const native={...snapshot,flows:{...snapshot.flows,'1h':{BTCUSDT:entry(rows)}}};
+ assert.equal(flowPeriodSnapshot(native,'1h'),native);
+ assert.equal(flowPeriodSnapshot(snapshot,'5m'),snapshot);
+});
+test('all intraday rotation levels can render the real snapshot before native downloads finish',()=>{
+ const snapshot=JSON.parse(readFileSync(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url),'utf8'));
+ for(const period of ['15m','30m','1h','2h','4h','6h','12h']){
+  const model=buildRotation(snapshot,period);
+  assert.ok(model.frames.some(f=>f.rows.length>0),period+' should not start with an empty native map');
+  assert.ok(model.frames.every(f=>f.ts<=Number(snapshot.candles.BTCUSDT.response.requestTime)));
  }
 });
 test('calendar replay ranges clamp month endings and report insufficient history honestly',()=>{

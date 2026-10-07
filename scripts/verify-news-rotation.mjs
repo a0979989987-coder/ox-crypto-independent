@@ -87,8 +87,8 @@ async function verifyIdleUpdates(){
  const pointsReady=()=>page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return Number(h?.shadowRoot.querySelector('canvas')?.dataset.points)>0;},{},{timeout:20000});
  try{
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();await active(page,'[data-control="period"]').selectOption('12h');await waitPartial();
-  assert.equal(await active(page,'canvas').getAttribute('data-points'),'0','a new native period waits for the whole cohort instead of moving partially averaged sectors');assert.ok(await active(page,'.cfx-plot-loading').isVisible());
-  release();await pointsReady();const nativeLatest=(await chartScene(page)).timestamp;await active(page,'[data-action="zoom-in"]').click();
+  await pointsReady();assert.ok(!(await active(page,'.cfx-plot-loading').isVisible()),'complete 15m windows render the selected period while the native batch is staged');
+  release();await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return h?.shadowRoot.querySelector('.cfx-notice')?.hidden===true;},{},{timeout:20000});await pointsReady();const nativeLatest=(await chartScene(page)).timestamp;await active(page,'[data-action="zoom-in"]').click();
   await active(page,'[data-action="replay-toggle"]').click();
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),v=Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.value);return v>0&&v%1>0;});await active(page,'[data-action="play"]').click();
   const paused=await chartScene(page);phase=1;returned=0;gate=new Promise(r=>release=r);partial=new Promise(r=>partialReady=r);feedTime+=13*3600000;await page.clock.setSystemTime(feedTime);
@@ -108,7 +108,7 @@ async function verifySectorDialog(page,width,theme){
  await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
  await active(page,'[data-action="view-bubbles"]').click();
  const bubbleCanvas=active(page,'.cfx-plot canvas');await bubbleCanvas.scrollIntoViewIfNeeded();
- const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],labels:c.__bubbleLabels||[],width:c.clientWidth,height:c.clientHeight,clips:c.__plotClips||[],text:c.__plotText||[]}));assert.ok(drawn.points.every(p=>p.r<=(width<600?34:50)),'strength-sized bubbles stay compact');
+ const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],labels:c.__bubbleLabels||[],width:c.clientWidth,height:c.clientHeight,clips:c.__plotClips||[],text:c.__plotText||[]}));assert.ok(drawn.points.every(p=>p.r>=(width<600?26:30)&&p.r<=(width<600?44:60)),'weak bubbles preserve their readable minimum size');
  assert.ok(drawn.clips.some(c=>c.x===0&&c.y===0&&Math.abs(c.w-drawn.width)<1&&Math.abs(c.h-drawn.height)<1),'grid fills the entire canvas');
  const coordinates=drawn.text.filter(t=>t.baseline==='alphabetic'&&/^[+−-]?\d/.test(t.text));assert.ok(coordinates.some(t=>t.x===8),'left ticks overlay the grid');assert.ok(coordinates.some(t=>Math.abs(t.y-(drawn.height-27))<1),'bottom ticks overlay the grid');assert.ok(coordinates.every(t=>t.x>=0&&t.x<=drawn.width&&t.y>0&&t.y<drawn.height));
  assert.ok(drawn.labels.length,'bubble labels render');

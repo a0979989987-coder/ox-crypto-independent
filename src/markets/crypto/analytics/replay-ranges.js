@@ -1,4 +1,11 @@
 export const REPLAY_RANGES=[['current','目前時間級別'],['7d','最近七天'],['1m','最近一個月'],['3m','最近一季'],['1y','最近一年']];
+const stageDate=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',month:'2-digit',day:'2-digit'});
+const stageTime=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',hour:'2-digit',minute:'2-digit',hourCycle:'h23'});
+export function replayStages(frames,position,period){
+ if(!frames.length)return [];
+ const current=Math.max(0,Math.min(frames.length-1,Math.floor(position))),start=Math.max(0,Math.min(current-1,frames.length-3));
+ return frames.slice(start,start+3).map((frame,i)=>({ts:frame.ts,index:start+i,current:start+i===current,label:stageDate.format(frame.ts)+(period==='1d'?'':' '+stageTime.format(frame.ts))}));
+}
 export function replayWindow(range,now=Date.now()){
  const end=new Date(now),start=new Date(now);
  if(range==='7d'||range==='current')start.setUTCDate(start.getUTCDate()-7);

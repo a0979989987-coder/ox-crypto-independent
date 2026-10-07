@@ -47,19 +47,19 @@
 .cfx-segment button[aria-pressed=true]{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:inherit}
 .cfx-picker,.cfx-replay-toggle{border:1px solid var(--line);background:var(--bg)}
 .cfx-research-toolbar .cfx-picker{margin-left:auto}
-.cfx-research-panel>.cfx-plot{height:620px;min-height:500px;width:100%;border:0;background:var(--bg)}
+.cfx-research-panel>.cfx-plot{height:var(--cfx-plot-height,clamp(300px,60svh,620px));min-height:220px;width:100%;border:0;background:var(--bg)}
 .cfx-research-panel .cfx-chart-meta{font-size:10px;padding:9px 12px;margin:0;gap:10px}
 .cfx-research-panel .cfx-chart-meta time{color:var(--muted);white-space:nowrap}
 .cfx-bottom-actions{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 10px;border-top:1px solid var(--line);flex-wrap:wrap}
 .cfx-bottom-tools{display:flex;gap:2px;align-items:center}
 .cfx-bottom-tools button{padding:0 6px;min-width:27px;color:inherit}
 .cfx-bottom-tools svg{width:15px;height:15px}
-.cfx-research-panel .cfx-replay{display:flex;flex-direction:column;gap:10px;padding:10px}
+.cfx-research-panel .cfx-replay{display:flex;flex-direction:column;gap:5px;padding:7px 10px}
 .cfx-replay-controls{display:flex;align-items:center;gap:8px;width:100%}
 .cfx-replay-controls button,.cfx-replay-controls select{height:30px;padding:0 10px;border:1px solid var(--line);border-radius:7px;background:var(--bg);font-size:11px}
 .cfx-replay-controls button:last-child{margin-left:auto}
 .cfx-research-panel .cfx-replay input{width:100%;min-width:0;accent-color:#a5aaa9}
-.cfx-research-panel .cfx-rotation-table{height:620px;max-height:620px;overflow:auto;padding:8px 12px}
+.cfx-research-panel .cfx-rotation-table{height:var(--cfx-plot-height,620px);max-height:620px;overflow:auto;padding:8px 12px}
 .cfx-research-panel .cfx-table small{display:block;font-size:10px}
 .cfx-content[data-mode=rotation]>.cfx-states,.cfx-content[data-mode=flow]>.cfx-states{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:12px 0 8px}
 .cfx-content[data-mode=rotation]>.cfx-states button,.cfx-content[data-mode=flow]>.cfx-states button{justify-content:center;padding:7px 5px;min-height:32px;gap:5px}
@@ -81,8 +81,8 @@
  .cfx-research-toolbar .cfx-segment{padding:2px;gap:0;border-radius:7px}
  .cfx-research-toolbar .cfx-picker{margin-left:auto;padding:0 5px}
  .cfx-research-toolbar .cfx-period-select{width:45px;min-width:45px;padding:0 3px;height:31px;font-size:10px}
- .cfx-research-panel>.cfx-plot{height:clamp(500px,74svh,760px);min-height:500px}
- .cfx-research-panel .cfx-rotation-table{height:clamp(500px,74svh,760px);max-height:760px}
+ .cfx-research-panel>.cfx-plot{height:var(--cfx-plot-height,clamp(280px,58svh,500px));min-height:220px}
+ .cfx-research-panel .cfx-rotation-table{height:var(--cfx-plot-height,clamp(280px,58svh,500px));max-height:620px}
  .cfx-research-panel .cfx-chart-meta{font-size:9px;padding:7px 8px;gap:4px;flex-wrap:wrap}
  .cfx-bottom-actions{padding:7px 5px;gap:3px;flex-wrap:nowrap}
  .cfx-bottom-actions .cfx-segment button{padding:0 5px;font-size:9px}
@@ -114,7 +114,7 @@
 .cfx-flow-symbols button{display:inline-flex;align-items:center;gap:5px;min-height:25px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:10px}
 .cfx-flow-symbols button[aria-pressed=true]{border-color:#e9ede7}
 .cfx-flow-symbols i{display:block;width:5px;height:5px;border-radius:50%;flex:none}
-@media(max-width:600px){.cfx-research-panel>.cfx-plot{height:clamp(560px,82svh,850px);min-height:560px}.cfx-research-panel .cfx-chart-meta{margin:0;padding:5px 8px}}
+@media(max-width:600px){.cfx-research-panel .cfx-chart-meta{margin:0;padding:5px 8px}}
 .cfx-sector-dialog.cfx-dialog{width:min(740px,calc(100vw - 24px));max-height:84dvh;margin:auto;border:1px solid #a5b0b2;border-radius:20px;padding:20px;background:linear-gradient(145deg,#202a2f,#12191d);box-shadow:0 18px 64px #0009,inset 0 1px #e9ede728,0 0 18px #d5ddd51a}
 .cfx-sector-dialog .cfx-dialog-head{position:sticky;top:-20px;padding:12px 0;background:var(--panel,#141d22);z-index:1}
 .cfx-sector-dialog .cfx-selected-state{margin-top:0}.cfx-member-hint{font-size:11px;color:var(--muted,#9aa9ad);margin:4px 0 12px}.cfx-sector-members{overflow-x:auto}
@@ -161,3 +161,11 @@
 
 :host([data-ox-theme="light"]) .cfx .cfx-close{outline:0!important;border:0!important;background:transparent!important}
 :host([data-ox-theme="light"]) .cfx .cfx-close:focus-visible{box-shadow:0 0 0 2px #9baeb5!important}
+
+/* The current period and its neighbors sit next to the replay transport. */
+.cfx-replay [data-slot="replay-stage"]{width:100%;text-align:center;font-variant-numeric:tabular-nums}
+.cfx-stage-caption{font-size:10px;color:var(--muted)}
+.cfx-stage-times{display:flex;align-items:center;justify-content:center;gap:7px;min-height:24px;white-space:nowrap}
+.cfx-stage-times time{font-size:11px;color:var(--muted)}
+.cfx-stage-times time[aria-current="step"]{color:inherit;font-weight:600;background:var(--panel);padding:2px 5px;border-radius:5px}
+.cfx-stage-times>span{color:var(--muted)}

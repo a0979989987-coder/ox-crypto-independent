@@ -1,6 +1,6 @@
 import {mergeFlowHistory} from './flow-history.js';
-import {REPLAY_RANGES,replayWindow,replayCoverage} from './replay-ranges.js';
-import { buildFlow, buildFlowHistory, cryptoUniverse, PERIODS, STATES, signed, compact, dateLabel } from './flow-model.js';
+import {REPLAY_RANGES,replayWindow,replayCoverage,replayStages} from './replay-ranges.js';
+import { buildFlow, buildFlowHistory, flowPeriodSnapshot, cryptoUniverse, PERIODS, STATES, signed, compact, dateLabel } from './flow-model.js';
 import { buildRotation, heatmapRows, ROTATION_STATES, TOOL_PERIODS } from './tools-model.js?v=20261001-loading1';
 import { createFlowChart } from './flow-chart.js?v=20261001-loading1';
 import { createToolChart } from './tools-charts.js?v=20261005-graytop5';
@@ -18,7 +18,7 @@ const paths={close:'<path d="m6 6 12 12M18 6 6 18"/>',back:'<path d="m10 5-7 7 7
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
 const snapshotURL=new URL('../../../../previews/data/crypto-flow-snapshot.json',import.meta.url);
 const marketURL=new URL('../../../../previews/data/crypto-tools-snapshot.json',import.meta.url);
-const cssURL=new URL('./flow.css?v=20261007-stable-dialog8',import.meta.url);
+const cssURL=new URL('./flow.css?v=20261007-readable-replay9',import.meta.url);
 const replayDateFormatter=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
 const replayDateLabel=ts=>replayDateFormatter.format(new Date(ts));
 const numPrice=v=>Number.isFinite(v)?v.toLocaleString('en-US',{maximumFractionDigits:v<1?6:2}):'—';
@@ -81,6 +81,8 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  const nativePeriods=new Map(latestPeriods),lastPeriodAttempts=new Map();let nativeCombined=null,nativeCombinedMarket=null,nativeCombinedData=null;
  let historyArchive=null,historyPending=false,historySource=null,historyCombined=null;
  let suspended=false,viewport=restore?.viewport||null,modelSource=null,modelPeriod=null,flowHistory=null,domain=null,paintedFrame=null,dailyCombined=null,dailyCombinedMarket=null,dailyCombinedData=null,lastDailyAttempt=0;
+ let layoutKey='',layoutRaf=0,stageKey='',derivedPressureSource=null,derivedPressurePeriod='',derivedPressure=null;
+ const periodProgress=new Map();
  if(restore?.state)Object.assign(state,restore.state,{tab:initialTab,focus:false});
  const pressureSnapshots=new Map(),assetCandles=createAssetCandleSource();
  let assetChart=null,assetRequest=null,assetSession=null,assetTimer=null,assetQuotes=null,assetVersion=0;
@@ -102,7 +104,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
     if(signal.aborted||life.signal.aborted||suspended||state.period!==period)return;
     // Stage a whole cohort before publishing it. Recomputing sector averages
     // after each coin response moves existing bubbles and rescales the axes.
-    notice('正在載入 '+period.toUpperCase()+' 資料…');if(part.scan.done===1)render();
+    periodProgress.set(period,part.scan);loadingProgress(period,part.scan);if(part.scan.done===1)render();
    }});
    if(signal.aborted||life.signal.aborted)return;nativePeriods.set(period,next);latestPeriods.set(period,next);updated=true;
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted){lastPeriodAttempts.set(period,Date.now()-280000);notice('此級別正在重新連線，已取得的資料會保留。');}}
@@ -113,7 +115,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   try{const next=await dailyRefresh.refresh({...market,historyDays:replayWindow(state.replayRange).days},{signal,owner:'analytics-daily',priority:70,onPartial:part=>{
    if(signal.aborted||life.signal.aborted||suspended||state.period!=='1d')return;
    // A daily cohort is committed together, including its BTC benchmark.
-   notice('正在載入日線…');if(part.scan.done===1)render();
+   periodProgress.set('1d',part.scan);loadingProgress('1d',part.scan);if(part.scan.done===1)render();
   }});
    if(signal.aborted||life.signal.aborted)return;latestDaily=dailyMarket=next;updated=true;
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted)notice('日線下載失敗；保留已取得的資料，可切換週期後再試。');}
@@ -127,7 +129,11 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(state.tab==='flow'&&Date.now()-lastPressureAttempt>5*60000&&Date.now()-pressureTime()>5*60000)void refreshPressure();};
  const pressureKey=()=>state.period+':'+state.flowMode;
  // Partials report loading progress; only complete batches become observations.
- const pressureSnapshot=()=>pressureSnapshots.get(pressureKey())||latestFlows.get(pressureKey())||(state.flowMode==='volume'?flowSnapshot:null);
+ const pressureSnapshot=()=>{
+  const source=pressureSnapshots.get(pressureKey())||latestFlows.get(pressureKey())||(state.flowMode==='volume'?flowSnapshot:null);
+  if(source!==derivedPressureSource||state.period!==derivedPressurePeriod){derivedPressureSource=source;derivedPressurePeriod=state.period;derivedPressure=flowPeriodSnapshot(source,state.period);}
+  return derivedPressure;
+ };
  const pressureTime=()=>{const entries=Object.values(pressureSnapshot()?.flows?.[state.period]||{});return entries.length?Math.min(...entries.map(e=>Number(e.response?.requestTime)||0)):0;};
  const watchKey='ox-crypto-sector-watch:'+encodeURIComponent(window.OXAuth?.user?.id||'guest');
  const watched=new Set();try{for(const s of JSON.parse(localStorage.getItem(watchKey)||'[]'))watched.add(s);}catch{}
@@ -135,6 +141,29 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  revealStyledShadow(shadow,life.signal);
  const q=s=>shadow.querySelector(s),qa=s=>[...shadow.querySelectorAll(s)];
  const notice=text=>{q('.cfx-notice').textContent=text;q('.cfx-notice').hidden=!text;};
+ function loadingProgress(period,scan){
+  const message='正在載入 '+period.toUpperCase()+' 資料… '+scan.done+'/'+scan.total;
+  notice(message);const loading=q('.cfx-plot-loading');if(loading&&!loading.hidden)loading.textContent=message;
+ }
+ function fitResearchLayout(force=false){
+  const panel=q('.cfx-research-panel');if(!panel)return;
+  const height=window.visualViewport?.height||window.innerHeight;
+  const key=[window.innerWidth,Math.round(height),state.replayOpen,state.table,state.focus,state.tab,state.period,frames().some(f=>f.rows.length)].join(':');
+  if(!force&&key===layoutKey)return;layoutKey=key;cancelAnimationFrame(layoutRaf);
+  layoutRaf=requestAnimationFrame(()=>{
+   if(life.signal.aborted||suspended)return;
+   if(!state.replayOpen){panel.style.removeProperty('--cfx-plot-height');return;}
+   const chart=q('.cfx-plot'),table=q('.cfx-rotation-table'),replayBar=q('.cfx-replay');
+   const top=Math.max(0,(state.table?table:chart).getBoundingClientRect().top);
+   const dock=state.focus?null:document.querySelector('.app-dock'),dockRect=dock?.getBoundingClientRect();
+   const bottom=dockRect?.height&&dockRect.top>top?Math.min(height,dockRect.top):height-12;
+   const symbols=state.tab==='flow'?q('.cfx-flow-symbols')?.getBoundingClientRect().height||0:0;
+   const available=bottom-top-replayBar.getBoundingClientRect().height-symbols-12;
+   panel.style.setProperty('--cfx-plot-height',Math.round(Math.max(220,Math.min(620,available)))+'px');
+  });
+ }
+ window.addEventListener('resize',()=>fitResearchLayout(true),{signal:life.signal});
+ window.visualViewport?.addEventListener('resize',()=>fitResearchLayout(true),{signal:life.signal});
  function showDialog(selector){const dialog=q(selector),head=dialog.querySelector('.cfx-dialog-head');head.tabIndex=-1;head.setAttribute('autofocus','');dialog.showModal();head.focus({preventScroll:true});}
  function cleanup(){closeAsset();q('.cfx-sector-dialog').close();viewport=otherPlot?.getViewport?.()||plot?.getViewport?.()||viewport;plot?.destroy();otherPlot?.destroy();plot=otherPlot=null;stopReplay();}
  function replayButton(playing){if(replayButtonState===playing)return;replayButtonState=playing;const b=q('[data-action="play"]');if(b){b.innerHTML=icon(playing?'pause':'play');b.setAttribute('aria-label',(playing?'暫停':'播放')+(state.tab==='flow'?'主動買賣':'輪動')+'回放');}}
@@ -207,10 +236,10 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  function mountResearch(){
   if(q('.cfx-content').dataset.mode===state.tab&&q('.cfx-research-panel'))return;
   cleanup();q('.cfx-content').dataset.mode=state.tab;
-  q('.cfx-content').innerHTML=`<section class="cfx-research-panel">${researchToolbar()}<div class="cfx-plot"><canvas role="img" aria-label="${state.tab==='flow'?'Crypto 主動買賣泡泡圖':'加密板塊相對 BTC 輪動圖'}，可雙指縮放與拖曳"></canvas><div class="cfx-plot-loading" role="status" hidden></div></div><div class="cfx-rotation-table" hidden></div>${state.tab==='flow'?'<div class="cfx-flow-symbols" aria-label="主動買賣圖上幣種"></div>':''}<div class="cfx-replay" hidden><span data-slot="replay-coverage"></span><div class="cfx-replay-controls"><button data-action="frame-prev" aria-label="前一期">‹</button><button class="cfx-icon" data-action="play" aria-label="${state.tab==='flow'?'播放主動買賣回放':'播放輪動回放'}">${icon('play')}</button><button data-action="frame-next" aria-label="後一期">›</button><select data-control="replay-speed" aria-label="回放速度">${[.5,1,2].map(n=>`<option value="${n}" ${state.replaySpeed===n?'selected':''}>${n}×</option>`).join('')}</select><button data-action="latest">最新</button></div><input type="range" aria-label="${state.tab==='flow'?'主動買賣':'輪動'}歷史期別" data-control="frame" min="0" max="0" step="0.01" value="0"></div><div class="cfx-bottom-actions"><div class="cfx-segment"><button data-action="density-all" aria-pressed="${state.density==='all'}">全部</button><button data-action="density-top" aria-pressed="${state.density==='top'}">成交前 10</button></div><div class="cfx-bottom-tools"><button data-action="zoom-out" aria-label="縮小">${icon('minus')}</button><button data-action="reset" aria-label="重設圖表"><span data-slot="zoom">100%</span></button><button data-action="zoom-in" aria-label="放大">${icon('plus')}</button><button data-action="fullscreen" aria-label="全螢幕">${icon('expand')}</button><button data-action="settings" aria-label="圖表設定">${icon('settings')}</button><button data-action="help" aria-label="資料與計算說明">${icon('info')}</button>${state.tab==='flow'?`<button data-action="refresh-flow" aria-label="更新資料">${icon('refresh')}</button>`:''}</div></div></section><div class="cfx-states">${defs().map(def=>`<button data-state="${def.id}" aria-pressed="false"></button>`).join('')}</div><div class="cfx-research-search">${search()}<span data-slot="research-hint">點泡泡查看詳情</span></div>`;
+  q('.cfx-content').innerHTML=`<section class="cfx-research-panel">${researchToolbar()}<div class="cfx-plot"><canvas role="img" aria-label="${state.tab==='flow'?'Crypto 主動買賣泡泡圖':'加密板塊相對 BTC 輪動圖'}，可雙指縮放與拖曳"></canvas><div class="cfx-plot-loading" role="status" hidden></div></div><div class="cfx-rotation-table" hidden></div>${state.tab==='flow'?'<div class="cfx-flow-symbols" aria-label="主動買賣圖上幣種"></div>':''}<div class="cfx-replay" hidden><div data-slot="replay-stage"></div><input type="range" aria-label="${state.tab==='flow'?'主動買賣':'輪動'}歷史期別" data-control="frame" min="0" max="0" step="0.01" value="0"><div class="cfx-replay-controls"><button data-action="frame-prev" aria-label="前一期">‹</button><button class="cfx-icon" data-action="play" aria-label="${state.tab==='flow'?'播放主動買賣回放':'播放輪動回放'}">${icon('play')}</button><button data-action="frame-next" aria-label="後一期">›</button><select data-control="replay-speed" aria-label="回放速度">${[.5,1,2].map(n=>`<option value="${n}" ${state.replaySpeed===n?'selected':''}>${n}×</option>`).join('')}</select><button data-action="latest">最新</button></div><span data-slot="replay-coverage"></span></div><div class="cfx-bottom-actions"><div class="cfx-segment"><button data-action="density-all" aria-pressed="${state.density==='all'}">全部</button><button data-action="density-top" aria-pressed="${state.density==='top'}">成交前 10</button></div><div class="cfx-bottom-tools"><button data-action="zoom-out" aria-label="縮小">${icon('minus')}</button><button data-action="reset" aria-label="重設圖表"><span data-slot="zoom">100%</span></button><button data-action="zoom-in" aria-label="放大">${icon('plus')}</button><button data-action="fullscreen" aria-label="全螢幕">${icon('expand')}</button><button data-action="settings" aria-label="圖表設定">${icon('settings')}</button><button data-action="help" aria-label="資料與計算說明">${icon('info')}</button>${state.tab==='flow'?`<button data-action="refresh-flow" aria-label="更新資料">${icon('refresh')}</button>`:''}</div></div></section><div class="cfx-states">${defs().map(def=>`<button data-state="${def.id}" aria-pressed="false"></button>`).join('')}</div><div class="cfx-research-search">${search()}<span data-slot="research-hint">點泡泡查看詳情</span></div>`;
   plot=createFlowChart(q('canvas'),{signal:life.signal,onZoom:zoom=>{const label=q('[data-slot="zoom"]');if(label)label.textContent=Math.round(zoom*100)+'%';},onSelect:id=>{state.selected=id;if(state.tab==='flow'){stopReplay();showFlowDetail(id);paintRotation();}else openSector(id);}});
   plot.setInteractive(true);if(viewport)plot.restoreViewport(viewport);
-  paintedFrame=null;replayButtonState=null;
+  paintedFrame=null;replayButtonState=null;layoutKey=stageKey='';
  }
  function pickerItems(){const pool=state.tab==='flow'&&partialFlow?.mode===state.flowMode?partialFlow:pressureSnapshot();return state.tab==='flow'?cryptoUniverse(pool?.instruments||[],pool?.tickers||[],50,state.flowMode,radarAnalyses()).map(r=>({symbol:r.symbol,base:r.baseCoin,change24h:Number(r.change24h)*100,volume:Number(r.usdtVolume),score:radarAnalyses().get(r.symbol)?.oxScore})):(market?.sectors||[]).map(r=>({symbol:r.id,base:r.name,members:r.members,topics:(r.topics||[]).filter(t=>t.members.length),requested:r.members.map(sectorCoinLabel),expected:r.requestedBases?.length||r.members.length}));}
  function renderPicker(){
@@ -238,11 +267,17 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   const trails=state.trails?frame.rows.map(r=>({symbol:r.symbol,color:r.state.color,points:[...list.slice(Math.max(0,index-5),index+1).flatMap(f=>{const p=f.rows.find(x=>x.symbol===r.symbol);return p?[{x:p.x,y:p.y}]:[]}),...(fraction>.001?interpolated.filter(p=>p.symbol===r.symbol).map(p=>({x:p.x,y:p.y})):[])]})):[];
   plot?.update(interpolated,{selected:state.selected,filter:state.filter,rotation:state.tab==='rotation',equalSize:state.equal,domain,trails,axisX:state.tab==='rotation'?'相對 BTC 報酬（pp）':'主動買賣占比（%）',axisY:state.tab==='rotation'?'相對表現變化（pp）':'占比變化（百分點）',quadrants:state.tab==='rotation'?['落後改善','領先擴大','落後擴大','領先降溫']:null});
   const coverage=replayCoverage(list,state.replayRange,list.at(-1)?.ts||Date.now());q('[data-slot="replay-coverage"]').textContent=list.length?`可回放 ${replayDateLabel(list[0].ts)}～${replayDateLabel(list.at(-1).ts)} · ${list.length} 期${state.period==='1d'&&!coverage.complete?' · 此範圍歷史資料未齊':''}`:'尚無可回放資料';
+  const nextStageKey=state.period+':'+index+':'+list[0]?.ts+':'+list.length;
+  if(nextStageKey!==stageKey){stageKey=nextStageKey;
+   q('[data-slot="replay-stage"]').innerHTML=`<span class="cfx-stage-caption">目前第 ${index+1}/${list.length} 期 · UTC+8</span><div class="cfx-stage-times">${replayStages(list,state.frame,state.period).map(stage=>`<time datetime="${new Date(stage.ts).toISOString()}" ${stage.current?'aria-current="step"':''}>${stage.label}</time>`).join('<span aria-hidden="true">›</span>')}</div>`;
+  }
   q('.cfx-plot').hidden=state.table;q('.cfx-rotation-table').hidden=!state.table;q('.cfx-replay').hidden=!state.replayOpen;
+  fitResearchLayout();
   q('[data-action="replay-toggle"]').textContent=state.replayOpen?'結束':'回放';q('[data-action="replay-toggle"]').setAttribute('aria-pressed',state.replayOpen);
   if(state.tab==='flow'&&(!replay?.playing||paintedFrame!==sourceFrame()))q('.cfx-flow-symbols').innerHTML=frame.rows.map(r=>`<button data-open-chart="${escape(r.symbol)}" aria-pressed="${state.selected===r.symbol}" title="${escape(r.base)} ${pct(r.x)}"><i style="background:${r.state.color}"></i>${escape(r.base)}</button>`).join('');
-  const range=q('[data-control="frame"]');range.max=String(list.length-1);range.value=String(state.frame);
+  const range=q('[data-control="frame"]');range.max=String(list.length-1);range.value=String(state.frame);range.disabled=list.length<2;
   q('[data-action="play"]').disabled=list.length<2;
+  q('[data-action="frame-prev"]').disabled=index===0;q('[data-action="frame-next"]').disabled=index>=list.length-1;q('[data-action="latest"]').disabled=false;
   if(paintedFrame!==sourceFrame() || !replay?.playing){
    q('.cfx-rotation-table').innerHTML=state.tab==='rotation'?rankMarkup(frame):`<div class="cfx-side-head"><span>主動買賣排行</span><select data-control="sort" aria-label="主動買賣排名方式"><option value="relative" ${state.sort==='relative'?'selected':''}>買賣占比</option><option value="momentum" ${state.sort==='momentum'?'selected':''}>占比變化</option><option value="volume" ${state.sort==='volume'?'selected':''}>24H 成交額</option><option value="net" ${state.sort==='net'?'selected':''}>主動淨買額估算</option></select></div><table class="cfx-table"><thead><tr><th>幣種</th><th>占比</th><th>變化</th><th>自選</th></tr></thead><tbody>${frame.rows.filter(r=>!state.filter||r.state.id===state.filter).sort((a,b)=>state.sort==='net'?(b.netNotional??-Infinity)-(a.netNotional??-Infinity):state.sort==='volume'?b.turnover-a.turnover:state.sort==='momentum'?b.y-a.y:b.x-a.x).map(r=>`<tr data-member-detail="${r.symbol}" tabindex="0" aria-label="查看 ${r.base} 主動買賣詳情"><td><button data-open-chart="${r.symbol}">${r.base} ↗<small style="color:${r.state.color}">${r.state.name}</small></button></td><td>${pct(r.x)}</td><td>${pp(r.y)}</td><td><button data-watch="${r.symbol}" aria-label="${watched.has(r.symbol)?'取消':'加入'} ${r.base} 自選" aria-pressed="${watched.has(r.symbol)}">${watched.has(r.symbol)?'★':'☆'}</button></td></tr>`).join('')}</tbody></table>`;
    qa('[data-state]').forEach(b=>{const def=defs().find(d=>d.id===b.dataset.state);b.innerHTML=`<i style="background:${def.color}"></i>${def.name}<strong>${frame.rows.filter(r=>r.state.id===def.id).length}</strong>`;b.setAttribute('aria-pressed',String(state.filter===def.id));});
@@ -266,9 +301,8 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
    source=dailyCombined;
   }
   const native=state.tab==='rotation'&&state.period!=='1d'?nativePeriods.get(state.period):null;
-  const needsNative=state.tab==='rotation'&&!['15m','1h','1d'].includes(state.period);
-  if(native||needsNative){
-   if(nativeCombinedMarket!==market||nativeCombinedData!==native||nativeCombined?.nativePeriod!==state.period){nativeCombined={...market,nativePeriod:state.period,periodCandles:{[state.period]:native?.candles||{}},scan:native?.scan};nativeCombinedMarket=market;nativeCombinedData=native;}
+  if(native?.scan?.complete){
+   if(nativeCombinedMarket!==market||nativeCombinedData!==native||nativeCombined?.nativePeriod!==state.period){nativeCombined={...market,nativePeriod:state.period,periodCandles:{[state.period]:native.candles},scan:native.scan};nativeCombinedMarket=market;nativeCombinedData=native;}
    source=nativeCombined;
   }
   if(modelSource===source&&modelPeriod===state.period+':'+state.replayRange)return;
@@ -277,7 +311,8 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(state.replayOpen&&!acceptUpdate&&modelPeriod===state.period+':'+state.replayRange&&frames().some(f=>f.rows.length))return;
   const oldTime=sourceFrame()?.ts,atLatest=!state.replayOpen&&(!frames().length||state.frame>=frames().length-1);
   const wanted=state.period==='1d'&&state.replayRange!=='current'?replayWindow(state.replayRange).days:8;
-  const next=state.tab==='flow'?buildFlowHistory(source,state.period,wanted):buildRotation(source,state.period,wanted);
+  let next=state.tab==='flow'?buildFlowHistory(source,state.period,wanted):buildRotation(source,state.period,wanted);
+  if(state.tab==='rotation'&&native&&state.period!=='1d'&&!next.frames.some(f=>f.rows.length))next=buildRotation(market,state.period,wanted);
   if(modelPeriod===state.period+':'+state.replayRange&&frames().some(f=>f.rows.length)&&!next.frames.some(f=>f.rows.length))return;
   if(state.tab==='flow')flowHistory=next;else rotation=next;
   const list=frames();
@@ -287,10 +322,16 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  }
  function renderRotation(){
   researchModel();mountResearch();q('.cfx-replay').hidden=!state.replayOpen;q('[data-control="period"]').value=timeSelection();q('[data-control="period"]').dataset.range=state.replayRange==='current'?'current':'history';
+  fitResearchLayout();
   const emptyPlot=q('.cfx-plot-loading');
   if(!frames().some(f=>f.rows.length)){
    const complete=state.tab==='flow'?(state.period==='1d'&&!historyArchive?false:pressureSnapshot()?.scan?.complete):state.period==='1d'?dailyMarket?.historyDays>=replayWindow(state.replayRange).days&&dailyMarket?.scan?.complete:nativePeriods.get(state.period)?.scan?.complete;
-   const message=complete?'此級別目前沒有完整期別資料':'正在載入 '+state.period.toUpperCase()+' 資料…';
+   const progress=periodProgress.get(state.period);
+   const message=complete?'此級別目前沒有完整期別資料':'正在載入 '+state.period.toUpperCase()+' 資料…'+(progress?' '+progress.done+'/'+progress.total:'');
+   stageKey='';q('[data-slot="replay-stage"]').textContent=message;
+   const range=q('[data-control="frame"]');range.max=range.value='0';range.disabled=true;
+   for(const action of ['frame-prev','frame-next','latest'])q('[data-action="'+action+'"]').disabled=true;
+   q('.cfx-plot').hidden=state.table;q('.cfx-rotation-table').hidden=!state.table;q('.cfx-rotation-table').innerHTML=empty(message);
    emptyPlot.hidden=false;emptyPlot.textContent=message;q('canvas').dataset.period=state.period;q('canvas').dataset.points='0';q('[data-slot="replay-coverage"]').textContent='正在確認可回放日期；缺資料的期別不補零';status(message);q('[data-action="play"]').disabled=true;plot.update([]);return;
   }
   emptyPlot.hidden=true;paintRotation();
@@ -314,7 +355,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(d.heatSector!==undefined){state.sector=d.heatSector;render();return;}
   if(d.watch){watched.has(d.watch)?watched.delete(d.watch):watched.add(d.watch);b.setAttribute('aria-pressed',String(watched.has(d.watch)));b.textContent=watched.has(d.watch)?'★':'☆';try{localStorage.setItem(watchKey,JSON.stringify([...watched]));}catch{}paintRotation();return;}
   if(d.frameTime){stopReplay();state.frame=rotation.frames.findIndex(f=>f.ts===Number(d.frameTime));openSector(state.selected);return;}
-  switch(d.action){case'retry-data':void loadData();break;case'settings':renderSettings();showDialog('.cfx-settings-dialog');break;case'close-settings':q('.cfx-settings-dialog').close();break;case'exit':onExit();break;case'help':q('.cfx-settings-dialog').close();help();break;case'close-help':q('.cfx-dialog').close();break;case'close-asset':closeAsset();break;case'retry-asset':void updateAssetChart();break;case'asset-reset':assetChart?.reset();break;case'close-sector':q('.cfx-sector-dialog').close();state.selected='';paintRotation();break;case'fullscreen':state.focus=!state.focus;q('.cfx').classList.toggle('focused',state.focus);q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';plot?.setInteractive(true);break;
+  switch(d.action){case'retry-data':void loadData();break;case'settings':renderSettings();showDialog('.cfx-settings-dialog');break;case'close-settings':q('.cfx-settings-dialog').close();break;case'exit':onExit();break;case'help':q('.cfx-settings-dialog').close();help();break;case'close-help':q('.cfx-dialog').close();break;case'close-asset':closeAsset();break;case'retry-asset':void updateAssetChart();break;case'asset-reset':assetChart?.reset();break;case'close-sector':q('.cfx-sector-dialog').close();state.selected='';paintRotation();break;case'fullscreen':state.focus=!state.focus;q('.cfx').classList.toggle('focused',state.focus);q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';plot?.setInteractive(true);fitResearchLayout(true);break;
    case'scope-all':state.watch=false;paintRotation();break;case'scope-watch':state.watch=true;paintRotation();break;
    case'view-bubbles':state.table=false;paintRotation();break;case'view-rank':state.table=true;paintRotation();break;
    case'density-all':state.density='all';paintRotation();break;case'density-top':state.density='top';paintRotation();break;
@@ -353,7 +394,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
    case'heat-sector':state.sector=e.target.value;break;case'sort':state.sort=e.target.value;paintRotation();return;case'weight':state.weight=e.target.value;break;default:return;
   }render();
  },{signal:life.signal});
- function closeInner(){if(q('.cfx-picker-dialog').open){q('.cfx-picker-dialog').close();return true;}if(q('.cfx-settings-dialog').open){q('.cfx-settings-dialog').close();return true;}if(q('.cfx-dialog').open){q('.cfx-dialog').close();return true;}if(q('.cfx-asset-dialog').open){closeAsset();return true;}if(q('.cfx-sector-dialog').open){q('.cfx-sector-dialog').close();state.selected='';paintRotation();return true;}if(state.selected){state.selected='';if(state.tab==='rotation')paintRotation();return true;}if(state.focus){state.focus=false;q('.cfx').classList.remove('focused');q('[data-slot="exit-label"]').textContent='全螢幕';plot?.setInteractive(true);return true;}return false;}
+ function closeInner(){if(q('.cfx-picker-dialog').open){q('.cfx-picker-dialog').close();return true;}if(q('.cfx-settings-dialog').open){q('.cfx-settings-dialog').close();return true;}if(q('.cfx-dialog').open){q('.cfx-dialog').close();return true;}if(q('.cfx-asset-dialog').open){closeAsset();return true;}if(q('.cfx-sector-dialog').open){q('.cfx-sector-dialog').close();state.selected='';paintRotation();return true;}if(state.selected){state.selected='';if(state.tab==='rotation')paintRotation();return true;}if(state.focus){state.focus=false;q('.cfx').classList.remove('focused');q('[data-slot="exit-label"]').textContent='全螢幕';plot?.setInteractive(true);fitResearchLayout(true);return true;}return false;}
  shadow.addEventListener('keydown',e=>{const member=e.target.closest('[data-member-detail]');if(member&&e.target===member&&['Enter',' '].includes(e.key)){e.preventDefault();openMember(member.dataset.memberDetail);return;}if(e.key==='Escape'){e.preventDefault();e.stopPropagation();if(!closeInner())onExit();}},{signal:life.signal});
  q('.cfx-asset-dialog').addEventListener('close',()=>{if(!q('.cfx-asset-dialog').open)closeAsset();},{signal:life.signal});
  q('.cfx-sector-dialog').addEventListener('cancel',e=>{e.preventDefault();closeInner();},{signal:life.signal});
@@ -363,5 +404,5 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopReplay();assetRequest?.abort();request?.abort();marketRequest?.abort();periodRequest?.abort();dailyRequest?.abort();lastMarketAttempt=lastPressureAttempt=lastDailyAttempt=0;}else if(!suspended){maybeRefreshMarket();if(assetSession)void updateAssetChart(true);}},{signal:life.signal});
  window.addEventListener('online',()=>{lastMarketAttempt=lastPressureAttempt=0;if(!suspended){if(state.tab==='flow'?!flowSnapshot:!market)void loadData();else maybeRefreshMarket();if(assetSession&&!assetRequest)void updateAssetChart(true);}},{signal:life.signal});
  render();if(autoRefresh)marketTimer=setInterval(()=>{if(!life.signal.aborted)maybeRefreshMarket();},15000);if(state.tab==='flow'?!flowSnapshot:!market)void loadData();
- return {closeInner,getState:()=>({state:{...state},viewport:otherPlot?.getViewport?.()||plot?.getViewport?.()||viewport}),suspend(){suspended=true;closeAsset();plot?.setActive?.(false);lastMarketAttempt=lastPressureAttempt=lastDailyAttempt=0;stopReplay();request?.abort();marketRequest?.abort();periodRequest?.abort();dailyRequest?.abort();for(const d of qa('dialog'))d.close();},resume(){suspended=false;plot?.setActive?.(true);if(!plot&&!otherPlot||partialMarket||partialFlow)render();else maybeRefreshMarket();},destroy(){life.abort();request?.abort();marketRequest?.abort();periodRequest?.abort();dailyRequest?.abort();clearInterval(marketTimer);cleanup();q('.cfx-settings-dialog')?.close();q('.cfx-dialog')?.close();q('.cfx-asset-dialog')?.close();shadow.innerHTML='';}};
+ return {closeInner,getState:()=>({state:{...state},viewport:otherPlot?.getViewport?.()||plot?.getViewport?.()||viewport}),suspend(){suspended=true;closeAsset();plot?.setActive?.(false);lastMarketAttempt=lastPressureAttempt=lastDailyAttempt=0;stopReplay();request?.abort();marketRequest?.abort();periodRequest?.abort();dailyRequest?.abort();for(const d of qa('dialog'))d.close();},resume(){suspended=false;plot?.setActive?.(true);fitResearchLayout(true);if(!plot&&!otherPlot||partialMarket||partialFlow)render();else maybeRefreshMarket();},destroy(){life.abort();cancelAnimationFrame(layoutRaf);request?.abort();marketRequest?.abort();periodRequest?.abort();dailyRequest?.abort();clearInterval(marketTimer);cleanup();q('.cfx-settings-dialog')?.close();q('.cfx-dialog')?.close();q('.cfx-asset-dialog')?.close();shadow.innerHTML='';}};
 }
