@@ -21,7 +21,7 @@ sectors=verified['sectors'];symbols=verified['symbols'];errors=[]
 if not any(t['symbol']=='BTCUSDT' for t in verified['tickers']):raise ValueError('BTC benchmark unavailable')
 for group in sectors:print(group['name'],len(group['members']),'/',len(group['requestedBases']),flush=True)
 prior=json.loads((ROOT/'previews/data/crypto-tools-snapshot.json').read_text())
-result={'schemaVersion':4,'kind':'recorded','source':'Bitget; OX editorial topics; archived CoinGecko market-cap metadata','capturedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'requestTime':tickers['requestTime'],'sectors':sectors,'taxonomyVersion':'ox-crypto-31-topics-20261007','coins':prior.get('coins',{}),'instruments':verified['instruments'],'tickers':verified['tickers'],'candles':{},'trades':{},'funding':{},'ratios':{},'errors':errors}
+result={'schemaVersion':4,'kind':'recorded','source':'Bitget; OX editorial topics; archived CoinGecko market-cap metadata','capturedAt':datetime.datetime.now(datetime.timezone.utc).isoformat(),'requestTime':tickers['requestTime'],'sectors':sectors,'taxonomyVersion':'ox-crypto-31-topics-20261007','coins':prior.get('coins',{}),'instruments':verified['instruments'],'tickers':verified['tickers'],'candles':{},'trades':{},'funding':{},'ratios':{},'errors':errors,'scan':{'done':len(symbols),'total':len(symbols),'complete':True}}
 def candles(symbol):
  path=f'/api/v2/mix/market/candles?symbol={symbol}&productType=USDT-FUTURES&granularity=15m&limit=200'
  try:

@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { SECTOR_GROUPS, verifiedSectorUniverse, withSectorCatalog } from '../src/markets/crypto/analytics/sector-taxonomy.js';
 import { replayVisualRows, createFlowReplayPlayer } from '../src/markets/crypto/analytics/replay-motion.js';
 import { buildRotation } from '../src/markets/crypto/analytics/tools-model.js';
+import { createMarketRefreshCache } from '../src/markets/crypto/analytics/market-cache.js';
 import { readFileSync } from 'node:fs';
 
 const recorded=JSON.parse(readFileSync(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url)));
@@ -38,6 +39,13 @@ test('old recorded snapshot gains a full selectable catalog without inventing un
   assert.ok([...symbols].every(symbol=>expanded.candles[symbol]?.response?.data?.length));
   assert.ok(frame.rows.every(row=>row.members.length>=2));
  }
+});
+test('complete captured coverage can be reused while fresh instead of starting another market scan',async()=>{
+ let fetches=0;const cache=createMarketRefreshCache(async()=>{fetches++;throw Error('Unnecessary refresh');},{now:()=>Number(recorded.requestTime)+1000});
+ const restored=withSectorCatalog(recorded);
+ assert.equal(restored.scan?.done,restored.tickers.length);
+ assert.equal(await cache.refresh(restored),restored);
+ assert.equal(fetches,0);
 });
 test('visual playback interpolates position, radius input and color without mutating closed frames',()=>{
  const row=(x,y,turnover,color)=>({symbol:'A',x,y,turnover,state:{id:'leading',color}});

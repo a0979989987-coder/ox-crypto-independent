@@ -37,7 +37,7 @@ export function buildRotation(data,period='1h',wantedFrames=8) {
   const rows=cohorts.map((s,i)=>{
    const members=s.validMembers.map(symbol=>{const a=candleWindow(index,symbol,t,step),b=candleWindow(index,symbol,t-step,step);return {symbol,base:symbol.replace(/USDT$/,''),...a,relative:a.returnPct-bm.returnPct,previousRelative:b.returnPct-bp.returnPct,volumeChange:b.volume>0?100*(a.volume/b.volume-1):null};});
    const x=mean(members.map(m=>m.relative)),previous=mean(members.map(m=>m.previousRelative)),y=x-previous;
-   return {...s,expectedMembers:s.requestedBases?.length||s.members.length,symbol:s.id,base:s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
+   return {...s,expectedMembers:s.requestedBases?.length||s.members.length,symbol:s.id,base:s.shortName||s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
   });
   return [{ts:t,rows,benchmark:bm.returnPct,totalVolume:total}];
  });
