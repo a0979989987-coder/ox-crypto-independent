@@ -29,7 +29,12 @@ try{
   const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
   await active(page,'[data-action="zoom-in"]').click();const zoom=await active(page,'[data-slot="zoom"]').textContent();assert.equal(zoom,'150%');
-  await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();
+  await active(page,'[data-action="picker"]').click();
+  assert.equal(await active(page,'.cfx-picker-group').count(),31,'all first-level groups remain selectable');
+  await active(page,'[data-topic-group="meme"] summary').click();
+  assert.equal(await active(page,'[data-topic-group="meme"] .cfx-topic').count(),19,'second-level topics expand on demand');
+  assert.match(await active(page,'[data-topic-group="meme"] .cfx-topic').first().textContent(),/DOGE/);
+  await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();
   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rotation-table').waitFor();await active(page,'[data-action="view-bubbles"]').click();
   await active(page,'[data-action="replay-toggle"]').click();
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
