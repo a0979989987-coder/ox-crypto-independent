@@ -45,7 +45,7 @@ async function verifyDialogBounds(page,selector){
   assert.ok(g.r.x>=11&&g.r.x+g.r.w<=g.vw-11&&g.r.y>=15&&g.r.y+g.r.h<=g.vh-15,`${selector} fits viewport: ${JSON.stringify(g)}`);
   assert.ok(Math.abs(g.r.x+g.r.w/2-g.vw/2)<1&&Math.abs(g.r.y+g.r.h/2-g.vh/2)<1,`${selector} stays centered`);
   assert.ok(g.b.x>=g.r.x&&g.b.x+g.b.w<=g.r.x+g.r.w&&g.b.y>=g.r.y&&g.b.y+g.b.h<=g.r.y+g.r.h,`${selector} close stays visible while scrolling`);
-  assert.equal(g.b.w,44);assert.equal(g.b.h,44);assert.equal(g.border,0);assert.equal(g.outline,0);assert.ok(g.radius>=22,'exit has no square outline');assert.ok(g.overflow<=1,'popup has no horizontal overflow');assert.equal(g.transform,'none');
+  assert.equal(g.b.w,44);assert.equal(g.b.h,44);assert.equal(g.border,0);assert.equal(g.outline,0);assert.ok(g.radius>=22,`exit has no square outline: ${JSON.stringify(g)}`);assert.ok(g.overflow<=1,'popup has no horizontal overflow');assert.equal(g.transform,'none');
  }
  await dialog.evaluate(el=>el.scrollTop=0);
  // Native dialog autofocus must not create a black square around the close.

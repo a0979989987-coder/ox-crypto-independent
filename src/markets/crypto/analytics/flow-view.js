@@ -256,11 +256,13 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  }
  function researchModel(acceptUpdate=false){let source=state.tab==='flow'?(pressureSnapshot()||{instruments:[],tickers:[],flows:{}}):market;
   if(state.tab==='flow'&&state.period==='1d'){
-   if(!historyArchive&&!historyPending){historyPending=true;fetch(new URL('../../../../previews/data/crypto-flow-history.json',import.meta.url),{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('History unavailable');return r.json();}).then(data=>{historyArchive=data;historySource=null;modelSource=null;if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).catch(()=>{historyArchive={symbols:{}};}).finally(()=>historyPending=false);}
+   if(!historyArchive&&!historyPending){historyPending=true;fetch(new URL('../../../../previews/data/crypto-flow-history.json',import.meta.url),{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('History unavailable');return r.json();}).then(data=>{historyArchive=data;historySource=null;modelSource=null;if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).catch(()=>{historyArchive={symbols:{}};if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).finally(()=>historyPending=false);}
    if(historyArchive){if(historySource!==source){historyCombined=mergeFlowHistory(source,historyArchive);historySource=source;}source=historyCombined;}
+   else source={...source,flows:{...source.flows,'1d':{}}};
   }
   if(state.tab==='rotation'&&state.period==='1d'&&dailyMarket){
-   if(dailyCombinedMarket!==market||dailyCombinedData!==dailyMarket){dailyCombined={...market,dailyCandles:dailyMarket.dailyCandles};dailyCombinedMarket=market;dailyCombinedData=dailyMarket;}
+   const historyDays=replayWindow(state.replayRange).days;
+   if(dailyCombinedMarket!==market||dailyCombinedData!==dailyMarket||dailyCombined?.historyDays!==historyDays){dailyCombined={...market,historyDays,dailyCandles:dailyMarket.historyDays>=historyDays?dailyMarket.dailyCandles:{}};dailyCombinedMarket=market;dailyCombinedData=dailyMarket;}
    source=dailyCombined;
   }
   const native=state.tab==='rotation'&&state.period!=='1d'?nativePeriods.get(state.period):null;
@@ -287,7 +289,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   researchModel();mountResearch();q('.cfx-replay').hidden=!state.replayOpen;q('[data-control="period"]').value=timeSelection();q('[data-control="period"]').dataset.range=state.replayRange==='current'?'current':'history';
   const emptyPlot=q('.cfx-plot-loading');
   if(!frames().some(f=>f.rows.length)){
-   const complete=state.tab==='flow'?pressureSnapshot()?.scan?.complete:state.period==='1d'?dailyMarket?.scan?.complete:nativePeriods.get(state.period)?.scan?.complete;
+   const complete=state.tab==='flow'?(state.period==='1d'&&!historyArchive?false:pressureSnapshot()?.scan?.complete):state.period==='1d'?dailyMarket?.historyDays>=replayWindow(state.replayRange).days&&dailyMarket?.scan?.complete:nativePeriods.get(state.period)?.scan?.complete;
    const message=complete?'此級別目前沒有完整期別資料':'正在載入 '+state.period.toUpperCase()+' 資料…';
    emptyPlot.hidden=false;emptyPlot.textContent=message;q('canvas').dataset.period=state.period;q('canvas').dataset.points='0';q('[data-slot="replay-coverage"]').textContent='正在確認可回放日期；缺資料的期別不補零';status(message);q('[data-action="play"]').disabled=true;plot.update([]);return;
   }
