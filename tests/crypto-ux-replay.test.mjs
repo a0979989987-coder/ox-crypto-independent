@@ -5,6 +5,7 @@ import {runInNewContext} from 'node:vm';
 import {strengthBubbleRadius} from '../src/markets/crypto/analytics/flow-chart.js';
 import {replayWindow,replayCoverage} from '../src/markets/crypto/analytics/replay-ranges.js';
 import {retainDailyFlow,mergeFlowHistory} from '../src/markets/crypto/analytics/flow-history.js';
+import {buildFlowHistory} from '../src/markets/crypto/analytics/flow-model.js';
 import {buildRotation} from '../src/markets/crypto/analytics/tools-model.js';
 import {localizeNewsText} from '../src/components/news/localization.js';
 test('rotation strength sizes remain readable and taker sell strength matches buy strength',()=>{
@@ -62,4 +63,13 @@ test('missing benchmark days omit those periods without discarding otherwise com
  const model=buildRotation({dailyCandles:{BTCUSDT:entry(data.filter((_,i)=>i!==180)),ETHUSDT:entry(data),SOLUSDT:entry(data)},sectors:[{id:'test',name:'Test',members:['ETHUSDT','SOLUSDT']}]},'1d',365);
  assert.equal(model.frames.length,363);assert.ok(model.frames.every(f=>f.rows.length===1));
  const missing=Number(data[180][0]);assert.ok(model.frames.every(f=>f.ts!==missing+day&&f.ts!==missing+2*day));
+});
+
+test('venue daily taker buckets at UTC+8 midnight replay only after closing',()=>{
+ const day=86400000,start=Date.UTC(2026,8,6,16),now=start+30*day+4*3600000;
+ const rows=Array.from({length:31},(_,i)=>({ts:start+i*day,buyVolume:'2',sellVolume:'1'}));
+ const snapshot={mode:'volume',tickers:[{symbol:'BTCUSDT',baseCoin:'BTC',usdtVolume:1}],flows:{'1d':{BTCUSDT:{response:{requestTime:now,data:rows}}}}};
+ const history=buildFlowHistory(snapshot,'1d',365);
+ assert.equal(history.frames.length,29);assert.equal(history.frames.at(-1).ts,start+29*day);
+ assert.ok(history.frames.every(f=>f.ts+day<=now));
 });

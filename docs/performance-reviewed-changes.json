@@ -136,8 +136,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "f66a495b8f56728e2f8e37fae8952f66016bb25f1ee9d26cdf4db460773eab00",
-      "reason": "Bitget-supported taker pressure periods and verified multi-coin replay."
+      "sha256": "bb6a2da9907c204b394909d4ca30fcd47ad8c19cf67217ee7087642003fa4081",
+      "reason": "Accept verified venue daily buckets at UTC+8 midnight while excluding open intervals; tested against retained real timestamp shape and UTC fixtures."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
