@@ -28,7 +28,7 @@ try{
   page.on('pageerror',e=>errors.push(e.message));await page.addInitScript(t=>{if(t==='light')document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('theme-light'));},theme);
   await page.goto(`http://127.0.0.1:${server.address().port}/`);await page.waitForFunction(()=>document.querySelector('.chart-drawing-tools')&&JSON.parse(localStorage.getItem(fixturePrefix+'-drawings-v2'))?.symbols?.[fixtureSymbol]?.length===1);
   const data=()=>page.evaluate(()=>JSON.parse(localStorage.getItem(fixturePrefix+'-drawings-v2')).symbols[fixtureSymbol]||[]);
-  const point=async(d,which='mid')=>page.evaluate(({d,which})=>{const r=document.getElementById('chart').getBoundingClientRect(),ts=state.chart.timeScale(),s=state.candleSeries;const a={x:ts.timeToCoordinate(d.a.time),y:s.priceToCoordinate(d.a.price)},b={x:ts.timeToCoordinate(d.b.time),y:s.priceToCoordinate(d.b.price)},p=which==='a'?a:which==='b'?b:{x:(a.x+b.x)/2,y:(a.y+b.y)/2};return{x:r.left+p.x,y:r.top+p.y};},{d,which});
+  const point=async(d,which='mid')=>page.evaluate(({d,which})=>{const r=document.getElementById('chart').getBoundingClientRect(),ts=state.chart.timeScale(),s=state.candleSeries;const x=t=>{const i=state.candleData.findIndex(v=>v.time>=t);if(i<0)return ts.timeToCoordinate(t);if(state.candleData[i].time===t)return ts.logicalToCoordinate(i);const lo=state.candleData[i-1]?.time??state.candleData[i].time-14400;return ts.logicalToCoordinate(i-1+(t-lo)/(state.candleData[i].time-lo));};const a={x:x(d.a.time),y:s.priceToCoordinate(d.a.price)},b={x:x(d.b.time),y:s.priceToCoordinate(d.b.price)},p=which==='a'?a:which==='b'?b:{x:(a.x+b.x)/2,y:(a.y+b.y)/2};return{x:r.left+p.x,y:r.top+p.y};},{d,which});
   const tap=async p=>touch?page.touchscreen.tap(p.x,p.y):page.mouse.click(p.x,p.y);
   const cdp=touch?await ctx.newCDPSession(page):null;
   const drag=async(a,b)=>{if(touch){await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:a.x,y:a.y,id:1}]});for(let i=1;i<=8;i++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:a.x+(b.x-a.x)*i/8,y:a.y+(b.y-a.y)*i/8,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}else{await page.mouse.move(a.x,a.y);await page.mouse.down();await page.mouse.move(b.x,b.y,{steps:8});await page.mouse.up();}};
@@ -56,7 +56,7 @@ try{
   await page.locator('.chart-drawing-tools [data-action="cursor"]').click();
   // A second tap/click can edit an old line after changing candle aggregation.
   await page.evaluate(()=>setFrame('1W'));assert.equal((await data()).length,1);
-  await page.evaluate(()=>setFrame(fixturePeriod));p=await point((await data())[0]);await tap(p);await page.locator('.chart-drawing-editor').waitFor({state:'visible'});
+  await page.evaluate(()=>setFrame(fixturePeriod));await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));p=await point((await data())[0]);await tap(p);await page.locator('.chart-drawing-editor').waitFor({state:'visible'});
   await page.locator('.chart-drawing-editor [data-action="copy"]').click();assert.equal((await data()).length,2);
   await page.locator('.chart-drawing-editor [data-action="delete"]').click();assert.equal((await data()).length,1);
   await page.locator('.chart-drawing-tools [data-action="undo"]').click();assert.equal((await data()).length,2);

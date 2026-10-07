@@ -30,7 +30,7 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: node scripts/chart-editing-check.mjs
         env:
-          OX_CHART_crypto: crypto
+          OX_CHART_MARKET: crypto
       - uses: actions/upload-artifact@v4
         if: always()
         with:
