@@ -32,6 +32,7 @@ try{
   await active(page,'[data-action="picker"]').click();
   assert.equal(await active(page,'.cfx-picker-group').count(),31,'all first-level groups remain selectable');
   await active(page,'[data-topic-group="meme"] summary').click();
+  await active(page,'[data-topic-group="meme"] .cfx-topic').first().waitFor();
   assert.equal(await active(page,'[data-topic-group="meme"] .cfx-topic').count(),19,'second-level topics expand on demand');
   assert.match(await active(page,'[data-topic-group="meme"] .cfx-topic').first().textContent(),/DOGE/);
   await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();

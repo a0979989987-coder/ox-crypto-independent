@@ -1,7 +1,5 @@
 name: Capture crypto sector snapshot
 on:
-  push:
-    branches: [work/crypto-sector-replay-20261007]
   workflow_dispatch:
 permissions:
   contents: read
