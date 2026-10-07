@@ -10,7 +10,7 @@ await new Promise(r=>server.listen(4308,'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
 const reports=[];
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
-const tool=(p,id)=>p.locator(`[data-crypto-tool="${id}"]`).click();
+const tool=(p,id)=>p.locator(`button[data-crypto-tool="${id}"]`).click();
 async function setup(width,theme='dark'){
  const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW'}),{page,audit}=await preparePage(context,{width,height:900});
  const requests=[];page.on('request',r=>requests.push(r.url()));

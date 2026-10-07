@@ -72,7 +72,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  let suspended=false,viewport=restore?.viewport||null,modelSource=null,modelPeriod=null,flowHistory=null,domain=null,paintedFrame=null,dailyCombined=null,dailyCombinedMarket=null,dailyCombinedData=null,lastDailyAttempt=0;
  if(restore?.state)Object.assign(state,restore.state,{tab:initialTab,focus:false});
  const pressureSnapshots=new Map(),assetCandles=createAssetCandleSource();
- let assetChart=null,assetRequest=null,assetSession=null,assetTimer=null,assetVersion=0;
+ let assetChart=null,assetRequest=null,assetSession=null,assetTimer=null,assetQuotes=null,assetVersion=0;
  async function refreshCurrentMarket(){if(!autoRefresh||!market||marketRequest||suspended||document.hidden)return;
   if(Date.now()-Number(market.requestTime)<5*60000)return;
   marketRequest=new AbortController();lastMarketAttempt=Date.now();notice('正在更新 Bitget 觀察池…');
@@ -136,7 +136,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  const empty=text=>`<div class="cfx-empty">${text}</div>`;
  function status(text,stamp){q('[data-slot="source"]').textContent=text;q('[data-slot="period"]').textContent=stamp?dateLabel(stamp)+' UTC+8':'';}
  function chartButton(symbol){return `<button class="cfx-open-chart" data-open-chart="${escape(symbol)}" aria-label="開啟 ${escape(symbol.replace(/USDT$/,''))} K 線圖">查看 K 線圖 ↗</button>`;}
- function closeAsset(){assetVersion++;assetRequest?.abort();assetRequest=null;clearInterval(assetTimer);assetTimer=null;assetChart?.destroy();assetChart=null;assetSession=null;q('.cfx-asset-dialog').close();}
+ function closeAsset(){assetQuotes?.stop();assetQuotes=null;assetVersion++;assetRequest?.abort();assetRequest=null;clearInterval(assetTimer);assetTimer=null;assetChart?.destroy();assetChart=null;assetSession=null;q('.cfx-asset-dialog').close();}
  function openChart(symbol){if(!/^[A-Z0-9]+USDT$/.test(symbol))return;closeAsset();q('.cfx-sector-dialog').close();window.switchSymbol?.(symbol);}
  function assetChartMarkup(){return `<section class="cfx-asset-chart"><div class="cfx-asset-chart-head"><label>K 線 <select data-control="asset-period" aria-label="幣種詳情 K 線級別">${Object.keys(ASSET_PERIODS).map(p=>`<option value="${p}" ${assetSession.period===p?'selected':''}>${p.toUpperCase()}</option>`).join('')}</select></label><button class="cfx-icon" data-action="asset-reset" aria-label="重設詳情 K 線">${icon('reset')}</button></div><canvas role="img" aria-label="${escape(assetSession.symbol)} 實際 K 線，可拖曳及雙指縮放" hidden></canvas><div class="cfx-asset-chart-status" role="status">正在取得 K 線…</div><button class="cfx-button" data-action="retry-asset" hidden>重新讀取 K 線</button></section>`;}
  function presentAsset(symbol,information){
@@ -144,8 +144,8 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   stopReplay();closeAsset();assetSession={symbol,period:ASSET_PERIODS[state.period]?state.period:'1h'};
   const base=symbol.replace(/USDT$/,''),ticker=[...(market?.tickers||[]),...(pressureSnapshot()?.tickers||[])].find(t=>t.symbol===symbol);
   q('[data-slot="asset-title"]').innerHTML=`<button class="cfx-asset-name" data-open-chart="${escape(symbol)}" aria-label="${escape(base)} 直接開啟圖表">${escape(base)} ↗</button>`;
-  q('[data-slot="asset"]').innerHTML=`<div class="cfx-reading"><span>價格 · USDT</span><strong>${numPrice(Number(ticker?.lastPr))}</strong></div>${assetChartMarkup()}${information}${chartButton(symbol)}`;
-  q('.cfx-asset-dialog').dataset.symbol=symbol;q('.cfx-asset-dialog').showModal();void updateAssetChart();
+  q('[data-slot="asset"]').innerHTML=`<div class="cfx-reading"><span>價格 · USDT</span><strong data-slot="asset-price">${numPrice(Number(ticker?.lastPr))}</strong></div>${assetChartMarkup()}${information}${chartButton(symbol)}`;
+  q('.cfx-asset-dialog').dataset.symbol=symbol;q('.cfx-asset-dialog').showModal();assetQuotes=globalThis.OXCryptoQuotes?.subscribe([symbol],quotes=>{const quote=quotes.find(q=>q.symbol===symbol);if(quote&&assetSession?.symbol===symbol&&!suspended&&!document.hidden)q('[data-slot="asset-price"]').textContent=numPrice(quote.lastPr);});void updateAssetChart();
   assetTimer=setInterval(()=>{if(!suspended&&!document.hidden&&assetSession&&!assetRequest)void updateAssetChart(true);},15000);
  }
  async function updateAssetChart(background=false){
@@ -156,10 +156,11 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   try{
    const data=await assetCandles.load(symbol,period,controller.signal);
    if(controller.signal.aborted||version!==assetVersion||!q('.cfx-asset-dialog').open)return;
+   assetSession.serverTime=data.serverTime;const liveQuote=globalThis.OXCryptoQuotes?.get(symbol);q('[data-slot="asset-price"]').textContent=numPrice(liveQuote?.lastPr??data.candles.at(-1).close);
    canvas.hidden=false;canvas.dataset.symbol=symbol;canvas.dataset.period=period;canvas.dataset.candles=String(data.candles.length);if(assetChart)assetChart.update(data);else assetChart=candleChart(canvas,data,{interactive:true});
    if(!assetTimer)assetTimer=setInterval(()=>{if(!suspended&&!document.hidden&&assetSession&&!assetRequest)void updateAssetChart(true);},15000);
    stamp.textContent=`Bitget · ${period.toUpperCase()} · 更新 ${dateLabel(data.serverTime)} UTC+8 · 末根 K 線可能未收盤`;
-  }catch(error){if(controller.signal.aborted||version!==assetVersion)return;clearInterval(assetTimer);assetTimer=null;stamp.textContent=`K 線讀取失敗：${error.message}${assetChart?'；保留上次有時間戳的圖表':''}`;retry.hidden=false;}
+  }catch(error){if(controller.signal.aborted||version!==assetVersion)return;clearInterval(assetTimer);assetTimer=null;stamp.textContent=`K 線讀取失敗：${error.message}${assetChart?'；保留 '+dateLabel(assetSession.serverTime)+' UTC+8 的圖表':''}`;retry.hidden=false;}
   finally{if(assetRequest===controller)assetRequest=null;}
  }
  function openAsset(symbol){const r=heatmapRows(market,state.heatPeriod).find(x=>x.symbol===symbol);presentAsset(symbol,`<dl class="cfx-detail-metrics"><div><dt>${state.heatPeriod.toUpperCase()} 漲跌</dt><dd>${pct(r?.returnPct)}</dd></div><div><dt>本期成交額</dt><dd>${compact(r?.volume)} USDT</dd></div></dl>`);}
@@ -306,7 +307,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   let dataPending=false;
  async function loadData(){if(dataPending||life.signal.aborted)return;dataPending=true;render();try{const values=await Promise.all([market||state.tab==='flow'?Promise.resolve(market):loadCached(marketURL,'market'),flowSnapshot||state.tab!=='flow'?Promise.resolve(flowSnapshot):loadCached(snapshotURL,'flow')]);if(life.signal.aborted)return;[market,flowSnapshot]=values;if(!suspended)render();}catch(e){if(!life.signal.aborted){q('.cfx-content').innerHTML=empty('資料暫時無法取得')+'<button class="cfx-button" data-action="retry-data">重試</button>';notice('');}}finally{dataPending=false;}}
  document.addEventListener('visibilitychange',()=>{if(document.hidden){stopReplay();assetRequest?.abort();request?.abort();marketRequest?.abort();dailyRequest?.abort();lastMarketAttempt=lastPressureAttempt=lastDailyAttempt=0;}else if(!suspended){maybeRefreshMarket();if(assetSession)void updateAssetChart(true);}},{signal:life.signal});
- window.addEventListener('online',()=>{lastMarketAttempt=lastPressureAttempt=0;if(!suspended){if(state.tab==='flow'?!flowSnapshot:!market)void loadData();else maybeRefreshMarket();}},{signal:life.signal});
+ window.addEventListener('online',()=>{lastMarketAttempt=lastPressureAttempt=0;if(!suspended){if(state.tab==='flow'?!flowSnapshot:!market)void loadData();else maybeRefreshMarket();if(assetSession&&!assetRequest)void updateAssetChart(true);}},{signal:life.signal});
  render();if(autoRefresh)marketTimer=setInterval(()=>{if(!life.signal.aborted)maybeRefreshMarket();},60000);if(state.tab==='flow'?!flowSnapshot:!market)void loadData();
  return {closeInner,getState:()=>({state:{...state},viewport:otherPlot?.getViewport?.()||plot?.getViewport?.()||viewport}),suspend(){suspended=true;closeAsset();plot?.setActive?.(false);lastMarketAttempt=lastPressureAttempt=lastDailyAttempt=0;stopReplay();request?.abort();marketRequest?.abort();dailyRequest?.abort();for(const d of qa('dialog'))d.close();},resume(){suspended=false;plot?.setActive?.(true);if(!plot&&!otherPlot||partialMarket||partialFlow)render();else maybeRefreshMarket();},destroy(){life.abort();request?.abort();marketRequest?.abort();dailyRequest?.abort();clearInterval(marketTimer);cleanup();q('.cfx-settings-dialog')?.close();q('.cfx-dialog')?.close();q('.cfx-asset-dialog')?.close();shadow.innerHTML='';}};
 }
