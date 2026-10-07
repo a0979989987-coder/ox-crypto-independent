@@ -38,12 +38,13 @@ async function verifyExpandedResearch(page){
 }
 async function verifyDialogBounds(page,selector){
  const dialog=active(page,selector);await dialog.waitFor();
- const inspect=()=>dialog.evaluate(el=>{const r=el.getBoundingClientRect(),button=el.querySelector('.cfx-close'),b=button.getBoundingClientRect(),s=getComputedStyle(button);return {r:{x:r.x,y:r.y,w:r.width,h:r.height},b:{x:b.x,y:b.y,w:b.width,h:b.height},vw:innerWidth,vh:innerHeight,overflow:el.scrollWidth-el.clientWidth,outline:parseFloat(s.outlineWidth),border:parseFloat(s.borderTopWidth),radius:parseFloat(s.borderTopLeftRadius),transform:getComputedStyle(el).transform};});
+ const inspect=()=>dialog.evaluate(el=>{const r=el.getBoundingClientRect(),button=el.querySelector('.cfx-close'),b=button.getBoundingClientRect(),s=getComputedStyle(button);return {r:{x:r.x,y:r.y,w:r.width,h:r.height},b:{x:b.x,y:b.y,w:b.width,h:b.height},vw:innerWidth,vh:innerHeight,overflow:el.scrollWidth-el.clientWidth,bottomGap:r.bottom-el.lastElementChild.getBoundingClientRect().bottom,outline:parseFloat(s.outlineWidth),border:parseFloat(s.borderTopWidth),radius:parseFloat(s.borderTopLeftRadius),transform:getComputedStyle(el).transform};});
  for(const scrolled of [false,true]){
   if(scrolled)await dialog.evaluate(el=>el.scrollTop=el.scrollHeight);
   const g=await inspect();
   assert.ok(g.r.x>=11&&g.r.x+g.r.w<=g.vw-11&&g.r.y>=15&&g.r.y+g.r.h<=g.vh-15,`${selector} fits viewport: ${JSON.stringify(g)}`);
   assert.ok(Math.abs(g.r.x+g.r.w/2-g.vw/2)<1&&Math.abs(g.r.y+g.r.h/2-g.vh/2)<1,`${selector} stays centered`);
+  if(selector==='.cfx-settings-dialog')assert.ok(g.bottomGap<=24,'settings dialog fits its content without a tall empty area');
   assert.ok(g.b.x>=g.r.x&&g.b.x+g.b.w<=g.r.x+g.r.w&&g.b.y>=g.r.y&&g.b.y+g.b.h<=g.r.y+g.r.h,`${selector} close stays visible while scrolling`);
   assert.equal(g.b.w,44);assert.equal(g.b.h,44);assert.equal(g.border,0);assert.equal(g.outline,0);assert.ok(g.radius>=22,`exit has no square outline: ${JSON.stringify(g)}`);assert.ok(g.overflow<=1,'popup has no horizontal overflow');assert.equal(g.transform,'none');
  }
