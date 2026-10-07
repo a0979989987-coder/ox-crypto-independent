@@ -58,6 +58,8 @@ try{
    else{await page.locator('[data-twr-mode="chart"]').click();}
    const chart=market==='tw'?'#tw-radar-chart':'#chart',box=market==='tw'?'.twcr-chart-box':'#view-radar .chart-box';
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
+   // The existing compact layout exposes expand after folding its scanner panel.
+   await page.locator(market==='tw'?'.twcr-chart-box [data-action="fold"]':'#radar-scanner-toggle').click();
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
    await page.waitForFunction(m=>document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
