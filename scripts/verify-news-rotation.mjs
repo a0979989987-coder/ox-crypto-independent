@@ -108,7 +108,7 @@ try{
   if(width===390&&theme==='dark'){
    for(const period of ['30m','2h','4h','6h','12h']){
     await active(page,'[data-control="period"]').selectOption(period);
-    await page.waitForFunction(p=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period===p&&Number(c.dataset.points)>0;},period,{timeout:15000});
+    try{await page.waitForFunction(p=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period===p&&Number(c.dataset.points)>0;},period,{timeout:15000});}catch(error){throw new Error(`級別 ${period}：${await active(page,'.cfx').evaluate(el=>JSON.stringify({text:el.innerText,canvas:{...el.querySelector('canvas')?.dataset}}))}；請求 ${JSON.stringify(requests.filter(u=>u.includes('/candles')).slice(-35))}；錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}
    }
    for(const period of ['12h','6h','2h','1h'])await active(page,'[data-control="period"]').selectOption(period);
    await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period==='1h'&&Number(c.dataset.points)>0;});
