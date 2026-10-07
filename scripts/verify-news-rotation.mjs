@@ -54,6 +54,13 @@ async function verifySectorDialog(page,width,theme){
 try{
  for(const [width,theme] of [[320,'dark'],[390,'dark'],[390,'light'],[1440,'dark'],[1440,'light']]){
   const {page,context,audit,requests}=await setup(width,theme);
+  for(const id of ['patterns','bubbles','strength','heatmap','rotation']){
+   await tool(page,id);
+   if(id==='strength')await page.locator('.strength-compare-panel').waitFor();
+   else await active(page,id==='patterns'?'.px-board':id==='bubbles'?'.oxb-shell':'.cfx').waitFor();
+   const gap=await page.evaluate(id=>{const nav=document.querySelector('#ox-crypto-tools-nav'),content=document.querySelector(id==='strength'?'.strength-compare-panel':'#ox-crypto-tools-inline');return content.getBoundingClientRect().top-nav.getBoundingClientRect().bottom;},id);
+   assert.ok(Math.abs(gap-4)<=1,`${id} content gap is 4px at ${width}px, received ${gap}`);
+  }
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
   const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
