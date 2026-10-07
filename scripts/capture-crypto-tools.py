@@ -58,5 +58,5 @@ for symbol in ['BTCUSDT','ETHUSDT','SOLUSDT']:
  print('TRADES',symbol,len(records),flush=True)
 result['previousTickers']=prior['tickers']
 result['captureCompletedAt']=datetime.datetime.now(datetime.timezone.utc).isoformat()
-(ROOT/'previews/data/crypto-tools-snapshot.json').write_text(json.dumps(result,ensure_ascii=False,indent=2))
+(ROOT/'previews/data/crypto-tools-snapshot.json').write_text(json.dumps(result,ensure_ascii=False,separators=(',',':'))+'\n')
 print('SAVED',len(symbols),len(sectors),flush=True)
