@@ -55,6 +55,7 @@ try{
   assert.equal(await canvas.getAttribute('data-identity'),'original','period switch updates canvas');
   await tool(page,'heatmap');await active(page,'.cfx-heatmap canvas').waitFor();await tool(page,'rotation');assert.equal(await canvas.getAttribute('data-identity'),'original','return to retained tool preserves canvas');
   if(width===390&&theme==='dark'){
+   await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
    await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
    const member=active(page,'.cfx-sidebar [data-open-chart]').first(),symbol=await member.getAttribute('data-open-chart');await member.click();
    await page.locator('#view-radar[data-selected-symbol]').waitFor();assert.equal(await page.locator('#view-radar').getAttribute('data-selected-symbol'),symbol,'sector member opens the correct radar K line');

@@ -54,7 +54,7 @@ export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}
     const [current, previous] = pair; const x = pressure(current), old = pressure(previous), y = x - old;
     return [{ symbol: t.symbol, base: t.baseCoin, price: finite(t.lastPr), change24h: finite(t.change24h) === null ? null : Number(t.change24h) * 100,
       turnover: Number(t.usdtVolume), tickerTime: Number(t.ts || snapshot.tickerRequestTime), x, y, previous: old,
-      buy: Number(current.buyVolume), sell: Number(current.sellVolume), netNotional: (Number(current.buyVolume)-Number(current.sellVolume))*Number(t.lastPr), ts: target, state: classify(x, y) }];
+      buy: Number(current.buyVolume), sell: Number(current.sellVolume), netNotional: finite(t.lastPr)>0?(Number(current.buyVolume)-Number(current.sellVolume))*Number(t.lastPr):null, ts: target, state: classify(x, y) }];
   });
   return { rows, target, period, excluded: universe.filter(t => !rows.some(r => r.symbol === t.symbol)).map(t => t.symbol), expected: universe.length };
 }
