@@ -23,7 +23,7 @@
   let workspaceModule=null, workspaceAttempt=0;
   function loadWorkspace() {
     if(state.workspaceError)return Promise.reject(state.workspaceError);
-    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261007-ux-replay3&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
+    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261007-ux-replay4&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
     return workspaceModule;
   }
   function refresh(force = false, {priority='high'}={}) {

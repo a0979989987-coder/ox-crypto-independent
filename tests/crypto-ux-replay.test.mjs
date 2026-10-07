@@ -5,6 +5,7 @@ import {runInNewContext} from 'node:vm';
 import {strengthBubbleRadius} from '../src/markets/crypto/analytics/flow-chart.js';
 import {replayWindow,replayCoverage} from '../src/markets/crypto/analytics/replay-ranges.js';
 import {retainDailyFlow,mergeFlowHistory} from '../src/markets/crypto/analytics/flow-history.js';
+import {buildRotation} from '../src/markets/crypto/analytics/tools-model.js';
 import {localizeNewsText} from '../src/components/news/localization.js';
 test('rotation strength sizes remain readable and taker sell strength matches buy strength',()=>{
  for(const mobile of [true,false]){
@@ -53,4 +54,12 @@ test('yearly daily history follows short pages and preserves recent data when ol
  assert.equal(full.dailyCandles.BTCUSDT.response.data.length,368);assert.equal(calls.length,5);
  assert.equal(new Set(full.dailyCandles.BTCUSDT.response.data.map(r=>r[0])).size,368);
  fail=true;const partial=await api.refreshDailyCandles(seed,{signal});assert.equal(partial.dailyCandles.BTCUSDT.response.data.length,90);
+});
+
+test('missing benchmark days omit those periods without discarding otherwise complete sector members',()=>{
+ const day=86400000,end=Date.UTC(2026,9,7),data=Array.from({length:368},(_,i)=>[String(end-(368-i)*day),'1','2','1','2','1','2']);
+ const entry=rows=>({response:{requestTime:end,data:rows}});
+ const model=buildRotation({dailyCandles:{BTCUSDT:entry(data.filter((_,i)=>i!==180)),ETHUSDT:entry(data),SOLUSDT:entry(data)},sectors:[{id:'test',name:'Test',members:['ETHUSDT','SOLUSDT']}]},'1d',365);
+ assert.equal(model.frames.length,363);assert.ok(model.frames.every(f=>f.rows.length===1));
+ const missing=Number(data[180][0]);assert.ok(model.frames.every(f=>f.ts!==missing+day&&f.ts!==missing+2*day));
 });
