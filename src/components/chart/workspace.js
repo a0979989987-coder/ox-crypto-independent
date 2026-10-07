@@ -1,11 +1,13 @@
 function getChartRightOffset() {
   const spacing = state.chart?.timeScale().options().barSpacing || 6;
-  const labelSpace = (state.chartPriceAxisWidth || 44) + 16;
-  // Mobile needs room for the complete last candle and its price/countdown label.
-  const futureSpace = window.matchMedia('(max-width: 720px)').matches
-    ? Math.max(labelSpace, Math.min(110, window.innerWidth * .25)) : labelSpace;
+  // Keep the latest candle clear of the price/countdown label, with a little
+  // extra drawing room when opening a symbol or timeframe.
+  const futureSpace = (state.chartPriceAxisWidth || 44)
+    + (window.matchMedia('(max-width: 720px)').matches ? 32 : 40);
   return futureSpace / spacing;
 }
+
+function getChartScaleMargins() { return window.matchMedia('(max-width:720px)').matches ? {top:.08,bottom:.14} : {top:.18,bottom:.22}; }
 
 let chartPriceOverlayFrame = 0;
 function scheduleChartPriceOverlayUpdate() {
@@ -270,7 +272,7 @@ function initChart() {
       borderColor: "#343b37",
       visible: false,
       autoScale: true,
-      scaleMargins: { top: 0.18, bottom: 0.22 }
+      scaleMargins: getChartScaleMargins()
     },
     timeScale: {
       borderColor: "#343b37",
@@ -292,7 +294,7 @@ function initChart() {
   if (window.matchMedia("(max-width: 720px)").matches) {
     state.chart.applyOptions({
       layout: { fontSize: 10 },
-      rightPriceScale: { borderColor: "#343b37", autoScale: true, scaleMargins: { top: 0.18, bottom: 0.22 } }
+      rightPriceScale: { borderColor: "#343b37", autoScale: true, scaleMargins: getChartScaleMargins() }
     });
   }
 
@@ -320,7 +322,7 @@ function initChart() {
     lastValueVisible: false
   });
   state.chart.priceScale("vol").applyOptions({
-    scaleMargins: { top: 0.8, bottom: 0 }
+    scaleMargins: { top: window.matchMedia('(max-width:720px)').matches ? .88 : .8, bottom: 0 }
   });
 
   const mobilePriceLabel = document.createElement('span');
@@ -386,6 +388,8 @@ function initChart() {
     if (mobileNow !== mobileScale) {
       mobileScale = mobileNow;
       state.chart.applyOptions({ layout: { fontSize: mobileNow ? 10 : 11 } });
+      state.chart.priceScale('right').applyOptions({scaleMargins:getChartScaleMargins()});
+      state.chart.priceScale('vol').applyOptions({scaleMargins:{top:mobileNow ? .88 : .8,bottom:0}});
       applyChartFutureSpace();
     }
     resizeChartToContainer();
@@ -503,7 +507,7 @@ function renderChartData(candles, fitContent = false, preservedLogicalRange = nu
     state.chartPriceViewport = null;
     state.chartAutoPriceRange = null;
     clearKeyLevelPriceLines();
-    state.chart.priceScale("right").applyOptions({ autoScale: true, scaleMargins: { top: .18, bottom: .22 } });
+    state.chart.priceScale("right").applyOptions({ autoScale: true, scaleMargins: getChartScaleMargins() });
   }
   const digits = chartAxisPrecision(candles.at(-1)?.close);
   if (digits !== state.chartAxisDigits) {
