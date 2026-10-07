@@ -77,7 +77,9 @@ try{
    const midpoint=async()=>page.evaluate(({chart,d})=>{
     const el=document.querySelector(chart),r=el.getBoundingClientRect(),{rows,series,chart:c}=el.__chartQA;
     const epoch=t=>typeof t==='number'?t:typeof t==='string'?Date.parse(t)/1000:Date.UTC(t.year,t.month-1,t.day)/1000;
-    const x=t=>{let i=rows.findIndex(row=>epoch(row.time)>=t);if(i<0)i=rows.length-1;const hi=epoch(rows[i].time),lo=epoch(rows[Math.max(0,i-1)].time);return c.timeScale().logicalToCoordinate(hi===t?i:i-1+(t-lo)/(hi-lo));};
+    const times=rows.map(row=>epoch(row.time)),gaps=times.slice(-24).slice(1).map((t,i)=>t-times.slice(-24)[i]).filter(n=>n>0).sort((a,b)=>a-b),step=gaps[Math.floor(gaps.length/2)]||86400;
+    // A valid line can start in blank history or future space outside the loaded candles.
+    const x=t=>{let i=times.findIndex(time=>time>=t),logical;if(i<0)logical=times.length-1+(t-times.at(-1))/step;else if(times[i]===t)logical=i;else if(i===0)logical=(t-times[0])/step;else logical=i-1+(t-times[i-1])/(times[i]-times[i-1]);return c.timeScale().logicalToCoordinate(logical);};
     return{x:r.x+(x(d.a.time)+x(d.b.time))/2,y:r.y+(series.priceToCoordinate(d.a.price)+series.priceToCoordinate(d.b.price))/2};
    },{chart,d:drawings[0]});
    let p=await midpoint();await tap(p);const editor=page.locator(box+' .chart-drawing-editor');await editor.waitFor({state:'visible'});
