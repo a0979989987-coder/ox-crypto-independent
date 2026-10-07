@@ -122,8 +122,8 @@ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color input::-webkit-
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-width-menu{bottom:46px;left:34px;padding:5px;display:flex;gap:2px}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-width-menu i{display:block;width:20px;border-top:1px solid currentColor}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector{position:absolute;top:62px;right:12px;left:auto;bottom:auto;width:min(280px,calc(100% - 24px));box-sizing:border-box;padding:12px;display:grid;gap:10px;font:12px/1.5 system-ui}
-body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector header{display:flex;align-items:center;justify-content:space-between;gap:10px}
-body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector header button{width:36px;height:36px;background:transparent;border:0;color:inherit;font:24px system-ui;cursor:pointer}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector .drawing-inspector-heading{display:flex;align-items:center;justify-content:space-between;gap:10px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector .drawing-inspector-heading button{width:36px;height:36px;background:transparent;border:0;color:inherit;font:24px system-ui;cursor:pointer}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector label{display:grid;gap:4px}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector :is(input:not([type="checkbox"]),select){width:100%;min-height:34px;box-sizing:border-box;border:1px solid var(--drawing-line);border-radius:6px;background:var(--drawing-active);color:var(--drawing-text);padding:5px;font:12px/1.4 system-ui}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector input[type="range"]{padding:0;accent-color:var(--drawing-text)}
@@ -143,7 +143,7 @@ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(#chart,#tw-radar-chart)[da
 @media(max-width:900px){
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools{top:52px!important;left:6px!important;flex-direction:row;gap:0;padding:2px;max-width:calc(100% - 12px)}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools .drawing-tools-content{flex-direction:row;gap:0}
- body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button{width:40px;min-width:40px;height:42px;padding:9px}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button{width:40px;min-width:40px;height:44px;padding:9px}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-tool-menu,.drawing-object-list){top:48px;left:0;max-height:min(55dvh,360px)}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-menu button{width:100%;height:auto;min-height:42px}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-editor{bottom:38px;padding:3px;gap:0}

@@ -27,6 +27,7 @@ try{
   const ctx=await browser.newContext({viewport:{width,height:850},hasTouch:touch,isMobile:touch,locale:'zh-TW'}),page=await ctx.newPage(),errors=[];
   page.on('pageerror',e=>errors.push(e.message));await page.addInitScript(t=>{if(t==='light')document.addEventListener('DOMContentLoaded',()=>document.body.classList.add('theme-light'));},theme);
   await page.goto(`http://127.0.0.1:${server.address().port}/`);await page.waitForFunction(()=>document.querySelector('.chart-drawing-tools')&&JSON.parse(localStorage.getItem(fixturePrefix+'-drawings-v2'))?.symbols?.[fixtureSymbol]?.length===1);
+  await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
   const data=()=>page.evaluate(()=>JSON.parse(localStorage.getItem(fixturePrefix+'-drawings-v2')).symbols[fixtureSymbol]||[]);
   const point=async(d,which='mid')=>page.evaluate(({d,which})=>{const r=document.getElementById('chart').getBoundingClientRect(),ts=state.chart.timeScale(),s=state.candleSeries;const x=t=>{const i=state.candleData.findIndex(v=>v.time>=t);if(i<0)return ts.timeToCoordinate(t);if(state.candleData[i].time===t)return ts.logicalToCoordinate(i);const lo=state.candleData[i-1]?.time??state.candleData[i].time-14400;return ts.logicalToCoordinate(i-1+(t-lo)/(state.candleData[i].time-lo));};const a={x:x(d.a.time),y:s.priceToCoordinate(d.a.price)},b={x:x(d.b.time),y:s.priceToCoordinate(d.b.price)},p=which==='a'?a:which==='b'?b:{x:(a.x+b.x)/2,y:(a.y+b.y)/2};return{x:r.left+p.x,y:r.top+p.y};},{d,which});
   const tap=async p=>touch?page.touchscreen.tap(p.x,p.y):page.mouse.click(p.x,p.y);
@@ -70,7 +71,7 @@ try{
   // Two-click trend creation is supported in addition to drag creation.
   await page.locator('.chart-drawing-tools [data-action="menu"]').click();await page.locator('[data-draw="trend"]').click();await tap(start);await tap(end);assert.equal((await data()).length,3);
   await page.locator('.chart-drawing-tools [data-action="menu"]').click();await page.locator('[data-draw="rectangle"]').click();await page.keyboard.press('Escape');assert.equal(await page.evaluate(()=>fullscreenExited),false);assert.equal(await page.locator('.chart-drawing-tools').getAttribute('data-mode'),'cursor');
-  const saved=await data();await page.reload();await page.waitForFunction(()=>document.querySelector('.chart-drawing-tools'));assert.deepEqual(await data(),saved,'all drawings survive reload without duplicated migration');
+  const saved=await data();await page.reload();await page.waitForFunction(()=>document.querySelector('.chart-drawing-tools')&&state.chart.timeScale().width()>100);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));assert.deepEqual(await data(),saved,'all drawings survive reload without duplicated migration');
   p=await point((await data())[0]);await tap(p);await page.locator('.chart-drawing-editor [data-action="settings"]').click();await page.locator('[data-setting="a-price"]').fill('101.25');await page.locator('[data-setting="a-price"]').dispatchEvent('change');assert.equal((await data())[0].a.price,101.25);
   await page.screenshot({path:resolve(artifacts,`${market}-${width}-${theme}.png`)});
   assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));

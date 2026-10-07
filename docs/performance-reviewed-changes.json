@@ -160,7 +160,7 @@
     {
       "path": "src/components/chart/drawings.js",
       "sourceSha256": "db0df31e1326e037ed56d228874accbda3aef3e20d918ec45b29b44f00340b88",
-      "sha256": "d1faf9cd373bb5e6254fc8ea613151b8487991af425902f64b331565e32cf78c",
+      "sha256": "42b67852a00cd815522d3c754e29f9847874ead56f4f405c988c9c4cfb6a1344",
       "reason": "User-requested chart editing: shared navigation/selection cursor, transaction undo/redo, nonblocking drawing layer, legacy migration, timeframe visibility and touch pinch arbitration. Verified with chart gesture and real-browser interaction checks."
     }
   ]
