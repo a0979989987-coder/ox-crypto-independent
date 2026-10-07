@@ -19,6 +19,16 @@ test('a missing bar excludes an asset from every replay frame instead of creatin
  const d=structuredClone(recorded);d.candles.ETHUSDT.response.data=[];
  const {frames}=buildRotation(d,'1h');assert.ok(frames.length);for(const f of frames){const l=f.rows.find(r=>r.id==='l1');if(l)assert.ok(l.expectedMembers>=l.members.length);assert.ok(!f.rows.some(r=>r.members.some(m=>m.base==='ETH')));near(f.rows.reduce((s,r)=>s+r.share,0),100);}
 });
+test('daily rotation reads actual daily candles instead of resampling an insufficient 15m snapshot',()=>{
+ const d=structuredClone(recorded),day=86400000,end=Math.floor(d.requestTime/day)*day;
+ assert.equal(buildRotation(d,'1d').frames.length,0);
+ d.dailyCandles=Object.fromEntries(Object.entries(d.candles).map(([symbol,entry])=>{
+  const price=Number(entry.response?.data?.at(-1)?.[4]);
+  return [symbol,{response:{requestTime:d.requestTime,data:Array.from({length:16},(_,i)=>{const open=price*(1+i*.002),close=open*(1+Math.sin(i/3)*.005);return [end-(16-i)*day,open,open*1.02,open*.98,close,100,close*100];})}}];
+ }));
+ const result=buildRotation(d,'1d');assert.equal(result.frames.length,8);
+ assert.ok(result.frames[0].rows.length>1);assert.ok(result.frames.every(f=>f.ts%day===0));
+});
 test('treemap tile areas match weights exactly and do not overlap',()=>{
  const tiles=partition([{v:50},{v:30},{v:20}],[0,0,400,250],r=>r.v);
  for(const t of tiles)near(t.rect[2]*t.rect[3],t.v*1000);

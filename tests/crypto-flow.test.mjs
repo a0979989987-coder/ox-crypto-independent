@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { pressure, classify, cryptoUniverse, buildFlow } from '../src/markets/crypto/analytics/flow-model.js';
+import { pressure, classify, cryptoUniverse, buildFlow, PERIODS, buildFlowHistory } from '../src/markets/crypto/analytics/flow-model.js';
 const hour = 3600000;
 const data = rows => ({ instruments: [{symbol:'BTCUSDT',baseCoin:'BTC',symbolType:'crypto',type:'perpetual',status:'online',quoteCoin:'USDT'}], tickers:[{symbol:'BTCUSDT',lastPr:'10',change24h:'0.01',usdtVolume:'100'}], flows:{'1h':{BTCUSDT:{response:{requestTime:hour*4+1,data:rows}}}} });
 test('pressure uses same-asset taker buy/sell volume and rejects missing, zero and negative values', () => {
@@ -27,9 +27,15 @@ test('a source failure remains missing, not a zero-valued healthy market', () =>
 });
 
 test('replay uses only closed consecutive source periods and retains the current cohort',async()=>{
- const {buildFlowHistory}=await import('../src/markets/crypto/analytics/flow-model.js');
  const snapshot=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../previews/data/crypto-flow-snapshot.json',import.meta.url),'utf8'));
  const current=buildFlow(snapshot,'1h'),history=buildFlowHistory(snapshot,'1h');
  assert.deepEqual(history.frames.at(-1).rows,current.rows);
  for(const frame of history.frames){assert.deepEqual(frame.rows.map(r=>r.symbol),current.rows.map(r=>r.symbol));assert.ok(frame.ts<=current.target);assert.equal(frame.ts%3600000,0);for(const row of frame.rows)assert.ok(Number.isFinite(row.x)&&Number.isFinite(row.y));}
+});
+test('short and daily taker periods use exchange-supported intervals and preserve non-BTC coins',async()=>{
+ const snapshot=JSON.parse(await (await import('node:fs/promises')).readFile(new URL('../previews/data/crypto-flow-snapshot.json',import.meta.url),'utf8'));
+ assert.deepEqual(Object.keys(PERIODS),['5m','15m','30m','1h','2h','4h','6h','12h','1d']);
+ const current=buildFlow(snapshot,'1h'),history=buildFlowHistory(snapshot,'1h');
+ assert.ok(current.rows.length>1);assert.ok(history.frames.every(f=>f.rows.length===current.rows.length));
+ assert.ok(current.rows.some(r=>r.symbol==='ETHUSDT'),'BTC turnover cannot erase other valid symbols');
 });

@@ -27,6 +27,8 @@ try{
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
   const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
+  assert.ok(await active(page,'.cfx-chart-meta').evaluate(el=>el.compareDocumentPosition(el.parentElement.querySelector('.cfx-plot'))&Node.DOCUMENT_POSITION_PRECEDING),'coverage caption follows the plot');
+  const periods=await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value));for(const period of ['15m','30m','1h','2h','4h','6h','12h','1d'])assert.ok(periods.includes(period));
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
   await active(page,'[data-action="zoom-in"]').click();const zoom=await active(page,'[data-slot="zoom"]').textContent();assert.equal(zoom,'150%');
   await active(page,'[data-action="picker"]').click();
@@ -42,6 +44,7 @@ try{
   await active(page,'[data-action="play"]').click();
   assert.equal(await canvas.getAttribute('data-identity'),'original','controls and replay never replace the canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),zoom);
   await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
+  if(width===390&&theme==='dark'){await active(page,'[data-control="period"]').selectOption('1d');await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return /有效 \d+\/31/.test(h?.shadowRoot.querySelector('[data-slot="rotation-coverage"]')?.textContent||'')&&h?.shadowRoot.querySelector('[data-action="play"]')?.disabled===false;},{},{timeout:35000});await active(page,'[data-control="period"]').selectOption('1h');}
   assert.equal(await canvas.getAttribute('data-identity'),'original','period switch updates canvas');
   await tool(page,'heatmap');await active(page,'.cfx-heatmap canvas').waitFor();await tool(page,'rotation');assert.equal(await canvas.getAttribute('data-identity'),'original','return to retained tool preserves canvas');
   if(width===390&&theme==='dark'){
@@ -50,6 +53,8 @@ try{
    await active(page,'[data-action="zoom-in"]').click();
    await active(page,'.cfx[data-scan-state="partial"]').waitFor({timeout:10000});
    await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:20000});
+   assert.ok(await active(page,'.cfx-flow-symbols button').count()>1,'ETH and other valid symbols stay visible alongside BTC');
+   assert.ok((await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value))).includes('1d'));
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original','partial/final batches update the same canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),'150%');
    await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-table tbody tr').first().waitFor();await active(page,'[data-watch]').first().click();await active(page,'[data-action="scope-watch"]').click();assert.equal(await active(page,'.cfx-table tbody tr').count(),1);
    await active(page,'[data-action="scope-all"]').click();

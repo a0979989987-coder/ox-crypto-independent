@@ -42,3 +42,18 @@ export async function refreshMarket(snapshot,{signal,onProgress=()=>{},onPartial
     instruments,previousTickers:snapshot.tickers,tickers,sectors:verified.sectors,candles,
     requestTime:Number(quote.requestTime),captureCompletedAt:new Date().toISOString()};
 }
+// Daily rotation needs real daily candles. The 200×15m pool covers ~50 hours,
+// which cannot produce an eight-day replay. Fetch this only when 1D is opened.
+export async function refreshDailyCandles(snapshot,{signal,onProgress=()=>{},onPartial=()=>{},transport={owner:'analytics',priority:15}}){
+  const symbols=[...new Set(['BTCUSDT',...snapshot.sectors.flatMap(s=>s.members)])];
+  const dailyCandles={};
+  for(let i=0;i<symbols.length;i++){
+    if(i)await delay(160,signal);
+    const symbol=symbols[i],path=`/api/v2/mix/market/candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=32`;
+    try{const response=await bitget(path,signal,transport);dailyCandles[symbol]=response.data.length>=3?{path,response}:{path,error:'日 K 線不足'};}
+    catch(error){if(error.name==='AbortError')throw error;dailyCandles[symbol]={path,error:error.message};}
+    onPartial({dailyCandles:{...dailyCandles},scan:{done:i+1,total:symbols.length,complete:false}});
+    onProgress(i+1,symbols.length);
+  }
+  return {dailyCandles,scan:{done:symbols.length,total:symbols.length,complete:true},captureCompletedAt:new Date().toISOString()};
+}

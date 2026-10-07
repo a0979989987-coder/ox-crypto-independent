@@ -105,3 +105,10 @@
 .cfx-topic{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:11px;line-height:1.65}
 .cfx-topic b{font-size:12px}.cfx-topic small{margin-left:8px;color:var(--muted)}
 .cfx-topic .verified{color:#eceee8}.cfx-topic .candidate{color:var(--muted)}
+/* Give the plot the first screenful; coverage is a caption below the canvas. */
+.cfx-research-panel .cfx-chart-meta{border-top:1px solid var(--line);background:var(--panel);min-height:32px}
+.cfx-flow-symbols{display:flex;gap:5px;overflow-x:auto;padding:4px 9px 7px;scrollbar-width:thin;white-space:nowrap}
+.cfx-flow-symbols button{display:inline-flex;align-items:center;gap:5px;min-height:25px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:10px}
+.cfx-flow-symbols button[aria-pressed=true]{border-color:#e9ede7}
+.cfx-flow-symbols i{display:block;width:5px;height:5px;border-radius:50%;flex:none}
+@media(max-width:600px){.cfx-research-panel>.cfx-plot{height:clamp(560px,82svh,850px);min-height:560px}.cfx-research-panel .cfx-chart-meta{margin:0;padding:5px 8px}}

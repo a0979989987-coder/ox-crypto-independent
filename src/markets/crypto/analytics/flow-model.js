@@ -1,5 +1,6 @@
 // Crypto-only, venue-specific taker pressure. These are not cash-inflow estimates.
-export const PERIODS = Object.freeze({ '15m': 900000, '1h': 3600000, '4h': 14400000 });
+// Bitget taker-buy-sell supports these exact intervals (the exchange has no 1m feed here).
+export const PERIODS = Object.freeze({ '5m':300000, '15m':900000, '30m':1800000, '1h':3600000, '2h':7200000, '4h':14400000, '6h':21600000, '12h':43200000, '1d':86400000 });
 export const STATES = Object.freeze([
   { id: 'buy-up', name: '買壓增強', note: '買方占優，力道增加', color: '#91c7b1', direction: '↗' },
   { id: 'buy-down', name: '買壓放緩', note: '買方占優，力道放緩', color: '#cfbc91', direction: '↘' },
