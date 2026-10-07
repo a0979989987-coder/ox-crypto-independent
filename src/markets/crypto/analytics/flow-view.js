@@ -19,6 +19,8 @@ const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" str
 const snapshotURL=new URL('../../../../previews/data/crypto-flow-snapshot.json',import.meta.url);
 const marketURL=new URL('../../../../previews/data/crypto-tools-snapshot.json',import.meta.url);
 const cssURL=new URL('./flow.css?v=20261007-ux-replay3',import.meta.url);
+const replayDateFormatter=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
+const replayDateLabel=ts=>replayDateFormatter.format(new Date(ts));
 const numPrice=v=>Number.isFinite(v)?v.toLocaleString('en-US',{maximumFractionDigits:v<1?6:2}):'—';
 const pct=v=>Number.isFinite(v)?signed(v,2)+'%':'—';
 const pp=v=>Number.isFinite(v)?signed(v,2)+'pp':'—';
@@ -215,7 +217,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   const interpolated=replayVisualRows(list,state.frame,frame.rows);
   const trails=state.trails?frame.rows.map(r=>({symbol:r.symbol,color:r.state.color,points:[...list.slice(Math.max(0,index-5),index+1).flatMap(f=>{const p=f.rows.find(x=>x.symbol===r.symbol);return p?[{x:p.x,y:p.y}]:[]}),...(fraction>.001?interpolated.filter(p=>p.symbol===r.symbol).map(p=>({x:p.x,y:p.y})):[])]})):[];
   plot?.update(interpolated,{selected:state.selected,filter:state.filter,rotation:state.tab==='rotation',equalSize:state.equal,domain,trails,axisX:state.tab==='rotation'?'相對 BTC 報酬（pp）':'主動買賣占比（%）',axisY:state.tab==='rotation'?'相對表現變化（pp）':'占比變化（百分點）',quadrants:state.tab==='rotation'?['落後改善','領先擴大','落後擴大','領先降溫']:null});
-  const coverage=replayCoverage(list,state.replayRange,list.at(-1)?.ts||Date.now());q('[data-slot="replay-coverage"]').textContent=list.length?`可回放 ${dateLabel(list[0].ts)}～${dateLabel(list.at(-1).ts)} · ${list.length} 期${state.period==='1d'&&!coverage.complete?' · 此範圍歷史資料未齊':''}`:'尚無可回放資料';
+  const coverage=replayCoverage(list,state.replayRange,list.at(-1)?.ts||Date.now());q('[data-slot="replay-coverage"]').textContent=list.length?`可回放 ${replayDateLabel(list[0].ts)}～${replayDateLabel(list.at(-1).ts)} · ${list.length} 期${state.period==='1d'&&!coverage.complete?' · 此範圍歷史資料未齊':''}`:'尚無可回放資料';
   q('.cfx-plot').hidden=state.table;q('.cfx-rotation-table').hidden=!state.table;q('.cfx-replay').hidden=!state.replayOpen;
   q('[data-action="replay-toggle"]').textContent=state.replayOpen?'結束':'回放';q('[data-action="replay-toggle"]').setAttribute('aria-pressed',state.replayOpen);
   q('[data-slot="rotation-time"]').textContent=dateLabel(frame.ts)+' UTC+8'+(fraction>.001?' · 回放過渡':'');
