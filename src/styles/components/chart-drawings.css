@@ -95,3 +95,60 @@ body.ox-terminal #view-radar :is(#chart) .chart-current-price.is-up{color:#00b8d
 body.ox-terminal #view-radar :is(#chart) .chart-current-price[hidden]{display:none!important}
 body.ox-terminal #view-radar :is(#chart) .chart-current-price-line{position:absolute;left:0;right:2px;top:0;height:0;border-top:1px dashed currentColor}
 body.ox-terminal #view-radar :is(#chart) .chart-current-price .chart-mobile-last-price{transform:translateY(-50%);will-change:auto}
+
+/* Unified cursor and contextual editor; the drawing canvas never blocks navigation. */
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-layer,
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-layer.is-editing{pointer-events:none!important;touch-action:auto;cursor:inherit}
+body.ox-terminal{--drawing-bg:#171c23f5;--drawing-text:#eeeae2;--drawing-line:#ffffff38;--drawing-active:#ffffff1f}
+body.ox-terminal.theme-light{--drawing-bg:#fffffff5;--drawing-text:#263544;--drawing-line:#46566b44;--drawing-active:#40557216}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools{display:flex;position:absolute;top:56px;left:8px;z-index:16;padding:3px;gap:2px;flex-direction:column;align-items:center;color:var(--drawing-text);background:var(--drawing-bg);border:1px solid var(--drawing-line);box-shadow:0 4px 18px #0003;border-radius:10px;max-width:calc(100% - 16px)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools .drawing-tools-content{display:flex;gap:2px;flex-direction:column}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button{width:36px;height:36px;min-width:36px;padding:7px;display:grid;place-items:center;border:0;border-radius:7px;background:transparent;color:var(--drawing-text);font:15px/1 system-ui;cursor:pointer;touch-action:manipulation}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button[aria-pressed="true"]{background:var(--drawing-active);box-shadow:inset 0 0 0 1px var(--drawing-line);text-shadow:none}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button:disabled{opacity:.3;cursor:default}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools [data-action="magnet"][data-magnet="strong"]{box-shadow:inset 0 0 0 2px var(--drawing-text)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools.is-folded .drawing-tools-content{display:none}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools.is-folded [data-action="fold"]{transform:rotate(180deg)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-tool-menu,.drawing-object-list,.drawing-width-menu,.drawing-tool-inspector){position:absolute;z-index:25;border:1px solid var(--drawing-line);border-radius:10px;background:var(--drawing-bg);color:var(--drawing-text);box-shadow:0 8px 24px #0003;max-height:min(60dvh,430px);overflow:auto;overscroll-behavior:contain}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-tool-menu,.drawing-object-list){top:0;left:46px;width:210px;padding:6px;}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-menu button{display:block;width:100%;height:auto;min-height:38px;text-align:left;padding:9px;font-size:13px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-menu button[aria-current="true"]{background:var(--drawing-active)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-editor{position:absolute;z-index:18;left:50%;bottom:38px;transform:translateX(-50%);display:flex;align-items:center;gap:2px;padding:4px;border:1px solid var(--drawing-line);border-radius:10px;background:var(--drawing-bg);color:var(--drawing-text);box-shadow:0 6px 24px #0003;max-width:calc(100% - 16px)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color{display:grid;place-items:center;width:36px;height:36px;flex:0 0 36px;cursor:pointer}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color input{display:block;width:25px;height:25px;padding:0;border:0;border-radius:50%;background:transparent;cursor:pointer}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color input::-webkit-color-swatch-wrapper{padding:0}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color input::-webkit-color-swatch{border:1px solid var(--drawing-line);border-radius:50%}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-width-menu{bottom:46px;left:34px;padding:5px;display:flex;gap:2px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-width-menu i{display:block;width:20px;border-top:1px solid currentColor}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector{position:absolute;top:62px;right:12px;left:auto;bottom:auto;width:min(280px,calc(100% - 24px));box-sizing:border-box;padding:12px;display:grid;gap:10px;font:12px/1.5 system-ui}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector header{display:flex;align-items:center;justify-content:space-between;gap:10px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector header button{width:36px;height:36px;background:transparent;border:0;color:inherit;font:24px system-ui;cursor:pointer}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector label{display:grid;gap:4px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector :is(input:not([type="checkbox"]),select){width:100%;min-height:34px;box-sizing:border-box;border:1px solid var(--drawing-line);border-radius:6px;background:var(--drawing-active);color:var(--drawing-text);padding:5px;font:12px/1.4 system-ui}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector input[type="range"]{padding:0;accent-color:var(--drawing-text)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector input[type="checkbox"]{accent-color:var(--drawing-text)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-coordinates,.drawing-extend){display:grid;grid-template-columns:1fr 1fr;gap:8px;min-width:0}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-extend label{display:flex;align-items:center}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-list>strong{display:block;font:12px system-ui;padding:8px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-row{display:flex;align-items:center;gap:1px;border-bottom:1px solid var(--drawing-line)}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-row button:first-child{width:auto;flex:1;display:flex;align-items:center;justify-content:start;min-width:0;text-align:left;padding:5px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-row span{font:12px/1.5 system-ui;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-row small{display:block;opacity:.65;font-size:10px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-object-row i{width:6px;height:22px;flex-shrink:0;border-radius:3px;margin-right:4px}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-drag-hint{position:absolute;z-index:20;pointer-events:none;background:var(--drawing-bg);color:var(--drawing-text);border:1px solid var(--drawing-line);padding:4px 6px;border-radius:6px;white-space:nowrap;font:11px/1.3 system-ui}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-sr-status{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor,.drawing-tool-inspector,.drawing-drag-hint) [hidden],body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-editor,.drawing-tool-inspector,.drawing-drag-hint)[hidden]{display:none!important}
+body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(#chart,#tw-radar-chart)[data-drawing-mode="draw"] canvas{cursor:crosshair!important}
+@media(max-width:900px){
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools{top:52px!important;left:6px!important;flex-direction:row;gap:0;padding:2px;max-width:calc(100% - 12px)}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools .drawing-tools-content{flex-direction:row;gap:0}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.chart-drawing-tools,.chart-drawing-editor) button{width:40px;min-width:40px;height:42px;padding:9px}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-tool-menu,.drawing-object-list){top:48px;left:0;max-height:min(55dvh,360px)}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-menu button{width:100%;height:auto;min-height:42px}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-editor{bottom:38px;padding:3px;gap:0}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color{width:40px;height:42px;flex-basis:40px}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector{top:102px;left:8px;right:8px;width:auto;max-height:min(55dvh,400px)}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector :is(input:not([type="checkbox"]),select){font-size:16px;min-height:40px}
+}
+@media(max-width:360px){body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-tools button{width:36px;min-width:36px}}
