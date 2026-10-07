@@ -81,6 +81,12 @@ try{
    if(touch){const cdp=await context.newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{...p,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...end,id:1}]});await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});}
    else{await page.mouse.move(p.x,p.y);await page.mouse.down();await page.mouse.move(end.x,end.y,{steps:6});await page.mouse.up();}
    drawings=await page.evaluate(k=>Object.values(JSON.parse(localStorage.getItem(k)).symbols).flat(),key);assert.notEqual(drawings[0].a.price,before.a.price);
+   if(!touch){
+    const pixels=await page.locator(chart+' .chart-drawing-layer').evaluate(el=>el.toDataURL());
+    const axis=await page.locator(chart).boundingBox();await page.mouse.move(axis.x+axis.width-8,axis.y+axis.height*.4);await page.mouse.down();await page.mouse.move(axis.x+axis.width-8,axis.y+axis.height*.52,{steps:8});await page.mouse.up();
+    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    assert.notEqual(await page.locator(chart+' .chart-drawing-layer').evaluate(el=>el.toDataURL()),pixels,'drawing overlay must follow native price scale changes');
+   }
    await editor.locator('[data-action="settings"]').click();const inspector=page.locator(box+' .drawing-tool-inspector');await inspector.waitFor({state:'visible'});
    const bounds=await inspector.boundingBox();assert(bounds.x>=0&&bounds.x+bounds.width<=width+1);
    const timeWidth=await inspector.locator('[data-setting="a-time"]').evaluate(el=>el.clientWidth);assert(timeWidth>200,'date and time field must be readable');

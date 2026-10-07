@@ -236,7 +236,7 @@ window.OXChartDrawings = function mountChartDrawings({box,chartEl,state,market='
   const stop=e=>{e.preventDefault();e.stopImmediatePropagation();};
   let mousePointer=null;
   listen(chartEl,'pointerdown',event=>{if(event.pointerType==='touch'||event.button!==0)return;const p=localPoint(event);if(begin(p,event)){mousePointer=event.pointerId;chartEl.setPointerCapture?.(event.pointerId);stop(event);}}, {capture:true});
-  listen(chartEl,'pointermove',event=>{if(event.pointerType==='touch')return;const p=localPoint(event);if(gesture||awaiting){move(p,event);if(gesture)stop(event);}else chartEl.style.cursor=inPlot(p)&&nearest(p.x,p.y)?'pointer':'';},{capture:true});
+  listen(chartEl,'pointermove',event=>{if(event.pointerType==='touch')return;if(event.buttons)schedule();const p=localPoint(event);if(gesture||awaiting){move(p,event);if(gesture)stop(event);}else chartEl.style.cursor=inPlot(p)&&nearest(p.x,p.y)?'pointer':'';},{capture:true});
   listen(chartEl,'pointerup',event=>{if(event.pointerType==='touch'||mousePointer!==event.pointerId)return;mousePointer=null;finish();if(chartEl.hasPointerCapture?.(event.pointerId))chartEl.releasePointerCapture(event.pointerId);stop(event);},{capture:true});
   listen(chartEl,'pointercancel',()=>{mousePointer=null;cancel();},{capture:true});
   listen(chartEl,'dblclick',event=>{if(event.pointerType==='touch')return;const p=localPoint(event),d=inPlot(p)?nearest(p.x,p.y):null;if(d){choose(d);panel='settings';syncUI();stop(event);}},{capture:true});
@@ -252,7 +252,7 @@ window.OXChartDrawings = function mountChartDrawings({box,chartEl,state,market='
   const observer=new ResizeObserver(schedule);observer.observe(chartEl);
   const mutation=new MutationObserver(()=>{if(!expanded()&&tool){cancel({exit:true});}sync();});mutation.observe(document.body,{attributes:true,attributeFilter:['class']});
   for(const type of ['ox:chartdata','ox:chartpriceview','ox:themechange','ox:marketchange','fullscreenchange','webkitfullscreenchange'])listen(document,type,sync);
-  listen(chartEl,'wheel',schedule,{passive:true});listen(window,'resize',sync,{passive:true});listen(window,'pagehide',flushStyle);
+  listen(chartEl,'wheel',schedule,{passive:true});listen(chartEl,'dblclick',schedule,{capture:true,passive:true});listen(window,'resize',sync,{passive:true});listen(window,'pagehide',flushStyle);
   let boundChart=null;
   function bind(){if(life.signal.aborted)return;if(!state.chart){bindTimer=setTimeout(bind,50);return;}boundChart=state.chart;boundChart.timeScale().subscribeVisibleLogicalRangeChange(sync);sync();}
   bind();
