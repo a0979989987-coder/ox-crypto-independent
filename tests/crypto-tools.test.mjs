@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildRotation,heatmapRows,orderFlow,normalizeTrades,derivativeRows} from '../src/markets/crypto/analytics/tools-model.js';
 import {partition} from '../src/markets/crypto/analytics/tools-charts.js';
+import {freshDaily} from '../src/markets/crypto/analytics/daily-cache.js';
 const recorded=JSON.parse(readFileSync(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url)));
 const expectedCount=recorded.sectors.reduce((set,sector)=>{sector.members.forEach(member=>set.add(member));return set;},new Set()).size;
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
@@ -28,6 +29,12 @@ test('daily rotation reads actual daily candles instead of resampling an insuffi
  }));
  const result=buildRotation(d,'1d');assert.equal(result.frames.length,8);
  assert.ok(result.frames[0].rows.length>1);assert.ok(result.frames.every(f=>f.ts%day===0));
+});
+test('completed 15m market snapshot cannot bypass the daily candle fetch',()=>{
+ const now=Date.now(),market={scan:{done:8,total:8,complete:true},captureCompletedAt:new Date(now).toISOString(),candles:{BTCUSDT:{response:{data:[[now]]}}}};
+ assert.equal(freshDaily(market,now),false);
+ assert.equal(freshDaily({...market,dailyCandles:{BTCUSDT:{response:{data:[[now]]}}}},now),true);
+ assert.equal(freshDaily({...market,scan:{done:1,total:8,complete:false},dailyCandles:{BTCUSDT:{response:{data:[[now]]}}}},now),false);
 });
 test('treemap tile areas match weights exactly and do not overlap',()=>{
  const tiles=partition([{v:50},{v:30},{v:20}],[0,0,400,250],r=>r.v);

@@ -8,6 +8,7 @@ import { refreshMarket, refreshDailyCandles } from './market-live.js';
 import { createMarketRefreshCache } from './market-cache.js';
 import { withSectorCatalog, verifiedSectorUniverse } from './sector-taxonomy.js';
 import { replayVisualRows, createFlowReplayPlayer } from './replay-motion.js';
+import { freshDaily } from './daily-cache.js';
 const escape=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const paths={close:'<path d="m6 6 12 12M18 6 6 18"/>',back:'<path d="m10 5-7 7 7 7M3 12h18"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',reset:'<path d="M3 4v6h6M4 10a8 8 0 1 1 1 8"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v1"/>',search:'<circle cx="10" cy="10" r="6"/><path d="m15 15 5 5"/>',arrow:'<path d="M5 12h14m-6-6 6 6-6 6"/>',play:'<path d="m8 4 12 8-12 8Z"/>',pause:'<path d="M8 4v16M16 4v16"/>',settings:'<path d="M4 7h16M4 17h16M8 4v6M16 14v6"/>',refresh:'<path d="M4 4v6h6M4 10a8 8 0 1 1 1 8"/>',plus:'<path d="M5 12h14M12 5v14"/>',minus:'<path d="M5 12h14"/>'};
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
@@ -40,7 +41,7 @@ const flowRefresh=createMarketRefreshCache((seed,options)=>refreshFlow(seed.peri
 });
 const dailyRefresh=createMarketRefreshCache(refreshDailyCandles,{
  keyFor:snapshot=>'ox-crypto-daily-rotation:'+snapshot.sectors.flatMap(s=>s.members).sort().join(','),maxPools:1,
- isFresh:(value,now)=>{const captured=Date.parse(value?.captureCompletedAt);return value?.scan?.complete===true&&Number.isFinite(captured)&&now>=captured-10000&&now<Math.floor(captured/86400000)*86400000+86400000+120000;},
+ isFresh:freshDaily,
  validate(value){if(!value.scan?.complete||value.scan.done!==value.scan.total||!value.dailyCandles.BTCUSDT?.response?.data?.length)throw Error('日線板塊掃描不完整');}
 });
 export async function preloadFlowMarket(signal){const next=await flowRefresh.refresh({period:'1h'},{signal,owner:'analytics-preload',priority:-20});latestFlows.set('1h',next);}
