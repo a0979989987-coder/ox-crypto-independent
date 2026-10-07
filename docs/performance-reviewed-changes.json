@@ -16,7 +16,7 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "ec150b80aecd27de2981edd854e1aacf4ffb5a957e4d118484af995e18d525ab",
+      "sha256": "5b9899dfbea624a892a38ca2070948cac4f5b41b1312790a725d29c44aa25a74",
       "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
     },
     {
@@ -136,8 +136,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "f66a495b8f56728e2f8e37fae8952f66016bb25f1ee9d26cdf4db460773eab00",
-      "reason": "Bitget-supported taker pressure periods and verified multi-coin replay."
+      "sha256": "bb6a2da9907c204b394909d4ca30fcd47ad8c19cf67217ee7087642003fa4081",
+      "reason": "Accept verified venue daily buckets at UTC+8 midnight while excluding open intervals; tested against retained real timestamp shape and UTC fixtures."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
@@ -154,8 +154,8 @@
     {
       "path": "src/markets/crypto/analytics/tools-model.js",
       "sourceSha256": "f9350870cde26059be2e1071081ea171ec18557ff01eadf90747fc172d59c8ad",
-      "sha256": "5ed12608d2d70294595191b0e94d9c96bd70ce6bc21fa2f2afec3dfa4fef5698",
-      "reason": "Real daily candle rotation alongside existing 15m-derived intervals."
+      "sha256": "19d5044d2b661099e5a05a5db0dc5c2f179dfd628f8f90ea7f31c244057ddb36",
+      "reason": "Skip only replay periods missing benchmark candles while retaining complete sector members on all available dates; verified by missing-benchmark and common-cohort tests."
     },
     {
       "path": "src/components/chart/workspace.js",

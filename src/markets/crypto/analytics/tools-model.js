@@ -26,7 +26,7 @@ export function buildRotation(data,period='1h',wantedFrames=8) {
  if(!Number.isFinite(sourceTime))return {frames:[],sectors:[],excluded:[],period};
  const end=Math.floor(sourceTime/step)*step;
  const oldest=Math.min(...btc.keys());const frameCount=Math.max(0,Math.min(wantedFrames,Math.floor((end-oldest)/step)-1));
- const ends=Array.from({length:frameCount},(_,i)=>end-(frameCount-1-i)*step);
+ const ends=Array.from({length:frameCount},(_,i)=>end-(frameCount-1-i)*step).filter(t=>candleWindow(index,'BTCUSDT',t,step,bar)&&candleWindow(index,'BTCUSDT',t-step,step,bar));
  const window=(symbol,t)=>candleWindow(index,symbol,t,step,bar);
  const validMember=s=>ends.every(t=>window(s,t)&&window(s,t-step));
  const sectors=(data.sectors||[]).map(s=>({...s,validMembers:s.members.filter(validMember)}));

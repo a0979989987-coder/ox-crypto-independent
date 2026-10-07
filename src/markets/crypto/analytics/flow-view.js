@@ -18,7 +18,7 @@ const paths={close:'<path d="m6 6 12 12M18 6 6 18"/>',back:'<path d="m10 5-7 7 7
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
 const snapshotURL=new URL('../../../../previews/data/crypto-flow-snapshot.json',import.meta.url);
 const marketURL=new URL('../../../../previews/data/crypto-tools-snapshot.json',import.meta.url);
-const cssURL=new URL('./flow.css?v=20261007-ux-replay3',import.meta.url);
+const cssURL=new URL('./flow.css?v=20261007-ux-replay4',import.meta.url);
 const replayDateFormatter=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
 const replayDateLabel=ts=>replayDateFormatter.format(new Date(ts));
 const numPrice=v=>Number.isFinite(v)?v.toLocaleString('en-US',{maximumFractionDigits:v<1?6:2}):'—';

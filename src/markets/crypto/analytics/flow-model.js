@@ -38,8 +38,9 @@ export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}
     const sourceTime = finite(response?.requestTime);
     if (!sourceTime || !Array.isArray(response?.data)) continue;
     // Conservatively exclude the latest possibly open source period. No local clock assumption.
-    const cutoff = Math.floor(sourceTime / interval) * interval - interval;
-    const records = new Map(response.data.filter(r => Number(r.ts) <= cutoff && Number(r.ts) % interval === 0 && pressure(r) !== null).map(r => [Number(r.ts), r]));
+    const closed = ts => ts + interval <= sourceTime;
+    const aligned = ts => ts % interval === 0 || (period === '1d' && ts % interval === 16 * 3600000);
+    const records = new Map(response.data.filter(r => closed(Number(r.ts)) && aligned(Number(r.ts)) && pressure(r) !== null).map(r => [Number(r.ts), r]));
     const valid = new Map();
     for (const [ts, row] of records) if (records.has(ts - interval)) {
       valid.set(ts, [row, records.get(ts - interval)]);
