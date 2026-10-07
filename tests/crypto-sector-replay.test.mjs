@@ -66,3 +66,15 @@ test('one playback clock pauses and resumes fractionally, seeks, and cancels on 
  player.seek(1.5);assert.equal(player.position,1.5);assert.equal(player.playing,false);
  player.play();advance(20);player.destroy();assert.equal(pending.size,0);assert.ok(rendered.some(x=>x>1&&x<2));
 });
+
+test('explicit multiplier contracts are verified without suffix-matching unrelated projects',()=>{
+ const bases=['BTC','1000BONK','1MBABYDOGE','1MCHEEMS','1000000MOG','1000XEC','1000SATS','1000RATS','CHIP','1000CAT'];
+ const instruments=bases.map(base=>({symbol:base+'USDT',baseCoin:base,quoteCoin:'USDT',symbolType:'crypto',type:'perpetual',status:'online'}));
+ const tickers=bases.map(base=>({symbol:base+'USDT',usdtVolume:100}));
+ const pool=verifiedSectorUniverse(instruments,tickers);
+ for(const base of bases.slice(1,8))assert.ok(pool.symbols.includes(base+'USDT'));
+ assert.ok(!pool.sectors.find(s=>s.id==='meme').members.includes('1000CATUSDT'));
+ assert.ok(!pool.symbols.includes('IPUSDT'));
+ instruments.find(i=>i.symbol==='1000BONKUSDT').baseCoin='OTHER';
+ assert.ok(!verifiedSectorUniverse(instruments,tickers).symbols.includes('1000BONKUSDT'));
+});

@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "4d4d528fafa4e09aec133c8b86cb84d9370cd20798dc8d02bb3916634f71dda4",
-      "reason": "Remove the requested chart metadata block and reduce default bubble sizes while retaining monotonic strength sizing, selection hit areas and replay behavior; verified across mobile and desktop."
+      "sha256": "ee2c2d52aa736069eb05b2cce790ac34c1411df622e14b150286290fe1c34f60",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "93f35229503e11d1828b60f5f6f55b3556bd7bc6952197e184f3a3675441cf3b",
-      "reason": "Remove the requested chart metadata block and reduce default bubble sizes while retaining monotonic strength sizing, selection hit areas and replay behavior; verified across mobile and desktop."
+      "sha256": "0282f4280a369409b48b72b6fb9c70ccb62fe84476f8a1eaf6020cab6c222c05",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -28,8 +28,8 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "f93376a6f4b698de33776acd19ac82612d3a949f913039fcd572575b8aeb7e5a",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "195d83e699d97bfe87d8de6f533e14312828a91127549879d15e5485c0784e5c",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
@@ -40,8 +40,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
       "sourceSha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad",
-      "sha256": "1f66e7a5a2a73ccf48d71a1568fe79b9d360ca86dd36dff5383785579cc074cb",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "5cb8c5bb7a9636adfb02471de67e451eacb029d4c559b905e794066999f2289f",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/patterns/worker.js",
@@ -136,14 +136,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "bb6a2da9907c204b394909d4ca30fcd47ad8c19cf67217ee7087642003fa4081",
-      "reason": "Accept verified venue daily buckets at UTC+8 midnight while excluding open intervals; tested against retained real timestamp shape and UTC fixtures."
+      "sha256": "2d0408b338cb14a47d012d190e92085dd9a7b8f8bff83099b8a324c14695c660",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "527a564b6dc3c6b1ced419033dbda93d55ba748165483b04f261f49d67d25b5b",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "7ce9d86100f0923ae99cc035519e4ff1ae80cee26c4928d99e427489c4acadf8",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",
@@ -154,8 +154,8 @@
     {
       "path": "src/markets/crypto/analytics/tools-model.js",
       "sourceSha256": "f9350870cde26059be2e1071081ea171ec18557ff01eadf90747fc172d59c8ad",
-      "sha256": "19d5044d2b661099e5a05a5db0dc5c2f179dfd628f8f90ea7f31c244057ddb36",
-      "reason": "Skip only replay periods missing benchmark candles while retaining complete sector members on all available dates; verified by missing-benchmark and common-cohort tests."
+      "sha256": "61650e2650d1df23623eb89aca46f5209966202cd8abf94731a3913b8fc0234d",
+      "reason": "Reviewed compact proportional in-circle labels, denser grid, centered playback, stronger size range, progressive native-period loading and verified contract display; checked with data and browser regressions."
     },
     {
       "path": "src/components/chart/workspace.js",

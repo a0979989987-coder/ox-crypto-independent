@@ -16,9 +16,10 @@ async function setup(width,theme='dark'){
  const requests=[];page.on('request',r=>requests.push(r.url()));
  await page.addInitScript(theme=>localStorage.setItem('ox-ui-theme',theme),theme);
  await page.addInitScript(()=>{
-  const arc=CanvasRenderingContext2D.prototype.arc,clear=CanvasRenderingContext2D.prototype.clearRect;
-  CanvasRenderingContext2D.prototype.clearRect=function(...args){if(this.canvas.closest('.cfx-plot'))this.canvas.__bubblePoints=[];return clear.apply(this,args);};
-  CanvasRenderingContext2D.prototype.arc=function(x,y,r,...rest){if(r>10&&this.canvas.closest('.cfx-plot'))(this.canvas.__bubblePoints||=[]).push({x,y,r});return arc.call(this,x,y,r,...rest);};
+  const arc=CanvasRenderingContext2D.prototype.arc,clear=CanvasRenderingContext2D.prototype.clearRect,fill=CanvasRenderingContext2D.prototype.fillText;
+  CanvasRenderingContext2D.prototype.clearRect=function(...args){if(this.canvas.closest('.cfx-plot')){this.canvas.__bubblePoints=[];this.canvas.__bubbleLabels=[];}return clear.apply(this,args);};
+  CanvasRenderingContext2D.prototype.arc=function(x,y,r,...rest){if(r>=9&&this.canvas.closest('.cfx-plot'))(this.canvas.__bubblePoints||=[]).push({x,y,r});return arc.call(this,x,y,r,...rest);};
+  CanvasRenderingContext2D.prototype.fillText=function(text,x,y,...rest){if(this.textBaseline==='middle'&&this.canvas.closest('.cfx-plot'))(this.canvas.__bubbleLabels||=[]).push({text,x,y,width:this.measureText(text).width,font:this.font});return fill.call(this,text,x,y,...rest);};
  });
  await page.route('**/api/v1/account/**',r=>r.fulfill({json:new URL(r.request().url()).pathname.endsWith('feature-access')?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:{ok:true,user:null,configured:false}}));
  await page.route('https://api.bitget.com/**',async r=>{await new Promise(done=>setTimeout(done,80));return r.fulfill({json:fixtureBody(r.request().url())});});
@@ -30,7 +31,10 @@ async function verifySectorDialog(page,width,theme){
  await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
  await active(page,'[data-action="view-bubbles"]').click();
  const bubbleCanvas=active(page,'.cfx-plot canvas');await bubbleCanvas.scrollIntoViewIfNeeded();
- const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],width:c.clientWidth,height:c.clientHeight}));assert.ok(drawn.points.every(p=>p.r<=(width<600?26:40)),'strength-sized bubbles stay compact');
+ const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],labels:c.__bubbleLabels||[],width:c.clientWidth,height:c.clientHeight}));assert.ok(drawn.points.every(p=>p.r<=(width<600?34:50)),'strength-sized bubbles stay compact');
+ assert.ok(drawn.labels.length,'bubble labels render');
+ for(const label of drawn.labels){const size=Number(/([\d.]+)px/.exec(label.font)?.[1]);assert.doesNotMatch(label.font,/bold|600|700/);assert.ok(drawn.points.some(p=>Math.abs(p.x-label.x)<.1&&Math.hypot(label.width/2,Math.abs(label.y-p.y)+size/2)<=p.r+.1),'text stays inside a bubble');}
+ await active(page,'.cfx-research-panel').screenshot({path:`docs/performance/bubble-${width}-${theme}.png`});
  const point=drawn.points.find(p=>p.x>35&&p.x<drawn.width-15&&p.y>60&&p.y<drawn.height-60);assert.ok(point,'actual sector bubbles are drawn');
  await bubbleCanvas.click({position:{x:point.x,y:point.y}});await active(page,'.cfx-sector-dialog').waitFor();await active(page,'[data-action="close-sector"]').click();
  await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
@@ -73,7 +77,7 @@ try{
   assert.equal(await active(page,'.cfx-picker-group').count(),31,'all first-level groups remain selectable');
   await active(page,'[data-topic-group="meme"] summary').click();
   await active(page,'[data-topic-group="meme"] .cfx-topic').first().waitFor();
-  assert.equal(await active(page,'[data-topic-group="meme"] .cfx-topic').count(),19,'second-level topics expand on demand');
+  assert.ok(await active(page,'[data-topic-group="meme"] .cfx-topic').count()>0,'available topic members expand on demand');assert.doesNotMatch(await active(page,'.cfx-picker-dialog').textContent(),/幣已驗證|候選不等於/);
   assert.match(await active(page,'[data-topic-group="meme"] .cfx-topic').first().textContent(),/DOGE/);
   await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();
   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rotation-table').waitFor();await active(page,'[data-action="view-bubbles"]').click();
@@ -87,6 +91,7 @@ try{
   await active(page,'[data-action="replay-toggle"]').click();
   assert.deepEqual(await active(page,'[data-control="replay-range"]').evaluate(el=>[...el.options].filter(o=>o.value!=='current').map(o=>o.text)),['最近七天','最近一個月','最近一季','最近一年']);
   assert.ok(await active(page,'.cfx-replay').evaluate(e=>Math.abs(e.getBoundingClientRect().top-e.parentElement.querySelector('.cfx-plot').getBoundingClientRect().bottom)<2),'replay controls follow the plot without empty space');
+  const playAlignment=await active(page,'[data-action="play"]').evaluate(b=>{const r=b.getBoundingClientRect(),s=b.querySelector('svg').getBoundingClientRect();return {x:Math.abs(s.x+s.width/2-r.x-r.width/2),y:Math.abs(s.y+s.height/2-r.y-r.height/2)};});assert.ok(playAlignment.x<.6&&playAlignment.y<.6,'replay icon is centered inside its button');
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
   if(width===390&&theme==='dark'){
@@ -100,6 +105,17 @@ try{
   assert.equal(await canvas.getAttribute('data-identity'),'original','controls and replay never replace the canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),zoom);
   await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
   if(width===390&&theme==='dark'){await active(page,'[data-control="period"]').selectOption('1d');try{await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.max)>0&&h?.shadowRoot.querySelector('[data-action="play"]')?.disabled===false;},{},{timeout:35000});}catch(error){const detail=await active(page,'.cfx-research-panel').evaluate(el=>({coverage:el.querySelector('[data-slot="replay-coverage"]')?.textContent,notice:el.closest('.cfx').querySelector('.cfx-notice')?.textContent,period:el.querySelector('[data-control="period"]')?.value,playDisabled:el.querySelector('[data-action="play"]')?.disabled}));throw new Error(`日線回歸：${JSON.stringify(detail)}；請求 ${requests.filter(u=>u.includes('1Dutc')).length}；瀏覽器錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}await active(page,'[data-control="period"]').selectOption('1h');}
+  if(width===390&&theme==='dark'){
+   // The picker test selects Meme, which has only DOGE in this fixture and
+   // correctly cannot form a sector. Restore all sectors for loading checks.
+   await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
+   for(const period of ['30m','2h','4h','6h','12h']){
+    await active(page,'[data-control="period"]').selectOption(period);
+    try{await page.waitForFunction(p=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period===p&&Number(c.dataset.points)>0;},period,{timeout:15000});}catch(error){throw new Error(`級別 ${period}：${await active(page,'.cfx').evaluate(el=>JSON.stringify({text:el.innerText,canvas:{...el.querySelector('canvas')?.dataset}}))}；請求 ${JSON.stringify(requests.filter(u=>u.includes('/candles')).slice(-35))}；錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}
+   }
+   for(const period of ['12h','6h','2h','1h'])await active(page,'[data-control="period"]').selectOption(period);
+   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period==='1h'&&Number(c.dataset.points)>0;});
+  }
   assert.equal(await canvas.getAttribute('data-identity'),'original','period switch updates canvas');
   await tool(page,'heatmap');await active(page,'.cfx-heatmap canvas').waitFor();await tool(page,'rotation');assert.equal(await canvas.getAttribute('data-identity'),'original','return to retained tool preserves canvas');
   const dialogResults=await verifySectorDialog(page,width,theme);
@@ -121,6 +137,10 @@ try{
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original','partial/final batches update the same canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),'150%');
    await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-table tbody tr').first().waitFor();await active(page,'[data-watch]').first().click();await active(page,'[data-action="scope-watch"]').click();assert.equal(await active(page,'.cfx-table tbody tr').count(),1);
    await active(page,'[data-action="scope-all"]').click();
+   for(const period of ['5m','30m','2h','6h','12h','1d']){
+    await active(page,'[data-control="period"]').selectOption(period);
+    await page.waitForFunction(p=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),c=h?.shadowRoot.querySelector('canvas');return c?.dataset.period===p&&Number(c.dataset.points)>0;},period,{timeout:20000});
+   }
    for(const period of ['4h','15m','1h'])await active(page,'[data-control="period"]').selectOption(period);
    assert.equal(await active(page,'[data-control="period"]').inputValue(),'1h');
    await active(page,'[data-action="view-bubbles"]').click();

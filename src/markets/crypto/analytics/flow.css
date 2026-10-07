@@ -125,3 +125,8 @@
 @media(max-width:560px){.cfx-sector-dialog.cfx-dialog{margin:auto;width:calc(100vw - 24px);padding:14px;border-radius:18px;max-height:82dvh}.cfx-sector-dialog .cfx-dialog-head{top:-14px}.cfx-asset-chart canvas{height:220px}.cfx-sector-dialog .cfx-table.compact td{padding:12px 4px}.cfx-asset-chart{padding:7px}}
 
 .cfx-replay [data-control="replay-range"]{max-width:125px;font-size:11px;min-height:32px}.cfx-replay [data-slot="replay-coverage"]{font-size:10px;color:var(--muted);flex:1;min-width:140px}
+
+/* Keep transport buttons identical; SVG receives no asymmetric button padding. */
+.cfx-replay-controls button{display:inline-flex;align-items:center;justify-content:center;line-height:1}
+.cfx-replay-controls button[data-action="play"]{flex:0 0 32px;width:32px;min-width:32px;height:32px;padding:0}
+.cfx-replay-controls button[data-action="play"] svg{display:block;width:17px;height:17px;margin:0}

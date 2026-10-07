@@ -1,9 +1,15 @@
 import { signed } from './flow-model.js';
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 export function strengthBubbleRadius(row,{rotation=false,domain=1,mobile=false}={}){
-  const peak=mobile?26:40,minimum=mobile?10:12;
+  const peak=mobile?34:50,minimum=mobile?10:12;
   const strength=rotation?(row.x/Math.max(domain,.001)+1)/2:Math.abs(row.x)/100;
-  return minimum+(peak-minimum)*Math.sqrt(clamp(strength,0,1));
+  return minimum+(peak-minimum)*Math.pow(clamp(strength,0,1),rotation?2:1.35);
+}
+export function bubbleLabelLayout(measure,name,value,r,mobile=false){
+  const fit=(text,size)=>size*Math.min(1,r*1.65/Math.max(1,measure(text,size)));
+  const nameSize=fit(name,Math.min(mobile?10:13,r*.42));
+  const valueSize=fit(value,Math.min(mobile?8:10.5,r*.34));
+  return {nameSize,valueSize,nameY:-r*.2,valueY:r*.28};
 }
 export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:parentSignal }) {
   const life=new AbortController(),signal=life.signal,onAbort=()=>life.abort();parentSignal?.addEventListener('abort',onAbort,{once:true});if(parentSignal?.aborted)life.abort();
@@ -24,7 +30,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     const xd = settings.domain?.x || nice(Math.max(...ext.map(r => Math.abs(r.x)), 0));
     const yd = settings.domain?.y || nice(Math.max(...ext.map(r => Math.abs(r.y)), 0));
     // Insets keep the largest circle inside the plot at reset, without moving observations.
-    const radiusMax = width < 600 ? 26 : 40;
+    const radiusMax = width < 600 ? 34 : 50;
     const xSpan = Math.max(20, pw / 2 - radiusMax - 12), ySpan = Math.max(20, ph / 2 - radiusMax - 12);
     const cx = m.l + pw / 2 + pan.x, cy = m.t + ph / 2 + pan.y;
     const xAt = v => cx + v / xd * xSpan * zoom, yAt = v => cy - v / yd * ySpan * zoom;
@@ -33,9 +39,15 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     quadrants.forEach(q => { if (q.w > 0 && q.h > 0) { ctx.fillStyle = q.c; ctx.fillRect(q.x, q.y, q.w, q.h); } });
     ctx.strokeStyle = light?'#d7dee7':'#242b2f'; ctx.lineWidth = 1;
     const nt = width < 600 ? 2 : 4;
-    for (let i = -nt; i <= nt; i++) {
-      const x = xAt(xd * i / nt), y = yAt(yd * i / nt);
+    const spacing=width<600?34:58;
+    const gridX=nt*Math.max(1,Math.ceil(xSpan*zoom/(nt*spacing))),gridY=nt*Math.max(1,Math.ceil(ySpan*zoom/(nt*spacing)));
+    const xStep=xSpan*zoom/gridX,yStep=ySpan*zoom/gridY;
+    for(let i=Math.ceil((m.l-cx)/xStep);i<=(m.l+pw-cx)/xStep;i++){
+      const x=cx+i*xStep;
       ctx.beginPath(); ctx.moveTo(x, m.t); ctx.lineTo(x, m.t + ph); ctx.stroke();
+    }
+    for(let i=Math.ceil((m.t-cy)/yStep);i<=(m.t+ph-cy)/yStep;i++){
+      const y=cy+i*yStep;
       ctx.beginPath(); ctx.moveTo(m.l, y); ctx.lineTo(m.l + pw, y); ctx.stroke();
     }
     ctx.strokeStyle = '#59615f';
@@ -52,7 +64,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       gradient.addColorStop(0, p.row.state.color + 'aa'); gradient.addColorStop(.75, p.row.state.color + '70'); gradient.addColorStop(1, p.row.state.color + '45');
       ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
       ctx.strokeStyle = chosen ? (light?'#8d712e':'#f0eee8') : p.row.state.color + 'cc'; ctx.lineWidth = chosen ? 1.8 : 1.25; ctx.stroke();
-      ctx.fillStyle = p.row.state.color; ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
+      
     }
     ctx.globalAlpha = 1;
     // Draw the moving path over the bubbles so the cumulative line stays visible.
@@ -60,39 +72,21 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       ctx.strokeStyle=(trail.color || '#bbc5c4')+(selected?'ef':'ae');ctx.lineWidth=selected?2.5:1.7;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();
       pts.slice(0,-1).forEach(p=>{ctx.fillStyle=light?'#334149c9':'#15252bdb';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2.3,0,Math.PI*2);ctx.fill();});
     }
-    // Plain labels with a soft shadow keep the text readable without dark outlines or boxes.
-    const ink=(value,x,y,tone=light?'#28343c':'#f0f2ea')=>{ctx.save();ctx.shadowColor=light?'transparent':'#08101766';ctx.shadowBlur=2;ctx.shadowOffsetY=1;ctx.fillStyle=tone;ctx.fillText(value,x,y);ctx.restore();};
-    // Labels may be suppressed on overlap; the measured coordinates never move.
-    const boxes = [];
-    for (const p of [...points].sort((a, b) => Number(b.row.symbol === selected) - Number(a.row.symbol === selected) || b.r - a.r)) {
-      if (filter && p.row.state.id !== filter) continue;
-      const chosen = p.row.symbol === selected;
-      if (!settings.rotation && !chosen && p.r < (width < 600 ? 11 : 12)) continue;
-      if(settings.rotation && p.r < 26) {
-        const labelWidth=width<600?77:88,labelHeight=36;
-        const vert=p.r+labelHeight/2+10,side=p.r+labelWidth/2+8;const candidates=[[0,-vert],[0,vert],[side,0],[-side,0],[side*.8,-vert*.8],[-side*.8,-vert*.8],[side*.8,vert*.8],[-side*.8,vert*.8],[0,-vert*1.7],[0,vert*1.7]];
-        const pointInView=p.x>=m.l&&p.x<=m.l+pw&&p.y>=m.t&&p.y<=m.t+ph;
-        if(!pointInView)continue;
-        let box=null;
-        for(const [dx,dy] of candidates){const lx=clamp(p.x+dx,m.l+labelWidth/2+2,m.l+pw-labelWidth/2-2),ly=clamp(p.y+dy,m.t+42,m.t+ph-42);const candidate={l:lx-labelWidth/2,r:lx+labelWidth/2,t:ly-labelHeight/2,b:ly+labelHeight/2,x:lx,y:ly};if(Math.hypot(lx-p.x,ly-p.y)<p.r+labelHeight/2+3)continue;if(!boxes.some(o=>candidate.l<o.r+5&&candidate.r>o.l-5&&candidate.t<o.b+5&&candidate.b>o.t-5)){box=candidate;break;}}
-        if(!box)continue;
-        boxes.push(box);labelHits.push({...box,symbol:p.row.symbol});
-        const displaced=Math.hypot(box.x-p.x,box.y-p.y)>14;
-        if(displaced){ctx.strokeStyle=p.row.state.color+'a0';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(box.x,box.y);ctx.stroke();}
-        ctx.font='600 12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ink(p.row.base,box.x,box.y-2);
-        ctx.font='10px Inter,sans-serif';ink(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12,light?'#475b61':'#c4d9d5');
-        continue;
-      }
-      let fontSize = settings.rotation ? (width < 600 ? 11 : 14) : (chosen || p.r > 26 ? 15 : 12);
-      ctx.font = `600 ${fontSize}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`;
-      while(settings.rotation && fontSize>8 && ctx.measureText(p.row.base).width>p.r*1.8){fontSize--;ctx.font=`600 ${fontSize}px Inter, -apple-system, sans-serif`;}
-      const w = Math.max(ctx.measureText(p.row.base).width + 12, 52), h = p.r > 26 || chosen ? 36 : 18;
-      const b = { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h / 2, b: p.y + h / 2 };
-      if (b.l < m.l || b.r > m.l + pw || b.t < m.t || b.b > m.t + ph) continue;
-      if (!chosen && boxes.some(o => b.l < o.r + 5 && b.r > o.l - 5 && b.t < o.b + 5 && b.b > o.t - 5)) continue;
-      boxes.push(b);ctx.textAlign = 'center';
-      ink(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
-      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ink(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
+    // Labels stay centered inside their own circle and scale with its radius.
+    const boxes=[];
+    const measure=(text,size)=>{ctx.font=`400 ${size}px Inter,-apple-system,sans-serif`;return ctx.measureText(text).width;};
+    for(const p of [...points].sort((a,b)=>Number(b.row.symbol===selected)-Number(a.row.symbol===selected)||b.r-a.r)){
+      if(filter&&p.row.state.id!==filter)continue;
+      const name=p.row.base,value=signed(p.row.labelX??p.row.x,settings.rotation?2:1)+(settings.rotation?'pp':'%');
+      const layout=bubbleLabelLayout(measure,name,value,p.r,width<600);
+      const w=Math.max(measure(name,layout.nameSize),measure(value,layout.valueSize));
+      const box={l:p.x-w/2,r:p.x+w/2,t:p.y+layout.nameY-layout.nameSize/2,b:p.y+layout.valueY+layout.valueSize/2};
+      if(p.row.symbol!==selected&&boxes.some(o=>box.l<o.r+1&&box.r>o.l-1&&box.t<o.b+1&&box.b>o.t-1))continue;
+      boxes.push(box);ctx.save();ctx.beginPath();ctx.arc(p.x,p.y,p.r-1,0,Math.PI*2);ctx.clip();
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle=light?'#334149':'#f0f2ea';
+      ctx.font=`400 ${layout.nameSize}px Inter,-apple-system,sans-serif`;ctx.fillText(name,p.x,p.y+layout.nameY);
+      ctx.fillStyle=light?'#52646b':'#c4d9d5';ctx.font=`400 ${layout.valueSize}px Inter,-apple-system,sans-serif`;ctx.fillText(value,p.x,p.y+layout.valueY);
+      ctx.restore();
     }
     ctx.restore(); ctx.font = `${width<600?10:11}px Inter, -apple-system, sans-serif`; ctx.fillStyle = light?'#616d7c':'#909a9d';
     for (let i = -nt; i <= nt; i++) {

@@ -2,16 +2,18 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {runInNewContext} from 'node:vm';
-import {strengthBubbleRadius} from '../src/markets/crypto/analytics/flow-chart.js';
+import {strengthBubbleRadius,bubbleLabelLayout} from '../src/markets/crypto/analytics/flow-chart.js';
 import {replayWindow,replayCoverage} from '../src/markets/crypto/analytics/replay-ranges.js';
 import {retainDailyFlow,mergeFlowHistory} from '../src/markets/crypto/analytics/flow-history.js';
 import {buildFlowHistory} from '../src/markets/crypto/analytics/flow-model.js';
 import {buildRotation} from '../src/markets/crypto/analytics/tools-model.js';
+import {freshPeriodCandles} from '../src/markets/crypto/analytics/market-live.js';
+import {createMarketRefreshCache} from '../src/markets/crypto/analytics/market-cache.js';
 import {localizeNewsText} from '../src/components/news/localization.js';
 test('rotation strength sizes remain readable and taker sell strength matches buy strength',()=>{
  for(const mobile of [true,false]){
   const radii=[-10,-5,0,5,10].map(x=>strengthBubbleRadius({x},{rotation:true,domain:10,mobile}));
-  assert.ok(radii[0]>=10);assert.ok(radii.at(-1)<=(mobile?26:40));assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));
+  assert.ok(radii[0]>=10);assert.ok(radii.at(-1)<=(mobile?34:50));assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));assert.ok(radii.at(-1)/radii[2]>=2,'strength changes have a visibly wider size range');
   assert.equal(strengthBubbleRadius({x:-70},{mobile}),strengthBubbleRadius({x:70},{mobile}));
  }
 });
@@ -72,4 +74,58 @@ test('venue daily taker buckets at UTC+8 midnight replay only after closing',()=
  const history=buildFlowHistory(snapshot,'1d',365);
  assert.equal(history.frames.length,29);assert.equal(history.frames.at(-1).ts,start+29*day);
  assert.ok(history.frames.every(f=>f.ts+day<=now));
+});
+
+test('labels shrink with their circles and both lines fit inside the circular boundary',()=>{
+ const measure=(text,size)=>text.length*size*.8;
+ for(const mobile of [true,false])for(const name of ['公鏈生態','BTC／PoW','Launchpad','1000000MOG']){
+  let previous=0;
+  for(const r of [10,16,24,34,50]){
+   const layout=bubbleLabelLayout(measure,name,'−123.45pp',r,mobile);
+   assert.ok(layout.nameSize>=previous);previous=layout.nameSize;
+   for(const [text,size,y] of [[name,layout.nameSize,layout.nameY],['−123.45pp',layout.valueSize,layout.valueY]]){
+    assert.ok(Math.hypot(measure(text,size)/2,Math.abs(y)+size/2)<r);
+   }
+  }
+ }
+});
+test('native 2H, 6H and 12H candles supply a full replay without a 15m snapshot',()=>{
+ for(const hours of [2,6,12]){
+  const step=hours*3600000,end=Math.floor(Date.UTC(2026,9,7)/step)*step;
+  const entry=(factor)=>({response:{requestTime:end+1000,data:Array.from({length:12},(_,i)=>[end-(12-i)*step,100,110,90,100+factor*i,1,100])}});
+  const model=buildRotation({candles:{},periodCandles:{[hours+'h']:{BTCUSDT:entry(.1),ETHUSDT:entry(.2),SOLUSDT:entry(.3)}},sectors:[{id:'test',members:['ETHUSDT','SOLUSDT']}]},hours+'h');
+  assert.equal(model.frames.length,8);assert.ok(model.frames.every(f=>f.rows.length===1));
+ }
+});
+test('6H and 12H taker periods accept venue UTC+8 boundaries and exclude open buckets',()=>{
+ for(const hours of [6,12]){
+  const step=hours*3600000,start=Date.UTC(2026,9,6,16),now=start+10*step+1000;
+  const data=Array.from({length:11},(_,i)=>({ts:start+i*step,buyVolume:'2',sellVolume:'1'}));
+  const history=buildFlowHistory({mode:'volume',tickers:[{symbol:'BTCUSDT',baseCoin:'BTC',usdtVolume:1}],flows:{[hours+'h']:{BTCUSDT:{response:{requestTime:now,data}}}}},hours+'h');
+  assert.equal(history.frames.length,8);assert.ok(history.frames.every(f=>f.ts+step<=now));
+ }
+});
+
+test('native period download advances past a slow coin and cancellation releases the batch',async()=>{
+ const code=readFileSync(new URL('../src/markets/crypto/analytics/market-live.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace(/export /g,'');
+ const controller=new AbortController(),started=[],completed=[];let release;
+ const gate=new Promise(r=>release=r);
+ const api=runInNewContext(code+'\n({refreshPeriodCandles})',{setTimeout,clearTimeout,DOMException,Date,ASSET_PERIODS:{'6h':['6Hutc',21600]},globalThis:{OXPublicFeed:{async json(url,{signal}){
+  const symbol=new URL(url).searchParams.get('symbol');started.push(symbol);
+  if(symbol==='ETHUSDT')await gate;
+  if(signal.aborted)throw new DOMException('Aborted','AbortError');
+  return {code:'00000',requestTime:Date.now(),data:[[1],[2],[3]]};
+ }}}});
+ const work=api.refreshPeriodCandles({period:'6h',sectors:[{members:['ETHUSDT','SOLUSDT','XRPUSDT','DOGEUSDT']}]},{signal:controller.signal,onPartial:p=>completed.push(p.scan.done)});
+ const rejection=assert.rejects(work,e=>e.name==='AbortError');
+ await new Promise(r=>setTimeout(r,190));assert.ok(started.includes('XRPUSDT'));assert.ok(completed.length>=3);
+ controller.abort();release();await rejection;
+});
+
+test('a fresh 15m market snapshot never masquerades as a completed native 6H fetch',async()=>{
+ const now=Date.now(),seed={period:'6h',requestTime:now,scan:{done:1,total:1,complete:true},candles:{BTCUSDT:{response:{data:[[1]]}}}};
+ assert.equal(freshPeriodCandles(seed,now),false);
+ let calls=0;const cache=createMarketRefreshCache(async()=>{calls++;return {...seed,nativePeriod:'6h'};},{now:()=>now,keyFor:s=>s.period,isFresh:freshPeriodCandles,validate(){}});
+ const first=await cache.refresh(seed);assert.equal(first.nativePeriod,'6h');assert.equal(calls,1);
+ assert.equal(await cache.refresh(seed),first);assert.equal(calls,1);
 });
