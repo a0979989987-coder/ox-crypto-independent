@@ -23,7 +23,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) { canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
-    const m = { l: width < 600 ? 32 : 52, r: width < 600 ? 12 : 30, t: 31, b: 42 };
+    // Coordinates overlay the plot; no separate gutters squeeze the grid.
+    const m = { l: 0, r: 0, t: 0, b: 0 };
     const pw = width - m.l - m.r, ph = height - m.t - m.b;
     const ext = [...all, ...(settings.trails || []).flatMap(t => t.points)];
     const nice = v => { const step = v <= .2 ? .05 : v <= 1 ? .25 : v <= 4 ? 1 : v <= 10 ? 2 : 10; return Math.max(step, Math.ceil(v / step) * step); };
@@ -53,8 +54,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     ctx.strokeStyle = '#59615f';
     ctx.beginPath(); ctx.moveTo(cx, m.t); ctx.lineTo(cx, m.t + ph); ctx.moveTo(m.l, cy); ctx.lineTo(m.l + pw, cy); ctx.stroke();
     const label = (text, x, y, align) => { ctx.font = `${width<600?10:11}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`; ctx.fillStyle = light?'#616d7c':'#838c8e'; ctx.textAlign = align; ctx.fillText(text, x, y); };
-    label(settings.quadrants?.[0] || '賣壓放緩', m.l + 12, m.t + 22, 'left'); label(settings.quadrants?.[1] || '買壓增強', m.l + pw - 12, m.t + 22, 'right');
-    label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 12, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 12, 'right');
+    label(settings.quadrants?.[0] || '賣壓放緩', m.l + 12, m.t + 38, 'left'); label(settings.quadrants?.[1] || '買壓增強', m.l + pw - 12, m.t + 38, 'right');
+    label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 44, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 44, 'right');
     points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 18 : 24) : strengthBubbleRadius(row,{rotation:settings.rotation,domain:xd,mobile:width<600}) }));
     const sorted = [...points].sort((a, b) => b.r - a.r);
     for (const p of sorted) {
@@ -88,14 +89,20 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       ctx.fillStyle=light?'#52646b':'#c4d9d5';ctx.font=`400 ${layout.valueSize}px Inter,-apple-system,sans-serif`;ctx.fillText(value,p.x,p.y+layout.valueY);
       ctx.restore();
     }
-    ctx.restore(); ctx.font = `${width<600?10:11}px Inter, -apple-system, sans-serif`; ctx.fillStyle = light?'#616d7c':'#909a9d';
+    ctx.restore(); ctx.font = `${width<600?10:11}px Inter, -apple-system, sans-serif`;
+    const coordinate=(text,x,y,align='left')=>{
+      ctx.textAlign=align;ctx.textBaseline='alphabetic';
+      const w=ctx.measureText(text).width,left=align==='center'?x-w/2:align==='right'?x-w:x;
+      ctx.fillStyle=light?'rgba(255,255,255,.82)':'rgba(13,18,21,.82)';ctx.fillRect(left-3,y-11,w+6,15);
+      ctx.fillStyle=light?'#616d7c':'#909a9d';ctx.fillText(text,x,y);
+    };
     for (let i = -nt; i <= nt; i++) {
       const xv = xd * i / nt, yv = yd * i / nt, x = xAt(xv), y = yAt(yv);
-      if (x >= m.l && x <= width - m.r) { ctx.textAlign = 'center'; ctx.fillText(signed(xv, Number.isInteger(xv) ? 0 : Math.abs(xv)<1 ? 2 : 1), x, height - 29); }
-      if (y >= m.t && y <= m.t + ph) { ctx.textAlign = 'right'; ctx.fillText(signed(yv, Number.isInteger(yv) ? 0 : Math.abs(yv)<1 ? 2 : 1), m.l - 4, y + 3); }
+      if (x >= 28 && x <= width - 28) coordinate(signed(xv, Number.isInteger(xv) ? 0 : Math.abs(xv)<1 ? 2 : 1),x,height-27,'center');
+      if (y >= 50 && y <= height - 55) coordinate(signed(yv, Number.isInteger(yv) ? 0 : Math.abs(yv)<1 ? 2 : 1),8,y+3);
     }
-    ctx.textAlign = 'left'; ctx.fillStyle = light?'#616d7c':'#a5adad'; ctx.fillText(settings.axisY || '占比變化（百分點）', m.l, 17);
-    ctx.textAlign = 'center'; ctx.fillText(settings.axisX || '主動買賣占比（%）', m.l + pw / 2, height - 7);
+    coordinate(settings.axisY || '占比變化（百分點）',10,17);
+    coordinate(settings.axisX || '主動買賣占比（%）',width/2,height-8,'center');
   };
   const schedule = () => { if (active && !raf) raf = requestAnimationFrame(draw); };
   const resize = new ResizeObserver(entries => { const r = entries[0].contentRect; width = r.width; height = r.height; schedule(); }); resize.observe(canvas);
