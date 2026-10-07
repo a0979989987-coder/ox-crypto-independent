@@ -55,7 +55,7 @@ try{
   }
   await page.locator('.chart-drawing-tools [data-action="cursor"]').click();
   // A second tap/click can edit an old line after changing candle aggregation.
-  await page.evaluate(()=>setFrame('1W'));assert.equal((await data()).length,1);
+  await page.evaluate(()=>setFrame('1W'));assert.equal((await data()).length,1);await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));p=await point((await data())[0]);await tap(p);await page.locator('.chart-drawing-editor').waitFor({state:'visible'});
   await page.evaluate(()=>setFrame(fixturePeriod));await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));p=await point((await data())[0]);await tap(p);await page.locator('.chart-drawing-editor').waitFor({state:'visible'});
   await page.locator('.chart-drawing-editor [data-action="copy"]').click();assert.equal((await data()).length,2);
   await page.locator('.chart-drawing-editor [data-action="delete"]').click();assert.equal((await data()).length,1);

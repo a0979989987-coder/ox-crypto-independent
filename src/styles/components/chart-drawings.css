@@ -147,7 +147,7 @@ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(#chart,#tw-radar-chart)[da
  body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(.drawing-tool-menu,.drawing-object-list){top:48px;left:0;max-height:min(55dvh,360px)}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-menu button{width:100%;height:auto;min-height:42px}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .chart-drawing-editor{bottom:38px;padding:3px;gap:0}
- body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color{width:40px;height:42px;flex-basis:40px}
+ body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-color{width:40px;height:44px;flex-basis:40px}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector{top:102px;left:8px;right:8px;width:auto;max-height:min(55dvh,400px)}
  body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector :is(input:not([type="checkbox"]),select){font-size:16px;min-height:40px}
 }
@@ -155,3 +155,5 @@ body.ox-terminal :is(#view-radar,.tw-chart-radar) :is(#chart,#tw-radar-chart)[da
 
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector label{min-width:0}
 body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-tool-inspector :is(input,select){min-width:0}
+
+body.ox-terminal :is(#view-radar,.tw-chart-radar) .drawing-coordinates label:has(input[type="datetime-local"]){grid-column:1 / -1}
