@@ -18,7 +18,7 @@ const paths={close:'<path d="m6 6 12 12M18 6 6 18"/>',back:'<path d="m10 5-7 7 7
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[name]||''}</svg>`;
 const snapshotURL=new URL('../../../../previews/data/crypto-flow-snapshot.json',import.meta.url);
 const marketURL=new URL('../../../../previews/data/crypto-tools-snapshot.json',import.meta.url);
-const cssURL=new URL('./flow.css?v=20261007-chart-inset7',import.meta.url);
+const cssURL=new URL('./flow.css?v=20261007-stable-dialog8',import.meta.url);
 const replayDateFormatter=new Intl.DateTimeFormat('zh-TW',{timeZone:'Asia/Taipei',year:'numeric',month:'2-digit',day:'2-digit'});
 const replayDateLabel=ts=>replayDateFormatter.format(new Date(ts));
 const numPrice=v=>Number.isFinite(v)?v.toLocaleString('en-US',{maximumFractionDigits:v<1?6:2}):'—';
@@ -86,37 +86,38 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  let assetChart=null,assetRequest=null,assetSession=null,assetTimer=null,assetQuotes=null,assetVersion=0;
  async function refreshCurrentMarket(){if(!autoRefresh||!market||marketRequest||suspended||document.hidden)return;
   if(Date.now()-Number(market.requestTime)<5*60000)return;
-  marketRequest=new AbortController();lastMarketAttempt=Date.now();notice('正在更新 Bitget 觀察池…');
+  marketRequest=new AbortController();let updated=false;lastMarketAttempt=Date.now();notice('正在更新 Bitget 觀察池…');
   const loading=window.OXLoading?.begin('crypto','更新熱力圖與板塊',{signal:marketRequest.signal,total:market.tickers.length,done:0,views:['strength'],target:q('[data-slot="loading"]')});
   try{const next=await marketRefresh.refresh(market,{signal:marketRequest.signal,onPartial:next=>{if(life.signal.aborted||suspended||marketRequest?.signal.aborted)return;partialMarket=next;if(next.scan.done===1||next.scan.done%5===0)render();},onProgress:(n,total)=>{loading?.update(n,total);if(n===total||n%5===0)notice('更新市場資料…');}});
-   if(!life.signal.aborted&&!suspended){market=next;partialMarket=null;cachedMarket=Promise.resolve(next);render();}
+   if(!life.signal.aborted&&!suspended){market=next;partialMarket=null;cachedMarket=Promise.resolve(next);updated=true;}
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted){partialMarket=null;render();notice(`即時更新失敗：${e.message}；目前顯示有時間戳的快照。`);};}
-  finally{const cancelled=marketRequest?.signal.aborted;marketRequest=null;loading?.finish();if(cancelled&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}
+  finally{const cancelled=marketRequest?.signal.aborted;marketRequest=null;loading?.finish();if(updated&&!suspended&&!life.signal.aborted)render();if(cancelled&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}
  }
  async function refreshNativePeriod(){
   if(!market||periodRequest||suspended||document.hidden||state.period==='1d')return;
-  const period=state.period,controller=periodRequest=new AbortController(),signal=controller.signal;
+  const period=state.period,controller=periodRequest=new AbortController(),signal=controller.signal;let updated=false;
   lastPeriodAttempts.set(period,Date.now());
   try{
    const next=await periodRefresh.refresh({...market,period},{signal,owner:'analytics-period',priority:70,onPartial:part=>{
     if(signal.aborted||life.signal.aborted||suspended||state.period!==period)return;
-    nativePeriods.set(period,part);if(part.scan.done<=3||part.scan.done%5===0)render();
+    // Stage a whole cohort before publishing it. Recomputing sector averages
+    // after each coin response moves existing bubbles and rescales the axes.
+    notice('正在載入 '+period.toUpperCase()+' 資料…');if(part.scan.done===1)render();
    }});
-   if(signal.aborted||life.signal.aborted)return;nativePeriods.set(period,next);latestPeriods.set(period,next);render();
+   if(signal.aborted||life.signal.aborted)return;nativePeriods.set(period,next);latestPeriods.set(period,next);updated=true;
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted){lastPeriodAttempts.set(period,Date.now()-280000);notice('此級別正在重新連線，已取得的資料會保留。');}}
-  finally{if(periodRequest===controller)periodRequest=null;if(signal.aborted){lastPeriodAttempts.delete(period);if(!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}}
+  finally{if(periodRequest===controller)periodRequest=null;if(updated&&!suspended&&!life.signal.aborted)render();if(signal.aborted){lastPeriodAttempts.delete(period);if(!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}}
  }
  async function refreshDaily(){if(!market||dailyRequest||suspended||document.hidden)return;
-  lastDailyAttempt=Date.now();dailyRequest=new AbortController();const signal=dailyRequest.signal;
+  lastDailyAttempt=Date.now();dailyRequest=new AbortController();const signal=dailyRequest.signal;let updated=false;
   try{const next=await dailyRefresh.refresh({...market,historyDays:replayWindow(state.replayRange).days},{signal,owner:'analytics-daily',priority:70,onPartial:part=>{
    if(signal.aborted||life.signal.aborted||suspended||state.period!=='1d')return;
-   // Keep completed candles visible while the rest of the verified pool arrives.
-   dailyMarket={dailyCandles:{...dailyMarket?.dailyCandles,...part.dailyCandles},scan:part.scan};
-   if(part.scan.done<=3||part.scan.done%(replayWindow(state.replayRange).days>31?15:5)===0)render();
+   // A daily cohort is committed together, including its BTC benchmark.
+   notice('正在載入日線…');if(part.scan.done===1)render();
   }});
-   if(signal.aborted||life.signal.aborted)return;latestDaily=dailyMarket=next;render();
+   if(signal.aborted||life.signal.aborted)return;latestDaily=dailyMarket=next;updated=true;
   }catch(e){if(e.name!=='AbortError'&&!life.signal.aborted)notice('日線下載失敗；保留已取得的資料，可切換週期後再試。');}
-  finally{if(signal.aborted)lastDailyAttempt=0;dailyRequest=null;if(signal.aborted&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}
+  finally{if(signal.aborted)lastDailyAttempt=0;dailyRequest=null;if(updated&&!suspended&&!life.signal.aborted)render();if(signal.aborted&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}
  }
  const maybeRefreshMarket=()=>{if(suspended||document.hidden)return;
   if(state.tab==='rotation'&&state.period==='1d'&&Date.now()-lastDailyAttempt>20000&&(!dailyMarket?.scan?.complete||dailyMarket.historyDays<replayWindow(state.replayRange).days||Date.now()>=Math.floor(Date.parse(dailyMarket.captureCompletedAt)/86400000)*86400000+86400000+120000))void refreshDaily();
@@ -125,13 +126,8 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(['heatmap','rotation'].includes(state.tab)&&Date.now()-lastMarketAttempt>5*60000)void refreshCurrentMarket();
   if(state.tab==='flow'&&Date.now()-lastPressureAttempt>5*60000&&Date.now()-pressureTime()>5*60000)void refreshPressure();};
  const pressureKey=()=>state.period+':'+state.flowMode;
- const pressureSnapshot=()=>{const current=pressureSnapshots.get(pressureKey())||latestFlows.get(pressureKey())||(state.flowMode==='volume'?flowSnapshot:null);
-  if(!partialFlow?.flows?.[state.period])return current;
-  const fresh=buildFlow(partialFlow,state.period);
-  // A live refresh keeps its complete closed cohort visible until the new scan finishes.
-  const previous=current?buildFlow(current,state.period):null;
-  return fresh.rows.length&&(!previous?.rows.length||fresh.target>previous.target||fresh.target===previous.target&&fresh.rows.length>=previous.rows.length)?partialFlow:current;
- };
+ // Partials report loading progress; only complete batches become observations.
+ const pressureSnapshot=()=>pressureSnapshots.get(pressureKey())||latestFlows.get(pressureKey())||(state.flowMode==='volume'?flowSnapshot:null);
  const pressureTime=()=>{const entries=Object.values(pressureSnapshot()?.flows?.[state.period]||{});return entries.length?Math.min(...entries.map(e=>Number(e.response?.requestTime)||0)):0;};
  const watchKey='ox-crypto-sector-watch:'+encodeURIComponent(window.OXAuth?.user?.id||'guest');
  const watched=new Set();try{for(const s of JSON.parse(localStorage.getItem(watchKey)||'[]'))watched.add(s);}catch{}
@@ -139,6 +135,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  revealStyledShadow(shadow,life.signal);
  const q=s=>shadow.querySelector(s),qa=s=>[...shadow.querySelectorAll(s)];
  const notice=text=>{q('.cfx-notice').textContent=text;q('.cfx-notice').hidden=!text;};
+ function showDialog(selector){const dialog=q(selector),head=dialog.querySelector('.cfx-dialog-head');head.tabIndex=-1;head.setAttribute('autofocus','');dialog.showModal();head.focus({preventScroll:true});}
  function cleanup(){closeAsset();q('.cfx-sector-dialog').close();viewport=otherPlot?.getViewport?.()||plot?.getViewport?.()||viewport;plot?.destroy();otherPlot?.destroy();plot=otherPlot=null;stopReplay();}
  function replayButton(playing){if(replayButtonState===playing)return;replayButtonState=playing;const b=q('[data-action="play"]');if(b){b.innerHTML=icon(playing?'pause':'play');b.setAttribute('aria-label',(playing?'暫停':'播放')+(state.tab==='flow'?'主動買賣':'輪動')+'回放');}}
  function stopReplay(){const player=replay;replay=null;player?.destroy();replayButton(false);}
@@ -171,7 +168,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   const base=symbol.replace(/USDT$/,''),ticker=[...(market?.tickers||[]),...(pressureSnapshot()?.tickers||[])].find(t=>t.symbol===symbol);
   q('[data-slot="asset-title"]').innerHTML=`<button class="cfx-asset-name" data-open-chart="${escape(symbol)}" aria-label="${escape(base)} 直接開啟圖表">${escape(base)} ↗</button>`;
   q('[data-slot="asset"]').innerHTML=`<div class="cfx-reading"><span>價格 · USDT</span><strong data-slot="asset-price">${numPrice(Number(ticker?.lastPr))}</strong></div>${assetChartMarkup()}${information}${chartButton(symbol)}`;
-  q('.cfx-asset-dialog').dataset.symbol=symbol;q('.cfx-asset-dialog').showModal();assetQuotes=globalThis.OXCryptoQuotes?.subscribe([symbol],quotes=>{const quote=quotes.find(q=>q.symbol===symbol);if(quote&&assetSession?.symbol===symbol&&!suspended&&!document.hidden)q('[data-slot="asset-price"]').textContent=numPrice(quote.lastPr);});void updateAssetChart();
+  q('.cfx-asset-dialog').dataset.symbol=symbol;showDialog('.cfx-asset-dialog');assetQuotes=globalThis.OXCryptoQuotes?.subscribe([symbol],quotes=>{const quote=quotes.find(q=>q.symbol===symbol);if(quote&&assetSession?.symbol===symbol&&!suspended&&!document.hidden)q('[data-slot="asset-price"]').textContent=numPrice(quote.lastPr);});void updateAssetChart();
   assetTimer=setInterval(()=>{if(!suspended&&!document.hidden&&assetSession&&!assetRequest)void updateAssetChart(true);},15000);
  }
  async function updateAssetChart(background=false){
@@ -194,7 +191,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  function openSector(id){
   stopReplay();state.selected=id;paintRotation();const row=sourceFrame()?.rows.find(r=>r.id===id);if(!row)return;
   q('[data-slot="sector-title"]').textContent=row.name;const watch=q('[data-slot="sector-watch"]');watch.dataset.watch=id;watch.setAttribute('aria-label',`${watched.has(id)?'取消':'加入'} ${row.name} 自選`);watch.setAttribute('aria-pressed',String(watched.has(id)));watch.textContent=watched.has(id)?'★':'☆';
-  q('[data-slot="sector"]').innerHTML=sectorMarkup(row);q('.cfx-sector-dialog').dataset.sector=id;q('.cfx-sector-dialog').showModal();
+  q('[data-slot="sector"]').innerHTML=sectorMarkup(row);q('.cfx-sector-dialog').dataset.sector=id;showDialog('.cfx-sector-dialog');
  }
  function frames(){return state.tab==='flow'?flowHistory?.frames||[]:rotation?.frames||[];}
  function sourceFrame(){const list=frames();return list[Math.max(0,Math.min(list.length-1,Math.floor(state.frame)))];}
@@ -210,7 +207,7 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
  function mountResearch(){
   if(q('.cfx-content').dataset.mode===state.tab&&q('.cfx-research-panel'))return;
   cleanup();q('.cfx-content').dataset.mode=state.tab;
-  q('.cfx-content').innerHTML=`<section class="cfx-research-panel">${researchToolbar()}<div class="cfx-plot"><canvas role="img" aria-label="${state.tab==='flow'?'Crypto 主動買賣泡泡圖':'加密板塊相對 BTC 輪動圖'}，可雙指縮放與拖曳"></canvas></div><div class="cfx-rotation-table" hidden></div>${state.tab==='flow'?'<div class="cfx-flow-symbols" aria-label="主動買賣圖上幣種"></div>':''}<div class="cfx-replay" hidden><span data-slot="replay-coverage"></span><div class="cfx-replay-controls"><button data-action="frame-prev" aria-label="前一期">‹</button><button class="cfx-icon" data-action="play" aria-label="${state.tab==='flow'?'播放主動買賣回放':'播放輪動回放'}">${icon('play')}</button><button data-action="frame-next" aria-label="後一期">›</button><select data-control="replay-speed" aria-label="回放速度">${[.5,1,2].map(n=>`<option value="${n}" ${state.replaySpeed===n?'selected':''}>${n}×</option>`).join('')}</select><button data-action="latest">最新</button></div><input type="range" aria-label="${state.tab==='flow'?'主動買賣':'輪動'}歷史期別" data-control="frame" min="0" max="0" step="0.01" value="0"></div><div class="cfx-bottom-actions"><div class="cfx-segment"><button data-action="density-all" aria-pressed="${state.density==='all'}">全部</button><button data-action="density-top" aria-pressed="${state.density==='top'}">成交前 10</button></div><div class="cfx-bottom-tools"><button data-action="zoom-out" aria-label="縮小">${icon('minus')}</button><button data-action="reset" aria-label="重設圖表"><span data-slot="zoom">100%</span></button><button data-action="zoom-in" aria-label="放大">${icon('plus')}</button><button data-action="fullscreen" aria-label="全螢幕">${icon('expand')}</button><button data-action="settings" aria-label="圖表設定">${icon('settings')}</button><button data-action="help" aria-label="資料與計算說明">${icon('info')}</button>${state.tab==='flow'?`<button data-action="refresh-flow" aria-label="更新資料">${icon('refresh')}</button>`:''}</div></div></section><div class="cfx-states">${defs().map(def=>`<button data-state="${def.id}" aria-pressed="false"></button>`).join('')}</div><div class="cfx-research-search">${search()}<span data-slot="research-hint">點泡泡查看詳情</span></div>`;
+  q('.cfx-content').innerHTML=`<section class="cfx-research-panel">${researchToolbar()}<div class="cfx-plot"><canvas role="img" aria-label="${state.tab==='flow'?'Crypto 主動買賣泡泡圖':'加密板塊相對 BTC 輪動圖'}，可雙指縮放與拖曳"></canvas><div class="cfx-plot-loading" role="status" hidden></div></div><div class="cfx-rotation-table" hidden></div>${state.tab==='flow'?'<div class="cfx-flow-symbols" aria-label="主動買賣圖上幣種"></div>':''}<div class="cfx-replay" hidden><span data-slot="replay-coverage"></span><div class="cfx-replay-controls"><button data-action="frame-prev" aria-label="前一期">‹</button><button class="cfx-icon" data-action="play" aria-label="${state.tab==='flow'?'播放主動買賣回放':'播放輪動回放'}">${icon('play')}</button><button data-action="frame-next" aria-label="後一期">›</button><select data-control="replay-speed" aria-label="回放速度">${[.5,1,2].map(n=>`<option value="${n}" ${state.replaySpeed===n?'selected':''}>${n}×</option>`).join('')}</select><button data-action="latest">最新</button></div><input type="range" aria-label="${state.tab==='flow'?'主動買賣':'輪動'}歷史期別" data-control="frame" min="0" max="0" step="0.01" value="0"></div><div class="cfx-bottom-actions"><div class="cfx-segment"><button data-action="density-all" aria-pressed="${state.density==='all'}">全部</button><button data-action="density-top" aria-pressed="${state.density==='top'}">成交前 10</button></div><div class="cfx-bottom-tools"><button data-action="zoom-out" aria-label="縮小">${icon('minus')}</button><button data-action="reset" aria-label="重設圖表"><span data-slot="zoom">100%</span></button><button data-action="zoom-in" aria-label="放大">${icon('plus')}</button><button data-action="fullscreen" aria-label="全螢幕">${icon('expand')}</button><button data-action="settings" aria-label="圖表設定">${icon('settings')}</button><button data-action="help" aria-label="資料與計算說明">${icon('info')}</button>${state.tab==='flow'?`<button data-action="refresh-flow" aria-label="更新資料">${icon('refresh')}</button>`:''}</div></div></section><div class="cfx-states">${defs().map(def=>`<button data-state="${def.id}" aria-pressed="false"></button>`).join('')}</div><div class="cfx-research-search">${search()}<span data-slot="research-hint">點泡泡查看詳情</span></div>`;
   plot=createFlowChart(q('canvas'),{signal:life.signal,onZoom:zoom=>{const label=q('[data-slot="zoom"]');if(label)label.textContent=Math.round(zoom*100)+'%';},onSelect:id=>{state.selected=id;if(state.tab==='flow'){stopReplay();showFlowDetail(id);paintRotation();}else openSector(id);}});
   plot.setInteractive(true);if(viewport)plot.restoreViewport(viewport);
   paintedFrame=null;replayButtonState=null;
@@ -257,33 +254,47 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   }
   status(state.tab==='rotation'?`Bitget ${market.kind==='foreground-refresh'?'更新':'快照'} · OX 板塊分類 · 目前觀察池回看`:'Bitget 主動成交',frame.ts);
  }
- function researchModel(){let source=state.tab==='flow'?(pressureSnapshot()||{instruments:[],tickers:[],flows:{}}):market;
+ function researchModel(acceptUpdate=false){let source=state.tab==='flow'?(pressureSnapshot()||{instruments:[],tickers:[],flows:{}}):market;
   if(state.tab==='flow'&&state.period==='1d'){
-   if(!historyArchive&&!historyPending){historyPending=true;fetch(new URL('../../../../previews/data/crypto-flow-history.json',import.meta.url),{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('History unavailable');return r.json();}).then(data=>{historyArchive=data;historySource=null;modelSource=null;if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).catch(()=>{historyArchive={symbols:{}};}).finally(()=>historyPending=false);}
+   if(!historyArchive&&!historyPending){historyPending=true;fetch(new URL('../../../../previews/data/crypto-flow-history.json',import.meta.url),{signal:AbortSignal.timeout(12000)}).then(r=>{if(!r.ok)throw Error('History unavailable');return r.json();}).then(data=>{historyArchive=data;historySource=null;modelSource=null;if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).catch(()=>{historyArchive={symbols:{}};if(!life.signal.aborted&&!suspended&&state.tab==='flow')render();}).finally(()=>historyPending=false);}
    if(historyArchive){if(historySource!==source){historyCombined=mergeFlowHistory(source,historyArchive);historySource=source;}source=historyCombined;}
+   else source={...source,flows:{...source.flows,'1d':{}}};
   }
   if(state.tab==='rotation'&&state.period==='1d'&&dailyMarket){
-   if(dailyCombinedMarket!==market||dailyCombinedData!==dailyMarket){dailyCombined={...market,dailyCandles:dailyMarket.dailyCandles};dailyCombinedMarket=market;dailyCombinedData=dailyMarket;}
+   const historyDays=replayWindow(state.replayRange).days;
+   if(dailyCombinedMarket!==market||dailyCombinedData!==dailyMarket||dailyCombined?.historyDays!==historyDays){dailyCombined={...market,historyDays,dailyCandles:dailyMarket.historyDays>=historyDays?dailyMarket.dailyCandles:{}};dailyCombinedMarket=market;dailyCombinedData=dailyMarket;}
    source=dailyCombined;
   }
   const native=state.tab==='rotation'&&state.period!=='1d'?nativePeriods.get(state.period):null;
-  if(native?.candles.BTCUSDT?.response?.data?.length){
-   if(nativeCombinedMarket!==market||nativeCombinedData!==native){nativeCombined={...market,periodCandles:{[state.period]:native.candles},scan:native.scan};nativeCombinedMarket=market;nativeCombinedData=native;}
+  const needsNative=state.tab==='rotation'&&!['15m','1h','1d'].includes(state.period);
+  if(native||needsNative){
+   if(nativeCombinedMarket!==market||nativeCombinedData!==native||nativeCombined?.nativePeriod!==state.period){nativeCombined={...market,nativePeriod:state.period,periodCandles:{[state.period]:native?.candles||{}},scan:native?.scan};nativeCombinedMarket=market;nativeCombinedData=native;}
    source=nativeCombined;
   }
   if(modelSource===source&&modelPeriod===state.period+':'+state.replayRange)return;
-  if(replay?.playing&&modelPeriod===state.period+':'+state.replayRange&&frames().some(f=>f.rows.length))return;
+  // Keep a replay's cohort, domain and fractional cursor stable even while
+  // paused. The latest button or ending replay explicitly accepts new data.
+  if(state.replayOpen&&!acceptUpdate&&modelPeriod===state.period+':'+state.replayRange&&frames().some(f=>f.rows.length))return;
   const oldTime=sourceFrame()?.ts,atLatest=!state.replayOpen&&(!frames().length||state.frame>=frames().length-1);
   const wanted=state.period==='1d'&&state.replayRange!=='current'?replayWindow(state.replayRange).days:8;
   const next=state.tab==='flow'?buildFlowHistory(source,state.period,wanted):buildRotation(source,state.period,wanted);
-  if(source?.scan?.complete===false && modelPeriod===state.period+':'+state.replayRange && frames().some(f=>f.rows.length) && !next.frames.some(f=>f.rows.length))return;
+  if(modelPeriod===state.period+':'+state.replayRange&&frames().some(f=>f.rows.length)&&!next.frames.some(f=>f.rows.length))return;
   if(state.tab==='flow')flowHistory=next;else rotation=next;
   const list=frames();
   state.frame=atLatest?Math.max(0,list.length-1):Math.max(0,Math.min(list.length-1,list.findIndex(f=>f.ts===oldTime)>=0?list.findIndex(f=>f.ts===oldTime):Math.floor(state.frame)));
   const all=list.flatMap(f=>f.rows);domain={x:state.tab==='flow'?100:Math.max(.1,...all.map(r=>Math.abs(r.x)))*1.12,y:Math.max(.1,...all.map(r=>Math.abs(r.y)))*1.12};
   modelSource=source;modelPeriod=state.period+':'+state.replayRange;paintedFrame=null;
  }
- function renderRotation(){researchModel();mountResearch();q('.cfx-replay').hidden=!state.replayOpen;q('[data-control="period"]').value=timeSelection();q('[data-control="period"]').dataset.range=state.replayRange==='current'?'current':'history';if(!frames().some(f=>f.rows.length)){q('canvas').dataset.period=state.period;q('canvas').dataset.points='0';q('[data-slot="replay-coverage"]').textContent='正在確認可回放日期；缺資料的期別不補零';status(state.tab==='rotation'&&state.period==='1d'?(dailyMarket?.scan?.complete?'日 K 共同期別不足':'正在載入日線…'):'缺少相鄰期別的完整資料');q('[data-action="play"]').disabled=true;plot.update([]);return;}paintRotation();}
+ function renderRotation(){
+  researchModel();mountResearch();q('.cfx-replay').hidden=!state.replayOpen;q('[data-control="period"]').value=timeSelection();q('[data-control="period"]').dataset.range=state.replayRange==='current'?'current':'history';
+  const emptyPlot=q('.cfx-plot-loading');
+  if(!frames().some(f=>f.rows.length)){
+   const complete=state.tab==='flow'?(state.period==='1d'&&!historyArchive?false:pressureSnapshot()?.scan?.complete):state.period==='1d'?dailyMarket?.historyDays>=replayWindow(state.replayRange).days&&dailyMarket?.scan?.complete:nativePeriods.get(state.period)?.scan?.complete;
+   const message=complete?'此級別目前沒有完整期別資料':'正在載入 '+state.period.toUpperCase()+' 資料…';
+   emptyPlot.hidden=false;emptyPlot.textContent=message;q('canvas').dataset.period=state.period;q('canvas').dataset.points='0';q('[data-slot="replay-coverage"]').textContent='正在確認可回放日期；缺資料的期別不補零';status(message);q('[data-action="play"]').disabled=true;plot.update([]);return;
+  }
+  emptyPlot.hidden=true;paintRotation();
+ }
  function renderFlow(){renderRotation();}
  function renderHeatmap(){const rows=heatmapRows(market,state.heatPeriod).filter(r=>(!state.sector||r.sectorId===state.sector)&&(!state.search||r.base.includes(state.search)));
   if(q('.cfx-content').dataset.mode!=='heatmap'||!otherPlot){cleanup();q('.cfx-content').dataset.mode='heatmap';q('.cfx-content').innerHTML=`${toolbar(state.heatPeriod,true)}<div class="cfx-chart-meta"><span data-slot="heat-coverage"></span><span>負值 ← 顏色 → 正值</span></div><div class="cfx-heatmap"><canvas role="img" aria-label="加密市場熱力圖，可雙指縮放、滑鼠滾輪縮放與拖曳，面積依選定權重，顏色依漲跌幅"></canvas><div class="cfx-zoom"><button data-action="heat-out" aria-label="縮小熱力圖">−</button><button data-action="heat-reset" aria-label="重設熱力圖">${icon('reset')}</button><button data-action="heat-in" aria-label="放大熱力圖">＋</button></div></div><div class="cfx-heat-list"></div>`;otherPlot=createToolChart(q('canvas'),{signal:life.signal,onSelect:openAsset});if(viewport)otherPlot.restoreViewport(viewport);}
@@ -292,9 +303,9 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   otherPlot.update({type:'heatmap',rows,weight:state.weight,grouped:state.grouped});status(`Bitget 行情${market.kind==='foreground-refresh'?'更新':'快照'}${state.weight==='cap'?' · 市值：CoinGecko 各幣時間見說明':''} · 觀察池`,rows[0]?.end);
  }
  function showFlowDetail(symbol){const r=sourceFrame()?.rows.find(r=>r.symbol===symbol);if(!r)return;presentAsset(symbol,`<span style="color:${r.state.color}">${r.state.name}</span><dl class="cfx-detail-metrics"><div><dt>主動買賣占比</dt><dd>${pct(r.x)}</dd></div><div><dt>占比變化</dt><dd>${pp(r.y)}</dd></div><div><dt>主動買量 · ${r.base}</dt><dd>${compact(r.buy)}</dd></div><div><dt>主動賣量 · ${r.base}</dt><dd>${compact(r.sell)}</dd></div><div><dt>主動淨買額估算</dt><dd>${compact(r.netNotional)} USDT</dd></div></dl><button class="cfx-watch" data-watch="${r.symbol}" aria-pressed="${watched.has(r.symbol)}">${watched.has(r.symbol)?'★ 已加入自選':'☆ 加入自選'}</button><div class="cfx-balance"><i style="width:${(r.x+100)/2}%"></i></div><div class="cfx-data-note">主動成交期別 ${dateLabel(sourceFrame().ts)} UTC+8 · 淨買額為估算。</div>`);}
- function render(){renderSettings();q('.cfx-source-badge').textContent='BITGET · USDT 永續';qa('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===state.tab)));q('.cfx').classList.toggle('focused',state.focus);q('.cfx').classList.toggle('cfx-edge-layout',['rotation','flow'].includes(state.tab));q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';if(state.tab==='flow'?!flowSnapshot:!market){cleanup();q('.cfx-content').dataset.mode='';q('.cfx-content').innerHTML=empty(window.OXLoading?.markup('讀取市場資料')||'讀取市場資料…');return;}const completeMarket=market;if(partialMarket&&state.tab!=='flow'&&!market.scan?.complete)market=partialMarket;switch(state.tab){case'rotation':renderRotation();break;case'heatmap':renderHeatmap();break;case'flow':renderFlow();break;default:renderRotation();}market=completeMarket;const coverage=state.tab==='flow'?partialFlow?.scan:partialMarket?.scan;if(coverage)notice('更新市場資料…');else if(!request&&!marketRequest)notice('');q('.cfx').dataset.scanState=coverage?'partial':(state.tab==='flow'?pressureSnapshot()?.scan?.complete:market?.scan?.complete)?'complete':'snapshot';maybeRefreshMarket();}
- function help(){q('[data-slot="help"]').innerHTML=`<details open><summary>板塊輪動如何閱讀</summary><p>橫軸＝成分幣等權平均報酬 − BTC 同期報酬，單位 pp。縱軸＝本期相對報酬 − 上一期相對報酬。右上為領先擴大、右下為領先降溫、左上為落後改善、左下為落後擴大。</p><p>可在圖表設定開關軌跡；軌跡連接同一板塊的真實歷史期別。回放使用目前固定觀察池，不代表當時全市場的可投資範圍。每個板塊至少兩個成分幣，且回放所需 K 線完整才納入。</p><p>成交占比＝板塊本期成交額／所有納入板塊本期成交額。占比上升只代表本觀察池的交易活躍度提高，不證明資金從另一板塊轉入。泡泡預設依強弱調整大小，弱勢泡泡保留可讀的最小尺寸；可在設定切換為等大。板塊依相對 BTC 表現，主動買賣依買賣占比絕對值；位置仍由真實占比及變化決定。</p></details><details><summary>板塊分類與涵蓋範圍</summary><p>31 個一級板塊、226 個二級題材是 OX 擴充候選名單，非全市場窮盡名單或 Bitget 上架保證；幣可跨一級及二級。點「已選」查看各級題材與成分幣。</p><p>只把已上線的 Bitget 加密 USDT 永續、baseCoin 相符及有成交行情的合約納入；成分幣依交易所合約資料核對後納入。每個一級板塊至少兩個成分有完整共同 K 線才顯示泡泡。BTC 是 BTC／PoW 成分也是相對報酬基準。重複歸類的成交占比不能解讀為去重後市場資金流。</p><p><a href="https://www.bitget.com/docs/catalog/market/market-data" target="_blank" rel="noopener">Bitget 公開合約與行情來源</a></p></details><details><summary>主動買賣與回放</summary><p>横軸＝100 ×（主動買量 − 主動賣量）／兩者總量；縱軸＝相較上一個完整期別的占比變化。這是買賣力道占比，單位為百分比／百分點，不是資金淨流入金額。主動買賣可依 24H 漲幅、成交額或既有雷達 OX 評分選取最多 50 個已驗證 USDT 永續合約；資金異動模式先取成交額前 50，再按主動淨買額估算排序。主動淨買額＝（本期主動買量－主動賣量）× 當前價格；不是實際入金、大單逐筆統計或市場全體排名。每個合約的主動成交 API 需依交易所限速逐一取得，期間保留已完成的資料。</p><p>回放只使用相鄰、已結束的真實期別；泡泡的位置、大小、顏色連續過渡，標示與排行使用該期原始數值。全部與成交前 10 只改變顯示，完整更新範圍不變；缺資料的標的不補零。</p></details><details><summary>Footprint／CVD／Volume Profile</summary><p>使用 Bitget fills-history 的真實逐筆成交，依 tradeId 去重。Ask＝主動買、Bid＝主動賣；Delta＝Ask−Bid。價格依設定分桶，時間為 1 分鐘。首尾 K 線標為不完整。完整性僅限取得的 REST 頁面，不宣稱交易所全量歷史。</p><p>CVD 自已載入首筆交易歸零。Volume Profile 加總同價位已載入成交。POC 為最大量價位。斜向不平衡條件：Ask(k) ≥ 3 × Bid(k−1) 或 Bid(k) ≥ 3 × Ask(k＋1)，並達到該根 1% 成交量；分母為零不計比率。門檻只是標記規則，不是買賣訊號。</p></details>`;q('.cfx-dialog').showModal();}
- async function refreshPressure(){if(request||suspended||document.hidden)return;lastPressureAttempt=Date.now();const period=state.period,mode=state.flowMode,key=pressureKey(),analyses=radarAnalyses();if(mode==='score'&&!analyses.size){notice('OX 雷達評分尚未產生；雷達分析完成後再更新此模式。');return;}request=new AbortController();const loading=window.OXLoading?.begin('crypto','更新主動成交標的',{signal:request.signal,views:['strength'],target:q('[data-slot="loading"]')});notice('依序取得 Bitget 主動成交資料…');try{const next=await flowRefresh.refresh({period,mode,analyses},{signal:request.signal,onPartial:next=>{if(life.signal.aborted||suspended||request?.signal.aborted||pressureKey()!==key)return;partialFlow=next;if(next.scan.done===1||next.scan.done%3===0)render();},onProgress:(n,total)=>{loading?.update(n,total);notice('更新市場資料…');}});if(!buildFlow(next,period).rows.length)throw new Error('沒有可用共同期別');if(life.signal.aborted||suspended||request?.signal.aborted||pressureKey()!==key)return;pressureSnapshots.set(key,next);latestFlows.set(key,next);partialFlow=null;if(state.tab==='flow'&&pressureKey()===key)render();}catch(e){if(e.name!=='AbortError'&&!life.signal.aborted){partialFlow=null;lastPressureAttempt=Date.now()-280000;render();notice('主動成交更新失敗，保留有時間戳的原資料；可按更新重試。');}}finally{const cancelled=request?.signal.aborted;request=null;loading?.finish();if(cancelled&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}}
+ function render(){renderSettings();q('.cfx-source-badge').textContent='BITGET · USDT 永續';qa('[data-tab]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.tab===state.tab)));q('.cfx').classList.toggle('focused',state.focus);q('.cfx').classList.toggle('cfx-edge-layout',['rotation','flow'].includes(state.tab));q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';if(state.tab==='flow'?!flowSnapshot:!market){cleanup();q('.cfx-content').dataset.mode='';q('.cfx-content').innerHTML=empty(window.OXLoading?.markup('讀取市場資料')||'讀取市場資料…');return;}const completeMarket=market;if(partialMarket&&state.tab==='heatmap'&&!market.scan?.complete)market=partialMarket;switch(state.tab){case'rotation':renderRotation();break;case'heatmap':renderHeatmap();break;case'flow':renderFlow();break;default:renderRotation();}market=completeMarket;const coverage=state.tab==='flow'?partialFlow?.scan:partialMarket?.scan;if(coverage)notice('更新市場資料…');else if(!request&&!marketRequest&&!periodRequest&&!dailyRequest)notice('');q('.cfx').dataset.scanState=coverage?'partial':(state.tab==='flow'?pressureSnapshot()?.scan?.complete:market?.scan?.complete)?'complete':'snapshot';maybeRefreshMarket();}
+ function help(){q('[data-slot="help"]').innerHTML=`<details open><summary>板塊輪動如何閱讀</summary><p>橫軸＝成分幣等權平均報酬 − BTC 同期報酬，單位 pp。縱軸＝本期相對報酬 − 上一期相對報酬。右上為領先擴大、右下為領先降溫、左上為落後改善、左下為落後擴大。</p><p>可在圖表設定開關軌跡；軌跡連接同一板塊的真實歷史期別。回放使用目前固定觀察池，不代表當時全市場的可投資範圍。每個板塊至少兩個成分幣，且回放所需 K 線完整才納入。</p><p>成交占比＝板塊本期成交額／所有納入板塊本期成交額。占比上升只代表本觀察池的交易活躍度提高，不證明資金從另一板塊轉入。泡泡預設依強弱調整大小，弱勢泡泡保留可讀的最小尺寸；可在設定切換為等大。板塊依相對 BTC 表現，主動買賣依買賣占比絕對值；位置仍由真實占比及變化決定。</p></details><details><summary>板塊分類與涵蓋範圍</summary><p>31 個一級板塊、226 個二級題材是 OX 擴充候選名單，非全市場窮盡名單或 Bitget 上架保證；幣可跨一級及二級。點「已選」查看各級題材與成分幣。</p><p>只把已上線的 Bitget 加密 USDT 永續、baseCoin 相符及有成交行情的合約納入；成分幣依交易所合約資料核對後納入。每個一級板塊至少兩個成分有完整共同 K 線才顯示泡泡。BTC 是 BTC／PoW 成分也是相對報酬基準。重複歸類的成交占比不能解讀為去重後市場資金流。</p><p><a href="https://www.bitget.com/docs/catalog/market/market-data" target="_blank" rel="noopener">Bitget 公開合約與行情來源</a></p></details><details><summary>主動買賣與回放</summary><p>横軸＝100 ×（主動買量 − 主動賣量）／兩者總量；縱軸＝相較上一個完整期別的占比變化。這是買賣力道占比，單位為百分比／百分點，不是資金淨流入金額。主動買賣可依 24H 漲幅、成交額或既有雷達 OX 評分選取最多 50 個已驗證 USDT 永續合約；資金異動模式先取成交額前 50，再按主動淨買額估算排序。主動淨買額＝（本期主動買量－主動賣量）× 當前價格；不是實際入金、大單逐筆統計或市場全體排名。每個合約的主動成交 API 需依交易所限速逐一取得，期間保留已完成的資料。</p><p>回放只使用相鄰、已結束的真實期別；泡泡的位置、大小、顏色連續過渡，標示與排行使用該期原始數值。全部與成交前 10 只改變顯示，完整更新範圍不變；缺資料的標的不補零。</p></details><details><summary>Footprint／CVD／Volume Profile</summary><p>使用 Bitget fills-history 的真實逐筆成交，依 tradeId 去重。Ask＝主動買、Bid＝主動賣；Delta＝Ask−Bid。價格依設定分桶，時間為 1 分鐘。首尾 K 線標為不完整。完整性僅限取得的 REST 頁面，不宣稱交易所全量歷史。</p><p>CVD 自已載入首筆交易歸零。Volume Profile 加總同價位已載入成交。POC 為最大量價位。斜向不平衡條件：Ask(k) ≥ 3 × Bid(k−1) 或 Bid(k) ≥ 3 × Ask(k＋1)，並達到該根 1% 成交量；分母為零不計比率。門檻只是標記規則，不是買賣訊號。</p></details>`;showDialog('.cfx-dialog');}
+ async function refreshPressure(){if(request||suspended||document.hidden)return;lastPressureAttempt=Date.now();const period=state.period,mode=state.flowMode,key=pressureKey(),analyses=radarAnalyses();let updated=false;if(mode==='score'&&!analyses.size){notice('OX 雷達評分尚未產生；雷達分析完成後再更新此模式。');return;}request=new AbortController();const loading=window.OXLoading?.begin('crypto','更新主動成交標的',{signal:request.signal,views:['strength'],target:q('[data-slot="loading"]')});notice('依序取得 Bitget 主動成交資料…');try{const next=await flowRefresh.refresh({period,mode,analyses},{signal:request.signal,onPartial:next=>{if(life.signal.aborted||suspended||request?.signal.aborted||pressureKey()!==key)return;partialFlow=next;if(next.scan.done===1||next.scan.done%3===0)render();},onProgress:(n,total)=>{loading?.update(n,total);notice('更新市場資料…');}});if(!buildFlow(next,period).rows.length)throw new Error('沒有可用共同期別');if(life.signal.aborted||suspended||request?.signal.aborted||pressureKey()!==key)return;pressureSnapshots.set(key,next);latestFlows.set(key,next);partialFlow=null;updated=true;}catch(e){if(e.name!=='AbortError'&&!life.signal.aborted){partialFlow=null;lastPressureAttempt=Date.now()-280000;render();notice('主動成交更新失敗，保留有時間戳的原資料；可按更新重試。');}}finally{const cancelled=request?.signal.aborted;request=null;loading?.finish();if(updated&&!suspended&&!life.signal.aborted&&state.tab==='flow'&&pressureKey()===key)render();if(cancelled&&!suspended&&!document.hidden&&!life.signal.aborted)queueMicrotask(maybeRefreshMarket);}}
  function changeTab(tab){cleanup();modelSource=null;modelPeriod=null;state.tab=tab;state.search='';state.selected='';state.filter='';if(tab==='flow'&&!PERIODS[state.period])state.period='1h';if(tab==='rotation'&&(!TOOL_PERIODS[state.period]||state.period==='24h'))state.period='15m';render();}
  shadow.addEventListener('click',e=>{const b=e.target.closest('button'),member=e.target.closest('[data-member-detail]');if(!b&&member){openMember(member.dataset.memberDetail);return;}if(!b||b.disabled)return;const d=b.dataset;
   if(d.tab){changeTab(d.tab);return;}if(d.period){if(state.tab==='heatmap')state.heatPeriod=d.period;else state.period=d.period;state.frame=7;state.selected='';render();return;}
@@ -303,18 +314,18 @@ export function mountCryptoFlow(host,{onExit=()=>{},snapshot=null,marketSnapshot
   if(d.heatSector!==undefined){state.sector=d.heatSector;render();return;}
   if(d.watch){watched.has(d.watch)?watched.delete(d.watch):watched.add(d.watch);b.setAttribute('aria-pressed',String(watched.has(d.watch)));b.textContent=watched.has(d.watch)?'★':'☆';try{localStorage.setItem(watchKey,JSON.stringify([...watched]));}catch{}paintRotation();return;}
   if(d.frameTime){stopReplay();state.frame=rotation.frames.findIndex(f=>f.ts===Number(d.frameTime));openSector(state.selected);return;}
-  switch(d.action){case'retry-data':void loadData();break;case'settings':renderSettings();q('.cfx-settings-dialog').showModal();break;case'close-settings':q('.cfx-settings-dialog').close();break;case'exit':onExit();break;case'help':q('.cfx-settings-dialog').close();help();break;case'close-help':q('.cfx-dialog').close();break;case'close-asset':closeAsset();break;case'retry-asset':void updateAssetChart();break;case'asset-reset':assetChart?.reset();break;case'close-sector':q('.cfx-sector-dialog').close();state.selected='';paintRotation();break;case'fullscreen':state.focus=!state.focus;q('.cfx').classList.toggle('focused',state.focus);q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';plot?.setInteractive(true);break;
+  switch(d.action){case'retry-data':void loadData();break;case'settings':renderSettings();showDialog('.cfx-settings-dialog');break;case'close-settings':q('.cfx-settings-dialog').close();break;case'exit':onExit();break;case'help':q('.cfx-settings-dialog').close();help();break;case'close-help':q('.cfx-dialog').close();break;case'close-asset':closeAsset();break;case'retry-asset':void updateAssetChart();break;case'asset-reset':assetChart?.reset();break;case'close-sector':q('.cfx-sector-dialog').close();state.selected='';paintRotation();break;case'fullscreen':state.focus=!state.focus;q('.cfx').classList.toggle('focused',state.focus);q('[data-slot="exit-label"]').textContent=state.focus?'退出全螢幕':'全螢幕';plot?.setInteractive(true);break;
    case'scope-all':state.watch=false;paintRotation();break;case'scope-watch':state.watch=true;paintRotation();break;
    case'view-bubbles':state.table=false;paintRotation();break;case'view-rank':state.table=true;paintRotation();break;
    case'density-all':state.density='all';paintRotation();break;case'density-top':state.density='top';paintRotation();break;
-   case'picker':renderPicker();q('.cfx-picker-dialog').showModal();break;case'close-picker':q('.cfx-picker-dialog').close();break;
+   case'picker':renderPicker();showDialog('.cfx-picker-dialog');break;case'close-picker':q('.cfx-picker-dialog').close();break;
    case'select-all':state.selectedIds=null;renderPicker();paintRotation();break;case'select-none':state.selectedIds=[];renderPicker();paintRotation();break;
    case'replay-toggle':stopReplay();state.replayOpen=!state.replayOpen;if(state.replayOpen){state.frame=0;paintRotation();startReplay();}else{state.frame=frames().length-1;researchModel();paintRotation();}break;
    case'watch-only':state.watch=!state.watch;paintRotation();renderSettings();break;case'toggle-table':state.table=!state.table;paintRotation();renderSettings();break;
    case'trails':state.trails=!state.trails;b.setAttribute('aria-pressed',state.trails);paintRotation();break;case'equal-size':state.equal=!state.equal;b.setAttribute('aria-pressed',state.equal);paintRotation();break;
    case'group':state.grouped=!state.grouped;render();break;case'heat-in':otherPlot?.zoom(1.3);break;case'heat-out':otherPlot?.zoom(1/1.3);break;case'heat-reset':otherPlot?.reset();break;
    case'zoom-in':plot?.zoom(.5);break;case'zoom-out':plot?.zoom(-.5);break;case'reset':plot?.reset();break;
-   case'latest':stopReplay();state.frame=frames().length-1;paintRotation();break;
+   case'latest':stopReplay();researchModel(true);state.frame=frames().length-1;paintRotation();break;
    case'frame-prev':case'frame-next':stopReplay();state.frame=Math.max(0,Math.min(frames().length-1,Math.floor(state.frame)+(d.action==='frame-prev'?-1:1)));paintRotation();break;
    case'play':if(replay?.playing)replay.pause();else startReplay();break;
    case'refresh-flow':lastPressureAttempt=0;void refreshPressure();break;}
