@@ -31,7 +31,7 @@ try{
   await active(page,'[data-action="zoom-in"]').click();const zoom=await active(page,'[data-slot="zoom"]').textContent();assert.equal(zoom,'150%');
   await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-none"]').click();await active(page,'[data-item]').first().check();await active(page,'[data-action="close-picker"]').click();
   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rotation-table').waitFor();await active(page,'[data-action="view-bubbles"]').click();
-  await active(page,'[data-action="replay-toggle"]').click();await active(page,'[data-action="play"]').click();
+  await active(page,'[data-action="replay-toggle"]').click();
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
   assert.equal(await canvas.getAttribute('data-identity'),'original','controls and replay never replace the canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),zoom);
@@ -51,6 +51,10 @@ try{
    assert.equal(await active(page,'[data-control="period"]').inputValue(),'1h');
    await active(page,'[data-action="view-bubbles"]').click();
    assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original');
+   await active(page,'[data-action="replay-toggle"]').click();
+   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const v=Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.value);return v>0&&v%1>0;});
+   await active(page,'[data-action="play"]').click();
+   assert.equal(await flowCanvas.getAttribute('data-identity'),'flow-original','主動買賣回放沿用畫布');
    await tool(page,'patterns');await active(page,'.px-board').waitFor();
    assert.equal(await active(page,'.px-status-row').count(),0,'board scan text is hidden');
    const alignment=await active(page,'.px-refresh-pill').evaluate(el=>{const r=el.getBoundingClientRect(),g=el.querySelector('.px-refresh-glyph').getBoundingClientRect();return {x:Math.abs(r.x+r.width/2-g.x-g.width/2),y:Math.abs(r.y+r.height/2-g.y-g.height/2)};});assert.ok(alignment.x<.6&&alignment.y<.6);

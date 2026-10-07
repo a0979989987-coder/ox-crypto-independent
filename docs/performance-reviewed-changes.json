@@ -16,8 +16,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "bde8b6f9bbacbb57b99df966276ea032b043e727a94e0cdefa5d861a66a79336",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "6df53c38555281e5bc9fafe156bdeff699b1b6e69c7cb9a6621b69acbb8925d5",
+      "reason": "24-sector Bitget-verified market universe and continuous replay, preserving the source and authentication boundaries."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -28,8 +28,8 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "915b541db8e185f92c8fd562036af0864bb5fcfff6da6c485f2411b347bb19cf",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "b7a7807b9654d9faaabd85aebd138b7b42672fdc9a61e07cd07c8bfd451b5060",
+      "reason": "24-sector Bitget-verified market universe and continuous replay, preserving the source and authentication boundaries."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
@@ -150,6 +150,12 @@
       "sourceSha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c",
       "sha256": "19ebaab9e9c7d5d85f2ee904bf17e185c477d8661a3c97018238b20a38239523",
       "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+    },
+    {
+      "path": "src/markets/crypto/analytics/tools-model.js",
+      "sourceSha256": "f9350870cde26059be2e1071081ea171ec18557ff01eadf90747fc172d59c8ad",
+      "sha256": "5d8502dfd59a47a275cfdfb1e87c7dab3beef1323d7da44f03c6d20071067207",
+      "reason": "24-sector verified market universe and replay coverage, reviewed with source-result and browser regressions."
     }
   ]
 }

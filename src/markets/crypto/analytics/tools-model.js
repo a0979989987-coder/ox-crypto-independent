@@ -19,7 +19,10 @@ export function candleWindow(index,symbol,end,step) {
 export function buildRotation(data,period='1h',wantedFrames=8) {
  const step=TOOL_PERIODS[period];if(!step)throw new Error('Unsupported rotation period');
  const index=candleIndex(data),btc=index.get('BTCUSDT');if(!btc?.size)return {frames:[],sectors:[],excluded:[],period};
- const sourceTime=Math.min(...Object.values(data.candles).filter(e=>e.response?.data?.length).map(e=>Number(e.response.requestTime)));
+ // BTC anchors the observation window. During a progressive refresh, an old
+ // candle response must not drag every newly fetched contract back in time.
+ const sourceTime=Number(data.candles.BTCUSDT?.response?.requestTime);
+ if(!Number.isFinite(sourceTime))return {frames:[],sectors:[],excluded:[],period};
  const end=Math.floor(sourceTime/step)*step;
  const oldest=Math.min(...btc.keys());const frameCount=Math.max(0,Math.min(wantedFrames,Math.floor((end-oldest)/step)-1));
  const ends=Array.from({length:frameCount},(_,i)=>end-(frameCount-1-i)*step);
@@ -34,17 +37,19 @@ export function buildRotation(data,period='1h',wantedFrames=8) {
   const rows=cohorts.map((s,i)=>{
    const members=s.validMembers.map(symbol=>{const a=candleWindow(index,symbol,t,step),b=candleWindow(index,symbol,t-step,step);return {symbol,base:symbol.replace(/USDT$/,''),...a,relative:a.returnPct-bm.returnPct,previousRelative:b.returnPct-bp.returnPct,volumeChange:b.volume>0?100*(a.volume/b.volume-1):null};});
    const x=mean(members.map(m=>m.relative)),previous=mean(members.map(m=>m.previousRelative)),y=x-previous;
-   return {...s,expectedMembers:s.members.length,symbol:s.id,base:s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
+   return {...s,expectedMembers:s.requestedBases?.length||s.members.length,symbol:s.id,base:s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
   });
   return [{ts:t,rows,benchmark:bm.returnPct,totalVolume:total}];
  });
- return {frames,sectors,period,excluded:sectors.filter(s=>s.validMembers.length<2).map(s=>({name:s.name,valid:s.validMembers.length,expected:s.members.length})),end};
+ return {frames,sectors,period,excluded:sectors.filter(s=>s.validMembers.length<2).map(s=>({name:s.name,valid:s.validMembers.length,expected:s.requestedBases?.length||s.members.length})),end};
 }
 export function heatmapRows(data,period='24h') {
  const step=TOOL_PERIODS[period],index=candleIndex(data);if(!step)return [];
  const available=Object.values(data.candles||{}).filter(e=>e.response?.data?.length);if(!available.length)return [];
- const end=Math.floor(Math.min(...available.map(e=>Number(e.response.requestTime)))/900000)*900000;
- const groups=new Map((data.sectors||[]).flatMap(s=>s.members.map(m=>[m,s])));
+ const anchor=Number(data.candles.BTCUSDT?.response?.requestTime);
+ if(!Number.isFinite(anchor))return [];
+ const end=Math.floor(anchor/900000)*900000;
+ const groups=new Map();for(const sector of data.sectors||[])for(const symbol of sector.members)if(!groups.has(symbol))groups.set(symbol,sector);
  return (data.tickers||[]).flatMap(t=>{const w=candleWindow(index,t.symbol,end,step);if(!w)return [];return [{...w,symbol:t.symbol,base:t.symbol.replace(/USDT$/,''),sector:groups.get(t.symbol)?.name||'BTC 基準',sectorId:groups.get(t.symbol)?.id||'benchmark',cap:finite(data.coins?.[t.symbol]?.market_cap),capTime:data.coins?.[t.symbol]?.last_updated}];});
 }
 export function derivativeRows(data) {
