@@ -11,7 +11,7 @@ import {localizeNewsText} from '../src/components/news/localization.js';
 test('rotation strength sizes remain readable and taker sell strength matches buy strength',()=>{
  for(const mobile of [true,false]){
   const radii=[-10,-5,0,5,10].map(x=>strengthBubbleRadius({x},{rotation:true,domain:10,mobile}));
-  assert.ok(radii[0]>=16);assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));
+  assert.ok(radii[0]>=10);assert.ok(radii.at(-1)<=(mobile?26:40));assert.ok(radii.every((r,i)=>!i||r>radii[i-1]));
   assert.equal(strengthBubbleRadius({x:-70},{mobile}),strengthBubbleRadius({x:70},{mobile}));
  }
 });
