@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "0f729af82a0860e30bc432b46622302a40020f0ffe8802c202945164f7a786bb",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "f874700065e3416c534bfcaaa19a464f455ea0ac1ad8ed3d0170cb557b569518",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "bde8b6f9bbacbb57b99df966276ea032b043e727a94e0cdefa5d861a66a79336",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "00c61c77fecefc9f1ac5435304388411bdc2099c723dafdbf28d0964f2f29bbe",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -28,8 +28,8 @@
     {
       "path": "src/markets/crypto/analytics/market-live.js",
       "sourceSha256": "cb4b8798c66517aa5a274c3cb7a893af7bcb3eb9bf716e19946a981459c18acf",
-      "sha256": "915b541db8e185f92c8fd562036af0864bb5fcfff6da6c485f2411b347bb19cf",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "cfafd3fa3067d97428102d94ff6e46b8433c0f59ac17ab23f24bc120bb99d2c7",
+      "reason": "Bounded on-demand full verified-universe daily candle scan."
     },
     {
       "path": "src/markets/crypto/analytics/entry.js",
@@ -40,7 +40,7 @@
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
       "sourceSha256": "4a9c947a187278727852d3b38615c026497b0a55ce1c4542aab40a1e134fefad",
-      "sha256": "e06d0aa697c97e053681b677a22ea3101e8ffd40dccea72d74a1fb1d48942bcc",
+      "sha256": "1f66e7a5a2a73ccf48d71a1568fe79b9d360ca86dd36dff5383785579cc074cb",
       "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
@@ -58,8 +58,8 @@
     {
       "path": "src/markets/crypto/patterns/charts.js",
       "sourceSha256": "53bcea4fdde642bbd0723dc979f240022b40c565b178eb834b861b98d1493d06",
-      "sha256": "8c43cd5f6d94c095a9631aa2a8b543e8e1a3d1d0948c3579ea7f7b8817ad55e3",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "abca6b5e551e5534a41410756f7ef877891f3c6cc6b3ac800b4c8d7dc1e42320",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/patterns/source.js",
@@ -136,14 +136,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
       "sourceSha256": "9009dbbfda07374c8a21134fc649ff3347408520054b10db7e003065e046bb88",
-      "sha256": "906089b0b1ebe29cf0f99d6d3d550e5182ad506be99d2b3fb3fb3b7f6e6ddfe4",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
+      "sha256": "f66a495b8f56728e2f8e37fae8952f66016bb25f1ee9d26cdf4db460773eab00",
+      "reason": "Bitget-supported taker pressure periods and verified multi-coin replay."
     },
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "a24d4ca1486c72220f8dc523ed658f7bb688112cc52d52c7df187bcc3587e50a",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Includes 320px CJK font layout validation; full toolbar controls retained."
+      "sha256": "f76d250289a20a8b54b0dc42ffd4652eeb6d939a208887eaa55727911ef6c36a",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",
@@ -152,10 +152,16 @@
       "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes."
     },
     {
+      "path": "src/markets/crypto/analytics/tools-model.js",
+      "sourceSha256": "f9350870cde26059be2e1071081ea171ec18557ff01eadf90747fc172d59c8ad",
+      "sha256": "5ed12608d2d70294595191b0e94d9c96bd70ce6bc21fa2f2afec3dfa4fef5698",
+      "reason": "Real daily candle rotation alongside existing 15m-derived intervals."
+    },
+    {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "d81746660134ca5242f1078e18b94e7ce6b07cb200ff42063e71c0ffd6b51970",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks."
+      "sha256": "797859f7e88a5686352cf8d7a9135c866620a0dfee11b4d152aa00091b973569",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return."
     },
     {
       "path": "src/components/chart/drawings.js",

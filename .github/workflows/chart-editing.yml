@@ -1,5 +1,12 @@
 name: Chart drawing interactions
 on:
+  pull_request:
+    paths:
+      - 'src/components/chart/**'
+      - 'src/styles/components/chart-drawings.css'
+      - 'scripts/chart-editing-check.mjs'
+      - 'scripts/chart-mounted-check.mjs'
+      - '.github/workflows/chart-editing.yml'
   push:
     branches: [main, 'fix/chart-editing-*']
     paths:

@@ -1,5 +1,6 @@
 // Crypto-only, venue-specific taker pressure. These are not cash-inflow estimates.
-export const PERIODS = Object.freeze({ '15m': 900000, '1h': 3600000, '4h': 14400000 });
+// Bitget taker-buy-sell supports these exact intervals (the exchange has no 1m feed here).
+export const PERIODS = Object.freeze({ '5m':300000, '15m':900000, '30m':1800000, '1h':3600000, '2h':7200000, '4h':14400000, '6h':21600000, '12h':43200000, '1d':86400000 });
 export const STATES = Object.freeze([
   { id: 'buy-up', name: '買壓增強', note: '買方占優，力道增加', color: '#91c7b1', direction: '↗' },
   { id: 'buy-down', name: '買壓放緩', note: '買方占優，力道放緩', color: '#cfbc91', direction: '↘' },
@@ -18,18 +19,19 @@ export function classify(x, y) {
   if (x === 0 || y === 0) return { id: 'neutral', name: '中性／持平', color: '#a5aaa9', direction: '—' };
   return STATES[x > 0 ? (y > 0 ? 0 : 1) : (y > 0 ? 2 : 3)];
 }
-export function cryptoUniverse(instruments, tickers, limit = 20) {
+export function cryptoUniverse(instruments, tickers, limit = 50, mode = 'volume', analyses = new Map()) {
   // Require explicit asset metadata. Never silently treat stocks or unknown instruments as crypto.
   const bySymbol = new Map(instruments.filter(i => i.symbolType === 'crypto' && i.type === 'perpetual' && i.status === 'online' && i.quoteCoin === 'USDT').map(i => [i.symbol, i]));
-  return tickers.filter(t => bySymbol.has(t.symbol) && finite(t.usdtVolume) > 0)
-    .sort((a, b) => Number(b.usdtVolume) - Number(a.usdtVolume)).slice(0, limit)
+  const scored = t => finite(analyses?.get?.(t.symbol)?.oxScore);
+  return tickers.filter(t => bySymbol.has(t.symbol) && finite(t.usdtVolume) > 0 && (mode !== 'score' || scored(t) !== null))
+    .sort((a, b) => (mode === 'gain' ? (finite(b.change24h) ?? -Infinity) - (finite(a.change24h) ?? -Infinity) : mode === 'score' ? scored(b) - scored(a) : Number(b.usdtVolume) - Number(a.usdtVolume)) || Number(b.usdtVolume) - Number(a.usdtVolume) || a.symbol.localeCompare(b.symbol)).slice(0, limit)
     .map(t => ({ ...t, baseCoin: bySymbol.get(t.symbol).baseCoin }));
 }
 export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}={}) {
   const interval = PERIODS[period];
   if (!interval) throw new Error('Unsupported period');
   const entries = snapshot.flows?.[period] || {};
-  const universe = cryptoUniverse(snapshot.instruments || [], snapshot.tickers || []);
+  const universe = snapshot.tickers?.length && snapshot.mode ? snapshot.tickers : cryptoUniverse(snapshot.instruments || [], snapshot.tickers || [], snapshot.limit || 50);
   const pairs = new Map(); const candidates = new Map();
   for (const ticker of universe) {
     const response = entries[ticker.symbol]?.response;
@@ -52,7 +54,7 @@ export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}
     const [current, previous] = pair; const x = pressure(current), old = pressure(previous), y = x - old;
     return [{ symbol: t.symbol, base: t.baseCoin, price: finite(t.lastPr), change24h: finite(t.change24h) === null ? null : Number(t.change24h) * 100,
       turnover: Number(t.usdtVolume), tickerTime: Number(t.ts || snapshot.tickerRequestTime), x, y, previous: old,
-      buy: Number(current.buyVolume), sell: Number(current.sellVolume), ts: target, state: classify(x, y) }];
+      buy: Number(current.buyVolume), sell: Number(current.sellVolume), netNotional: finite(t.lastPr)>0?(Number(current.buyVolume)-Number(current.sellVolume))*Number(t.lastPr):null, ts: target, state: classify(x, y) }];
   });
   return { rows, target, period, excluded: universe.filter(t => !rows.some(r => r.symbol === t.symbol)).map(t => t.symbol), expected: universe.length };
 }

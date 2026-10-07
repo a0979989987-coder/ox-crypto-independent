@@ -1,9 +1,9 @@
 function getChartRightOffset() {
   const spacing = state.chart?.timeScale().options().barSpacing || 6;
-  const labelSpace = (state.chartPriceAxisWidth || 44) + 16;
-  // Reserve the actual price label width, not a quarter of the phone screen.
-  const futureSpace = window.matchMedia('(max-width: 720px)').matches
-    ? (state.chartPriceAxisWidth || 44) + 8 : labelSpace;
+  // Keep the latest candle clear of the price/countdown label, with a little
+  // extra drawing room when opening a symbol or timeframe.
+  const futureSpace = (state.chartPriceAxisWidth || 44)
+    + (window.matchMedia('(max-width: 720px)').matches ? 32 : 40);
   return futureSpace / spacing;
 }
 

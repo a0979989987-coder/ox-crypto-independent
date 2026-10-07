@@ -41,6 +41,9 @@
 .cfx-research-toolbar{display:flex;align-items:center;gap:6px;padding:10px;white-space:nowrap;border-bottom:1px solid var(--line)}
 .cfx-segment{display:flex;align-items:center;gap:2px;background:var(--bg);padding:3px;border:1px solid var(--line);border-radius:9px}
 .cfx-research-toolbar button,.cfx-bottom-actions button,.cfx-picker-actions button{min-height:30px;padding:0 9px;font-size:11px;border-radius:7px;white-space:nowrap}
+.cfx-flow-mode{display:flex;align-items:center;gap:10px;padding:7px 12px;border-bottom:1px solid var(--line);font-size:11px;color:var(--muted)}
+.cfx-flow-mode select{max-width:260px;min-height:32px;color:inherit}
+.cfx-open-chart{display:block;width:100%;min-height:42px;margin:12px 0 0;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:inherit;text-align:center}
 .cfx-segment button[aria-pressed=true]{background:var(--panel);box-shadow:inset 0 0 0 1px var(--line);color:inherit}
 .cfx-picker,.cfx-replay-toggle{border:1px solid var(--line);background:var(--bg)}
 .cfx-research-toolbar .cfx-picker{margin-left:auto}
@@ -97,3 +100,26 @@
  .cfx-research-toolbar .cfx-picker{padding:0 3px}
  .cfx-research-toolbar .cfx-period-select{width:39px;min-width:39px;padding:0 1px}
 }
+.cfx-picker-group{border:1px solid var(--line);border-radius:9px}
+.cfx-picker-group>label{border:0}
+.cfx-picker-group details{padding:0 11px 8px}
+.cfx-picker-group summary{cursor:pointer;color:var(--muted);font-size:11px;min-height:30px;padding-top:7px}
+.cfx-topic-list{display:grid;gap:8px;max-height:48dvh;overflow:auto}
+.cfx-topic{padding:9px;border:1px solid var(--line);border-radius:8px;font-size:11px;line-height:1.65}
+.cfx-topic b{font-size:12px}.cfx-topic small{margin-left:8px;color:var(--muted)}
+.cfx-topic .verified{color:#eceee8}.cfx-topic .candidate{color:var(--muted)}
+/* Give the plot the first screenful; coverage is a caption below the canvas. */
+.cfx-research-panel .cfx-chart-meta{border-top:1px solid var(--line);background:var(--panel);min-height:32px}
+.cfx-flow-symbols{display:flex;gap:5px;overflow-x:auto;padding:4px 9px 7px;scrollbar-width:thin;white-space:nowrap}
+.cfx-flow-symbols button{display:inline-flex;align-items:center;gap:5px;min-height:25px;padding:0 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);font-size:10px}
+.cfx-flow-symbols button[aria-pressed=true]{border-color:#e9ede7}
+.cfx-flow-symbols i{display:block;width:5px;height:5px;border-radius:50%;flex:none}
+@media(max-width:600px){.cfx-research-panel>.cfx-plot{height:clamp(560px,82svh,850px);min-height:560px}.cfx-research-panel .cfx-chart-meta{margin:0;padding:5px 8px}}
+.cfx-sector-dialog.cfx-dialog{width:min(740px,calc(100vw - 24px));max-height:84dvh;margin:auto;border:1px solid #a5b0b2;border-radius:20px;padding:20px;background:linear-gradient(145deg,#202a2f,#12191d);box-shadow:0 18px 64px #0009,inset 0 1px #e9ede728,0 0 18px #d5ddd51a}
+.cfx-sector-dialog .cfx-dialog-head{position:sticky;top:-20px;padding:12px 0;background:var(--panel,#141d22);z-index:1}
+.cfx-sector-dialog .cfx-selected-state{margin-top:0}.cfx-member-hint{font-size:11px;color:var(--muted,#9aa9ad);margin:4px 0 12px}.cfx-sector-members{overflow-x:auto}
+.cfx-table tr[data-member-detail]{cursor:pointer}.cfx-table tr[data-member-detail]:hover{background:#9aa9ad12}.cfx-table tr[data-member-detail]:focus-visible{outline:1px solid #a5b0b2;outline-offset:-2px}
+.cfx-asset-name{font-size:17px;font-weight:500}.cfx-asset-chart{margin-top:14px;border:1px solid var(--line,#344248);border-radius:12px;padding:10px;background:var(--bg,#0d1215)}
+.cfx-asset-chart-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:6px}.cfx-asset-chart-head label{display:flex;align-items:center;gap:10px;color:var(--muted,#9aa9ad);font-size:12px}
+.cfx-asset-chart canvas{display:block;width:100%;height:260px}.cfx-asset-chart canvas[hidden]{display:none}.cfx-asset-chart-status{min-height:30px;font-size:10px;color:var(--muted,#9aa9ad);padding-top:8px;line-height:1.7}.cfx-asset-chart [data-action="retry-asset"]{margin-top:8px}
+@media(max-width:560px){.cfx-sector-dialog.cfx-dialog{margin:auto;width:calc(100vw - 24px);padding:14px;border-radius:18px;max-height:82dvh}.cfx-sector-dialog .cfx-dialog-head{top:-14px}.cfx-asset-chart canvas{height:220px}.cfx-sector-dialog .cfx-table.compact td{padding:12px 4px}.cfx-asset-chart{padding:7px}}

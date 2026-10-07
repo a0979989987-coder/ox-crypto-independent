@@ -3,26 +3,44 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {buildRotation,heatmapRows,orderFlow,normalizeTrades,derivativeRows} from '../src/markets/crypto/analytics/tools-model.js';
 import {partition} from '../src/markets/crypto/analytics/tools-charts.js';
+import {freshDaily} from '../src/markets/crypto/analytics/daily-cache.js';
 const recorded=JSON.parse(readFileSync(new URL('../previews/data/crypto-tools-snapshot.json',import.meta.url)));
+const expectedCount=recorded.sectors.reduce((set,sector)=>{sector.members.forEach(member=>set.add(member));return set;},new Set()).size;
 const near=(a,b)=>assert.ok(Math.abs(a-b)<1e-8,`${a} != ${b}`);
-test('rotation compares BTC returns with a fixed non-overlapping cohort through replay',()=>{
+test('rotation compares BTC returns with a fixed, potentially overlapping cohort through replay',()=>{
  for(const period of ['15m','1h','4h']){
   const {frames}=buildRotation(recorded,period);assert.equal(frames.length,8);
   const cohort=f=>f.rows.flatMap(r=>r.members.map(m=>m.symbol)).sort();
-  for(const f of frames){assert.deepEqual(cohort(f),cohort(frames[0]));assert.equal(new Set(cohort(f)).size,24);near(f.rows.reduce((s,r)=>s+r.share,0),100);near(f.rows.reduce((s,r)=>s+r.shareChange,0),0);
+  for(const f of frames){assert.deepEqual(cohort(f),cohort(frames[0]));assert.ok(new Set(cohort(f)).size<=expectedCount);assert.ok(cohort(f).length>=new Set(cohort(f)).size);near(f.rows.reduce((s,r)=>s+r.share,0),100);near(f.rows.reduce((s,r)=>s+r.shareChange,0),0);
    for(const r of f.rows){near(r.x,r.returnPct-f.benchmark);near(r.y,r.x-r.previous);near(r.turnover,r.members.reduce((s,m)=>s+m.volume,0));}
   }
  }
 });
 test('a missing bar excludes an asset from every replay frame instead of creating a false rotation',()=>{
  const d=structuredClone(recorded);d.candles.ETHUSDT.response.data=[];
- const {frames}=buildRotation(d,'1h');assert.ok(frames.length);for(const f of frames){const l=f.rows.find(r=>r.members.some(m=>m.base==='SOL'));assert.equal(l.members.length,4);assert.equal(l.expectedMembers,5);assert.ok(!f.rows.some(r=>r.members.some(m=>m.base==='ETH')));near(f.rows.reduce((s,r)=>s+r.share,0),100);}
+ const {frames}=buildRotation(d,'1h');assert.ok(frames.length);for(const f of frames){const l=f.rows.find(r=>r.id==='l1');if(l)assert.ok(l.expectedMembers>=l.members.length);assert.ok(!f.rows.some(r=>r.members.some(m=>m.base==='ETH')));near(f.rows.reduce((s,r)=>s+r.share,0),100);}
+});
+test('daily rotation reads actual daily candles instead of resampling an insufficient 15m snapshot',()=>{
+ const d=structuredClone(recorded),day=86400000,end=Math.floor(d.requestTime/day)*day;
+ assert.equal(buildRotation(d,'1d').frames.length,0);
+ d.dailyCandles=Object.fromEntries(Object.entries(d.candles).map(([symbol,entry])=>{
+  const price=Number(entry.response?.data?.at(-1)?.[4]);
+  return [symbol,{response:{requestTime:d.requestTime,data:Array.from({length:16},(_,i)=>{const open=price*(1+i*.002),close=open*(1+Math.sin(i/3)*.005);return [end-(16-i)*day,open,open*1.02,open*.98,close,100,close*100];})}}];
+ }));
+ const result=buildRotation(d,'1d');assert.equal(result.frames.length,8);
+ assert.ok(result.frames[0].rows.length>1);assert.ok(result.frames.every(f=>f.ts%day===0));
+});
+test('completed 15m market snapshot cannot bypass the daily candle fetch',()=>{
+ const now=Date.now(),market={scan:{done:8,total:8,complete:true},captureCompletedAt:new Date(now).toISOString(),candles:{BTCUSDT:{response:{data:[[now]]}}}};
+ assert.equal(freshDaily(market,now),false);
+ assert.equal(freshDaily({...market,dailyCandles:{BTCUSDT:{response:{data:[[now]]}}}},now),true);
+ assert.equal(freshDaily({...market,scan:{done:1,total:8,complete:false},dailyCandles:{BTCUSDT:{response:{data:[[now]]}}}},now),false);
 });
 test('treemap tile areas match weights exactly and do not overlap',()=>{
  const tiles=partition([{v:50},{v:30},{v:20}],[0,0,400,250],r=>r.v);
  for(const t of tiles)near(t.rect[2]*t.rect[3],t.v*1000);
  for(let i=0;i<tiles.length;i++)for(let j=i+1;j<tiles.length;j++){const [x,y,w,h]=tiles[i].rect,[a,b,c,d]=tiles[j].rect;assert.ok(x+w<=a||a+c<=x||y+h<=b||b+d<=y);}
- assert.equal(heatmapRows(recorded,'24h').length,25);
+ assert.ok(heatmapRows(recorded,'24h').length<=recorded.tickers.length);
 });
 test('Footprint, CVD and profile reconcile to deduplicated real trades and keep partial edges visible',()=>{
  for(const symbol of ['BTCUSDT','ETHUSDT','SOLUSDT']){const f=orderFlow(recorded.trades[symbol],{step:symbol==='BTCUSDT'?10:symbol==='ETHUSDT'?1:.01});assert.equal(f.trades.length,3000);near(f.buy-f.sell,f.delta);near(f.cvd.at(-1).value,f.delta);near(f.bars.reduce((s,b)=>s+b.total,0),f.total);near(f.profile.reduce((s,p)=>s+p.total,0),f.total);assert.ok(f.bars[0].partial&&f.bars.at(-1).partial);

@@ -12,7 +12,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     if (canvas.width !== Math.round(width * dpr) || canvas.height !== Math.round(height * dpr)) { canvas.width = Math.round(width * dpr); canvas.height = Math.round(height * dpr); }
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, width, height);
-    const m = { l: width < 600 ? 45 : 62, r: width < 600 ? 23 : 42, t: 40, b: 50 };
+    const m = { l: width < 600 ? 32 : 52, r: width < 600 ? 12 : 30, t: 31, b: 42 };
     const pw = width - m.l - m.r, ph = height - m.t - m.b;
     const ext = [...all, ...(settings.trails || []).flatMap(t => t.points)];
     const nice = v => { const step = v <= .2 ? .05 : v <= 1 ? .25 : v <= 4 ? 1 : v <= 10 ? 2 : 10; return Math.max(step, Math.ceil(v / step) * step); };
@@ -35,16 +35,15 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     }
     ctx.strokeStyle = '#59615f';
     ctx.beginPath(); ctx.moveTo(cx, m.t); ctx.lineTo(cx, m.t + ph); ctx.moveTo(m.l, cy); ctx.lineTo(m.l + pw, cy); ctx.stroke();
-    const label = (text, x, y, align) => { ctx.font = '12px Inter, -apple-system, BlinkMacSystemFont, sans-serif'; ctx.fillStyle = light?'#616d7c':'#838c8e'; ctx.textAlign = align; ctx.fillText(text, x, y); };
+    const label = (text, x, y, align) => { ctx.font = `${width<600?10:11}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`; ctx.fillStyle = light?'#616d7c':'#838c8e'; ctx.textAlign = align; ctx.fillText(text, x, y); };
     label(settings.quadrants?.[0] || '賣壓放緩', m.l + 12, m.t + 22, 'left'); label(settings.quadrants?.[1] || '買壓增強', m.l + pw - 12, m.t + 22, 'right');
     label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 12, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 12, 'right');
-    for (const trail of settings.trails || []) { if (selected && trail.symbol !== selected) continue; const pts=trail.points; ctx.strokeStyle=(trail.color || '#bbc5c4')+'70';ctx.lineWidth=1.2;ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();pts.slice(0,-1).forEach((p,i)=>{ctx.fillStyle=(trail.color || '#bbc5c4')+'80';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2+i*.3,0,Math.PI*2);ctx.fill();}); }
     const max = Math.max(...all.map(r => r.turnover), 1);
     points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 29 : 42) : Math.max(4,radiusMax * Math.sqrt(row.turnover / max)) }));
     const sorted = [...points].sort((a, b) => b.r - a.r);
     for (const p of sorted) {
       const active = !filter || p.row.state.id === filter; const chosen = p.row.symbol === selected;
-      ctx.globalAlpha = active ? (selected && !chosen ? .68 : 1) : .12;
+      ctx.globalAlpha = active ? (selected && !chosen ? .88 : 1) : .12;
       const gradient = ctx.createRadialGradient(p.x - p.r * .3, p.y - p.r * .4, 0, p.x, p.y, p.r);
       gradient.addColorStop(0, p.row.state.color + 'aa'); gradient.addColorStop(.75, p.row.state.color + '70'); gradient.addColorStop(1, p.row.state.color + '45');
       ctx.fillStyle = gradient; ctx.beginPath(); ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2); ctx.fill();
@@ -52,6 +51,13 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       ctx.fillStyle = p.row.state.color; ctx.beginPath(); ctx.arc(p.x, p.y, 2, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
+    // Draw the moving path over the bubbles so the cumulative line stays visible.
+    for (const trail of settings.trails || []) { if (selected && trail.symbol !== selected) continue; const pts=trail.points;if(pts.length<2)continue;
+      ctx.strokeStyle=(trail.color || '#bbc5c4')+(selected?'ef':'ae');ctx.lineWidth=selected?2.5:1.7;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();
+      pts.slice(0,-1).forEach(p=>{ctx.fillStyle=light?'#334149c9':'#15252bdb';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2.3,0,Math.PI*2);ctx.fill();});
+    }
+    // Plain labels with a soft shadow keep the text readable without dark outlines or boxes.
+    const ink=(value,x,y,tone=light?'#28343c':'#f0f2ea')=>{ctx.save();ctx.shadowColor=light?'transparent':'#08101766';ctx.shadowBlur=2;ctx.shadowOffsetY=1;ctx.fillStyle=tone;ctx.fillText(value,x,y);ctx.restore();};
     // Labels may be suppressed on overlap; the measured coordinates never move.
     const boxes = [];
     for (const p of [...points].sort((a, b) => Number(b.row.symbol === selected) - Number(a.row.symbol === selected) || b.r - a.r)) {
@@ -69,10 +75,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
         boxes.push(box);labelHits.push({...box,symbol:p.row.symbol});
         const displaced=Math.hypot(box.x-p.x,box.y-p.y)>14;
         if(displaced){ctx.strokeStyle=p.row.state.color+'a0';ctx.lineWidth=.8;ctx.beginPath();ctx.moveTo(p.x,p.y);ctx.lineTo(box.x,box.y);ctx.stroke();}
-        ctx.fillStyle=light?(chosen?'#edf2f8':'#ffffffed'):(chosen?'#273a40f5':'#17252ded');ctx.fillRect(box.l,box.t,labelWidth,labelHeight);
-        ctx.strokeStyle=chosen?(light?'#8d712e':'#e7ede4'):p.row.state.color+'50';ctx.lineWidth=.6;ctx.strokeRect(box.l,box.t,labelWidth,labelHeight);
-        ctx.font='12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ctx.fillStyle=light?'#374151':'#eceee5';ctx.fillText(p.row.base,box.x,box.y-2);
-        ctx.font='10px Inter,sans-serif';ctx.fillStyle=p.row.state.color;ctx.fillText(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12);
+        ctx.font='600 12px Inter,-apple-system,sans-serif';ctx.textAlign='center';ink(p.row.base,box.x,box.y-2);
+        ctx.font='10px Inter,sans-serif';ink(signed(p.row.labelX??p.row.x,2)+'pp',box.x,box.y+12,light?'#475b61':'#c4d9d5');
         continue;
       }
       let fontSize = settings.rotation ? (width < 600 ? 11 : 14) : (chosen || p.r > 26 ? 15 : 12);
@@ -82,17 +86,17 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       const b = { l: p.x - w / 2, r: p.x + w / 2, t: p.y - h / 2, b: p.y + h / 2 };
       if (b.l < m.l || b.r > m.l + pw || b.t < m.t || b.b > m.t + ph) continue;
       if (!chosen && boxes.some(o => b.l < o.r + 5 && b.r > o.l - 5 && b.t < o.b + 5 && b.b > o.t - 5)) continue;
-      boxes.push(b); ctx.textAlign = 'center'; ctx.fillStyle = light?'#374151':'#f0eee8';
-      ctx.fillText(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
-      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ctx.fillText(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
+      boxes.push(b);ctx.textAlign = 'center';
+      ink(p.row.base, p.x, p.y + (h === 18 ? 4 : -1));
+      if (h > 18) { ctx.font = '11px Inter, sans-serif'; ink(signed(p.row.labelX??p.row.x, settings.rotation ? 2 : 1) + (settings.rotation ? 'pp' : '%'), p.x, p.y + 15); }
     }
-    ctx.restore(); ctx.font = '11px Inter, -apple-system, sans-serif'; ctx.fillStyle = light?'#616d7c':'#909a9d';
+    ctx.restore(); ctx.font = `${width<600?10:11}px Inter, -apple-system, sans-serif`; ctx.fillStyle = light?'#616d7c':'#909a9d';
     for (let i = -nt; i <= nt; i++) {
       const xv = xd * i / nt, yv = yd * i / nt, x = xAt(xv), y = yAt(yv);
       if (x >= m.l && x <= width - m.r) { ctx.textAlign = 'center'; ctx.fillText(signed(xv, Number.isInteger(xv) ? 0 : Math.abs(xv)<1 ? 2 : 1), x, height - 29); }
-      if (y >= m.t && y <= m.t + ph) { ctx.textAlign = 'right'; ctx.fillText(signed(yv, Number.isInteger(yv) ? 0 : Math.abs(yv)<1 ? 2 : 1), m.l - 10, y + 4); }
+      if (y >= m.t && y <= m.t + ph) { ctx.textAlign = 'right'; ctx.fillText(signed(yv, Number.isInteger(yv) ? 0 : Math.abs(yv)<1 ? 2 : 1), m.l - 4, y + 3); }
     }
-    ctx.textAlign = 'left'; ctx.fillStyle = light?'#616d7c':'#a5adad'; ctx.fillText(settings.axisY || '占比變化（百分點）', m.l, 20);
+    ctx.textAlign = 'left'; ctx.fillStyle = light?'#616d7c':'#a5adad'; ctx.fillText(settings.axisY || '占比變化（百分點）', m.l, 17);
     ctx.textAlign = 'center'; ctx.fillText(settings.axisX || '主動買賣占比（%）', m.l + pw / 2, height - 7);
   };
   const schedule = () => { if (active && !raf) raf = requestAnimationFrame(draw); };

@@ -1,5 +1,5 @@
 import { finite } from './flow-model.js';
-export const TOOL_PERIODS = Object.freeze({'15m':900000,'1h':3600000,'4h':14400000,'24h':86400000});
+export const TOOL_PERIODS = Object.freeze({'15m':900000,'30m':1800000,'1h':3600000,'2h':7200000,'4h':14400000,'6h':21600000,'12h':43200000,'24h':86400000,'1d':86400000});
 export const ROTATION_STATES = Object.freeze([
  {id:'leading',name:'領先擴大',color:'#91c7b1'}, {id:'cooling',name:'領先降溫',color:'#cfbc91'},
  {id:'improving',name:'落後改善',color:'#9eaec4'}, {id:'lagging',name:'落後擴大',color:'#cd9399'}
@@ -7,44 +7,51 @@ export const ROTATION_STATES = Object.freeze([
 export const rotationState=(x,y)=>x===0||y===0?{id:'flat',name:'持平',color:'#a3acab'}:ROTATION_STATES[x>0?(y>0?0:1):(y>0?2:3)];
 const mean = a => a.length ? a.reduce((s,v)=>s+v,0)/a.length : null;
 const sum = a => a.reduce((s,v)=>s+v,0);
-export function candleIndex(data) {
- return new Map(Object.entries(data.candles||{}).map(([s,e])=>[s,new Map((e.response?.data||[]).filter(r=>r.length>=7 && r.slice(0,7).every(v=>finite(v)!==null) && Number(r[1])>0 && Number(r[4])>0 && Number(r[6])>=0).map(r=>[Number(r[0]),r.map(Number)]))]));
+export function candleIndex(data,source=data.candles) {
+ return new Map(Object.entries(source||{}).map(([s,e])=>[s,new Map((e.response?.data||[]).filter(r=>r.length>=7 && r.slice(0,7).every(v=>finite(v)!==null) && Number(r[1])>0 && Number(r[4])>0 && Number(r[6])>=0).map(r=>[Number(r[0]),r.map(Number)]))]));
 }
-export function candleWindow(index,symbol,end,step) {
+export function candleWindow(index,symbol,end,step,bar=900000) {
  const map=index.get(symbol); if(!map)return null;
- const rows=[]; for(let t=end-step;t<end;t+=900000){const r=map.get(t);if(!r)return null;rows.push(r);}
+ const rows=[]; for(let t=end-step;t<end;t+=bar){const r=map.get(t);if(!r)return null;rows.push(r);}
  if(!rows.length)return null;
  return {returnPct:100*(rows.at(-1)[4]/rows[0][1]-1),volume:sum(rows.map(r=>r[6])),price:rows.at(-1)[4],open:rows[0][1],end};
 }
 export function buildRotation(data,period='1h',wantedFrames=8) {
  const step=TOOL_PERIODS[period];if(!step)throw new Error('Unsupported rotation period');
- const index=candleIndex(data),btc=index.get('BTCUSDT');if(!btc?.size)return {frames:[],sectors:[],excluded:[],period};
- const sourceTime=Math.min(...Object.values(data.candles).filter(e=>e.response?.data?.length).map(e=>Number(e.response.requestTime)));
+ const daily=period==='1d',source=daily?(data.dailyCandles||{}):data.candles,bar=daily?86400000:900000;
+ const index=candleIndex(data,source),btc=index.get('BTCUSDT');if(!btc?.size)return {frames:[],sectors:[],excluded:[],period};
+ // BTC anchors the observation window. During a progressive refresh, an old
+ // candle response must not drag every newly fetched contract back in time.
+ const sourceTime=Number(source.BTCUSDT?.response?.requestTime);
+ if(!Number.isFinite(sourceTime))return {frames:[],sectors:[],excluded:[],period};
  const end=Math.floor(sourceTime/step)*step;
  const oldest=Math.min(...btc.keys());const frameCount=Math.max(0,Math.min(wantedFrames,Math.floor((end-oldest)/step)-1));
  const ends=Array.from({length:frameCount},(_,i)=>end-(frameCount-1-i)*step);
- const validMember=s=>ends.every(t=>candleWindow(index,s,t,step)&&candleWindow(index,s,t-step,step));
+ const window=(symbol,t)=>candleWindow(index,symbol,t,step,bar);
+ const validMember=s=>ends.every(t=>window(s,t)&&window(s,t-step));
  const sectors=(data.sectors||[]).map(s=>({...s,validMembers:s.members.filter(validMember)}));
  const frames=ends.flatMap(t=>{
-  const bm=candleWindow(index,'BTCUSDT',t,step),bp=candleWindow(index,'BTCUSDT',t-step,step);if(!bm||!bp)return [];
+  const bm=window('BTCUSDT',t),bp=window('BTCUSDT',t-step);if(!bm||!bp)return [];
   const cohorts=sectors.filter(s=>s.validMembers.length>=2);
-  const currentVolumes=cohorts.map(s=>sum(s.validMembers.map(m=>candleWindow(index,m,t,step).volume)));
-  const previousVolumes=cohorts.map(s=>sum(s.validMembers.map(m=>candleWindow(index,m,t-step,step).volume)));
+  const currentVolumes=cohorts.map(s=>sum(s.validMembers.map(m=>window(m,t).volume)));
+  const previousVolumes=cohorts.map(s=>sum(s.validMembers.map(m=>window(m,t-step).volume)));
   const total=sum(currentVolumes),oldTotal=sum(previousVolumes);
   const rows=cohorts.map((s,i)=>{
-   const members=s.validMembers.map(symbol=>{const a=candleWindow(index,symbol,t,step),b=candleWindow(index,symbol,t-step,step);return {symbol,base:symbol.replace(/USDT$/,''),...a,relative:a.returnPct-bm.returnPct,previousRelative:b.returnPct-bp.returnPct,volumeChange:b.volume>0?100*(a.volume/b.volume-1):null};});
+   const members=s.validMembers.map(symbol=>{const a=window(symbol,t),b=window(symbol,t-step);return {symbol,base:symbol.replace(/USDT$/,''),...a,relative:a.returnPct-bm.returnPct,previousRelative:b.returnPct-bp.returnPct,volumeChange:b.volume>0?100*(a.volume/b.volume-1):null};});
    const x=mean(members.map(m=>m.relative)),previous=mean(members.map(m=>m.previousRelative)),y=x-previous;
-   return {...s,expectedMembers:s.members.length,symbol:s.id,base:s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
+   return {...s,expectedMembers:s.requestedBases?.length||s.members.length,symbol:s.id,base:s.shortName||s.name,x,y,previous,returnPct:mean(members.map(m=>m.returnPct)),turnover:currentVolumes[i],share:total>0?100*currentVolumes[i]/total:null,shareChange:total>0&&oldTotal>0?100*(currentVolumes[i]/total-previousVolumes[i]/oldTotal):null,breadth:100*members.filter(m=>m.relative>0).length/members.length,members,state:rotationState(x,y),ts:t};
   });
   return [{ts:t,rows,benchmark:bm.returnPct,totalVolume:total}];
  });
- return {frames,sectors,period,excluded:sectors.filter(s=>s.validMembers.length<2).map(s=>({name:s.name,valid:s.validMembers.length,expected:s.members.length})),end};
+ return {frames,sectors,period,excluded:sectors.filter(s=>s.validMembers.length<2).map(s=>({name:s.name,valid:s.validMembers.length,expected:s.requestedBases?.length||s.members.length})),end};
 }
 export function heatmapRows(data,period='24h') {
  const step=TOOL_PERIODS[period],index=candleIndex(data);if(!step)return [];
  const available=Object.values(data.candles||{}).filter(e=>e.response?.data?.length);if(!available.length)return [];
- const end=Math.floor(Math.min(...available.map(e=>Number(e.response.requestTime)))/900000)*900000;
- const groups=new Map((data.sectors||[]).flatMap(s=>s.members.map(m=>[m,s])));
+ const anchor=Number(data.candles.BTCUSDT?.response?.requestTime);
+ if(!Number.isFinite(anchor))return [];
+ const end=Math.floor(anchor/900000)*900000;
+ const groups=new Map();for(const sector of data.sectors||[])for(const symbol of sector.members)if(!groups.has(symbol))groups.set(symbol,sector);
  return (data.tickers||[]).flatMap(t=>{const w=candleWindow(index,t.symbol,end,step);if(!w)return [];return [{...w,symbol:t.symbol,base:t.symbol.replace(/USDT$/,''),sector:groups.get(t.symbol)?.name||'BTC 基準',sectorId:groups.get(t.symbol)?.id||'benchmark',cap:finite(data.coins?.[t.symbol]?.market_cap),capTime:data.coins?.[t.symbol]?.last_updated}];});
 }
 export function derivativeRows(data) {
