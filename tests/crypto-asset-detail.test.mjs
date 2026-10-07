@@ -2,10 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {createAssetCandleSource,ASSET_PERIODS} from '../src/markets/crypto/analytics/asset-candles.js';
 import {candleChart} from '../src/markets/crypto/patterns/charts.js';
+import {fixtureBody} from '../scripts/performance-fixtures.mjs';
 
 const timestamp=Date.UTC(2026,9,7,4);
 function response(now=timestamp,seconds=3600){const end=Math.floor(now/1000/seconds)*seconds;return {code:'00000',requestTime:now,data:Array.from({length:100},(_,i)=>[(end-(99-i)*seconds)*1000,100+i,102+i,99+i,101+i,5,500])};}
 const candles=json=>json.data.map(([ms,open,high,low,close])=>({time:ms/1000,open,high,low,close}));
+
+test('minute-chart retry fixture advances simulated bar timestamps with its requested clock',async()=>{
+ const now=Date.now()+180000;
+ const source=createAssetCandleSource({api:null,now:()=>now,feed:{json:async url=>fixtureBody(url,now)}});
+ const result=await source.load('ETHUSDT','1m');
+ assert.equal(result.candles.at(-1).time,Math.floor(now/60000)*60-60);
+ assert.ok(result.candles.every((c,i)=>!i||c.time-result.candles[i-1].time===60));
+});
 
 test('asset details reuse only fresh matching main-chart candles and expire the small cache',async()=>{
  let now=timestamp,calls=0;
