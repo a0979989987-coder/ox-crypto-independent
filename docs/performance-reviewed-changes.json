@@ -154,14 +154,14 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "87ac71baa4bd2117de2f28f10a60d04d5612c8b46f79a64090b7dcb242cb7281",
-      "reason": "User-requested chart editing: shared navigation/selection cursor, transaction undo/redo, nonblocking drawing layer, legacy migration, timeframe visibility and touch pinch arbitration. Verified with chart gesture and real-browser interaction checks."
+      "sha256": "d81746660134ca5242f1078e18b94e7ce6b07cb200ff42063e71c0ffd6b51970",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks."
     },
     {
       "path": "src/components/chart/drawings.js",
       "sourceSha256": "db0df31e1326e037ed56d228874accbda3aef3e20d918ec45b29b44f00340b88",
-      "sha256": "567b5978a428a2652ff891de2c706b8d41100efbf76d98a9baab2738ab87b2ef",
-      "reason": "User-requested chart editing: shared navigation/selection cursor, transaction undo/redo, nonblocking drawing layer, legacy migration, timeframe visibility and touch pinch arbitration. Verified with chart gesture and real-browser interaction checks."
+      "sha256": "2f5ff98a1d43f24bf3e17a4bcac7b106154e4fb81072c5ea0c12be6c73343a76",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks."
     }
   ]
 }
