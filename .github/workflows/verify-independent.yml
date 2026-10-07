@@ -23,10 +23,13 @@ jobs:
       - run: npm run check
       - run: npm run verify:extraction
       - run: npm test
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - run: npm run test:e2e
       - run: npm run test:performance
       - run: npm run test:news-rotation
+      - run: npm run test:news-rotation
+        env:
+          OX_UI_BROWSER: webkit
       - run: npm run test:quotes
       - uses: actions/upload-artifact@v4
         if: always()

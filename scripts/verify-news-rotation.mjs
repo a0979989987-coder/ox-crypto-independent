@@ -1,18 +1,21 @@
 import assert from 'node:assert/strict';
 import {createRequire} from 'node:module';
 import {readFile,writeFile} from 'node:fs/promises';
-import {chromium} from 'playwright';
+import {chromium,webkit} from 'playwright';
 import {FEATURE_CATALOG} from '../server/account/feature-catalog.js';
 import {fixtureBody,routeSnapshots} from './performance-fixtures.mjs';
 process.env.OX_E2E_PORT='4308';
 const {server,preparePage,testBase}=createRequire(import.meta.url)('./e2e-check.cjs');
 await new Promise(r=>server.listen(4308,'127.0.0.1',r));
-const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
+const browserName=process.env.OX_UI_BROWSER||'chromium';
+const browser=await (browserName==='webkit'?webkit:chromium).launch({headless:true,...(browserName==='chromium'?{executablePath:process.env.OX_TEST_BROWSER,args:['--no-sandbox']}: {})});
+const imagePrefix=browserName==='webkit'?'bubble-webkit':'bubble';
 const reports=[];
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
 const tool=(p,id)=>p.locator(`button[data-crypto-tool="${id}"]`).click();
-async function setup(width,theme='dark'){
- const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW'}),{page,audit}=await preparePage(context,{width,height:900});
+async function setup(width,theme='dark',clockTime=null){
+ const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',...(browserName==='webkit'&&width<600?{isMobile:true,hasTouch:true}: {})}),{page,audit}=await preparePage(context,{width,height:900});
+ if(clockTime)await page.clock.install({time:clockTime});
  const requests=[];page.on('request',r=>requests.push(r.url()));
  await page.addInitScript(theme=>localStorage.setItem('ox-ui-theme',theme),theme);
  await page.addInitScript(()=>{
@@ -29,9 +32,76 @@ async function setup(width,theme='dark'){
  return {page,context,audit,requests};
 }
 async function verifyExpandedResearch(page){
- const geometry=await active(page,'.cfx-research-panel').evaluate(panel=>{const main=panel.closest('.cfx'),content=panel.parentElement,canvas=panel.querySelector('canvas'),a=main.getBoundingClientRect(),b=canvas.getBoundingClientRect();return {outerBorder:parseFloat(getComputedStyle(main).borderLeftWidth),panelBorder:parseFloat(getComputedStyle(panel).borderLeftWidth),padding:parseFloat(getComputedStyle(content).paddingLeft),mainWidth:a.width,canvasWidth:b.width};});
- assert.equal(geometry.outerBorder,0,'outer research frame is removed');assert.equal(geometry.panelBorder,0,'nested chart frame is removed');assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth)<1,'canvas fills the available tool width');
+ const geometry=await active(page,'.cfx-research-panel').evaluate(panel=>{const main=panel.closest('.cfx'),content=panel.parentElement,canvas=panel.querySelector('canvas'),a=main.getBoundingClientRect(),b=canvas.getBoundingClientRect();return {outerBorder:parseFloat(getComputedStyle(main).borderLeftWidth),panelBorder:parseFloat(getComputedStyle(panel).borderLeftWidth),radius:parseFloat(getComputedStyle(panel).borderTopLeftRadius),padding:parseFloat(getComputedStyle(content).paddingLeft),mainWidth:a.width,canvasWidth:b.width};});
+ assert.equal(geometry.outerBorder,0,'only the outermost research frame is removed');assert.equal(geometry.panelBorder,1,'one chart frame remains');assert.equal(geometry.radius,14);assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth-2)<1,'canvas fills the width within the single border');
  assert.equal(await active(page,'[data-control="period"]').count(),1);assert.equal(await active(page,'[data-control="replay-range"]').count(),0,'one header menu owns periods and replay ranges');
+}
+async function verifyDialogBounds(page,selector){
+ const dialog=active(page,selector);await dialog.waitFor();
+ const inspect=()=>dialog.evaluate(el=>{const r=el.getBoundingClientRect(),button=el.querySelector('.cfx-close'),b=button.getBoundingClientRect(),s=getComputedStyle(button);return {r:{x:r.x,y:r.y,w:r.width,h:r.height},b:{x:b.x,y:b.y,w:b.width,h:b.height},vw:innerWidth,vh:innerHeight,overflow:el.scrollWidth-el.clientWidth,outline:parseFloat(s.outlineWidth),border:parseFloat(s.borderTopWidth),radius:parseFloat(s.borderTopLeftRadius),transform:getComputedStyle(el).transform};});
+ for(const scrolled of [false,true]){
+  if(scrolled)await dialog.evaluate(el=>el.scrollTop=el.scrollHeight);
+  const g=await inspect();
+  assert.ok(g.r.x>=11&&g.r.x+g.r.w<=g.vw-11&&g.r.y>=15&&g.r.y+g.r.h<=g.vh-15,`${selector} fits viewport: ${JSON.stringify(g)}`);
+  assert.ok(Math.abs(g.r.x+g.r.w/2-g.vw/2)<1&&Math.abs(g.r.y+g.r.h/2-g.vh/2)<1,`${selector} stays centered`);
+  assert.ok(g.b.x>=g.r.x&&g.b.x+g.b.w<=g.r.x+g.r.w&&g.b.y>=g.r.y&&g.b.y+g.b.h<=g.r.y+g.r.h,`${selector} close stays visible while scrolling`);
+  assert.equal(g.b.w,44);assert.equal(g.b.h,44);assert.equal(g.border,0);assert.equal(g.outline,0);assert.ok(g.radius>=22,'exit has no square outline');assert.ok(g.overflow<=1,'popup has no horizontal overflow');assert.equal(g.transform,'none');
+ }
+ await dialog.evaluate(el=>el.scrollTop=0);
+ // Native dialog autofocus must not create a black square around the close.
+ assert.equal(await dialog.evaluate(el=>el.getRootNode().activeElement===el.querySelector('.cfx-dialog-head')),true);
+ await dialog.locator('.cfx-close').focus();assert.equal((await inspect()).outline,0);await dialog.locator('.cfx-dialog-head').focus();
+}
+async function verifyGeneralPopups(page,width,theme){
+ await active(page,'[data-action="settings"]').click();await verifyDialogBounds(page,'.cfx-settings-dialog');
+ if(width===390&&theme==='light'){
+  await page.setViewportSize({width,height:500});await verifyDialogBounds(page,'.cfx-settings-dialog');await page.setViewportSize({width,height:900});
+ }
+ await page.screenshot({path:`docs/performance/${imagePrefix}-settings-${width}-${theme}.png`});
+ await active(page,'[data-action="close-settings"]').click();
+ await active(page,'[data-action="help"]').last().click();await verifyDialogBounds(page,'.cfx-dialog:not(.cfx-settings-dialog):not(.cfx-picker-dialog):not(.cfx-sector-dialog)');
+ await active(page,'[data-action="close-help"]').click();
+}
+async function chartScene(page){
+ return active(page,'.cfx-plot canvas').evaluate(async c=>{
+  await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+  const panel=c.closest('.cfx-research-panel');
+  return {points:c.__bubblePoints,labels:c.__bubbleLabels,axes:c.__plotText?.filter(t=>t.baseline==='alphabetic'),frame:panel.querySelector('[data-control="frame"]').value,max:panel.querySelector('[data-control="frame"]').max,zoom:panel.querySelector('[data-slot="zoom"]').textContent,coverage:panel.querySelector('[data-slot="replay-coverage"]').textContent,timestamp:c.getRootNode().querySelector('[data-slot="period"]').textContent};
+ });
+}
+async function verifyIdleUpdates(){
+ let feedTime=Date.now(),phase=0,returned=0,release,partialReady;
+ let gate=new Promise(r=>release=r),partial=new Promise(r=>partialReady=r);
+ const {page,context,audit}=await setup(390,'light',feedTime);
+ await page.route('https://api.bitget.com/**',async route=>{
+  const url=new URL(route.request().url()),native=url.searchParams.get('granularity')==='12Hutc'&&url.searchParams.get('limit')==='32',taker=url.pathname.endsWith('/taker-buy-sell');
+  const held=native||phase>=2&&taker;
+  if(held&&url.searchParams.get('symbol')==='ETHUSDT')await gate;
+  const body=fixtureBody(url.href,feedTime);
+  if(phase>0&&native&&url.searchParams.get('symbol')==='ETHUSDT')body.data=body.data.map((r,i)=>{const a=[...r];a[4]=String(Number(a[4])*(1+(i%3)*.02));a[2]=String(Math.max(Number(a[1]),Number(a[4]))*1.01);a[3]=String(Math.min(Number(a[1]),Number(a[4]))*.99);return a;});
+  if(phase>=2&&taker)body.data=body.data.map((r,i)=>({...r,buyVolume:String(Number(r.buyVolume)+(i%3)*17)}));
+  await route.fulfill({json:body});if(held&&++returned===3)partialReady();
+ });
+ const waitPartial=()=>Promise.race([partial,new Promise((_,reject)=>setTimeout(()=>reject(Error('background refresh did not reach three staged responses')),15000))]);
+ const pointsReady=()=>page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return Number(h?.shadowRoot.querySelector('canvas')?.dataset.points)>0;},{},{timeout:20000});
+ try{
+  await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();await active(page,'[data-control="period"]').selectOption('12h');await waitPartial();
+  assert.equal(await active(page,'canvas').getAttribute('data-points'),'0','a new native period waits for the whole cohort instead of moving partially averaged sectors');assert.ok(await active(page,'.cfx-plot-loading').isVisible());
+  release();await pointsReady();const nativeLatest=(await chartScene(page)).timestamp;await active(page,'[data-action="zoom-in"]').click();
+  await active(page,'[data-action="replay-toggle"]').click();
+  await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),v=Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.value);return v>0&&v%1>0;});await active(page,'[data-action="play"]').click();
+  const paused=await chartScene(page);phase=1;returned=0;gate=new Promise(r=>release=r);partial=new Promise(r=>partialReady=r);feedTime+=13*3600000;await page.clock.setSystemTime(feedTime);
+  await page.evaluate(()=>window.dispatchEvent(new Event('online')));await waitPartial();assert.deepEqual(await chartScene(page),paused,'paused rotation keeps its positions, scale and fractional cursor during partial responses');
+  release();await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return h?.shadowRoot.querySelector('.cfx-notice')?.hidden===true;},{},{timeout:20000});
+  assert.deepEqual(await chartScene(page),paused,'completed background data cannot replace a paused replay cohort');await active(page,'[data-action="latest"]').click();assert.notDeepEqual(await chartScene(page),paused,'latest explicitly adopts the completed cohort');assert.notEqual((await chartScene(page)).timestamp,nativeLatest,'latest advances to the newly closed native period');
+  assert.equal(await active(page,'[data-slot="zoom"]').textContent(),'150%');
+  phase=2;returned=0;gate=new Promise(r=>release=r);partial=new Promise(r=>partialReady=r);
+  await tool(page,'flow');await active(page,'.cfx-research-panel').waitFor();await active(page,'[data-control="period"]').selectOption('1h');await waitPartial();release();await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:30000});await pointsReady();const flowLatest=(await chartScene(page)).timestamp;
+  await active(page,'[data-action="replay-toggle"]').click();await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot),v=Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.value);return v>0&&v%1>0;});await active(page,'[data-action="play"]').click();
+  const pausedFlow=await chartScene(page);phase=3;returned=0;gate=new Promise(r=>release=r);partial=new Promise(r=>partialReady=r);feedTime+=2*3600000;await page.clock.setSystemTime(feedTime);await active(page,'[data-action="refresh-flow"]').click();await waitPartial();assert.deepEqual(await chartScene(page),pausedFlow,'taker partial responses leave paused observations stable');
+  release();await active(page,'.cfx[data-scan-state="complete"]').waitFor({timeout:30000});assert.deepEqual(await chartScene(page),pausedFlow,'a completed taker batch preserves paused playback');await active(page,'[data-action="latest"]').click();assert.notDeepEqual(await chartScene(page),pausedFlow);assert.notEqual((await chartScene(page)).timestamp,flowLatest,'latest advances to the newly closed taker period');assert.deepEqual(audit.pageErrors,[]);
+  reports.push({browser:browserName,idleNativeCohortStable:true,idleTakerCohortStable:true,pausedFractionPreserved:true,explicitLatest:true});
+ }finally{release();await context.close();}
 }
 async function verifySectorDialog(page,width,theme){
  await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
@@ -42,16 +112,16 @@ async function verifySectorDialog(page,width,theme){
  const coordinates=drawn.text.filter(t=>t.baseline==='alphabetic'&&/^[+−-]?\d/.test(t.text));assert.ok(coordinates.some(t=>t.x===8),'left ticks overlay the grid');assert.ok(coordinates.some(t=>Math.abs(t.y-(drawn.height-27))<1),'bottom ticks overlay the grid');assert.ok(coordinates.every(t=>t.x>=0&&t.x<=drawn.width&&t.y>0&&t.y<drawn.height));
  assert.ok(drawn.labels.length,'bubble labels render');
  for(const label of drawn.labels){const size=Number(/([\d.]+)px/.exec(label.font)?.[1]);assert.doesNotMatch(label.font,/bold|600|700/);assert.ok(drawn.points.some(p=>Math.abs(p.x-label.x)<.1&&Math.hypot(label.width/2,Math.abs(label.y-p.y)+size/2)<=p.r+.1),'text stays inside a bubble');}
- await active(page,'.cfx-research-panel').screenshot({path:`docs/performance/bubble-${width}-${theme}.png`});
+ await active(page,'.cfx-research-panel').screenshot({path:`docs/performance/${imagePrefix}-${width}-${theme}.png`});
  const point=drawn.points.find(p=>p.x>35&&p.x<drawn.width-15&&p.y>60&&p.y<drawn.height-60);assert.ok(point,'actual sector bubbles are drawn');
  await bubbleCanvas.click({position:{x:point.x,y:point.y}});await active(page,'.cfx-sector-dialog').waitFor();await active(page,'[data-action="close-sector"]').click();
  await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
- const dialog=active(page,'.cfx-sector-dialog');await dialog.waitFor();
+ const dialog=active(page,'.cfx-sector-dialog');await dialog.waitFor();await verifyDialogBounds(page,'.cfx-sector-dialog');
  const bounds=await dialog.boundingBox();assert.ok(bounds.width<=width-12,'framed sector popup fits the viewport');
  assert.notEqual(await dialog.evaluate(el=>getComputedStyle(el).borderTopStyle),'none');
  const row=active(page,'.cfx-sector-dialog [data-member-detail]').first(),symbol=await row.getAttribute('data-member-detail');
  await row.locator('td').nth(1).click();
- const detail=active(page,'.cfx-asset-dialog');await detail.waitFor();
+ const detail=active(page,'.cfx-asset-dialog');await detail.waitFor();await verifyDialogBounds(page,'.cfx-asset-dialog');
  await active(page,`.cfx-asset-chart canvas[data-symbol="${symbol}"]`).waitFor({timeout:15000});
  assert.ok(await active(page,'.cfx-asset-dialog .cfx-detail-metrics').count());
  await active(page,'[data-control="asset-period"]').selectOption('1d');await active(page,'[data-control="asset-period"]').selectOption('5m');await active(page,'[data-control="asset-period"]').selectOption('1h');
@@ -65,7 +135,7 @@ async function verifySectorDialog(page,width,theme){
  return {framedPopup:true,coinDetailCandles:true,directNameChart:true,rapidPeriods:true,keyboardReturn:true};
 }
 try{
- for(const [width,theme] of [[320,'dark'],[390,'dark'],[390,'light'],[1440,'dark'],[1440,'light']]){
+ for(const [width,theme] of (browserName==='webkit'?[[320,'light'],[390,'dark'],[390,'light']]:[[320,'dark'],[390,'dark'],[390,'light'],[1440,'dark'],[1440,'light']])){
   const {page,context,audit,requests}=await setup(width,theme);
   for(const id of ['patterns','bubbles','strength','heatmap','rotation']){
    await tool(page,id);
@@ -82,7 +152,9 @@ try{
   const periods=await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value));for(const period of ['15m','30m','1h','2h','4h','6h','12h','1d'])assert.ok(periods.includes(period));
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
   await active(page,'[data-action="zoom-in"]').click();const zoom=await active(page,'[data-slot="zoom"]').textContent();assert.equal(zoom,'150%');
+  await verifyGeneralPopups(page,width,theme);
   await active(page,'[data-action="picker"]').click();
+  await verifyDialogBounds(page,'.cfx-picker-dialog');
   assert.equal(await active(page,'.cfx-picker-group').count(),31,'all first-level groups remain selectable');
   await active(page,'[data-topic-group="meme"] summary').click();
   await active(page,'[data-topic-group="meme"] .cfx-topic').first().waitFor();
@@ -180,6 +252,7 @@ try{
   assert.deepEqual(audit.pageErrors,[]);assert.equal(requests.some(u=>/\/markets\/tw\/|\/api\/v1\/tw\//.test(u)),false);
   reports.push({width,theme,plotHeight:Math.round(plot.height),toolbarFits:true,sameCanvas:true,continuousReplay:true,statePreserved:true,...dialogResults,newsEntryMs,errors:audit.pageErrors});await context.close();
  }
+ await verifyIdleUpdates();
  const faultSetup=await setup(390);const fp=faultSetup.page;let failed=true,candleAttempts=0;
  await fp.route('https://api.bitget.com/**',async r=>{const url=new URL(r.request().url());if(url.pathname.endsWith('/candles')&&url.searchParams.get('granularity')==='1m'&&url.searchParams.get('limit')==='200'){candleAttempts++;if(failed)return r.fulfill({status:429,headers:{'Retry-After':'0'},json:{code:'429'}});}return r.fulfill({json:fixtureBody(r.request().url())});});
  await tool(fp,'rotation');await active(fp,'.cfx-research-panel').waitFor();await active(fp,'[data-action="view-rank"]').click();await active(fp,'.cfx-rank-row').first().click();await active(fp,'.cfx-sector-dialog [data-member-detail]').first().locator('td').nth(1).click();
