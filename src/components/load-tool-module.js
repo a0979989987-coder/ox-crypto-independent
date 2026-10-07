@@ -1,6 +1,6 @@
 import {withDeadline} from './resource-deadline.js';
 const state=globalThis.__OXToolLoads??={loaded:new Map(),pending:new Map(),failed:new Set(),attempt:0};
-const bundles=new Map([['crypto/patterns/view.js','patterns'],['crypto/bubbles/view.js','bubbles'],['crypto/analytics/flow-view.js','analytics']].map(([p,id])=>['/src/markets/'+p,'/src/generated/tool-'+id+'.js?v=20261006-news-rotation4']));
+const bundles=new Map([['crypto/patterns/view.js','patterns'],['crypto/bubbles/view.js','bubbles'],['crypto/analytics/flow-view.js','analytics']].map(([p,id])=>['/src/markets/'+p,'/src/generated/tool-'+id+'.js?v=20261007-ux-replay3']));
 const transient=e=>e?.name==='TimeoutError'||e?.name==='TypeError'&&/fetch|dynamically imported module|importing a module script|load.*module|module.*load/i.test(e.message);
 export async function loadToolModule(url,{current=()=>true,importer=url=>import(url),pause=ms=>new Promise(r=>setTimeout(r,ms)),timeoutMs=15000}={}){
   if(!current())throw new DOMException('已切換工具','AbortError');

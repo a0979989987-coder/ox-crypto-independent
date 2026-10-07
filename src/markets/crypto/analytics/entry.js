@@ -13,7 +13,7 @@ if (section) {
   const boundaryStyle=document.createElement('style');
   boundaryStyle.textContent='body[data-view="strength"] .ox-live-shell{margin-bottom:14px!important}#view-strength .strength-page{padding-top:8px!important}#view-strength .strength-page[data-crypto-tool]:not([data-crypto-tool="strength"]) > :not(#ox-crypto-tools-nav):not(#ox-crypto-tools-inline){display:none!important}#view-strength .strength-page > [hidden]{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top .page-kicker,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top h2,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-side span,#view-strength .strength-page[data-crypto-tool="strength"] .strength-head p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-explain{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top{justify-content:flex-end;margin-bottom:8px}';
   section.append(boundaryStyle);
-  boundaryStyle.textContent+='#view-strength .strength-page[data-crypto-tool="patterns"]{row-gap:4px!important}';
+  boundaryStyle.textContent+='#view-strength .strength-page[data-crypto-tool]{row-gap:4px!important}#view-strength #ox-crypto-tools-inline{margin-top:0!important}';
   const positionIndicator = rail.position;
   const slot = document.createElement('section');
   slot.id = 'ox-crypto-tools-inline';

@@ -262,7 +262,7 @@ export async function collect() {
   for(const item of eventItems)if(item.proposalTitle){const reviewed=REVIEWED_V2.find(e=>e.translationField==='proposalTitle'&&e.sourceId===item.sourceId&&e.title===item.proposalTitle);const previous=old?.events?.find(e=>e.id===item.id&&e.sourceId===item.sourceId&&e.proposalTitle===item.proposalTitle);item.proposalTitleZh=reviewed?.titleZh||previous?.proposalTitleZh||null;}
   const proposals=new Map();
   for(const item of eventItems) if(item.proposalTitle && !item.proposalTitleZh){if(!proposals.has(item.proposalTitle))proposals.set(item.proposalTitle,{title:item.proposalTitle});}
-  const translation = await translateHeadlines([...news,...eventItems,...proposals.values()],{limit:500,concurrency:4});
+  const translation = await translateHeadlines([...eventItems,...proposals.values(),...news],{limit:1000,concurrency:3});
   for(const item of eventItems)if(proposals.get(item.proposalTitle)?.titleZh)item.proposalTitleZh=proposals.get(item.proposalTitle).titleZh;
   for(const item of eventItems)if(!item.proposalTitleZh&&item.proposalTitle){const previous=old?.events?.find(e=>e.id===item.id&&e.proposalTitle===item.proposalTitle);if(previous?.proposalTitleZh)item.proposalTitleZh=previous.proposalTitleZh;}
   const translations = news.filter(item => item.translationStatus !== 'pending');

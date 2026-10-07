@@ -100,8 +100,8 @@ const HomeChartVariant = (()=>{
         vertLine:{color:c.cross,width:1,style:2,labelVisible:false},
         horzLine:{color:c.cross,width:1,style:2,labelVisible:false}
       },
-      handleScroll:{mouseWheel:true,pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false},
-      handleScale:{axisPressedMouseMove:false,mouseWheel:true,pinch:true}
+      handleScroll:false,
+      handleScale:false
     });
     series=chart.addCandlestickSeries({
       upColor:theme()?"#176ed0":"#00b8d4",downColor:theme()?"#d13c5b":"#ff3078",

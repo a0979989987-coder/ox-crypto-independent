@@ -1,5 +1,10 @@
 import { signed } from './flow-model.js';
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+export function strengthBubbleRadius(row,{rotation=false,domain=1,mobile=false}={}){
+  const peak=mobile?43:66,minimum=mobile?16:20;
+  const strength=rotation?(row.x/Math.max(domain,.001)+1)/2:Math.abs(row.x)/100;
+  return minimum+(peak-minimum)*Math.sqrt(clamp(strength,0,1));
+}
 export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:parentSignal }) {
   const life=new AbortController(),signal=life.signal,onAbort=()=>life.abort();parentSignal?.addEventListener('abort',onAbort,{once:true});if(parentSignal?.aborted)life.abort();
   const ctx = canvas.getContext('2d');
@@ -39,7 +44,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     label(settings.quadrants?.[0] || '賣壓放緩', m.l + 12, m.t + 22, 'left'); label(settings.quadrants?.[1] || '買壓增強', m.l + pw - 12, m.t + 22, 'right');
     label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 12, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 12, 'right');
     const max = Math.max(...all.map(r => r.turnover), 1);
-    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 29 : 42) : Math.max(4,radiusMax * Math.sqrt(row.turnover / max)) }));
+    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 29 : 42) : strengthBubbleRadius(row,{rotation:settings.rotation,domain:xd,mobile:width<600}) }));
     const sorted = [...points].sort((a, b) => b.r - a.r);
     for (const p of sorted) {
       const active = !filter || p.row.state.id === filter; const chosen = p.row.symbol === selected;

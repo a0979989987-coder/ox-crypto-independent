@@ -5,7 +5,7 @@
   let attempt=0,pending;
   function start(){if(globalThis.OXToolModules){document.getElementById('ox-runtime-recovery')?.remove();return;}if(pending)return pending;
     const task=(async()=>{let error;for(let retry=0;retry<2;retry++){
-      const url=new URL('../generated/runtime.js?v=20261006-news-rotation4',document.currentScript?.src||new URL('src/app/module-boot.js',location.href));if(attempt)url.searchParams.set('retry',String(attempt));attempt++;
+      const url=new URL('../generated/runtime.js?v=20261007-ux-replay3',document.currentScript?.src||new URL('src/app/module-boot.js',location.href));if(attempt)url.searchParams.set('retry',String(attempt));attempt++;
       let timer;try{await Promise.race([import(url.href),new Promise((_,reject)=>timer=setTimeout(()=>reject(new DOMException('介面下載逾時','TimeoutError')),15000))]);if(!globalThis.OXToolModules)throw globalThis.OXRuntimeError||Error('介面初始化未完成');document.getElementById('ox-runtime-recovery')?.remove();document.dispatchEvent(new Event('ox:runtime-ready'));return;}
       catch(e){error=e;if(e.name!=='TimeoutError'&&!(e.name==='TypeError'&&/fetch|import|load.*module/i.test(e.message)))break;}
       finally{clearTimeout(timer);}

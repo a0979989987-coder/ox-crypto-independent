@@ -120,7 +120,7 @@ const BitgetAPI = {
 
   async fetchInstrumentMetadata() {
     try {
-      const json = await fetchBitgetJSON(`https://api.bitget.com/api/v3/market/instruments?category=${CONFIG.productType}`);
+      const json = await fetchBitgetJSON(`https://api.bitget.com/api/v3/market/instruments?category=${CONFIG.productType}`,5000);
       if (json.code !== "00000" || !Array.isArray(json.data)) return [];
       return json.data;
     } catch (e) {
