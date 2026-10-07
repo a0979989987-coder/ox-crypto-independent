@@ -30,7 +30,8 @@ async function verifySectorDialog(page,width,theme){
  await active(page,'[data-action="picker"]').click();await active(page,'[data-action="select-all"]').click();await active(page,'[data-action="close-picker"]').click();
  await active(page,'[data-action="view-bubbles"]').click();
  const bubbleCanvas=active(page,'.cfx-plot canvas');await bubbleCanvas.scrollIntoViewIfNeeded();
- const point=await bubbleCanvas.evaluate(c=>(c.__bubblePoints||[]).find(p=>p.x>35&&p.x<c.clientWidth-15&&p.y>60&&p.y<c.clientHeight-60));assert.ok(point,'actual sector bubbles are drawn');
+ const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],width:c.clientWidth,height:c.clientHeight}));assert.ok(drawn.points.every(p=>p.r<=(width<600?26:40)),'strength-sized bubbles stay compact');
+ const point=drawn.points.find(p=>p.x>35&&p.x<drawn.width-15&&p.y>60&&p.y<drawn.height-60);assert.ok(point,'actual sector bubbles are drawn');
  await bubbleCanvas.click({position:{x:point.x,y:point.y}});await active(page,'.cfx-sector-dialog').waitFor();await active(page,'[data-action="close-sector"]').click();
  await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
  const dialog=active(page,'.cfx-sector-dialog');await dialog.waitFor();
@@ -64,7 +65,7 @@ try{
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
   const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=500);assert.ok(plot.width<=width);
-  assert.ok(await active(page,'.cfx-chart-meta').evaluate(el=>el.compareDocumentPosition(el.parentElement.querySelector('.cfx-plot'))&Node.DOCUMENT_POSITION_PRECEDING),'coverage caption follows the plot');
+  assert.equal(await active(page,'.cfx-chart-meta').count(),0,'removed coverage text leaves no metadata panel');
   const periods=await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value));for(const period of ['15m','30m','1h','2h','4h','6h','12h','1d'])assert.ok(periods.includes(period));
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
   await active(page,'[data-action="zoom-in"]').click();const zoom=await active(page,'[data-slot="zoom"]').textContent();assert.equal(zoom,'150%');
@@ -85,6 +86,7 @@ try{
   }
   await active(page,'[data-action="replay-toggle"]').click();
   assert.deepEqual(await active(page,'[data-control="replay-range"]').evaluate(el=>[...el.options].filter(o=>o.value!=='current').map(o=>o.text)),['最近七天','最近一個月','最近一季','最近一年']);
+  assert.ok(await active(page,'.cfx-replay').evaluate(e=>Math.abs(e.getBoundingClientRect().top-e.parentElement.querySelector('.cfx-plot').getBoundingClientRect().bottom)<2),'replay controls follow the plot without empty space');
   await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);const r=h?.shadowRoot.querySelector('[data-control="frame"]');return r&&Number(r.value)>0&&Number(r.value)%1>0;});
   await active(page,'[data-action="play"]').click();
   if(width===390&&theme==='dark'){
@@ -97,7 +99,7 @@ try{
   }
   assert.equal(await canvas.getAttribute('data-identity'),'original','controls and replay never replace the canvas');assert.equal(await active(page,'[data-slot="zoom"]').textContent(),zoom);
   await active(page,'[data-control="period"]').selectOption('4h');await active(page,'[data-control="period"]').selectOption('15m');await active(page,'[data-control="period"]').selectOption('1h');
-  if(width===390&&theme==='dark'){await active(page,'[data-control="period"]').selectOption('1d');try{await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return /有效 \d+\/31/.test(h?.shadowRoot.querySelector('[data-slot="rotation-coverage"]')?.textContent||'')&&h?.shadowRoot.querySelector('[data-action="play"]')?.disabled===false;},{},{timeout:35000});}catch(error){const detail=await active(page,'.cfx-research-panel').evaluate(el=>({coverage:el.querySelector('[data-slot="rotation-coverage"]')?.textContent,notice:el.closest('.cfx').querySelector('.cfx-notice')?.textContent,period:el.querySelector('[data-control="period"]')?.value,playDisabled:el.querySelector('[data-action="play"]')?.disabled}));throw new Error(`日線回歸：${JSON.stringify(detail)}；請求 ${requests.filter(u=>u.includes('1Dutc')).length}；瀏覽器錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}await active(page,'[data-control="period"]').selectOption('1h');}
+  if(width===390&&theme==='dark'){await active(page,'[data-control="period"]').selectOption('1d');try{await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return Number(h?.shadowRoot.querySelector('[data-control="frame"]')?.max)>0&&h?.shadowRoot.querySelector('[data-action="play"]')?.disabled===false;},{},{timeout:35000});}catch(error){const detail=await active(page,'.cfx-research-panel').evaluate(el=>({coverage:el.querySelector('[data-slot="replay-coverage"]')?.textContent,notice:el.closest('.cfx').querySelector('.cfx-notice')?.textContent,period:el.querySelector('[data-control="period"]')?.value,playDisabled:el.querySelector('[data-action="play"]')?.disabled}));throw new Error(`日線回歸：${JSON.stringify(detail)}；請求 ${requests.filter(u=>u.includes('1Dutc')).length}；瀏覽器錯誤 ${JSON.stringify(audit.pageErrors)}`,{cause:error});}await active(page,'[data-control="period"]').selectOption('1h');}
   assert.equal(await canvas.getAttribute('data-identity'),'original','period switch updates canvas');
   await tool(page,'heatmap');await active(page,'.cfx-heatmap canvas').waitFor();await tool(page,'rotation');assert.equal(await canvas.getAttribute('data-identity'),'original','return to retained tool preserves canvas');
   const dialogResults=await verifySectorDialog(page,width,theme);

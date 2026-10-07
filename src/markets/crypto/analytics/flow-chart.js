@@ -1,7 +1,7 @@
 import { signed } from './flow-model.js';
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 export function strengthBubbleRadius(row,{rotation=false,domain=1,mobile=false}={}){
-  const peak=mobile?43:66,minimum=mobile?16:20;
+  const peak=mobile?26:40,minimum=mobile?10:12;
   const strength=rotation?(row.x/Math.max(domain,.001)+1)/2:Math.abs(row.x)/100;
   return minimum+(peak-minimum)*Math.sqrt(clamp(strength,0,1));
 }
@@ -24,7 +24,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     const xd = settings.domain?.x || nice(Math.max(...ext.map(r => Math.abs(r.x)), 0));
     const yd = settings.domain?.y || nice(Math.max(...ext.map(r => Math.abs(r.y)), 0));
     // Insets keep the largest circle inside the plot at reset, without moving observations.
-    const radiusMax = width < 600 ? 43 : 66;
+    const radiusMax = width < 600 ? 26 : 40;
     const xSpan = Math.max(20, pw / 2 - radiusMax - 12), ySpan = Math.max(20, ph / 2 - radiusMax - 12);
     const cx = m.l + pw / 2 + pan.x, cy = m.t + ph / 2 + pan.y;
     const xAt = v => cx + v / xd * xSpan * zoom, yAt = v => cy - v / yd * ySpan * zoom;
@@ -43,8 +43,7 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
     const label = (text, x, y, align) => { ctx.font = `${width<600?10:11}px Inter, -apple-system, BlinkMacSystemFont, sans-serif`; ctx.fillStyle = light?'#616d7c':'#838c8e'; ctx.textAlign = align; ctx.fillText(text, x, y); };
     label(settings.quadrants?.[0] || '賣壓放緩', m.l + 12, m.t + 22, 'left'); label(settings.quadrants?.[1] || '買壓增強', m.l + pw - 12, m.t + 22, 'right');
     label(settings.quadrants?.[2] || '賣壓增強', m.l + 12, m.t + ph - 12, 'left'); label(settings.quadrants?.[3] || '買壓放緩', m.l + pw - 12, m.t + ph - 12, 'right');
-    const max = Math.max(...all.map(r => r.turnover), 1);
-    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 29 : 42) : strengthBubbleRadius(row,{rotation:settings.rotation,domain:xd,mobile:width<600}) }));
+    points = rows.map(row => ({ row, x: xAt(row.x), y: yAt(row.y), r: settings.equalSize ? Math.min(radiusMax, width < 600 ? 18 : 24) : strengthBubbleRadius(row,{rotation:settings.rotation,domain:xd,mobile:width<600}) }));
     const sorted = [...points].sort((a, b) => b.r - a.r);
     for (const p of sorted) {
       const active = !filter || p.row.state.id === filter; const chosen = p.row.symbol === selected;

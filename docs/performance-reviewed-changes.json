@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "79bd09d92380d1887a13979a727514e842f3db8dbb80e72ab079bc357cb0ac7e",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "4d4d528fafa4e09aec133c8b86cb84d9370cd20798dc8d02bb3916634f71dda4",
+      "reason": "Remove the requested chart metadata block and reduce default bubble sizes while retaining monotonic strength sizing, selection hit areas and replay behavior; verified across mobile and desktop."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "5b9899dfbea624a892a38ca2070948cac4f5b41b1312790a725d29c44aa25a74",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "93f35229503e11d1828b60f5f6f55b3556bd7bc6952197e184f3a3675441cf3b",
+      "reason": "Remove the requested chart metadata block and reduce default bubble sizes while retaining monotonic strength sizing, selection hit areas and replay behavior; verified across mobile and desktop."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
