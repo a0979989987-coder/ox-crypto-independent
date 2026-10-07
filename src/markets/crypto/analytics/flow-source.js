@@ -8,7 +8,7 @@ const pause = (ms, signal) => new Promise((resolve, reject) => {
   signal.addEventListener('abort', abort, { once: true });
 });
 async function json(path, signal, transport) {
-  const body=await globalThis.OXPublicFeed.json(API+path,{signal,owner:transport?.owner||'analytics',priority:transport?.priority??20});
+  const body=await globalThis.OXPublicFeed.json(API+path,{signal,timeoutMs:10000,owner:transport?.owner||'analytics',priority:transport?.priority??20});
   if (body.code !== '00000' || !Array.isArray(body.data)) throw new Error('Bitget 暫時無法提供完整資料');
   return body;
 }

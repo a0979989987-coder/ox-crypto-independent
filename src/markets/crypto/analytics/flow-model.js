@@ -39,7 +39,7 @@ export function buildFlow(snapshot, period = '1h', {target:requestedTarget=null}
     if (!sourceTime || !Array.isArray(response?.data)) continue;
     // Conservatively exclude the latest possibly open source period. No local clock assumption.
     const closed = ts => ts + interval <= sourceTime;
-    const aligned = ts => ts % interval === 0 || (period === '1d' && ts % interval === 16 * 3600000);
+    const aligned = ts => ts % interval === 0 || ts % interval === (16 * 3600000) % interval;
     const records = new Map(response.data.filter(r => closed(Number(r.ts)) && aligned(Number(r.ts)) && pressure(r) !== null).map(r => [Number(r.ts), r]));
     const valid = new Map();
     for (const [ts, row] of records) if (records.has(ts - interval)) {

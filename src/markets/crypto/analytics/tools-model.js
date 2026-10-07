@@ -18,7 +18,8 @@ export function candleWindow(index,symbol,end,step,bar=900000) {
 }
 export function buildRotation(data,period='1h',wantedFrames=8) {
  const step=TOOL_PERIODS[period];if(!step)throw new Error('Unsupported rotation period');
- const daily=period==='1d',source=daily?(data.dailyCandles||{}):data.candles,bar=daily?86400000:900000;
+ const daily=period==='1d',native=data.periodCandles?.[period];
+ const source=daily?(data.dailyCandles||{}):native||data.candles,bar=daily?86400000:native?step:900000;
  const index=candleIndex(data,source),btc=index.get('BTCUSDT');if(!btc?.size)return {frames:[],sectors:[],excluded:[],period};
  // BTC anchors the observation window. During a progressive refresh, an old
  // candle response must not drag every newly fetched contract back in time.
@@ -27,7 +28,8 @@ export function buildRotation(data,period='1h',wantedFrames=8) {
  const end=Math.floor(sourceTime/step)*step;
  const oldest=Math.min(...btc.keys());const frameCount=Math.max(0,Math.min(wantedFrames,Math.floor((end-oldest)/step)-1));
  const ends=Array.from({length:frameCount},(_,i)=>end-(frameCount-1-i)*step).filter(t=>candleWindow(index,'BTCUSDT',t,step,bar)&&candleWindow(index,'BTCUSDT',t-step,step,bar));
- const window=(symbol,t)=>candleWindow(index,symbol,t,step,bar);
+ const windows=new Map();
+ const window=(symbol,t)=>{let cache=windows.get(symbol);if(!cache){cache=new Map();windows.set(symbol,cache);}if(!cache.has(t))cache.set(t,candleWindow(index,symbol,t,step,bar));return cache.get(t);};
  const validMember=s=>ends.every(t=>window(s,t)&&window(s,t-step));
  const sectors=(data.sectors||[]).map(s=>({...s,validMembers:s.members.filter(validMember)}));
  const frames=ends.flatMap(t=>{
