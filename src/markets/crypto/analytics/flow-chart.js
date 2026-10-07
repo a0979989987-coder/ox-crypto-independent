@@ -56,8 +56,8 @@ export function createFlowChart(canvas, { onSelect, onZoom = () => {}, signal:pa
       ctx.strokeStyle=(trail.color || '#bbc5c4')+(selected?'ef':'ae');ctx.lineWidth=selected?2.5:1.7;ctx.lineJoin='round';ctx.beginPath();pts.forEach((p,i)=>i?ctx.lineTo(xAt(p.x),yAt(p.y)):ctx.moveTo(xAt(p.x),yAt(p.y)));ctx.stroke();
       pts.slice(0,-1).forEach(p=>{ctx.fillStyle=light?'#334149c9':'#15252bdb';ctx.beginPath();ctx.arc(xAt(p.x),yAt(p.y),2.3,0,Math.PI*2);ctx.fill();});
     }
-    // Text uses a subtle outline for contrast, without a box around every sector.
-    const ink=(value,x,y,tone=light?'#28343c':'#f0f2ea')=>{ctx.lineJoin='round';ctx.lineWidth=3;ctx.strokeStyle=light?'#f5f7f1e8':'#0b151be8';ctx.strokeText(value,x,y);ctx.fillStyle=tone;ctx.fillText(value,x,y);};
+    // Plain labels with a soft shadow keep the text readable without dark outlines or boxes.
+    const ink=(value,x,y,tone=light?'#28343c':'#f0f2ea')=>{ctx.save();ctx.shadowColor=light?'transparent':'#08101766';ctx.shadowBlur=2;ctx.shadowOffsetY=1;ctx.fillStyle=tone;ctx.fillText(value,x,y);ctx.restore();};
     // Labels may be suppressed on overlap; the measured coordinates never move.
     const boxes = [];
     for (const p of [...points].sort((a, b) => Number(b.row.symbol === selected) - Number(a.row.symbol === selected) || b.r - a.r)) {

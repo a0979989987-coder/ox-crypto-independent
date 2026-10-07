@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "21d938b3ebd48b290faf6d27fbbef9b2d24bc2d3a2d40551143b14fdac03dd9c",
-      "reason": "Tide chart axis spacing, visible replay paths and readable labels on desktop/mobile."
+      "sha256": "f874700065e3416c534bfcaaa19a464f455ea0ac1ad8ed3d0170cb557b569518",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "2c0c766c20423994b753f18502e6eb254533d8aa6da4e1b9e2ec431e4c0542af",
-      "reason": "Tide controls, daily demand loading, replay paths, placement and honest coverage labels."
+      "sha256": "9515e12bb8cae0e30646001df3ae1f0855fef97ddb24810879099d6dcd7062fa",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -58,8 +58,8 @@
     {
       "path": "src/markets/crypto/patterns/charts.js",
       "sourceSha256": "53bcea4fdde642bbd0723dc979f240022b40c565b178eb834b861b98d1493d06",
-      "sha256": "8c43cd5f6d94c095a9631aa2a8b543e8e1a3d1d0948c3579ea7f7b8817ad55e3",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "abca6b5e551e5534a41410756f7ef877891f3c6cc6b3ac800b4c8d7dc1e42320",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/patterns/source.js",
@@ -142,8 +142,8 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "0d042fbe910511ade3260a53803810f98fe05a44b3aad37f9071327a65ad47cf",
-      "reason": "Tide chart caption below canvas, enlarged plot and compact coin list for mobile."
+      "sha256": "f76d250289a20a8b54b0dc42ffd4652eeb6d939a208887eaa55727911ef6c36a",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",

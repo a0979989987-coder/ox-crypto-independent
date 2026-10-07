@@ -1,7 +1,7 @@
 const price=n=>n.toLocaleString('en-US',{maximumSignificantDigits:6});
 export function candleChart(canvas,row,{interactive=false,onRange=()=>{},palette=null}={}){
   const ctx=canvas.getContext('2d'),life=new AbortController();let width=0,height=0,raf=0;
-  const candles=row.candles;
+  let candles=row.candles;
   const initial=()=>({count:Math.min(candles.length,row.match?Math.max(35,row.match.end-row.match.start+15):90),end:row.match?Math.min(candles.length,row.match.end+6):candles.length});
   let {count,end}=initial(),pointers=new Map(),gesture=null;
   function draw(){
@@ -34,5 +34,10 @@ export function candleChart(canvas,row,{interactive=false,onRange=()=>{},palette
     for(const event of ['pointerup','pointercancel'])canvas.addEventListener(event,e=>{pointers.delete(e.pointerId);resetGesture();},opts);
     canvas.addEventListener('wheel',e=>{e.preventDefault();count=Math.max(15,Math.min(candles.length,count*Math.exp(e.deltaY*.002)));end=Math.max(count,Math.min(candles.length,end));schedule();},{...opts,passive:false});
   }
-  schedule();return {destroy(){resize.disconnect();life.abort();cancelAnimationFrame(raf);},reset(){({count,end}=initial());schedule();}};
+  schedule();return {destroy(){resize.disconnect();life.abort();cancelAnimationFrame(raf);},reset(){({count,end}=initial());schedule();},update(next){
+    const latest=end>=candles.length,visibleTime=candles[Math.min(candles.length-1,Math.ceil(end)-1)]?.time;
+    row=next;candles=next.candles;count=Math.min(count,candles.length);
+    const index=candles.findIndex(c=>c.time===visibleTime);
+    end=latest?candles.length:Math.max(count,Math.min(candles.length,index>=0?index+1:end));schedule();
+  }};
 }
