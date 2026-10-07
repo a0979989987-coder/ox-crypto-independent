@@ -34,6 +34,7 @@ async function verifySectorDialog(page,width,theme){
  const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],labels:c.__bubbleLabels||[],width:c.clientWidth,height:c.clientHeight}));assert.ok(drawn.points.every(p=>p.r<=(width<600?34:50)),'strength-sized bubbles stay compact');
  assert.ok(drawn.labels.length,'bubble labels render');
  for(const label of drawn.labels){const size=Number(/([\d.]+)px/.exec(label.font)?.[1]);assert.doesNotMatch(label.font,/bold|600|700/);assert.ok(drawn.points.some(p=>Math.abs(p.x-label.x)<.1&&Math.hypot(label.width/2,Math.abs(label.y-p.y)+size/2)<=p.r+.1),'text stays inside a bubble');}
+ await active(page,'.cfx-research-panel').screenshot({path:`docs/performance/bubble-${width}-${theme}.png`});
  const point=drawn.points.find(p=>p.x>35&&p.x<drawn.width-15&&p.y>60&&p.y<drawn.height-60);assert.ok(point,'actual sector bubbles are drawn');
  await bubbleCanvas.click({position:{x:point.x,y:point.y}});await active(page,'.cfx-sector-dialog').waitFor();await active(page,'[data-action="close-sector"]').click();
  await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rank-row').first().click();
