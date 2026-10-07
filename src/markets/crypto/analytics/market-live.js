@@ -53,11 +53,17 @@ export async function refreshDailyCandles(snapshot,{signal,onProgress=()=>{},onP
     const symbol=symbols[i],path=`/api/v2/mix/market/candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=${Math.min(200,count)}`;
     try{
       const response=await bitget(path,signal,transport);let data=response.data;
-      if(count>200&&data.length){
+      // Providers can return fewer candles than the requested page size.
+      // Keep paging backwards until the requested calendar window is covered.
+      for(let page=0;data.length<count&&data.length&&page<6;page++){
         const oldest=Math.min(...data.map(row=>Number(row[0])));
         const olderPath=`/api/v2/mix/market/history-candles?symbol=${encodeURIComponent(symbol)}&productType=USDT-FUTURES&granularity=1Dutc&limit=200&endTime=${oldest-1}`;
-        const older=await bitget(olderPath,signal,transport);
-        data=[...new Map([...older.data,...data].map(row=>[Number(row[0]),row])).values()].sort((a,b)=>Number(a[0])-Number(b[0])).slice(-count);
+        let older;
+        try{older=await bitget(olderPath,signal,transport);}
+        catch(error){if(error.name==='AbortError')throw error;break;}
+        const combined=[...new Map([...older.data,...data].map(row=>[Number(row[0]),row])).values()].sort((a,b)=>Number(a[0])-Number(b[0])).slice(-count);
+        if(!older.data.length||Math.min(...combined.map(row=>Number(row[0])))>=oldest)break;
+        data=combined;
       }
       dailyCandles[symbol]=data.length>=3?{path,response:{...response,data}}:{path,error:'日 K 線不足'};
     }

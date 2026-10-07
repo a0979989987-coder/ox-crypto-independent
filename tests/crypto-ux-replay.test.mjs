@@ -39,3 +39,18 @@ test('localized event labels retain ticker symbols and the supplied source text'
  const original='Ethereum Ecosystem Summit in Singapore · BTC';
  assert.equal(localizeNewsText(original),'以太坊生態高峰會 in 新加坡 · BTC');assert.equal(original,'Ethereum Ecosystem Summit in Singapore · BTC');
 });
+
+test('yearly daily history follows short pages and preserves recent data when older pages fail',async()=>{
+ const code=readFileSync(new URL('../src/markets/crypto/analytics/market-live.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,'').replace(/export /g,'');
+ const calls=[],day=86400000,latest=Date.UTC(2026,9,7);let fail=false;
+ const api=runInNewContext(code+'\n({refreshDailyCandles})',{setTimeout,clearTimeout,DOMException,Date,globalThis:{OXPublicFeed:{async json(url){
+  calls.push(url);const q=new URL(url).searchParams,start=q.has('endTime')?Math.floor(Number(q.get('endTime'))/day)*day:latest;
+  if(fail&&q.has('endTime'))throw Error('unavailable');
+  return {code:'00000',data:Array.from({length:90},(_,i)=>[String(start-i*day),'1','2','1','2','1','2'])};
+ }}}});
+ const seed={historyDays:365,sectors:[]},signal=new AbortController().signal;
+ const full=await api.refreshDailyCandles(seed,{signal});
+ assert.equal(full.dailyCandles.BTCUSDT.response.data.length,368);assert.equal(calls.length,5);
+ assert.equal(new Set(full.dailyCandles.BTCUSDT.response.data.map(r=>r[0])).size,368);
+ fail=true;const partial=await api.refreshDailyCandles(seed,{signal});assert.equal(partial.dailyCandles.BTCUSDT.response.data.length,90);
+});
