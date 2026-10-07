@@ -148,7 +148,7 @@ try{
   await tool(page,'rotation');await active(page,'.cfx-research-panel').waitFor();
   await verifyExpandedResearch(page);
   const canvas=active(page,'.cfx-plot canvas');await canvas.evaluate(c=>c.dataset.identity='original');
-  const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=220&&plot.height<=620,'research plot leaves room for replay controls');if(width<600)assert.ok(plot.height<=500,'mobile plot uses the compact default height');assert.ok(plot.width<=width);
+  const plot=await active(page,'.cfx-plot').boundingBox();assert.ok(plot.height>=220&&plot.height<=620,`research plot uses the compact viewport height: ${plot.height}px at ${width}px`);assert.ok(plot.width<=width);
   assert.equal(await active(page,'.cfx-chart-meta').count(),0,'removed coverage text leaves no metadata panel');
   const periods=await active(page,'select[data-control="period"]').evaluate(el=>[...el.options].map(o=>o.value));for(const period of ['15m','30m','1h','2h','4h','6h','12h','1d'])assert.ok(periods.includes(period));
   const toolbar=active(page,'.cfx-research-toolbar'),toolbarSize=await toolbar.evaluate(e=>({scroll:e.scrollWidth,client:e.clientWidth,controls:[...e.children].map(c=>({text:c.textContent,width:c.getBoundingClientRect().width}))}));assert.ok(toolbarSize.scroll<=toolbarSize.client+1,`single toolbar row fits at ${width}px: ${JSON.stringify(toolbarSize)}`);
