@@ -7,8 +7,13 @@ import { chromium, webkit } from 'playwright';
 const root = resolve(import.meta.dirname, '..');
 const html = readFileSync(resolve(root, 'index.html'), 'utf8');
 const markup = html.slice(html.indexOf('<div class="ox-account-overlay"'), html.indexOf('<main class="wrap"'));
-const style = readFileSync(resolve(root, 'src/styles/account/account.css'), 'utf8');
-const foundation = readFileSync(resolve(root, 'src/styles/core/foundation.css'), 'utf8');
+// Use the app's complete CSS cascade, including theme and shared close controls.
+const cssLinks = [...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="([^"]+)"[^>]*>/g)].map(match => match[1]);
+const cssFiles = new Map(cssLinks.map(href => {
+  const path = new URL(href, 'https://ox.test/').pathname;
+  return [path, readFileSync(resolve(root, path.slice(1)), 'utf8')];
+}));
+const cssHead = cssLinks.map(href => `<link rel="stylesheet" href="${href}">`).join('');
 const executablePath = process.env.OX_TEST_BROWSER || [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
@@ -17,8 +22,10 @@ const engine=process.env.OX_UI_BROWSER==='webkit'?webkit:chromium;
 const browser = await engine.launch({ headless: true, ...(engine===chromium&&executablePath ? { executablePath } : {}) });
 async function verifyLoginLayout(page){
   mkdirSync(resolve(root,'docs/performance'),{recursive:true});
+  await page.locator('#ox-account-auth-view').waitFor({state:'visible'});
   for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:390,height:350},{width:844,height:390},{width:1440,height:900}]){
     await page.setViewportSize(viewport);
+    await page.waitForFunction(({width,height})=>innerWidth===width&&innerHeight===height&&Math.abs(parseFloat(document.querySelector('#ox-account-overlay').style.getPropertyValue('--ox-account-viewport-height'))-(window.visualViewport?.height||innerHeight))<1,viewport);
     for(const theme of ['dark','light']){
       await page.evaluate(t=>document.body.classList.toggle('theme-light',t==='light'),theme);
       const g=await page.locator('#ox-account-auth-view').evaluate(el=>{
@@ -27,7 +34,7 @@ async function verifyLoginLayout(page){
         const controls=[...row.querySelectorAll('button')].map(e=>{const s=getComputedStyle(e);return {...box(e),text:e.textContent.trim(),overflow:e.scrollWidth-e.clientWidth,border:s.borderTopWidth,background:s.backgroundColor,font:s.fontSize,weight:s.fontWeight};});
         return {form:box(form),row:box(row),input:box(input),send:box(button),shell:box(shell),close:box(shell.querySelector('.ox-account-close')),cardBorder:getComputedStyle(el).borderTopWidth,inputSize:parseFloat(getComputedStyle(input).fontSize),controls,dividers:row.querySelectorAll('.ox-account-action-divider').length,overflow:document.documentElement.scrollWidth-innerWidth,card:box(el),viewport:{w:innerWidth,h:innerHeight},status:el.querySelector('[role=status]').hidden};
       });
-      assert.ok(g.shell.x>=0&&g.shell.x+g.shell.w<=viewport.width+1&&g.shell.y>=0&&g.shell.y+g.shell.h<=viewport.height+1,`login fits ${JSON.stringify(viewport)}`);
+      assert.ok(g.shell.x>=0&&g.shell.x+g.shell.w<=viewport.width+1&&g.shell.y>=0&&g.shell.y+g.shell.h<=viewport.height+1,`login fits ${JSON.stringify({viewport,shell:g.shell})}`);
       assert.equal(g.cardBorder,'0px');assert.ok(g.inputSize>=16);assert.ok(g.overflow<=1);
       assert.ok(Math.abs(g.form.x-g.row.x)<1&&Math.abs(g.form.w-g.row.w)<1,'both rows align');
       assert.ok(Math.abs(g.card.cx-g.shell.cx)<1&&Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
@@ -38,6 +45,7 @@ async function verifyLoginLayout(page){
       assert.ok(g.close.h>=44&&g.close.y>=g.shell.y&&g.close.y+g.close.h<=g.shell.y+g.shell.h,'close remains reachable with keyboard height');
       assert.ok(g.send.h>=44&&Math.abs(g.send.cy-g.form.cy)<1&&g.input.w>=90);
       const label=page.locator(viewport.width<=760?'.ox-account-send-mobile':'.ox-account-send-desktop');
+      await label.waitFor({state:'visible'});
       if(!await label.isVisible()){
         await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${theme}-failure.png`)});
         console.log('Login label diagnostics',JSON.stringify({viewport,theme,g,labels:await page.locator('#ox-account-email-submit').evaluate(el=>({cooldown:el.dataset.cooldown,html:el.innerHTML,children:[...el.children].map(e=>({tag:e.tagName,display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))}))}));
@@ -56,7 +64,8 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.route('https://ox.test/**', async route => {
     const request = route.request(), path = new URL(request.url()).pathname;
-    if (path === '/') return route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${foundation}\n${style}</style></head><body><small class="ox-account-provider-note">Legacy provider placeholder</small><button data-ox-account-open>登入 / 註冊</button>${markup}<script src="/auth.js"></script><script src="/session.js"></script><script src="/account.js"></script></body></html>` });
+    if (path === '/') return route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">${cssHead}</head><body class="ox-terminal"><small class="ox-account-provider-note">Legacy provider placeholder</small><button data-ox-account-open>登入 / 註冊</button>${markup}<script src="/auth.js"></script><script src="/session.js"></script><script src="/account.js"></script></body></html>` });
+    if (cssFiles.has(path)) return route.fulfill({contentType:'text/css',body:cssFiles.get(path)});
     if (['/auth.js', '/session.js', '/account.js'].includes(path)) return route.fulfill({ contentType: 'text/javascript', body: readFileSync(resolve(root, 'src/components/account', path.slice(1)), 'utf8') });
     if (path === '/assets/account-orbit.svg') return route.fulfill({contentType:'image/svg+xml',body:readFileSync(resolve(root,'assets/account-orbit.svg'),'utf8')});
     const endpoint = path.split('/').at(-1);
