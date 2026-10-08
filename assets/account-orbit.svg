@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <radialGradient id="space" cx="62%" cy="6%" r="86%"><stop stop-color="#242324"/><stop offset=".47" stop-color="#0b0d10"/><stop offset="1" stop-color="#050608"/></radialGradient>
+    <radialGradient id="surface" cx="76%" cy="24%" r="78%"><stop stop-color="#74675a"/><stop offset=".18" stop-color="#423d37"/><stop offset=".44" stop-color="#1c1d1e"/><stop offset=".82" stop-color="#0a0c0f"/><stop offset="1" stop-color="#050608"/></radialGradient>
+    <linearGradient id="rim" x1="20%" y1="0" x2="93%" y2="55%"><stop stop-color="#c2b6a5" stop-opacity="0"/><stop offset=".5" stop-color="#d8cbb8" stop-opacity=".28"/><stop offset=".73" stop-color="#f4e2ca" stop-opacity=".75"/><stop offset="1" stop-color="#968773" stop-opacity=".06"/></linearGradient>
+    <radialGradient id="foreground" cx="65%" cy="0" r="66%"><stop stop-color="#4e443b"/><stop offset=".18" stop-color="#17191c"/><stop offset="1" stop-color="#06080a"/></radialGradient>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".018 .032" numOctaves="3" seed="17"/><feColorMatrix type="saturate" values="0"/><feComposite in2="SourceGraphic" operator="in"/></filter>
+    <filter id="air"><feGaussianBlur stdDeviation="6"/></filter>
+    <clipPath id="planet"><circle cx="280" cy="1120" r="1130"/></clipPath>
+  </defs>
+  <path fill="url(#space)" d="M0 0h1600v1000H0z"/>
+  <circle cx="280" cy="1120" r="1130" fill="url(#surface)"/>
+  <g clip-path="url(#planet)" opacity=".07"><path fill="#b8afa2" filter="url(#grain)" d="M0 0h1600v1000H0z"/></g>
+  <circle cx="280" cy="1120" r="1130" fill="none" stroke="url(#rim)" stroke-width="12" opacity=".34" filter="url(#air)"/>
+  <circle cx="280" cy="1120" r="1130" fill="none" stroke="url(#rim)" stroke-width="1.6"/>
+  <circle cx="390" cy="2390" r="1450" fill="url(#foreground)" stroke="url(#rim)" stroke-width="1.2"/>
+</svg>

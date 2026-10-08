@@ -4,8 +4,21 @@
   const authView = $('#ox-account-auth-view');
   const center = $('#ox-account-center');
   const status = $('#ox-account-auth-status');
-  let priorFocus = null, busy = false;
+  let priorFocus = null, busy = false, registerMode = false;
   const form = $('#ox-account-email-form');
+  function feedback(message = '') {
+    if (!status) return;
+    status.textContent = message;
+    status.hidden = !message;
+  }
+  function syncViewport() {
+    if (!overlay) return;
+    overlay.style.setProperty('--ox-account-viewport-height', `${window.visualViewport?.height || window.innerHeight}px`);
+    overlay.style.setProperty('--ox-account-viewport-top', `${window.visualViewport?.offsetTop || 0}px`);
+  }
+  window.visualViewport?.addEventListener('resize', syncViewport, { passive: true });
+  window.visualViewport?.addEventListener('scroll', syncViewport, { passive: true });
+  window.addEventListener('resize', syncViewport, { passive: true });
   let linkEpoch = 0, linkRevision = null;
   function ensureLinkForm() {
     if ($('#ox-bitget-link-form')) return;
@@ -60,7 +73,10 @@
     const button = $('#ox-account-email-submit'); if (!button) return;
     const seconds = window.OXAuth.emailCooldownSeconds || 0;
     button.disabled = busy || seconds > 0;
-    button.textContent = seconds ? `請等待 ${seconds} 秒` : $('#ox-account-tab-register')?.getAttribute('aria-selected') === 'true' ? '建立帳號' : 'Email 登入';
+    button.dataset.cooldown = String(seconds > 0);
+    const wait = button.querySelector('.ox-account-send-wait');
+    if (wait) { wait.textContent = seconds ? `${seconds} 秒` : ''; wait.hidden = !seconds; }
+    button.setAttribute('aria-label', seconds ? `${seconds} 秒後可重新寄送` : registerMode ? '寄送註冊連結' : '寄送登入連結');
     if (seconds && !emailCooldownTimer) emailCooldownTimer = setInterval(syncEmailCooldown, 1000);
     if (!seconds && emailCooldownTimer) { clearInterval(emailCooldownTimer); emailCooldownTimer = null; }
   }
@@ -70,9 +86,11 @@
   async function perform(action) {
     if (busy) return;
     busy = true; form?.setAttribute('aria-busy','true');
-    const buttons = [$('#ox-account-google'), $('#ox-account-email-submit')];
+    const buttons = [$('#ox-account-google'), $('#ox-account-email-submit'), $('#ox-account-tab-register')];
     buttons.forEach(button => { if (button) button.disabled = true; });
-    try { return await action(); } finally { busy = false; form?.removeAttribute('aria-busy'); buttons.forEach(button => { if (button) button.disabled = false; }); syncEmailCooldown(); }
+    try { return await action(); }
+    catch { feedback('登入暫時無法完成，請稍後再試。'); }
+    finally { busy = false; form?.removeAttribute('aria-busy'); buttons.forEach(button => { if (button) button.disabled = false; }); syncEmailCooldown(); }
   }
   const renderUser = user => {
     for (const note of document.querySelectorAll('.ox-account-provider-note')) {
@@ -116,25 +134,26 @@
     overlay?.classList.add('is-open'); overlay?.setAttribute('aria-hidden','false');
     document.body.classList.add('ox-account-open');
     authView.hidden = view !== 'auth'; center.hidden = view !== 'center';
-    requestAnimationFrame(() => (view === 'auth' ? $('#ox-account-tab-login') : $('#ox-account-close'))?.focus());
+    overlay.dataset.view = view;
+    $('.ox-account-shell')?.setAttribute('aria-label', view === 'center' ? 'OX 帳號中心' : registerMode ? '建立 OX 帳號' : 'OX 登入');
+    syncViewport();
+    // Focus immediately after revealing the view. A deferred frame can steal
+    // focus from a control the user has already selected, or from a closed view.
+    (view === 'auth' ? $('#ox-account-brand') : $('#ox-account-close'))?.focus({ preventScroll: true });
   };
   const close = () => {
     overlay?.classList.remove('is-open'); overlay?.setAttribute('aria-hidden','true');
     document.body.classList.remove('ox-account-open'); priorFocus?.focus?.();
   };
   const mode = (register) => {
-    const card = $('#ox-account-auth-view');
-    card.classList.add('is-switching');
-    window.setTimeout(() => card.classList.remove('is-switching'), 280);
+    if (busy) return;
+    registerMode = register;
     overlay.classList.toggle('is-register', register);
-    $('#ox-account-tab-login').setAttribute('aria-selected', String(!register));
-    $('#ox-account-tab-register').setAttribute('aria-selected', String(register));
-    $('#ox-account-title-main').textContent = register ? '建立 OX 帳號' : '登入 OX';
-    $('#ox-account-email-submit').textContent = register ? '建立帳號' : '繼續'; syncEmailCooldown();
-    $('.ox-account-password-wrap').hidden = true;
-
-    $('#ox-account-lead')?.remove();
-    status.textContent = window.OXAuth.status.configured ? '使用電子郵件登入連結，不需要設定密碼。' : '正式登入服務尚未設定。';
+    $('#ox-account-tab-register').setAttribute('aria-pressed', String(register));
+    $('.ox-account-shell')?.setAttribute('aria-label', register ? '建立 OX 帳號' : 'OX 登入');
+    syncEmailCooldown();
+    feedback(register ? '輸入電子郵件後寄送註冊連結。' : '');
+    $('#ox-account-email')?.focus({ preventScroll: true });
   };
   // The control panel stops click bubbling, so its account CTA must open the
   // account surface on the button itself instead of relying on document delegation.
@@ -151,28 +170,37 @@
     if (e.target.closest('#ox-account-trigger')) open();
     if (e.target.closest('#ox-account-close,#ox-account-skip')) close();
     if (e.target.closest('[data-ox-account-login]')) open();
-    if (e.target.closest('#ox-account-tab-login')) mode(false);
-    if (e.target.closest('#ox-account-tab-register')) mode(true);
-    if (e.target.closest('#ox-account-google')) perform(async () => { status.textContent = '正在連接 Google…'; const result = await window.OXAuth.signInWithGoogle(); if (!result.ok) status.textContent = result.message; });
+    if (e.target.closest('#ox-account-tab-register')) mode(!registerMode);
+    if (e.target.closest('#ox-account-google')) perform(async () => { feedback('正在連接 Google…'); const result = await window.OXAuth.signInWithGoogle(); if (!result.ok) feedback(result.message || 'Google 登入暫時無法使用。'); });
     if (e.target.closest('#ox-account-signout')) perform(async () => { const result = await window.OXAuth.signOut(); if (result.ok) close(); else status.textContent = result.message; });
     if (e.target.closest('#ox-account-bitget-info')) { $('#ox-account-info-modal').classList.add('is-open'); $('#ox-account-info-modal').setAttribute('aria-hidden','false'); }
     if (e.target.closest('#ox-account-info-close') || (e.target.id === 'ox-account-info-modal')) { $('#ox-account-info-modal').classList.remove('is-open'); $('#ox-account-info-modal').setAttribute('aria-hidden','true'); }
   });
   form?.addEventListener('submit', e => {
     e.preventDefault();
-    if (!$('#ox-account-email').reportValidity()) return;
+    const input = $('#ox-account-email');
+    input.value = input.value.trim();
+    if (!input.validity.valid) {
+      input.setAttribute('aria-invalid', 'true');
+      feedback(input.value ? '請輸入有效的電子郵件。' : '請輸入電子郵件。');
+      input.focus({ preventScroll: true });
+      return;
+    }
+    input.removeAttribute('aria-invalid');
     perform(async () => {
-      const email = $('#ox-account-email').value.trim();
-      status.textContent = '正在寄送登入連結…';
-      const register = $('#ox-account-tab-register').getAttribute('aria-selected') === 'true';
-      const result = await (register ? window.OXAuth.registerWithEmail(email) : window.OXAuth.signInWithEmail(email));
-      status.textContent = result.message;
+      const email = input.value;
+      feedback('正在寄送連結…');
+      const result = await (registerMode ? window.OXAuth.registerWithEmail(email) : window.OXAuth.signInWithEmail(email));
+      feedback(result.ok ? '連結已寄出，請查看信箱或垃圾郵件。' : result.code === 'EMAIL_RATE_LIMITED' ? '寄送頻率或配額已達限制，請稍後再試。' : result.message || '連結暫時無法寄送，請稍後再試。');
     });
+  });
+  $('#ox-account-email')?.addEventListener('input', event => {
+    if (event.currentTarget.hasAttribute('aria-invalid')) { event.currentTarget.removeAttribute('aria-invalid'); feedback(); }
   });
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { if ($('#ox-account-info-modal')?.classList.contains('is-open')) { $('#ox-account-info-modal').classList.remove('is-open'); $('#ox-account-info-modal').setAttribute('aria-hidden','true'); } else close(); }
     if (e.key === 'Tab' && overlay?.classList.contains('is-open')) {
-      const nodes = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(x => !x.closest('[hidden]'));
+      const nodes = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(x => !x.closest('[hidden]') && x.getClientRects().length && getComputedStyle(x).visibility === 'visible');
       if (!nodes.length) return; const first=nodes[0], last=nodes[nodes.length-1];
       if (e.shiftKey && document.activeElement===first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement===last) { e.preventDefault(); first.focus(); }
@@ -199,19 +227,19 @@
       flow_missing: '登入驗證 Cookie 未收到。請重新點選登入；若仍發生，請回報原因：flow_missing。',
       flow_invalid: '登入驗證 Cookie 已失效或無法驗證。請重新點選登入；原因：flow_invalid。',
       code_missing: '登入回呼未收到授權碼。請重新點選登入；原因：code_missing。',
-      provider_denied: '登入連結或授權未完成。連結可能已使用或過期，也可能取消了登入；請回到發起登入的同一瀏覽器確認後再試。',
+      provider_denied: '登入連結或授權未完成，請取得新連結或重新嘗試。',
       provider_callback_error: '登入提供者未完成回呼。請回報原因：provider_callback_error。',
       pkce_missing: '登入驗證資料未完整還原。請回報原因：pkce_missing。',
       pkce_mismatch: '登入驗證資料與回呼不符。請重新登入；原因：pkce_mismatch。',
-      authorization_expired: '登入驗證已失效，可能已使用或過期。請停止重開舊信，待寄信限制解除後再取得一封新信；原因：authorization_expired。',
+      authorization_expired: '登入驗證已失效，請寄送新連結再試。（authorization_expired）',
       authorization_invalid: '本次授權碼已使用或無法確認。請重新登入；原因：authorization_invalid。',
       exchange_failed: '登入提供者未能完成授權交換。請回報原因：exchange_failed。',
       response_invalid: '登入提供者沒有回傳完整登入資料。請回報原因：response_invalid。',
       callback_unavailable: '登入回呼暫時無法完成。請回報原因：callback_unavailable。'
     };
-    status.textContent = failedCallback ? (Object.hasOwn(messages, reason) ? messages[reason] : '登入回呼未完成。請重新點選 Google 或 Email 登入。') : config.configured ? '使用電子郵件登入連結，不需要設定密碼。' : '正式登入服務尚未設定，訪客功能可正常使用。';
+    feedback(failedCallback ? (Object.hasOwn(messages, reason) ? messages[reason] : '登入未完成，請重新嘗試。') : '');
     if (failedCallback && reason === 'provider_callback_error') {
-      status.textContent = `Supabase 登入提供者在返回 OX 前已回報錯誤。請回報診斷代碼：provider_callback_error / ${providerLabels.has(provider) ? provider : 'unclassified'}。這不是 OX 授權碼交換或會員查詢失敗，暫勿重複登入。`;
+      feedback(`登入提供者未完成登入。（provider_callback_error / ${providerLabels.has(provider) ? provider : 'unclassified'}）`);
     }
     // Remove transient errors before another attempt; never collect their URL.
     if (landing.searchParams.has('ox_auth')) {

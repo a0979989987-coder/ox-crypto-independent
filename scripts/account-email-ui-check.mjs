@@ -27,7 +27,8 @@ try {
   await page.locator('#ox-account-auth-status').filter({hasText:'配額'}).waitFor();
   assert.equal(await page.locator('#ox-account-email-submit').isDisabled(),true);
   assert.match(await page.locator('#ox-account-email-submit').innerText(),/\d+/);
-  await page.locator('#ox-account-tab-login').click();
+  await page.locator('#ox-account-tab-register').click();
+  assert.equal(await page.locator('#ox-account-tab-register').getAttribute('aria-pressed'),'false');
   assert.equal(await page.locator('#ox-account-email-submit').isDisabled(),true);
   await page.reload();await page.waitForFunction(()=>window.OXAuth?.status.configured);
   await page.locator('[data-ox-account-open]').click();
