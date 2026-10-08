@@ -6,10 +6,12 @@ import {createAccountHandler} from '../server/account/handler.js';
 import {seal,cookieName} from '../server/account/cookies.js';
 import {candidateFixtureDatabase} from '../scripts/lib/admin-review-candidate-fixtures.mjs';
 import {fixtureIDs as ids} from '../scripts/lib/admin-review-fixtures.mjs';
+import {initializeFeatureFixture} from '../scripts/lib/feature-access-fixtures.mjs';
 const env={OX_ACCOUNT_ORIGIN:'https://ox.example',OX_SUPABASE_URL:'https://fixture.supabase.co',OX_SUPABASE_PUBLISHABLE_KEY:'fixture-publishable',OX_AUTH_SESSION_SECRET:'synthetic-opaque-cookie-key-32-characters'};
 const response=()=>({headers:{},statusCode:200,setHeader(k,v){this.headers[k]=v;},status(s){this.statusCode=s;return this;},json(v){this.body=v;},end(){}});
 test('real Supabase SDK + provider-validated JWT + RLS RPC candidate adapter',async t=>{
  const db=await candidateFixtureDatabase({seedAdmin:true,ordinaryFixture:true}),signing=randomBytes(32);let rpcCalls=0,userCalls=0,refreshes=0,denyUser=false,failRPC=false,denyRPC=false;
+ await initializeFeatureFixture(db);
  const jwt=id=>{const h=Buffer.from(JSON.stringify({alg:'HS256',typ:'JWT'})).toString('base64url'),p=Buffer.from(JSON.stringify({sub:id,role:'authenticated',exp:Math.floor(Date.now()/1000)+3600})).toString('base64url');return `${h}.${p}.${createHmac('sha256',signing).update(h+'.'+p).digest('base64url')}`;};
  const adminToken=jwt(ids.admin),memberToken=jwt(ids.a);
  const identity=token=>{try{const[h,p,s]=token.split('.');if(createHmac('sha256',signing).update(h+'.'+p).digest('base64url')!==s)return null;return JSON.parse(Buffer.from(p,'base64url').toString()).sub;}catch{return null;}};
@@ -18,6 +20,10 @@ test('real Supabase SDK + provider-validated JWT + RLS RPC candidate adapter',as
    const url=new URL(typeof input==='string'?input:input.url),headers=new Headers(options.headers),token=(headers.get('authorization')||'').replace(/^Bearer /,'');
    if(url.pathname==='/auth/v1/user') {userCalls++;const id=identity(token);return id&&!denyUser?json({id,email:'fixture@example.com',created_at:'2026-10-01T00:00:00Z',user_metadata:{admin:true},app_metadata:{role:'admin'},identities:[]}):json({message:'invalid fixture JWT',code:'bad_jwt'},401);}
    if(url.pathname==='/auth/v1/token') {refreshes++;return json({access_token:adminToken,refresh_token:'fixture-refresh',token_type:'bearer',expires_in:3600,user:{id:ids.admin}});}
+   if(url.pathname==='/rest/v1/rpc/ox_feature_access_rpc') {
+     rpcCalls++;const id=identity(token),body=JSON.parse(options.body);
+     try{return json(await db.featureRPC(id,body.p_action,body.p_payload));}catch(e){return json({code:e.code,message:'raw SQL detail'},403);}
+   }
    if(url.pathname==='/rest/v1/rpc/ox_admin_review_rpc') {
      rpcCalls++;const id=identity(token);assert.ok(id,'RPC bearer must be the provider-valid JWT, never a publishable/service-role key');
      if(failRPC)return json({code:'PGRST202',message:'raw synthetic SQL details must not leak'},404);
@@ -43,6 +49,32 @@ test('real Supabase SDK + provider-validated JWT + RLS RPC candidate adapter',as
      const r=await run(request(memberToken,'lookup',{uids:['9000000001']}));assert.equal(r.statusCode,403);assert.equal(r.body.code,'ADMIN_REQUIRED');
      await db.query('update ox_review_live.administrators set active=false where account_id=$1',[ids.admin]);
      assert.equal((await run(request(adminToken))).statusCode,403);await db.query('update ox_review_live.administrators set active=true where account_id=$1',[ids.admin]);
+   });
+   await t.test('every management read/write rejects guests, ordinary members and disabled administrators',async()=>{
+     const management=[
+       ['admin-review'],
+       ...['lookup','records','approve','revoke'].map(action=>['admin-review',action,{}]),
+       ['feature-admin'],['feature-admin','records',{}],['feature-admin','update',{}],
+       ['bitget-admin-lookup'],['bitget-admin-lookup',null,{uid:'9000000001'}]
+     ];
+     const check=async(token,expected)=>{
+       for(const [endpoint,action,payload] of management){
+         const req=request(token,action,payload);req.query.endpoint=endpoint;
+         if(endpoint==='bitget-admin-lookup'&&payload){req.method='POST';req.body=payload;}
+         const r=await run(req);
+         assert.equal(r.statusCode,expected,`${endpoint} ${req.method} ${action||''}`);
+         assert.deepEqual(r.body.ok,false);
+         assert.equal(r.body.code,expected===401?'SIGN_IN_REQUIRED':'ADMIN_REQUIRED');
+         assert.match(r.headers['Cache-Control'],/no-store/);
+         assert.equal(['claims','audit','features','data','results'].some(key=>Object.hasOwn(r.body,key)),false);
+       }
+     };
+     const before=rpcCalls;await check(null,401);assert.equal(rpcCalls,before);
+     await check(memberToken,403);
+     await db.query('update ox_review_live.administrators set active=false where account_id=$1',[ids.admin]);
+     try{await check(adminToken,403);}finally{await db.query('update ox_review_live.administrators set active=true where account_id=$1',[ids.admin]);}
+     assert.equal((await db.query('select count(*)::int n from ox_review_live.audit')).rows[0].n,0);
+     const status=await run(request(adminToken));assert.equal(status.body.administrator,true);
    });
    await t.test('expired access is refreshed then getUser-validated; exact fresh bearer reaches RPC',async()=>{
      const before=userCalls;const r=await run(request('invalid-fixture-token'));assert.equal(r.statusCode,200);assert.equal(r.body.administrator,true);assert.equal(userCalls-before,2);assert.ok(refreshes>0);assert.ok(r.headers['Set-Cookie']);
