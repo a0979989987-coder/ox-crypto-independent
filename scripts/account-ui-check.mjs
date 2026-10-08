@@ -49,6 +49,9 @@ async function verifyLoginLayout(page){
       assert.equal(new Set(g.controls.map(c=>c.font)).size,1);
       assert.ok(g.close.h>=44&&g.close.y>=g.shell.y&&g.close.y+g.close.h<=g.shell.y+g.shell.h,'close remains reachable with keyboard height');
       assert.ok(g.send.h>=44&&Math.abs(g.send.cy-g.form.cy)<1&&g.input.w>=90);
+      const arrow=page.locator('.ox-account-send-arrow');
+      assert.equal(await arrow.isVisible(),true,'send arrow remains visible after resizing');
+      assert.equal(await arrow.innerText(),'→');
       const label=page.locator(viewport.width<=760?'.ox-account-send-mobile':'.ox-account-send-desktop');
       await label.waitFor({state:'visible'});
       if(!await label.isVisible()){
