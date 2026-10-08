@@ -24,6 +24,14 @@ jobs:
       - run: npm run verify:extraction
       - run: npm test
       - run: npx playwright install --with-deps chromium webkit
+      - name: Login layout and account flows (Chromium)
+        run: node scripts/account-ui-check.mjs
+      - name: Email cooldown and resend
+        run: node scripts/account-email-ui-check.mjs
+      - name: Login layout and account flows (WebKit)
+        run: node scripts/account-ui-check.mjs
+        env:
+          OX_UI_BROWSER: webkit
       - run: npm run test:e2e
       - run: npm run test:performance
       - run: npm run test:news-rotation
@@ -36,5 +44,12 @@ jobs:
         with:
           name: bubble-ui-verification
           path: docs/performance/bubble-*.png
+          if-no-files-found: ignore
+          retention-days: 2
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: account-login-verification
+          path: docs/performance/login-*.png
           if-no-files-found: ignore
           retention-days: 2

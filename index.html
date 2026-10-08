@@ -87,7 +87,7 @@
   <link rel="stylesheet" href="src/styles/components/radar-combined.css?v=20261004-markets2">
   <link rel="stylesheet" href="src/styles/components/live-visibility.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/components/control-menu-compact.css?v=20261004-markets2">
-  <link rel="stylesheet" href="src/styles/account/account.css?v=20261002-uid-entry">
+  <link rel="stylesheet" href="src/styles/account/account.css?v=20261008-orbit-login1">
   <link rel="preload" as="style" href="src/markets/crypto/patterns/patterns.css?v=20261002-quiet1">
   <link rel="preload" as="style" href="src/markets/crypto/analytics/flow.css?v=20261001-tiercomb2">
   <link rel="preload" as="style" href="src/markets/crypto/bubbles/bubbles.css?v=20261001-tiercomb2">
@@ -258,20 +258,26 @@
   <button class="ox-control-edge-close" id="ox-control-close" type="button" aria-label="收起選單"><span aria-hidden="true">›</span></button>
 </div>
 
-<div class="ox-account-overlay" id="ox-account-overlay" aria-hidden="true">
-  <section class="ox-account-shell" role="dialog" aria-modal="true" aria-labelledby="ox-account-title-main">
+<div class="ox-account-overlay" id="ox-account-overlay" data-view="auth" aria-hidden="true">
+  <section class="ox-account-shell" role="dialog" aria-modal="true" aria-label="OX 登入">
     <button class="ox-account-close" id="ox-account-close" type="button" aria-label="關閉 OX 帳號">×</button>
-    <div class="ox-account-brand"><span class="ox-account-mark">OX</span><span>OXLOVE</span></div>
+    <div class="ox-account-brand" id="ox-account-brand" tabindex="-1"><span class="ox-account-mark">OX</span><span class="ox-account-brand-note">OXLOVE</span></div>
     <div class="ox-account-layout">
       <div class="ox-account-intro"><p class="ox-account-eyebrow">ONE OX ACCOUNT</p><h1>一個帳號，<br>連接你的 OX 服務。</h1><p>為 OX 市場工具與未來服務準備的統一帳號。</p><div class="ox-account-lightwave" aria-hidden="true"></div></div>
       <div class="ox-account-card" id="ox-account-auth-view">
-        <div class="ox-account-tabs" role="tablist" aria-label="登入或建立帳號"><button type="button" role="tab" id="ox-account-tab-login" aria-selected="true">登入</button><button type="button" role="tab" id="ox-account-tab-register" aria-selected="false">建立帳號</button></div>
-        <h2 id="ox-account-title-main">登入 OX</h2><p class="ox-account-lead">一個帳號，連接你的 OX 服務。</p>
-        <button class="ox-account-google" type="button" id="ox-account-google"><span class="ox-google-g" aria-hidden="true">G</span>使用 Google 繼續</button>
-        <div class="ox-account-divider"><span>或使用電子郵件</span></div>
-        <form id="ox-account-email-form" novalidate><label for="ox-account-email">電子郵件</label><input id="ox-account-email" type="email" autocomplete="email" placeholder="name@example.com" required><div class="ox-account-password-wrap" hidden><label for="ox-account-password">密碼</label><input id="ox-account-password" type="password" autocomplete="new-password" minlength="8" placeholder="至少 8 個字元"></div><button class="ox-account-submit" type="submit" id="ox-account-email-submit">繼續</button></form>
-        <p class="ox-account-status" id="ox-account-auth-status" role="status" aria-live="polite">Google 與 Email 驗證服務尚未連接，現在不會提交或保存你的資料。</p>
-        <button class="ox-account-skip" type="button" id="ox-account-skip">繼續使用基礎版</button>
+        <form id="ox-account-email-form" class="ox-account-email-row" novalidate>
+          <svg class="ox-account-envelope" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 6 9 7 9-7"/></svg>
+          <input id="ox-account-email" type="email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" aria-label="電子郵件" aria-describedby="ox-account-auth-status" placeholder="電子郵件" required>
+          <button class="ox-account-submit" type="submit" id="ox-account-email-submit" aria-label="寄送登入連結"><span class="ox-account-send-desktop">寄送連結</span><span class="ox-account-send-mobile">寄送</span><span class="ox-account-send-wait" hidden></span><svg class="ox-account-send-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12h16m-6-6 6 6-6 6"/></svg></button>
+        </form>
+        <div class="ox-account-actions" role="group" aria-label="其他帳號操作">
+          <button class="ox-account-google" type="button" id="ox-account-google"><svg class="ox-account-google-mark" viewBox="0 0 24 24" aria-hidden="true"><path fill="#4285F4" d="M21.6 12.23c0-.71-.06-1.39-.18-2.04H12v3.86h5.38a4.6 4.6 0 0 1-2 3.02v2.51h3.24c1.9-1.74 2.98-4.31 2.98-7.35Z"/><path fill="#34A853" d="M12 22c2.7 0 4.97-.89 6.62-2.42l-3.24-2.51c-.9.6-2.05.96-3.38.96-2.6 0-4.8-1.75-5.59-4.1H3.07v2.59A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.41 13.93a6 6 0 0 1 0-3.86V7.48H3.07a10 10 0 0 0 0 9.04l3.34-2.59Z"/><path fill="#EA4335" d="M12 5.97c1.47 0 2.79.5 3.82 1.49l2.87-2.87A9.63 9.63 0 0 0 12 2a10 10 0 0 0-8.93 5.48l3.34 2.59C7.2 7.72 9.4 5.97 12 5.97Z"/></svg><span>Google 登入</span></button>
+          <span class="ox-account-action-divider" aria-hidden="true"></span>
+          <button type="button" id="ox-account-tab-register" aria-pressed="false">建立帳號</button>
+          <span class="ox-account-action-divider" aria-hidden="true"></span>
+          <button class="ox-account-skip" type="button" id="ox-account-skip">使用基礎版</button>
+        </div>
+        <p class="ox-account-status" id="ox-account-auth-status" role="status" aria-live="polite" aria-atomic="true" hidden></p>
       </div>
       <div class="ox-account-card ox-account-center" id="ox-account-center" hidden>
         <p class="ox-account-eyebrow">OX ACCOUNT</p><h2>帳號中心</h2><p>登入服務尚未連接。</p>
@@ -787,7 +793,7 @@
 <script src="src/components/account/summary.js?v=20261004-markets2"></script>
 <script src="src/components/account/auth.js?v=20261005-recovery3"></script>
 <script src="src/components/account/session.js?v=20261001-tiercomb2"></script>
-<script src="src/components/account/account.js?v=20261005-recovery3"></script>
+<script src="src/components/account/account.js?v=20261008-orbit-login1"></script>
 
 <!-- CSS moved: ox-v37-last-mile-fixes -->
 

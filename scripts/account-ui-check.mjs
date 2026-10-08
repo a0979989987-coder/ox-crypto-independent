@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
-import { readFileSync, existsSync } from 'node:fs';
+import { readFileSync, existsSync, mkdirSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { chromium } from 'playwright';
+import { chromium, webkit } from 'playwright';
 
 // Isolated UI fixtures. No real provider, email, account, or signed-in browser.
 const root = resolve(import.meta.dirname, '..');
@@ -13,7 +13,37 @@ const executablePath = process.env.OX_TEST_BROWSER || [
   'C:/Program Files/Google/Chrome/Application/chrome.exe',
   'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'
 ].find(existsSync);
-const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
+const engine=process.env.OX_UI_BROWSER==='webkit'?webkit:chromium;
+const browser = await engine.launch({ headless: true, ...(engine===chromium&&executablePath ? { executablePath } : {}) });
+async function verifyLoginLayout(page){
+  mkdirSync(resolve(root,'docs/performance'),{recursive:true});
+  for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:390,height:350},{width:844,height:390},{width:1440,height:900}]){
+    await page.setViewportSize(viewport);
+    for(const theme of ['dark','light']){
+      await page.evaluate(t=>document.body.classList.toggle('theme-light',t==='light'),theme);
+      const g=await page.locator('#ox-account-auth-view').evaluate(el=>{
+        const box=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,cx:r.x+r.width/2,cy:r.y+r.height/2};};
+        const form=el.querySelector('form'),row=el.querySelector('.ox-account-actions'),input=el.querySelector('input'),shell=el.closest('.ox-account-shell'),button=el.querySelector('#ox-account-email-submit');
+        const controls=[...row.querySelectorAll('button')].map(e=>{const s=getComputedStyle(e);return {...box(e),text:e.textContent.trim(),overflow:e.scrollWidth-e.clientWidth,border:s.borderTopWidth,background:s.backgroundColor,font:s.fontSize,weight:s.fontWeight};});
+        return {form:box(form),row:box(row),input:box(input),send:box(button),shell:box(shell),close:box(shell.querySelector('.ox-account-close')),cardBorder:getComputedStyle(el).borderTopWidth,inputSize:parseFloat(getComputedStyle(input).fontSize),controls,dividers:row.querySelectorAll('.ox-account-action-divider').length,overflow:document.documentElement.scrollWidth-innerWidth,card:box(el),viewport:{w:innerWidth,h:innerHeight},status:el.querySelector('[role=status]').hidden};
+      });
+      assert.ok(g.shell.x>=0&&g.shell.x+g.shell.w<=viewport.width+1&&g.shell.y>=0&&g.shell.y+g.shell.h<=viewport.height+1,`login fits ${JSON.stringify(viewport)}`);
+      assert.equal(g.cardBorder,'0px');assert.ok(g.inputSize>=16);assert.ok(g.overflow<=1);
+      assert.ok(Math.abs(g.form.x-g.row.x)<1&&Math.abs(g.form.w-g.row.w)<1,'both rows align');
+      assert.ok(Math.abs(g.card.cx-g.shell.cx)<1&&Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
+      assert.equal(g.dividers,2);assert.equal(g.status,true);
+      assert.deepEqual(g.controls.map(e=>e.text),['Google 登入','建立帳號','使用基礎版']);
+      for(const c of g.controls){assert.ok(c.h>=44&&c.overflow<=1,'complete text within a transparent touch target');assert.equal(c.border,'0px');assert.equal(c.background,'rgba(0, 0, 0, 0)');assert.equal(c.weight,'400');assert.ok(Math.abs(c.cy-g.row.cy)<1);}
+      assert.equal(new Set(g.controls.map(c=>c.font)).size,1);
+      assert.ok(g.close.h>=44&&g.close.y>=g.shell.y&&g.close.y+g.close.h<=g.shell.y+g.shell.h,'close remains reachable with keyboard height');
+      assert.ok(g.send.h>=44&&Math.abs(g.send.cy-g.form.cy)<1&&g.input.w>=90);
+      assert.equal(await page.locator(viewport.width<=760?'.ox-account-send-mobile':'.ox-account-send-desktop').isVisible(),true);
+      if(viewport.width===390&&viewport.height===844||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${theme}.png`)});
+    }
+  }
+  await page.setViewportSize({width:390,height:844});
+  await page.evaluate(()=>document.body.classList.remove('theme-light'));
+}
 try {
   const page = await browser.newPage();
   const calls = [], errors = [];
@@ -23,6 +53,7 @@ try {
     const request = route.request(), path = new URL(request.url()).pathname;
     if (path === '/') return route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta charset="UTF-8"><style>${foundation}\n${style}</style></head><body><small class="ox-account-provider-note">Legacy provider placeholder</small><button data-ox-account-open>登入 / 註冊</button>${markup}<script src="/auth.js"></script><script src="/session.js"></script><script src="/account.js"></script></body></html>` });
     if (['/auth.js', '/session.js', '/account.js'].includes(path)) return route.fulfill({ contentType: 'text/javascript', body: readFileSync(resolve(root, 'src/components/account', path.slice(1)), 'utf8') });
+    if (path === '/assets/account-orbit.svg') return route.fulfill({contentType:'image/svg+xml',body:readFileSync(resolve(root,'assets/account-orbit.svg'),'utf8')});
     const endpoint = path.split('/').at(-1);
     calls.push({ endpoint, method: request.method(), body: request.postDataJSON() });
     if (endpoint === 'admin-review') return route.fulfill({status:admin?200:403,contentType:'application/json',body:JSON.stringify(admin?{ok:true,administrator:true}:{ok:false,code:'ADMIN_REQUIRED'})});
@@ -39,11 +70,24 @@ try {
     await route.fulfill({ contentType: 'application/json', body: JSON.stringify(result) });
   });
   await page.goto('https://ox.test/');
-  await page.locator('#ox-account-auth-status').filter({ hasText: '登入連結' }).waitFor({ state: 'attached' });
+  await page.waitForFunction(() => window.OXAuth?.status.configured);
   assert.match(await page.locator('.ox-account-provider-note').innerText(),/連線設定已載入/);
   await page.locator('[data-ox-account-open]').click();
+  await verifyLoginLayout(page);
+  const before=await page.locator('#ox-account-email-form').boundingBox();
+  await page.locator('#ox-account-email-submit').click();
+  await page.locator('#ox-account-auth-status').filter({hasText:'請輸入電子郵件'}).waitFor();
+  assert.equal(calls.some(c=>c.endpoint==='email'),false,'invalid input never sends an email');
+  await page.locator('#ox-account-email').fill('invalid');await page.locator('#ox-account-email-submit').click();
+  await page.locator('#ox-account-auth-status').filter({hasText:'有效的電子郵件'}).waitFor();
+  assert.deepEqual(await page.locator('#ox-account-email-form').boundingBox(),before,'feedback does not move the input');
+  await page.locator('#ox-account-skip').click();assert.equal(await page.locator('#ox-account-overlay').getAttribute('aria-hidden'),'true');
+  await page.locator('[data-ox-account-open]').click();await page.locator('#ox-account-close').click();
+  assert.equal(await page.locator('[data-ox-account-open]').evaluate(e=>document.activeElement===e),true);
+  await page.locator('[data-ox-account-open]').click();await page.locator('#ox-account-close').focus();await page.keyboard.press('Shift+Tab');
+  assert.equal(await page.locator('#ox-account-skip').evaluate(e=>document.activeElement===e),true,'focus stays in the dialog');
   await page.locator('#ox-account-tab-register').click();
-  assert.equal(await page.locator('.ox-account-password-wrap').isVisible(), false);
+  assert.equal(await page.locator('.ox-account-password-wrap').count(), 0);
   await page.locator('#ox-account-email').fill('fixture@example.com');
   await page.locator('#ox-account-email-submit').click();
   await page.locator('#ox-account-auth-status').filter({ hasText: '已寄出' }).waitFor();
@@ -145,7 +189,9 @@ try {
   user = null;
   configured = false; calls.length = 0;
   await page.reload();
-  await page.locator('#ox-account-auth-status').filter({ hasText: '尚未設定' }).waitFor({ state: 'attached' });
+  await page.locator('.ox-account-provider-note').filter({hasText:'尚未完成'}).waitFor();
+  assert.equal(await page.locator('#ox-account-auth-status').textContent(),'');
+  assert.equal(await page.locator('#ox-account-auth-status').isVisible(),false);
   assert.equal(calls.some(call => call.endpoint === 'session'), false);
   configured = true; user = null;
   await page.goto('https://ox.test/?ox_auth=error&ox_auth_reason=provider_denied&ox_auth_provider=access_denied');

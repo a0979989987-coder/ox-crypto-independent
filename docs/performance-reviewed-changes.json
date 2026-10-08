@@ -168,6 +168,12 @@
       "sourceSha256": "db0df31e1326e037ed56d228874accbda3aef3e20d918ec45b29b44f00340b88",
       "sha256": "2f5ff98a1d43f24bf3e17a4bcac7b106154e4fb81072c5ea0c12be6c73343a76",
       "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks."
+    },
+    {
+      "path": "src/components/account/account.js",
+      "sourceSha256": "375ef44d53a823bc4d07f80e5e80c3e4c3d25fee16cfc29586eed568bf413123",
+      "sha256": "620a66108e055b83891b76decd241cde4ccd7d972bff30677a224d9599a62562",
+      "reason": "Reviewed two-row orbit login UI: preserve existing Google/email/register API calls and member/UID/admin flows; add concise validation, stable action labels, keyboard focus and visual viewport handling. Authentication configuration and backend remain unchanged."
     }
   ]
 }

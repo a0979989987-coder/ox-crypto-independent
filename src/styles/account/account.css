@@ -24,3 +24,77 @@ body.ox-account-open{overflow:hidden}body.theme-light .ox-account-shell{backgrou
 #ox-account-email-code { min-height:44px; width:100%; box-sizing:border-box; font:inherit; }
 .ox-account-card [aria-busy="true"] { opacity:.7; transition:opacity 200ms ease; }
 @media (prefers-reduced-motion:reduce) { .ox-account-card [aria-busy="true"] { transition:none; } }
+
+/* The login surface shares the existing account flow, without a second card. */
+#ox-account-overlay[data-view="auth"]{inset:var(--ox-account-viewport-top,0px) 0 auto;height:var(--ox-account-viewport-height,100dvh);box-sizing:border-box;padding:24px;background:rgba(3,5,7,.92)}
+#ox-account-overlay[data-view="auth"] .ox-account-shell{box-sizing:border-box;width:min(1080px,100%);height:min(680px,100%);min-height:0;max-height:100%;overflow:hidden;border:1px solid rgba(225,212,191,.42);border-radius:24px;background:#090b0e;color:#eeeae2;font-family:var(--ox-font-ui,-apple-system,BlinkMacSystemFont,"PingFang TC","Microsoft JhengHei",sans-serif);box-shadow:0 24px 80px #0008;transform:none;transition:opacity .22s ease}
+#ox-account-overlay[data-view="auth"] .ox-account-shell:before{inset:0;width:auto;height:auto;background:linear-gradient(90deg,#07090c69,transparent 76%),url("../../../assets/account-orbit.svg") 56% 50%/cover no-repeat;opacity:.74;pointer-events:none}
+#ox-account-overlay[data-view="auth"] .ox-account-intro,
+#ox-account-overlay[data-view="auth"] .ox-account-footer,
+#ox-account-overlay[data-view="auth"] .ox-account-brand-note{display:none}
+#ox-account-overlay[data-view="auth"] .ox-account-brand{z-index:2;left:38px;top:30px;outline:none;letter-spacing:0}
+#ox-account-overlay[data-view="auth"] .ox-account-mark{display:block;width:auto;height:auto;border:0;border-radius:0;color:#f0ede5;font-size:30px;font-weight:400;line-height:1;letter-spacing:-.055em}
+#ox-account-overlay #ox-account-close{display:grid;place-items:center;width:44px!important;min-width:44px!important;height:44px!important;min-height:44px!important;padding:0!important;border:0!important;border-radius:50%!important;background:transparent!important;outline:0!important;box-shadow:none!important;color:inherit;font-size:26px;line-height:1;transform:none!important;cursor:pointer}
+#ox-account-overlay #ox-account-close:focus-visible{box-shadow:0 0 0 1px #d3c9b699!important}
+#ox-account-overlay[data-view="auth"] #ox-account-close{right:25px;top:22px;z-index:3;color:#ede9e0}
+#ox-account-overlay[data-view="auth"] .ox-account-layout{position:relative;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;gap:0;width:100%;height:100%;min-height:0;padding:88px 48px 94px;overflow:auto;overscroll-behavior:contain}
+#ox-account-auth-view{width:min(760px,100%);max-width:100%;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;min-width:0}
+#ox-account-auth-view>*{transform:none;transition:none}
+#ox-account-email-form{display:grid;grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:16px;box-sizing:border-box;width:100%;height:64px;margin:0;padding:0 0 0 20px;border:1px solid rgba(226,216,196,.51);border-radius:16px;background:rgba(18,20,23,.64);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);transition:border-color .18s ease}
+#ox-account-email-form:focus-within{border-color:rgba(245,234,214,.9)}
+#ox-account-email-form:has([aria-invalid="true"]){border-color:#b78e82}
+#ox-account-email-form .ox-account-envelope{width:24px;height:24px;color:#e9e5dc;flex:none;pointer-events:none}
+#ox-account-email-form #ox-account-email{box-sizing:border-box;min-width:0;width:100%;height:100%;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;color:#f3efe7;font-family:inherit;font-size:16px;font-weight:400;line-height:1.4;outline:0;box-shadow:none}
+#ox-account-email-form #ox-account-email::placeholder{color:#aaa8a1;opacity:1}
+#ox-account-email-form #ox-account-email:focus{outline:0;box-shadow:none}
+#ox-account-email-form #ox-account-email:-webkit-autofill{-webkit-text-fill-color:#f3efe7;-webkit-box-shadow:0 0 0 100px #181a1d inset;caret-color:#f3efe7}
+#ox-account-email-form #ox-account-email-submit{display:flex;align-items:center;justify-content:center;gap:12px;align-self:stretch;box-sizing:border-box;min-width:158px;width:auto;min-height:44px;height:auto;margin:0;padding:0 20px;border:0;border-radius:14px;background:#eee6d8;color:#111419;font-family:inherit;font-size:15px;font-weight:500;line-height:1.2;white-space:nowrap;transform:none;transition:filter .18s ease}
+#ox-account-email-submit .ox-account-send-arrow{width:21px;height:21px;flex:none;pointer-events:none}
+#ox-account-email-submit .ox-account-send-mobile{display:none}
+#ox-account-email-submit[data-cooldown="true"] .ox-account-send-desktop,
+#ox-account-email-submit[data-cooldown="true"] .ox-account-send-mobile,
+#ox-account-email-submit[data-cooldown="true"] .ox-account-send-arrow{display:none}
+#ox-account-email-submit [hidden],#ox-account-auth-view>[hidden]{display:none!important}
+#ox-account-auth-view .ox-account-actions{display:grid;grid-template-columns:minmax(0,1.18fr) 1px minmax(0,1fr) 1px minmax(0,1.18fr);align-items:center;width:100%;margin:24px 0 0;gap:0}
+#ox-account-auth-view .ox-account-actions>button{display:flex;align-items:center;justify-content:center;gap:9px;box-sizing:border-box;min-width:0;width:100%;min-height:44px;height:44px;margin:0;padding:0 6px;border:0;border-radius:0;background:transparent;box-shadow:none;color:#dedbd4;font-family:inherit;font-size:16px;font-weight:400;line-height:1.2;text-decoration:none;white-space:nowrap;cursor:pointer;transform:none;transition:color .16s ease,opacity .16s ease}
+#ox-account-auth-view .ox-account-actions>button:hover,
+#ox-account-auth-view .ox-account-actions>button:focus-visible,
+#ox-account-auth-view #ox-account-tab-register[aria-pressed="true"]{color:#fff8ed}
+#ox-account-auth-view .ox-account-actions>button:focus-visible{outline:0;text-decoration:underline;text-decoration-color:#d9d0bf7d;text-underline-offset:6px;text-decoration-thickness:1px}
+#ox-account-auth-view .ox-account-actions>button:active{opacity:.72;transform:none}
+#ox-account-auth-view .ox-account-action-divider{display:block;align-self:center;width:1px;height:22px;background:rgba(219,210,192,.27);pointer-events:none}
+#ox-account-auth-view .ox-account-google-mark{width:22px;height:22px;flex:none;pointer-events:none}
+#ox-account-email-submit:focus-visible{outline:1px solid #ede4d1;outline-offset:3px}
+#ox-account-email-submit:hover{filter:brightness(1.06);transform:none}
+#ox-account-email-submit:active{filter:brightness(.91);transform:none}
+#ox-account-auth-view button:disabled{cursor:wait;opacity:.55;transform:none}
+#ox-account-auth-status{position:absolute;top:100%;left:0;right:0;max-height:100px;overflow:auto;min-height:0;margin:15px 0 0;padding:0;color:#d4ccc0;font-size:12px;line-height:1.65;overflow-wrap:anywhere;text-align:center}
+@media(max-width:760px){
+  #ox-account-overlay[data-view="auth"]{padding:max(10px,env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+  #ox-account-overlay[data-view="auth"] .ox-account-shell{height:100%;width:100%;border-radius:22px}
+  #ox-account-overlay[data-view="auth"] .ox-account-shell:before{background-position:76% center}
+  #ox-account-overlay[data-view="auth"] .ox-account-brand{top:25px;left:22px}
+  #ox-account-overlay[data-view="auth"] .ox-account-mark{font-size:27px}
+  #ox-account-overlay[data-view="auth"] #ox-account-close{top:15px;right:12px}
+  #ox-account-overlay[data-view="auth"] .ox-account-layout{padding:78px 16px 86px}
+  #ox-account-email-form{height:56px;grid-template-columns:19px minmax(0,1fr) auto;gap:10px;padding-left:13px;border-radius:13px}
+  #ox-account-email-form .ox-account-envelope{width:19px;height:19px}
+  #ox-account-email-form #ox-account-email-submit{min-width:91px;padding:0 12px;gap:8px;border-radius:11px;font-size:14px}
+  #ox-account-email-submit .ox-account-send-desktop{display:none}
+  #ox-account-email-submit .ox-account-send-mobile{display:inline}
+  #ox-account-email-submit .ox-account-send-arrow{width:18px;height:18px}
+  #ox-account-auth-view .ox-account-actions{margin-top:14px}
+  #ox-account-auth-view .ox-account-actions>button{gap:6px;padding:0 3px;font-size:13px}
+  #ox-account-auth-view .ox-account-google-mark{width:17px;height:17px}
+  #ox-account-auth-view .ox-account-action-divider{height:18px}
+  #ox-account-auth-status{margin-top:12px;font-size:12px}
+}
+@media(max-width:360px){
+  #ox-account-overlay[data-view="auth"] .ox-account-layout{padding-right:12px;padding-left:12px}
+  #ox-account-email-form{gap:8px;padding-left:11px}
+  #ox-account-email-form #ox-account-email-submit{min-width:83px;padding:0 9px;font-size:13px}
+  #ox-account-auth-view .ox-account-actions>button{gap:5px;padding:0 2px;font-size:12px}
+  #ox-account-auth-view .ox-account-google-mark{width:15px;height:15px}
+}
+@media(max-height:430px){#ox-account-overlay[data-view="auth"] .ox-account-layout{padding-top:68px;padding-bottom:74px}}
+@media(prefers-reduced-motion:reduce){#ox-account-overlay[data-view="auth"] .ox-account-shell,#ox-account-email-form,#ox-account-auth-view .ox-account-actions>button{transition:none}}
