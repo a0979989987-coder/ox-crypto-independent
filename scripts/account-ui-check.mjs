@@ -37,7 +37,12 @@ async function verifyLoginLayout(page){
       assert.equal(new Set(g.controls.map(c=>c.font)).size,1);
       assert.ok(g.close.h>=44&&g.close.y>=g.shell.y&&g.close.y+g.close.h<=g.shell.y+g.shell.h,'close remains reachable with keyboard height');
       assert.ok(g.send.h>=44&&Math.abs(g.send.cy-g.form.cy)<1&&g.input.w>=90);
-      assert.equal(await page.locator(viewport.width<=760?'.ox-account-send-mobile':'.ox-account-send-desktop').isVisible(),true);
+      const label=page.locator(viewport.width<=760?'.ox-account-send-mobile':'.ox-account-send-desktop');
+      if(!await label.isVisible()){
+        await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${theme}-failure.png`)});
+        console.log('Login label diagnostics',JSON.stringify({viewport,theme,g,labels:await page.locator('#ox-account-email-submit').evaluate(el=>({cooldown:el.dataset.cooldown,html:el.innerHTML,children:[...el.children].map(e=>({tag:e.tagName,display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))}))}));
+      }
+      assert.equal(await label.isVisible(),true,`send label visible at ${viewport.width}x${viewport.height} (${theme})`);
       if(viewport.width===390&&viewport.height===844||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${theme}.png`)});
     }
   }
