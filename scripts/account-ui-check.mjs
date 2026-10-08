@@ -56,7 +56,7 @@ try {
   page.on('pageerror', error => errors.push(error.message));
   await page.route('https://ox.test/**', async route => {
     const request = route.request(), path = new URL(request.url()).pathname;
-    if (path === '/') return route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta charset="UTF-8"><style>${foundation}\n${style}</style></head><body><small class="ox-account-provider-note">Legacy provider placeholder</small><button data-ox-account-open>登入 / 註冊</button>${markup}<script src="/auth.js"></script><script src="/session.js"></script><script src="/account.js"></script></body></html>` });
+    if (path === '/') return route.fulfill({ contentType: 'text/html', body: `<!doctype html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><style>${foundation}\n${style}</style></head><body><small class="ox-account-provider-note">Legacy provider placeholder</small><button data-ox-account-open>登入 / 註冊</button>${markup}<script src="/auth.js"></script><script src="/session.js"></script><script src="/account.js"></script></body></html>` });
     if (['/auth.js', '/session.js', '/account.js'].includes(path)) return route.fulfill({ contentType: 'text/javascript', body: readFileSync(resolve(root, 'src/components/account', path.slice(1)), 'utf8') });
     if (path === '/assets/account-orbit.svg') return route.fulfill({contentType:'image/svg+xml',body:readFileSync(resolve(root,'assets/account-orbit.svg'),'utf8')});
     const endpoint = path.split('/').at(-1);
