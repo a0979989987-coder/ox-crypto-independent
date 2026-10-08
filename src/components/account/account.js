@@ -19,23 +19,7 @@
   window.visualViewport?.addEventListener('resize', syncViewport, { passive: true });
   window.visualViewport?.addEventListener('scroll', syncViewport, { passive: true });
   window.addEventListener('resize', syncViewport, { passive: true });
-  let linkEpoch = 0, linkRevision = null, adminEpoch = 0;
-  async function loadAdmin(user) {
-    const epoch = ++adminEpoch;
-    let entry = $('#ox-account-admin-open');
-    if (!entry) {
-      entry = document.createElement('button'); entry.id = 'ox-account-admin-open'; entry.type = 'button';
-      entry.className = 'ox-account-skip'; entry.textContent = '代理審核後台'; center?.append(entry);
-      entry.addEventListener('click', () => { if (!entry.hidden && window.OXAuth.user) location.assign('/previews/account-admin/'); });
-    }
-    entry.hidden = true; entry.style.display = 'none';
-    if (!user) return;
-    try {
-      const result = await window.OXAuth.getAdminReviewStatus();
-      if (epoch !== adminEpoch || window.OXAuth.user?.id !== user.id) return;
-      entry.hidden = !(result.ok && result.administrator === true); entry.style.display = entry.hidden ? 'none' : '';
-    } catch { /* Fail closed; ordinary member and market use remain available. */ }
-  }
+  let linkEpoch = 0, linkRevision = null;
   function ensureLinkForm() {
     if ($('#ox-bitget-link-form')) return;
     const section = document.createElement('section'); section.id = 'ox-bitget-link-section';
@@ -113,7 +97,7 @@
       note.textContent = user ? '已登入 OX 帳號，可開啟帳號中心。' : window.OXAuth.status.configured ? '帳號連線設定已載入。請開啟登入／註冊。' : '帳號連線設定尚未完成。';
     }
     if (!center) return;
-    loadLink(user); loadAdmin(user);
+    loadLink(user);
     let profile = $('#ox-account-profile');
     if (!profile) {
       center.querySelector('h2 + p')?.remove();
@@ -241,11 +225,11 @@
       flow_missing: '登入驗證 Cookie 未收到。請重新點選登入；若仍發生，請回報原因：flow_missing。',
       flow_invalid: '登入驗證 Cookie 已失效或無法驗證。請重新點選登入；原因：flow_invalid。',
       code_missing: '登入回呼未收到授權碼。請重新點選登入；原因：code_missing。',
-      provider_denied: '登入連結或授權未完成。連結可能已使用或過期，也可能取消了登入；請回到發起登入的同一瀏覽器確認後再試。',
+      provider_denied: '登入連結或授權未完成，請取得新連結或重新嘗試。',
       provider_callback_error: '登入提供者未完成回呼。請回報原因：provider_callback_error。',
       pkce_missing: '登入驗證資料未完整還原。請回報原因：pkce_missing。',
       pkce_mismatch: '登入驗證資料與回呼不符。請重新登入；原因：pkce_mismatch。',
-      authorization_expired: '登入驗證已失效，可能已使用或過期。請停止重開舊信，待寄信限制解除後再取得一封新信；原因：authorization_expired。',
+      authorization_expired: '登入驗證已失效，請寄送新連結再試。（authorization_expired）',
       authorization_invalid: '本次授權碼已使用或無法確認。請重新登入；原因：authorization_invalid。',
       exchange_failed: '登入提供者未能完成授權交換。請回報原因：exchange_failed。',
       response_invalid: '登入提供者沒有回傳完整登入資料。請回報原因：response_invalid。',

@@ -168,19 +168,23 @@ try {
   await page.locator('#ox-bitget-link-save').click();
   await page.locator('#ox-bitget-link-status').filter({ hasText: '持有權待驗證' }).waitFor();
   assert.equal(calls.filter(call => call.endpoint === 'bitget-link' && call.method === 'POST').at(-1).body.revision, '00000000-0000-4000-8000-000000000004');
-  assert.equal(await page.locator('#ox-account-admin-open').isVisible(),false);
-  admin = true; await page.reload(); await page.locator('[data-ox-account-open]').click();
-  await page.locator('#ox-account-admin-open').waitFor({state:'visible'});
-  admin = false; await page.reload(); await page.locator('[data-ox-account-open]').click();
-  await page.waitForFunction(()=>window.OXAuth?.user?.id==='fixture-member');
-  assert.equal(await page.locator('#ox-account-admin-open').isVisible(),false);
-  // An in-flight old admin reply cannot restore the entry after logout.
-  admin = true; const savedUser = user; let releaseAdmin,adminStarted,adminFinished;
-  const adminStart=new Promise(r=>adminStarted=r),adminGate=new Promise(r=>releaseAdmin=r),adminDone=new Promise(r=>adminFinished=r);
-  await page.route('**/api/v1/account/admin-review',async route=>{adminStarted();await adminGate;await route.fulfill({status:200,contentType:'application/json',body:JSON.stringify({ok:true,administrator:true})});adminFinished();});
-  await page.reload();await adminStart;await page.evaluate(()=>window.OXAuth.signOut());releaseAdmin();await adminDone;
-  await page.waitForFunction(()=>!window.OXAuth.user);assert.equal(await page.locator('#ox-account-admin-open').isVisible(),false);
-  await page.unroute('**/api/v1/account/admin-review');admin=false;user=savedUser;
+  // No account surface may recreate an admin entry, even for an administrator.
+  for (const administrator of [false, true, false]) {
+    admin = administrator;
+    await page.reload();
+    await page.waitForFunction(() => window.OXAuth?.user?.id === 'fixture-member');
+    await page.locator('[data-ox-account-open]').click();
+    await page.locator('#ox-bitget-link-open').click();
+    await page.evaluate(() => {
+      for (let i = 0; i < 5; i++) document.dispatchEvent(new CustomEvent('ox:accountchange', {detail: {user: window.OXAuth.user}}));
+    });
+    assert.equal(await page.locator('#ox-account-admin-open').count(), 0);
+    assert.equal(await page.getByText('代理審核後台', {exact: true}).count(), 0);
+  }
+  assert.equal(calls.filter(call => call.endpoint === 'admin-review').length, 0);
+  await page.evaluate(() => window.OXAuth.signOut());
+  await page.waitForFunction(() => !window.OXAuth.user);
+  assert.equal(await page.locator('#ox-account-admin-open').count(), 0);
   await page.goto('https://ox.test/?ox_auth=success');
   await page.locator('#ox-account-center').waitFor({state:'visible'});
   assert.equal(await page.locator('#ox-account-overlay').isVisible(),true);

@@ -172,8 +172,8 @@
     {
       "path": "src/components/account/account.js",
       "sourceSha256": "375ef44d53a823bc4d07f80e5e80c3e4c3d25fee16cfc29586eed568bf413123",
-      "sha256": "620a66108e055b83891b76decd241cde4ccd7d972bff30677a224d9599a62562",
-      "reason": "Reviewed two-row orbit login UI: preserve existing Google/email/register API calls and member/UID/admin flows; add concise validation, stable action labels, keyboard focus and visual viewport handling. Authentication configuration and backend remain unchanged."
+      "sha256": "491b5c0950dfc4d58ddc1dfd7412d733e42f650cfdda697990c7a76e7841e3ad",
+      "reason": "Reviewed two-row orbit login UI: preserve existing Google/email/register calls, member and UID flows, and the current main removal of account admin entries. Add concise feedback, stable labels, keyboard focus and visual viewport handling; authentication configuration and backend are unchanged."
     }
   ]
 }
