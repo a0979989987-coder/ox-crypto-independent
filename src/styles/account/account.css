@@ -114,3 +114,7 @@ body.ox-account-open{overflow:hidden}body.theme-light .ox-account-shell{backgrou
 #ox-account-auth-view .ox-account-actions>button:hover,#ox-account-auth-view .ox-account-actions>button:focus-visible,#ox-account-auth-view #ox-account-tab-register[aria-pressed="true"]{color:#fff8ed!important}
 #ox-account-auth-status{color:#d4ccc0!important}
 @media(max-width:760px){#ox-account-overlay[data-view="auth"] .ox-account-shell:before{background-position:76% center!important}}
+@media(max-height:300px){
+  #ox-account-overlay[data-view="auth"]{padding:8px max(8px,env(safe-area-inset-right)) 8px max(8px,env(safe-area-inset-left))}
+  #ox-account-overlay[data-view="auth"] .ox-account-layout{align-items:start;padding-top:70px;padding-bottom:8px}
+}

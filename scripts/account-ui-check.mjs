@@ -24,7 +24,7 @@ async function verifyLoginLayout(page){
   mkdirSync(resolve(root,'docs/performance'),{recursive:true});
   await page.locator('#ox-account-auth-view').waitFor({state:'visible'});
   await page.waitForFunction(()=>getComputedStyle(document.querySelector('#ox-account-overlay')).opacity==='1'&&getComputedStyle(document.querySelector('.ox-account-shell')).opacity==='1');
-  for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:390,height:350},{width:844,height:390},{width:1440,height:900}]){
+  for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:390,height:350},{width:320,height:240},{width:844,height:240},{width:844,height:390},{width:1440,height:900}]){
     await page.setViewportSize(viewport);
     await page.waitForFunction(({width,height})=>innerWidth===width&&innerHeight===height&&Math.abs(parseFloat(document.querySelector('#ox-account-overlay').style.getPropertyValue('--ox-account-viewport-height'))-(window.visualViewport?.height||innerHeight))<1,viewport);
     for(const theme of ['dark','light']){
@@ -39,7 +39,9 @@ async function verifyLoginLayout(page){
       if(viewport.width===320||viewport.width===390||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${viewport.height}-${theme}.png`)});
       assert.equal(g.cardBorder,'0px');assert.ok(g.inputSize>=16);assert.ok(g.overflow<=1);
       assert.ok(Math.abs(g.form.x-g.row.x)<1&&Math.abs(g.form.w-g.row.w)<1,'both rows align');
-      assert.ok(Math.abs(g.card.cx-g.shell.cx)<1&&Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
+      assert.ok(Math.abs(g.card.cx-g.shell.cx)<1,'email and actions stay horizontally centered');
+      if(viewport.height>300)assert.ok(Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
+      else assert.ok(g.form.y>=g.close.y+g.close.h+3&&g.row.y+g.row.h<=viewport.height-8,'short keyboard viewport keeps the input, actions and close separate');
       assert.equal(g.dividers,2);assert.equal(g.status,true);
       assert.deepEqual(g.controls.map(e=>e.text),['Google 登入','建立帳號','使用基礎版']);
       for(const c of g.controls){assert.ok(c.h>=44&&c.overflow<=1,'complete text within a transparent touch target');assert.equal(c.border,'0px');assert.equal(c.background,'rgba(0, 0, 0, 0)');assert.equal(c.weight,'400');assert.ok(Math.abs(c.cy-g.row.cy)<1);}
@@ -56,6 +58,7 @@ async function verifyLoginLayout(page){
     }
   }
   await page.setViewportSize({width:390,height:844});
+  await page.waitForFunction(()=>innerWidth===390&&innerHeight===844&&Math.abs(parseFloat(document.querySelector('#ox-account-overlay').style.getPropertyValue('--ox-account-viewport-height'))-(window.visualViewport?.height||innerHeight))<1);
   await page.evaluate(()=>document.body.classList.remove('theme-light'));
 }
 try {
