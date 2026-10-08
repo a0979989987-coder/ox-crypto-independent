@@ -33,11 +33,12 @@ async function verifyLoginLayout(page){
         const box=e=>{const r=e.getBoundingClientRect();return {x:r.x,y:r.y,w:r.width,h:r.height,cx:r.x+r.width/2,cy:r.y+r.height/2};};
         const form=el.querySelector('form'),row=el.querySelector('.ox-account-actions'),input=el.querySelector('input'),shell=el.closest('.ox-account-shell'),button=el.querySelector('#ox-account-email-submit');
         const controls=[...row.querySelectorAll('button')].map(e=>{const s=getComputedStyle(e);return {...box(e),text:e.textContent.trim(),overflow:e.scrollWidth-e.clientWidth,border:s.borderTopWidth,background:s.backgroundColor,font:s.fontSize,weight:s.fontWeight};});
-        return {form:box(form),row:box(row),input:box(input),send:box(button),shell:box(shell),close:box(shell.querySelector('.ox-account-close')),cardBorder:getComputedStyle(el).borderTopWidth,inputSize:parseFloat(getComputedStyle(input).fontSize),controls,dividers:row.querySelectorAll('.ox-account-action-divider').length,overflow:document.documentElement.scrollWidth-innerWidth,card:box(el),viewport:{w:innerWidth,h:innerHeight},status:el.querySelector('[role=status]').hidden};
+        return {form:box(form),row:box(row),input:box(input),send:box(button),shell:box(shell),close:box(shell.querySelector('.ox-account-close')),cardBorder:getComputedStyle(el).borderTopWidth,inputSize:parseFloat(getComputedStyle(input).fontSize),inputColor:getComputedStyle(input).color,placeholderColor:getComputedStyle(input,'::placeholder').color,controls,dividers:row.querySelectorAll('.ox-account-action-divider').length,overflow:document.documentElement.scrollWidth-innerWidth,card:box(el),viewport:{w:innerWidth,h:innerHeight},status:el.querySelector('[role=status]').hidden};
       });
       assert.ok(g.shell.x>=0&&g.shell.x+g.shell.w<=viewport.width+1&&g.shell.y>=0&&g.shell.y+g.shell.h<=viewport.height+1,`login fits ${JSON.stringify({viewport,shell:g.shell})}`);
       if(viewport.width===320||viewport.width===390||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${viewport.height}-${theme}.png`)});
       assert.equal(g.cardBorder,'0px');assert.ok(g.inputSize>=16);assert.ok(g.overflow<=1);
+      assert.equal(g.inputColor,'rgb(243, 239, 231)');assert.equal(g.placeholderColor,'rgb(170, 168, 161)','warm text remains readable in both host themes');
       assert.ok(Math.abs(g.form.x-g.row.x)<1&&Math.abs(g.form.w-g.row.w)<1,'both rows align');
       assert.ok(Math.abs(g.card.cx-g.shell.cx)<1,'email and actions stay horizontally centered');
       if(viewport.height>300)assert.ok(Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
@@ -102,8 +103,12 @@ try {
   await page.locator('#ox-account-skip').click();assert.equal(await page.locator('#ox-account-overlay').getAttribute('aria-hidden'),'true');
   await page.locator('[data-ox-account-open]').click();await page.locator('#ox-account-close').click();
   assert.equal(await page.locator('[data-ox-account-open]').evaluate(e=>document.activeElement===e),true);
-  await page.locator('[data-ox-account-open]').click();await page.locator('#ox-account-close').focus();await page.keyboard.press('Shift+Tab');
-  assert.equal(await page.locator('#ox-account-skip').evaluate(e=>document.activeElement===e),true,'focus stays in the dialog');
+  await page.locator('[data-ox-account-open]').click();
+  assert.equal(await page.locator('#ox-account-brand').evaluate(e=>document.activeElement===e),true,'opening focuses the brand without opening the mobile keyboard');
+  await page.locator('#ox-account-close').focus();await page.keyboard.press('Shift+Tab');
+  assert.equal(await page.locator('#ox-account-skip').evaluate(e=>document.activeElement===e),true,'backward focus stays in the dialog');
+  await page.keyboard.press('Tab');
+  assert.equal(await page.locator('#ox-account-close').evaluate(e=>document.activeElement===e),true,'forward focus stays in the dialog');
   await page.locator('#ox-account-tab-register').click();
   assert.equal(await page.locator('.ox-account-password-wrap').count(), 0);
   await page.locator('#ox-account-email').fill('fixture@example.com');

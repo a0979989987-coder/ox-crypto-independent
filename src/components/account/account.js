@@ -137,7 +137,9 @@
     overlay.dataset.view = view;
     $('.ox-account-shell')?.setAttribute('aria-label', view === 'center' ? 'OX 帳號中心' : registerMode ? '建立 OX 帳號' : 'OX 登入');
     syncViewport();
-    requestAnimationFrame(() => (view === 'auth' ? $('#ox-account-brand') : $('#ox-account-close'))?.focus({ preventScroll: true }));
+    // Focus immediately after revealing the view. A deferred frame can steal
+    // focus from a control the user has already selected, or from a closed view.
+    (view === 'auth' ? $('#ox-account-brand') : $('#ox-account-close'))?.focus({ preventScroll: true });
   };
   const close = () => {
     overlay?.classList.remove('is-open'); overlay?.setAttribute('aria-hidden','true');
@@ -198,7 +200,7 @@
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') { if ($('#ox-account-info-modal')?.classList.contains('is-open')) { $('#ox-account-info-modal').classList.remove('is-open'); $('#ox-account-info-modal').setAttribute('aria-hidden','true'); } else close(); }
     if (e.key === 'Tab' && overlay?.classList.contains('is-open')) {
-      const nodes = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(x => !x.closest('[hidden]'));
+      const nodes = [...overlay.querySelectorAll('button:not(:disabled),input:not(:disabled)')].filter(x => !x.closest('[hidden]') && x.getClientRects().length && getComputedStyle(x).visibility === 'visible');
       if (!nodes.length) return; const first=nodes[0], last=nodes[nodes.length-1];
       if (e.shiftKey && document.activeElement===first) { e.preventDefault(); last.focus(); }
       else if (!e.shiftKey && document.activeElement===last) { e.preventDefault(); first.focus(); }

@@ -45,7 +45,7 @@ body.ox-account-open{overflow:hidden}body.theme-light .ox-account-shell{backgrou
 #ox-account-email-form:has([aria-invalid="true"]){border-color:#b78e82}
 #ox-account-email-form .ox-account-envelope{width:24px;height:24px;color:#e9e5dc;flex:none;pointer-events:none}
 #ox-account-email-form #ox-account-email{box-sizing:border-box;min-width:0;width:100%;height:100%;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;color:#f3efe7;font-family:inherit;font-size:16px;font-weight:400;line-height:1.4;outline:0;box-shadow:none}
-#ox-account-email-form #ox-account-email::placeholder{color:#aaa8a1;opacity:1}
+#ox-account-email-form #ox-account-email::placeholder{color:#aaa8a1!important;opacity:1}
 #ox-account-email-form #ox-account-email:focus{outline:0;box-shadow:none}
 #ox-account-email-form #ox-account-email:-webkit-autofill{-webkit-text-fill-color:#f3efe7;-webkit-box-shadow:0 0 0 100px #181a1d inset;caret-color:#f3efe7}
 #ox-account-email-form #ox-account-email-submit{display:flex;align-items:center;justify-content:center;gap:12px;align-self:stretch;box-sizing:border-box;min-width:158px;width:auto;min-height:44px;height:auto;margin:0;padding:0 20px;border:0;border-radius:14px;background:#eee6d8;color:#111419;font-family:inherit;font-size:15px;font-weight:500;line-height:1.2;white-space:nowrap;transform:none;transition:filter .18s ease}
