@@ -23,6 +23,7 @@ const browser = await engine.launch({ headless: true, ...(engine===chromium&&exe
 async function verifyLoginLayout(page){
   mkdirSync(resolve(root,'docs/performance'),{recursive:true});
   await page.locator('#ox-account-auth-view').waitFor({state:'visible'});
+  await page.waitForFunction(()=>getComputedStyle(document.querySelector('#ox-account-overlay')).opacity==='1'&&getComputedStyle(document.querySelector('.ox-account-shell')).opacity==='1');
   for(const viewport of [{width:320,height:740},{width:390,height:844},{width:430,height:932},{width:390,height:350},{width:844,height:390},{width:1440,height:900}]){
     await page.setViewportSize(viewport);
     await page.waitForFunction(({width,height})=>innerWidth===width&&innerHeight===height&&Math.abs(parseFloat(document.querySelector('#ox-account-overlay').style.getPropertyValue('--ox-account-viewport-height'))-(window.visualViewport?.height||innerHeight))<1,viewport);
@@ -35,6 +36,7 @@ async function verifyLoginLayout(page){
         return {form:box(form),row:box(row),input:box(input),send:box(button),shell:box(shell),close:box(shell.querySelector('.ox-account-close')),cardBorder:getComputedStyle(el).borderTopWidth,inputSize:parseFloat(getComputedStyle(input).fontSize),controls,dividers:row.querySelectorAll('.ox-account-action-divider').length,overflow:document.documentElement.scrollWidth-innerWidth,card:box(el),viewport:{w:innerWidth,h:innerHeight},status:el.querySelector('[role=status]').hidden};
       });
       assert.ok(g.shell.x>=0&&g.shell.x+g.shell.w<=viewport.width+1&&g.shell.y>=0&&g.shell.y+g.shell.h<=viewport.height+1,`login fits ${JSON.stringify({viewport,shell:g.shell})}`);
+      if(viewport.width===320||viewport.width===390||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${viewport.height}-${theme}.png`)});
       assert.equal(g.cardBorder,'0px');assert.ok(g.inputSize>=16);assert.ok(g.overflow<=1);
       assert.ok(Math.abs(g.form.x-g.row.x)<1&&Math.abs(g.form.w-g.row.w)<1,'both rows align');
       assert.ok(Math.abs(g.card.cx-g.shell.cx)<1&&Math.abs(g.card.cy-g.shell.cy)<5,'email and actions form a centered group');
@@ -51,7 +53,6 @@ async function verifyLoginLayout(page){
         console.log('Login label diagnostics',JSON.stringify({viewport,theme,g,labels:await page.locator('#ox-account-email-submit').evaluate(el=>({cooldown:el.dataset.cooldown,html:el.innerHTML,children:[...el.children].map(e=>({tag:e.tagName,display:getComputedStyle(e).display,visibility:getComputedStyle(e).visibility,width:e.getBoundingClientRect().width,height:e.getBoundingClientRect().height}))}))}));
       }
       assert.equal(await label.isVisible(),true,`send label visible at ${viewport.width}x${viewport.height} (${theme})`);
-      if(viewport.width===390&&viewport.height===844||viewport.width===1440)await page.screenshot({path:resolve(root,`docs/performance/login-${engine===webkit?'webkit':'chromium'}-${viewport.width}-${theme}.png`)});
     }
   }
   await page.setViewportSize({width:390,height:844});

@@ -98,3 +98,19 @@ body.ox-account-open{overflow:hidden}body.theme-light .ox-account-shell{backgrou
 }
 @media(max-height:430px){#ox-account-overlay[data-view="auth"] .ox-account-layout{padding-top:68px;padding-bottom:74px}}
 @media(prefers-reduced-motion:reduce){#ox-account-overlay[data-view="auth"] .ox-account-shell,#ox-account-email-form,#ox-account-auth-view .ox-account-actions>button{transition:none}}
+
+/* The orbit login stays dark when the surrounding app uses the legacy light theme. */
+#ox-account-overlay[data-view="auth"]{background:rgba(3,5,7,.92)!important}
+#ox-account-overlay[data-view="auth"] .ox-account-shell{border:1px solid rgba(225,212,191,.42)!important;background:#090b0e!important;color:#eeeae2!important;box-shadow:0 24px 80px #0008!important}
+#ox-account-overlay[data-view="auth"] .ox-account-shell:before{background:linear-gradient(90deg,#07090c69,transparent 76%),url("../../../assets/account-orbit.svg") 56% 50%/cover no-repeat!important}
+#ox-account-overlay[data-view="auth"] .ox-account-mark{border:0!important;color:#f0ede5!important}
+#ox-account-overlay[data-view="auth"] #ox-account-close{color:#ede9e0!important}
+#ox-account-auth-view{border:0!important;background:none!important;box-shadow:none!important}
+#ox-account-email-form #ox-account-email{border:0!important;background:transparent!important;color:#f3efe7!important;box-shadow:none!important}
+#ox-account-email-form #ox-account-email:focus{border:0!important;box-shadow:none!important}
+#ox-account-email-form #ox-account-email-submit{border:0!important;background:#eee6d8!important;color:#111419!important}
+#ox-account-email-submit:focus-visible{outline:1px solid #ede4d1!important}
+#ox-account-auth-view .ox-account-actions>button{border:0!important;background:transparent!important;box-shadow:none!important;color:#dedbd4!important;outline:0!important}
+#ox-account-auth-view .ox-account-actions>button:hover,#ox-account-auth-view .ox-account-actions>button:focus-visible,#ox-account-auth-view #ox-account-tab-register[aria-pressed="true"]{color:#fff8ed!important}
+#ox-account-auth-status{color:#d4ccc0!important}
+@media(max-width:760px){#ox-account-overlay[data-view="auth"] .ox-account-shell:before{background-position:76% center!important}}
