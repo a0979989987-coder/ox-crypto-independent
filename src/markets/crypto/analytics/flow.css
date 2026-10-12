@@ -169,3 +169,11 @@
 .cfx-stage-times time{font-size:11px;color:var(--muted)}
 .cfx-stage-times time[aria-current="step"]{color:inherit;font-weight:600;background:var(--panel);padding:2px 5px;border-radius:5px}
 .cfx-stage-times>span{color:var(--muted)}
+
+/* Match the Taiwan rotation's single glass panel and quiet plotting surface. */
+.cfx .cfx-research-panel{border:1px solid transparent;border-radius:20px;background:linear-gradient(130deg,#282a2dec,#151719f5 65%,#1d2022f5) padding-box,linear-gradient(130deg,#ffffffac,#ffffff12 28%,#ffffff19 64%,#ffffff66) border-box;box-shadow:0 0 14px #ffffff08,inset 0 1px 0 #ffffff12,0 12px 28px #0002}
+.cfx .cfx-research-panel>.cfx-plot,.cfx .cfx-research-panel>.cfx-replay,.cfx .cfx-research-panel>.cfx-bottom-actions{background:transparent}
+.cfx .cfx-research-panel>.cfx-replay{border-top:0}
+:host([data-ox-theme="light"]) .cfx .cfx-research-panel{background:linear-gradient(135deg,#ffffff,#edf0f0) padding-box,linear-gradient(135deg,#ffffff,#bcc4c4) border-box;box-shadow:0 10px 24px #182b3210}
+
+:host([data-ox-theme="light"]) .cfx .cfx-research-panel>.cfx-replay{background:transparent!important;border-top:0!important}

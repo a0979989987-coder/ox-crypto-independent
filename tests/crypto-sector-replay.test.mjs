@@ -78,3 +78,41 @@ test('explicit multiplier contracts are verified without suffix-matching unrelat
  instruments.find(i=>i.symbol==='1000BONKUSDT').baseCoin='OTHER';
  assert.ok(!verifiedSectorUniverse(instruments,tickers).symbols.includes('1000BONKUSDT'));
 });
+
+test('Taiwan-style turns have continuous velocity, bounded coordinates and stationary bubbles stay still',()=>{
+ const make=x=>({symbol:'A',x,y:x/3,turnover:100,state:{id:'leading',color:'#91c7b1'}});
+ const frames=[10,20,30,35,20].map((x,i)=>({ts:i*1000,rows:[make(x)]}));
+ const at=p=>replayVisualRows(frames,p,frames[Math.floor(p)].rows,{stepMs:1000})[0];
+ for(const i of [1,2,3]){
+  const e=1e-4,a=at(i-e),b=at(i),c=at(i+e);
+  assert.ok(Math.abs((b.x-a.x)/e-(c.x-b.x)/e)<.02);
+ }
+ for(let i=0;i<4;i++)for(let t=0;t<1;t+=.02){const p=at(i+t),ends=[frames[i].rows[0].x,frames[i+1].rows[0].x];assert.ok(p.x>=Math.min(...ends)-1e-8&&p.x<=Math.max(...ends)+1e-8);}
+ const fixed=[0,1,2].map(i=>({ts:i*1000,rows:[make(10)]}));
+ assert.equal(replayVisualRows(fixed,1.6,fixed[1].rows)[0].x,10);
+});
+
+test('trails fade and retreat continuously, reach the bubble and never cross missing observations',async()=>{
+ const {replayTrails}=await import('../src/markets/crypto/analytics/replay-motion.js');
+ const make=x=>({symbol:'A',x,y:x,turnover:100,state:{id:'leading',color:'#91c7b1'}});
+ const frames=Array.from({length:9},(_,i)=>({ts:i*1000,rows:[make(i%2?i:-i)]}));
+ const at=p=>{const rows=replayVisualRows(frames,p,frames[Math.floor(p)].rows,{stepMs:1000});return {row:rows[0],trail:replayTrails(frames,p,rows,{stepMs:1000})[0]};};
+ const before=at(6.9999),after=at(7.0001);
+ for(let i=0;i<before.trail.segments.length;i++){
+  const a=before.trail.segments[i],b=after.trail.segments[i];
+  assert.ok(Math.abs(a.from.x-b.from.x)<.01);assert.ok(Math.abs(a.opacity-b.opacity)<.001);
+ }
+ const {row,trail}=at(7.5);assert.equal(trail.segments.at(-1).to.x,row.x);assert.ok(trail.segments[0].opacity<trail.segments.at(-1).opacity);
+ const gap=[{ts:0,rows:[make(-10)]},{ts:1000,rows:[]},{ts:2000,rows:[make(10)]}];
+ const incoming=replayVisualRows(gap,1.5,[],{nextVisible:gap[2].rows,stepMs:1000});
+ assert.equal(incoming[0].opacity,.5);assert.equal(incoming[0].x,10);assert.deepEqual(replayTrails(gap,1.5,incoming,{stepMs:1000}),[]);
+ const departed=replayVisualRows(gap,.5,gap[0].rows,{nextVisible:[],stepMs:1000});assert.equal(departed[0].opacity,.5);assert.equal(departed[0].x,-10);
+ const skipped=[gap[0],gap[2]];
+ assert.equal(replayVisualRows(skipped,.25,skipped[0].rows,{nextVisible:skipped[1].rows,stepMs:1000})[0].x,-10);
+ assert.deepEqual(replayTrails(skipped,.75,skipped[1].rows,{stepMs:1000}),[]);
+});
+
+test('clock uses elapsed time without a hold at period boundaries',()=>{
+ let callback;const player=createFlowReplayPlayer({length:8,position:.95,render(){},requestFrame:fn=>(callback=fn,1),cancelFrame(){}});
+ player.play();callback(0);callback(260);assert.ok(Math.abs(player.position-1.15)<1e-9);player.destroy();
+});

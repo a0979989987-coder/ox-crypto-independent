@@ -10,14 +10,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
       "sourceSha256": "53d351665e2ab524d9d73e9c2db4643b098153300aeb6b13eca22196f0be7edf",
-      "sha256": "d9eb13d41feed4a8ddeb5b4c4e2feff578a67ea94284f12381735a9a543995c5",
-      "reason": "User requested larger readable bubbles and labels; preserve true coordinates and centered text."
+      "sha256": "217656eafb12936921a2ce6eba729b373c0e1d429dfdc52a7448577a4cd7aa36",
+      "reason": "User requested larger readable bubbles and labels; preserve true coordinates and centered text. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "1b9b11b508d8caecff25c38272d72f88c29630224cb87a8af73113414c1aff26",
-      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts."
+      "sha256": "6cd510c589281264e081430073c2c1821a0d62f24e4ad022119ccfb96498771a",
+      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -142,8 +142,8 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "359cacbd9bb53af573e0cc8cc6e3bf9d51957011c583a896ca1ccf4cf993bd55",
-      "reason": "User requested chart height that leaves replay transport visible on mobile."
+      "sha256": "7cd9c33f9ff6a03de567a78e0d73103f1a40a4adc270f47d0c6a30e9ebe0e4d1",
+      "reason": "User requested chart height that leaves replay transport visible on mobile. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",
