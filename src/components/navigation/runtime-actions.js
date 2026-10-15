@@ -71,8 +71,9 @@ document.addEventListener("click", e => {
   }
 
   if (e.target.id === "btn-force-rescan") {
-    state.scanIndex = 0;
-    refreshMarketTickers();
+    // Clears the between-pass rest and wakes the scan loop (scanner.js).
+    if (typeof restartRadarScan === "function") restartRadarScan();
+    else { state.scanIndex = 0; refreshMarketTickers(); }
     return;
   }
 });

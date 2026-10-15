@@ -23,8 +23,32 @@
   let workspaceModule=null, workspaceAttempt=0;
   function loadWorkspace() {
     if(state.workspaceError)return Promise.reject(state.workspaceError);
-    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261007-ux-replay4&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
+    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261015-midnight1&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
     return workspaceModule;
+  }
+  // News page CSS is not render-blocking for the rest of the app. Its link
+  // stays at its original cascade position and is enabled before the
+  // workspace mounts, so the news page never paints unstyled.
+  let newsStyles=null;
+  function loadNewsStyles() {
+    if(newsStyles)return newsStyles;
+    const link=document.querySelector('link[data-ox-lazy-css="news"]');
+    if(!link)return newsStyles=Promise.resolve();
+    if(link.getAttribute('href')&&link.sheet)return newsStyles=Promise.resolve();
+    newsStyles=new Promise((resolve,reject)=>{
+      let attempt=0,timer;
+      const start=()=>{
+        clearTimeout(timer);
+        const url=new URL(link.dataset.oxLazyHref,location.href);if(attempt)url.searchParams.set('retry',String(attempt));
+        timer=setTimeout(()=>fail(Error('資訊樣式下載逾時')),12000);
+        link.href=url.href;
+      };
+      const done=()=>{clearTimeout(timer);link.removeEventListener('load',done);link.removeEventListener('error',onError);resolve();};
+      const fail=error=>{clearTimeout(timer);link.removeEventListener('load',done);link.removeEventListener('error',onError);link.removeAttribute('href');newsStyles=null;reject(error);};
+      const onError=()=>{if(attempt++<1)start();else fail(Error('資訊樣式下載失敗'));};
+      link.addEventListener('load',done);link.addEventListener('error',onError);start();
+    });
+    return newsStyles;
   }
   function refresh(force = false, {priority='high'}={}) {
     if (state.pending) return state.pending;
@@ -64,7 +88,7 @@
     const host = document.querySelector(`[data-news-surface="${scope === 'all' ? 'all' : 'market'}"]`);
     if (!host) return;
     let mountNewsWorkspace;
-    try { ({mountNewsWorkspace}=await loadWorkspace()); }
+    try { [{mountNewsWorkspace}]=await Promise.all([loadWorkspace(),loadNewsStyles()]); }
     catch(error) {
       if(token!==generation||!host.isConnected)return;
       host.replaceChildren();const message=document.createElement('p'), retry=document.createElement('button');
@@ -148,10 +172,12 @@
     else if (entry?.oxView) { state.previous = entry.oxPrevious; switchTo(entry.oxView, entry.oxMarket); render(); if (!state.route.day && !state.route.event) requestAnimationFrame(() => window.scrollTo?.(0, entry.oxScroll || 0)); }
     else if (document.body.dataset.newsMode === '1' || currentView() === 'data') restore(state.previous);
   });
-  async function preload({signal}={}) {
+  // Background preparation downloads the workspace code only. news.json
+  // (about 2 MB) is fetched when the news/data page opens (refresh() above).
+  async function preload({signal,data=false}={}) {
     if(signal?.aborted)return;
-    await loadWorkspace();
-    if(signal?.aborted)return;
+    await Promise.all([loadWorkspace(),loadNewsStyles()]);
+    if(signal?.aborted||!data)return;
     await refresh(false,{priority:'low'});
   }
   window.OXNews = Object.freeze({ open, openMarket, close, refresh, render, unlockCountdown, preload });

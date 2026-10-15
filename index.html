@@ -3,21 +3,42 @@
 <html lang="zh-TW">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-  <script src="src/components/navigation/page-touch.js?v=20261005-nozoom1"></script>
-  <script src="src/components/account/feature-access.js?v=20261005-first24"></script>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#121417">
+  <script src="src/app/theme-boot.js?v=20261015-midnight1"></script>
+  <script src="src/components/navigation/page-touch.js?v=20261015-zoom1"></script>
+  <script src="src/generated/feature-defaults.js?v=20261015-defaults1"></script>
+  <script src="src/components/account/feature-access.js?v=20261015-defaults1"></script>
   <script src="src/core/public-feed.js?v=20261006-news-rotation4"></script>
-  <script src="src/components/control-panel/resource-guard.js?v=20261005-first24"></script>
+  <script src="src/components/control-panel/resource-guard.js?v=20261015-css1"></script>
   <link rel="icon" type="image/png" href="ox-logo.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <meta name="application-name" content="OX 篩選器">
+  <meta name="apple-mobile-web-app-title" content="OX">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="OX 篩選器">
+  <meta property="og:locale" content="zh_TW">
+  <meta property="og:title" content="OX 篩選器｜加密市場雷達與 K 線">
+  <meta property="og:description" content="市場總覽、指標、T1/T2/T3 雷達篩選、即時 K 線與提醒工作區。">
+  <meta property="og:url" content="https://ox-crypto-independent.vercel.app/">
+  <meta property="og:image" content="https://ox-crypto-independent.vercel.app/assets/ox-icon-512.png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta property="og:image:alt" content="OX 篩選器標誌">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="OX 篩選器｜加密市場雷達與 K 線">
+  <meta name="twitter:description" content="市場總覽、指標、T1/T2/T3 雷達篩選、即時 K 線與提醒工作區。">
+  <meta name="twitter:image" content="https://ox-crypto-independent.vercel.app/assets/ox-icon-512.png">
   <meta name="color-scheme" content="dark light">
-  <meta name="description" content="OX Market Command Center - 市場總覽、指標、雷達篩選、K 線與提醒工作區。">
+  <meta name="description" content="OX 篩選器（加密）－市場總覽、指標、T1/T2/T3 雷達篩選、即時 K 線與提醒工作區。">
   <script src="src/app/live-visibility.js?v=20261001-tiercomb2"></script>
   <script src="src/components/loading-state.js?v=20261006-perf1"></script>
-  <title>OX 加密｜Crypto Market Command Center</title>
+  <title>OX 篩選器｜加密市場雷達與 K 線</title>
   <!-- build: v4.0-modular-classified-rc2-2026-09-22 -->
   <!-- build-refine: v3.8-ui-glass-fluid-2026-09-22 -->
   <!-- TradingView Lightweight Charts™ Copyright (c) TradingView, Inc. https://www.tradingview.com/ -->
-  <script src="src/vendor/lightweight-charts-4.2.3.js"></script>
+  <script defer src="src/vendor/lightweight-charts-4.2.3.js"></script>
   <link rel="stylesheet" href="src/styles/core/foundation.css?v=20261005-touch1">
   <link rel="stylesheet" href="src/styles/components/benchmark-alert-detail.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/layout/three-view-shell.css?v=20261004-markets2">
@@ -27,7 +48,7 @@
   <link rel="stylesheet" href="src/styles/navigation/final-dock.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/themes/light-system.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/themes/light-complete.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/themes/light-readability.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-readability.css?v=20261001-tiercomb2" media="not all" data-ox-theme-css="light">
   <link rel="stylesheet" href="src/styles/components/control-center.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/layout/compact-header.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/components/feature-pack.css?v=20261001-tiercomb2">
@@ -48,7 +69,8 @@
   <link rel="stylesheet" href="src/styles/components/radar-light-tune.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/components/fullscreen-lightglass.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/components/feature-search-provider.css?v=20261005-weeklist4">
-  <link rel="stylesheet" href="src/styles/components/news-center.css?v=20261006-perf1">
+  <link rel="stylesheet" href="src/styles/components/news-shell.css?v=20261015-css1">
+  <link rel="stylesheet" data-ox-lazy-css="news" data-ox-lazy-href="src/styles/components/news-center.css?v=20261015-css1">
   <link rel="stylesheet" href="src/styles/themes/editorial-terminal.css?v=20261006-perf1">
 
 <!-- CSS moved: ox-premium-glass-design-system -->
@@ -70,7 +92,7 @@
 
 <!-- CSS moved: ox-v36-final-responsive-ux -->
 
-<script src="src/components/layout/responsive-guard.js?v=20261001-tiercomb2"></script>
+<script defer src="src/components/layout/responsive-guard.js?v=20261001-tiercomb2"></script>
 
 
 <!-- CSS moved: ox-v37-existing-ui-fixes -->
@@ -80,22 +102,24 @@
 
   <link rel="stylesheet" href="src/styles/themes/editorial-radar.css?v=20261004-markets2">
   <link rel="stylesheet" href="src/styles/components/radar-detail-neon.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/components/chart-toolbar.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/chart-toolbar.css?v=20261015-css1">
   <link rel="stylesheet" href="src/styles/components/chart-drawings.css?v=20261007-tools2">
   <link rel="stylesheet" href="src/styles/components/home-preview.css?v=20261004-markets2">
   <link rel="stylesheet" href="src/styles/components/radar-turnover.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/components/radar-combined.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/radar-combined.css?v=20261015-review1">
   <link rel="stylesheet" href="src/styles/components/live-visibility.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/components/control-menu-compact.css?v=20261004-markets2">
+  <link rel="stylesheet" href="src/styles/components/control-menu-compact.css?v=20261015-pills1">
   <link rel="stylesheet" href="src/styles/account/account.css?v=20261008-orbit-login1">
   <link rel="preload" as="style" href="src/markets/crypto/patterns/patterns.css?v=20261002-quiet1">
   <link rel="preload" as="style" href="src/markets/crypto/analytics/flow.css?v=20261001-tiercomb2">
   <link rel="preload" as="style" href="src/markets/crypto/bubbles/bubbles.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/themes/light-compat.css?v=20261006-perf1">
-  <link rel="stylesheet" href="src/styles/themes/light-platinum.css?v=20261006-perf1">
-  <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261005-weeklist4">
+  <link rel="stylesheet" href="src/styles/themes/light-compat.css?v=20261006-perf1" media="not all" data-ox-theme-css="light">
+  <link rel="stylesheet" href="src/styles/themes/light-platinum.css?v=20261015-css1" media="not all" data-ox-theme-css="light">
+  <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261015-css1">
   <link rel="stylesheet" href="src/styles/layout/mobile-content-width.css?v=20261005-gutters1">
-  <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261006-perf1">
+  <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261015-midnight1">
+  <link rel="stylesheet" href="src/styles/components/ui-polish.css?v=20261015-pills1">
+  <script defer src="src/components/style-boot.js?v=20261015-css1"></script>
 </head>
 <body class="ox-terminal" data-view="radar">
 
@@ -120,7 +144,7 @@
 <div hidden aria-hidden="true"><i id="dot"></i><span id="scan-status"></span><button id="btn-force-rescan" type="button" tabindex="-1"></button></div>
 <div class="wrap ox-live-shell" aria-live="polite">
   <div class="ox-live-strip">
-    <span class="ox-live-badge">OX LIVE</span>
+    <span class="ox-live-badge">OX 篩選器</span>
     <div class="ox-live-window"><span id="ox-live-text">正在整理市場即時資訊…</span></div>
   </div>
 </div>
@@ -145,16 +169,17 @@
         <div class="ox-control-group">
           <div class="ox-control-row">
             <span class="ox-control-icon" aria-hidden="true">OX</span>
-            <span class="ox-control-copy"><b>OX LIVE</b></span>
-            <span class="ox-control-side"><label class="ox-control-toggle" aria-label="顯示 OX LIVE"><input type="checkbox" data-setting-key="oxLive"><span></span></label></span>
+            <span class="ox-control-copy"><b>即時快訊列</b></span>
+            <span class="ox-control-side"><label class="ox-control-toggle"><input type="checkbox" data-setting-key="oxLive" aria-label="顯示即時快訊列"><span></span></label></span>
           </div>
           <div class="ox-control-row">
             <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 9 9 7 7 0 0 1-9-9Z"/></svg></span>
             <span class="ox-control-copy"><b>主題</b></span>
             <span class="ox-control-side">
-              <span class="ox-theme-segment" aria-label="主題切換">
+              <span class="ox-theme-segment" role="group" aria-label="主題切換">
                 <button type="button" data-control-theme="dark">深色</button>
                 <button type="button" data-control-theme="light">白金</button>
+                <button type="button" data-control-theme="midnight">午夜墨</button>
                 <button type="button" data-control-theme="system">自動</button>
               </span>
             </span>
@@ -189,7 +214,7 @@
             <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/><path d="M10 20h4"/></svg></span>
             <span class="ox-control-copy"><b>通知提醒</b><small id="ox-control-notify-status">檢查瀏覽器通知權限中…</small></span>
             <span class="ox-control-side">
-              <label class="ox-control-toggle" title="通知偏好總開關"><input id="ox-control-notify-toggle" type="checkbox"><span></span></label>
+              <label class="ox-control-toggle" title="通知偏好總開關"><input id="ox-control-notify-toggle" type="checkbox" aria-label="通知提醒"><span></span></label>
             </span>
           </div>
           <button class="ox-control-row" id="ox-control-open-notifications" type="button">
@@ -210,7 +235,7 @@
           <div class="ox-control-row">
             <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M5 9v6h4l5 4V5L9 9Z"/><path d="M17 9c1 .8 1.5 1.8 1.5 3S18 14.2 17 15"/></svg></span>
             <span class="ox-control-copy"><b>通知鈴聲</b></span>
-            <span class="ox-control-side"><label class="ox-control-toggle"><input id="ox-control-sound-toggle" type="checkbox" checked><span></span></label></span>
+            <span class="ox-control-side"><label class="ox-control-toggle"><input id="ox-control-sound-toggle" type="checkbox" checked aria-label="通知鈴聲"><span></span></label></span>
           </div>
           <div class="ox-control-row">
             <span class="ox-control-icon"><svg viewBox="0 0 24 24"><path d="M20 6v5h-5"/><path d="M18.4 15A7 7 0 1 1 19 8"/></svg></span>
@@ -441,7 +466,7 @@
         <button type="button" role="menuitemradio" data-radar-tier="t3" aria-checked="false">T3</button>
       </div>
       <div id="screener-list" class="scanner-body">
-        <div style="padding:24px;text-align:center;color:var(--muted)">正在初始化 Bitget 全市場資料…</div>
+        <div class="ox-radar-loading" role="status"><span class="ox-skeleton-card" aria-hidden="true"></span><span class="ox-skeleton-card" aria-hidden="true"></span><span class="ox-skeleton-card" aria-hidden="true"></span><p class="ox-state-note"><b>正在初始化</b><span>Bitget 全市場資料…</span></p></div>
       </div>
     </aside>
   </div>
@@ -668,9 +693,10 @@
           <div class="theme-buttons">
             <button type="button" class="btn-act theme-choice" data-theme-choice="dark">黑色</button>
             <button type="button" class="btn-act theme-choice" data-theme-choice="light">白金</button>
+            <button type="button" class="btn-act theme-choice" data-theme-choice="midnight">午夜墨</button>
             <button type="button" class="btn-act theme-choice" data-theme-choice="system">隨系統</button>
           </div>
-          <label class="settings-switch"><span>顯示 OX LIVE</span><input type="checkbox" data-setting-key="oxLive"></label>
+          <label class="settings-switch"><span>顯示即時快訊列</span><input type="checkbox" data-setting-key="oxLive"></label>
           <p class="settings-hint" id="settings-status">設定會自動保存在目前瀏覽器。</p>
         </article>
       </div>
@@ -750,28 +776,28 @@
   </section>
 </div>
 
-<script src="src/core/runtime-config.js?v=20261002-rank8"></script>
+<script src="src/core/runtime-config.js?v=20261015-reason1"></script>
 <script src="src/components/strength/snapshots.js?v=20261001-tiercomb2"></script>
 <script src="src/components/alerts/level-alerts.js?v=20261001-tiercomb2"></script>
-<script src="src/components/strength/market-strength.js?v=20261005-touch1"></script>
+<script src="src/components/strength/market-strength.js?v=20261015-review1"></script>
 <script src="src/app/token-logos.js?v=20261001-tiercomb2"></script>
-<script src="src/app/view-home-theme.js?v=20261005-clarity1"></script>
+<script src="src/app/view-home-theme.js?v=20261015-midnight1"></script>
 <script src="src/markets/crypto/live-quotes.js?v=20261006-quotes2"></script>
-<script src="src/markets/crypto/api.js?v=20261007-stable-dialog8"></script>
-<script src="src/markets/crypto/live-candles.js?v=20261005-first24"></script>
+<script src="src/markets/crypto/api.js?v=20261015-utc1"></script>
+<script src="src/markets/crypto/live-candles.js?v=20261015-utc1"></script>
 <script src="src/core/classic-engine.js?v=20261002-rank8"></script>
-<script src="src/markets/crypto/liquidity-policy.js?v=20261002-rank8"></script>
+<script src="src/markets/crypto/liquidity-policy.js?v=20261015-utc1"></script>
 <script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
-<script src="src/markets/crypto/scanner.js?v=20261007-stable-dialog8"></script>
+<script src="src/markets/crypto/scanner.js?v=20261015-weekly2"></script>
 <script src="src/components/chart/gestures.js?v=20261007-tools2"></script>
-<script src="src/components/chart/workspace.js?v=20261007-space1"></script>
-<script src="src/markets/crypto/presentation.js?v=20261006-quotes1"></script>
+<script src="src/components/chart/workspace.js?v=20261015-review1"></script>
+<script src="src/markets/crypto/presentation.js?v=20261015-reason1"></script>
 <script src="src/components/account/store.js?v=20261007-stable-dialog8"></script>
 <script src="src/components/control-panel/feature-pack.js?v=20261005-first24"></script>
-<script src="src/components/navigation/runtime-actions.js?v=20261001-tiercomb2"></script>
+<script src="src/components/navigation/runtime-actions.js?v=20261015-rescan1"></script>
 <script src="src/components/radar/timeframe-filters.js?v=20261001-tiercomb2"></script>
 <script src="src/components/chart/toolbar.js?v=20261001-tiercomb2"></script>
-<script src="src/app/runtime-boot.js?v=20261005-first24"></script>
+<script src="src/app/runtime-boot.js?v=20261015-hidden1"></script>
 
 <script src="src/components/motion/controller.js?v=20261001-tiercomb2"></script>
 
@@ -780,7 +806,7 @@
 <script src="src/components/navigation/repair.js?v=20261002-newsv2"></script>
 
 <script src="src/components/navigation/market-quick-switch.js?v=20261005-hover250"></script>
-<script src="src/components/news/center.js?v=20261006-news4"></script>
+<script src="src/components/news/center.js?v=20261015-midnight1"></script>
 <script src="src/components/news/entry.js?v=20261002-nav6"></script>
 
 
@@ -790,7 +816,7 @@
 <script src="src/components/chart/indicator-tooltip.js?v=20261001-tiercomb2"></script>
 
 
-<script src="src/components/account/summary.js?v=20261004-markets2"></script>
+<script src="src/components/account/summary.js?v=20261015-midnight1"></script>
 <script src="src/components/account/auth.js?v=20261005-recovery3"></script>
 <script src="src/components/account/session.js?v=20261001-tiercomb2"></script>
 <script src="src/components/account/account.js?v=20261008-orbit-login1"></script>
@@ -814,17 +840,17 @@
 <!-- CSS moved: ox-v383-fullscreen-lightglass-fix -->
 <script src="src/components/chart/focus-viewport.js?v=20261001-tiercomb2"></script>
 <script src="src/components/chart/drawings.js?v=20261007-tools2"></script>
-<script src="src/components/chart/home-preview.js?v=20261005-graytop5"></script>
+<script src="src/components/chart/home-preview.js?v=20261015-midnight1"></script>
 
 
 <!-- OX v3.8.4 — OX CONTROL 功能搜尋 + 真實交易所 Data Provider 切換 -->
 <!-- CSS moved: ox-v384-feature-search-provider-switch-styles -->
 
-<script src="src/components/search/provider-switch.js?v=20261005-graytop5"></script>
-<script src="src/app/module-boot.js?v=20261007-readable-replay9"></script>
+<script src="src/components/search/provider-switch.js?v=20261015-hidden1"></script>
+<script src="src/app/module-boot.js?v=20261015-midnight1"></script>
 
 <script src="src/app/editorial-workspace.js?v=20261004-markets2"></script>
-<script src="src/components/radar/controls.js?v=20261001-tiercomb2"></script>
+<script src="src/components/radar/controls.js?v=20261015-review1"></script>
 
 </body>
 </html>

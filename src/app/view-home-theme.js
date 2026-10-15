@@ -140,7 +140,8 @@ function homeStructureText(a, ticker) {
   if (a?.structureLabel) return a.structureLabel;
   if (a?.side === "LONG") return "結構偏多";
   if (a?.side === "SHORT") return "結構偏空";
-  if (ticker) return num(ticker.change24h) >= 0 ? "24H 偏強" : "24H 偏弱";
+  const change = toNumberOrNull(ticker?.change24h);
+  if (change !== null) return change >= 0 ? "24H 偏強" : "24H 偏弱";
   return "等待分析";
 }
 
@@ -157,8 +158,9 @@ function renderHomeOverview() {
   const setWidth = (id, value) => { const el = document.getElementById(id); if (el) { el.style.width = `${clamp(value)}%`; el.style.setProperty("--meter-color", value < 40 ? "var(--meter-weak)" : value < 60 ? "var(--meter-mid)" : "var(--meter-strong)"); } };
   const setChange = (id, ticker) => {
     const el = document.getElementById(id); if (!el) return;
-    el.textContent = ticker ? fmtPct(ticker.change24h) : "—";
-    el.className = ticker ? (num(ticker.change24h) >= 0 ? "positive" : "negative") : "";
+    const change = toNumberOrNull(ticker?.change24h);
+    el.textContent = ticker ? fmtPct(change) : "—";
+    el.className = change === null ? "" : change >= 0 ? "positive" : "negative";
   };
 
   const marketStateText = homeMarketState(strength);
@@ -231,17 +233,17 @@ function renderHomeOverview() {
   }
 
   setText("home-btc-price", btc ? fmtPrice(btc.lastPr) : "—"); setChange("home-btc-change", btc);
-  setText("home-btc-volume", btc ? `${fmtCryptoVolume(btc.usdtVolume)} USDT` : "—");
+  setText("home-btc-volume", toNumberOrNull(btc?.usdtVolume) === null ? "—" : `${fmtCryptoVolume(btc.usdtVolume)} USDT`);
   const btcHigh24 = btc ? num(btc.high24h ?? btc.high24H ?? btc.highPr ?? btc.highPrice24h) : NaN;
   const btcLow24 = btc ? num(btc.low24h ?? btc.low24H ?? btc.lowPr ?? btc.lowPrice24h) : NaN;
   setText("home-btc-high", Number.isFinite(btcHigh24) && btcHigh24 > 0 ? fmtPrice(btcHigh24) : "—");
   setText("home-btc-low", Number.isFinite(btcLow24) && btcLow24 > 0 ? fmtPrice(btcLow24) : "—");
   setText("home-btc-hero-strength", btcStrength);
   setText("home-btc-market-state", marketStateText);
-  setText("home-btc-note", `${homeStructureText(btcA, btc)}${btcA ? ` · OX ${btcA.oxScore}` : ""}`);
+  setText("home-btc-note", `${homeStructureText(btcA, btc)}${btcA ? ` · OX ${btcA.oxScore ?? "—"}` : ""}`);
 
   setText("home-eth-price", eth ? fmtPrice(eth.lastPr) : "—"); setChange("home-eth-change", eth);
-  setText("home-eth-note", `${homeStructureText(ethA, eth)}${ethA ? ` · OX ${ethA.oxScore}` : ""}`);
+  setText("home-eth-note", `${homeStructureText(ethA, eth)}${ethA ? ` · OX ${ethA.oxScore ?? "—"}` : ""}`);
   setWidth("home-eth-meter", ethA?.oxScore ?? clamp(50 + num(eth?.change24h) * 350));
 
   setText("home-btc-strength", btcStrength); setText("home-btc-strength-label", homeStrengthLabel(btcStrength));
@@ -271,18 +273,18 @@ function renderHomeOverview() {
   const rsCandidates = Array.from(state.analyzedCache.values()).filter(c => !benchmarkSymbols.has(c.symbol) && num(c.rsScore) >= 75).sort((a,b)=>num(b.rsScore)-num(a.rsScore));
   for (const c of rsCandidates.slice(0,2)) pushEvent(c, "相對 BTC 轉強", `Relative Strength ${c.rsScore}`, "RS", "↗");
   const eventBox = document.getElementById("home-events");
-  if (eventBox) eventBox.innerHTML = events.length ? events.map(e => `<button class="v33-event-row" type="button" data-home-symbol="${e.symbol}"><span class="v33-event-icon">${e.icon}</span><span class="v33-row-main"><b>${e.symbol.replace(/USDT$/,"")} · ${e.type}</b><small>${e.reason}</small></span><span class="v33-row-pill">${e.tag}</span></button>`).join("") : `<div class="v33-list-empty">全市場輪巡進行中</div>`;
+  if (eventBox) eventBox.innerHTML = events.length ? events.map(e => `<button class="v33-event-row" type="button" data-home-symbol="${escapeHtml(e.symbol)}"><span class="v33-event-icon">${escapeHtml(e.icon)}</span><span class="v33-row-main"><b>${escapeHtml(e.symbol.replace(/USDT$/,""))} · ${escapeHtml(e.type)}</b><small>${escapeHtml(e.reason)}</small></span><span class="v33-row-pill">${escapeHtml(e.tag)}</span></button>`).join("") : `<div class="v33-list-empty">全市場輪巡進行中</div>`;
 
   // OX 重點觀察：T1 / T2 最多三個
   const watch = [...(state.tierMap.t1 || []), ...(state.tierMap.t2 || [])].filter((c,i,a)=>a.findIndex(x=>x.symbol===c.symbol)===i).slice(0,3);
   const watchBox = document.getElementById("home-watchlist");
-  if (watchBox) watchBox.innerHTML = watch.length ? watch.map(c => `<button class="v33-watch-row" type="button" data-home-symbol="${c.symbol}"><span class="v33-row-main"><b>${c.symbol.replace(/USDT$/,"")} · ${c.setupName || "Setup 分析中"}</b><small>${c.structureLabel || c.side || "結構分析中"}</small><span class="v33-watch-stage">${c.tier === "t1" ? "T1 · 即戰力" : "T2 · 蹲點準備"}</span></span><span class="v33-watch-score">OX ${c.oxScore ?? "—"}</span></button>`).join("") : `<div class="v33-list-empty">等待 T1 / T2 候選標的</div>`;
+  if (watchBox) watchBox.innerHTML = watch.length ? watch.map(c => `<button class="v33-watch-row" type="button" data-home-symbol="${escapeHtml(c.symbol)}"><span class="v33-row-main"><b>${escapeHtml(c.symbol.replace(/USDT$/,""))} · ${escapeHtml(c.setupName || "Setup 分析中")}</b><small>${escapeHtml(c.structureLabel || c.side || "結構分析中")}</small><span class="v33-watch-stage">${c.tier === "t1" ? "T1 · 即戰力" : "T2 · 蹲點準備"}</span></span><span class="v33-watch-score">OX ${escapeHtml(c.oxScore ?? "—")}</span></button>`).join("") : `<div class="v33-list-empty">等待 T1 / T2 候選標的</div>`;
 
   // 強弱榜：直接讀現有 ticker 排名結果
   const renderRank = (id, list) => {
     const box = document.getElementById(id); if (!box) return;
     const rows = (list || []).slice(0,5);
-    box.innerHTML = rows.length ? rows.map((t,i)=>`<button class="v33-rank-row" type="button" data-home-symbol="${t.symbol}"><span class="v33-rank-no">#${i+1}</span><span class="v33-rank-symbol">${t.symbol.replace(/USDT$/,"")}</span><span class="v33-rank-change ${num(t.change24h)>=0?"positive":"negative"}">${fmtPct(t.change24h)}</span></button>`).join("") : `<div class="v33-list-empty">等待 Ticker</div>`;
+    box.innerHTML = rows.length ? rows.map((t,i)=>`<button class="v33-rank-row" type="button" data-home-symbol="${escapeHtml(t.symbol)}"><span class="v33-rank-no">#${i+1}</span><span class="v33-rank-symbol">${escapeHtml(t.symbol.replace(/USDT$/,""))}</span><span class="v33-rank-change ${toNumberOrNull(t.change24h)===null?"":num(t.change24h)>=0?"positive":"negative"}">${fmtPct(t.change24h)}</span></button>`).join("") : `<div class="v33-list-empty">等待 Ticker</div>`;
   };
   renderRank("home-gainers", state.tierMap.gainers);
   renderRank("home-losers", state.tierMap.losers);
@@ -334,54 +336,80 @@ function renderOxLive() {
 const systemThemeQuery = window.matchMedia("(prefers-color-scheme: light)");
 
 function getSavedThemeMode() {
-  const saved = localStorage.getItem("ox-ui-theme");
-  return ["dark", "light", "system"].includes(saved) ? saved : "dark";
+  return globalThis.OXTheme?.saved() ?? "dark";
 }
 
+// Themes: dark (default), light (白金), midnight (午夜墨, a colour layer over
+// dark whose sheet loads on demand) and system. Listeners keep using
+// detail.resolved / body.theme-light for light-vs-dark decisions; Midnight Ink
+// adds detail.palette and html/body.theme-midnight.
 let themeTransition = null, themeChangeVersion = 0, themeInitialized = false, themeFallbackTimer;
 function applyTheme(themeMode = "system") {
   const version = ++themeChangeVersion;
-  const light = themeMode === 'light' || themeMode === 'system' && systemThemeQuery.matches;
-  const changed = document.body.classList.contains('theme-light') !== light;
+  const target = OXTheme.resolve(themeMode);
+  const changed = OXTheme.current() !== target.palette;
   const animate = themeInitialized && changed && !matchMedia('(prefers-reduced-motion: reduce)').matches;
   themeInitialized = true;
   themeTransition?.skipTransition();
   const update = () => { if(version === themeChangeVersion)applyThemeNow(themeMode); };
-  if(!animate){update();return;}
-  if(typeof document.startViewTransition === 'function') {
-    themeTransition = document.startViewTransition(update);
-    themeTransition.finished.catch(()=>{});
-  } else {
-    document.body.classList.add('ox-theme-changing');
-    requestAnimationFrame(update);
-    clearTimeout(themeFallbackTimer);
-    themeFallbackTimer = setTimeout(()=>document.body.classList.remove('ox-theme-changing'),550);
-  }
+  // Never switch the class before the Midnight Ink sheet is usable.
+  const ready = target.palette === "midnight" ? OXTheme.loadMidnight() : Promise.resolve(true);
+  const run = () => {
+    if(version !== themeChangeVersion)return;
+    if(!animate){update();return;}
+    if(typeof document.startViewTransition === 'function') {
+      themeTransition = document.startViewTransition(update);
+      themeTransition.finished.catch(()=>{});
+    } else {
+      document.body.classList.add('ox-theme-changing');
+      requestAnimationFrame(update);
+      clearTimeout(themeFallbackTimer);
+      themeFallbackTimer = setTimeout(()=>document.body.classList.remove('ox-theme-changing'),320);
+    }
+  };
+  if(target.palette !== "midnight" || OXTheme.current() === "midnight")run();
+  else ready.then(ok => {
+    if(ok){run();return;}
+    if(version !== themeChangeVersion)return;
+    // The sheet could not load: stay on the current theme and keep the choice honest.
+    const previous = document.body.dataset.themeMode || "dark";
+    try { localStorage.setItem(OXTheme.KEY, previous); } catch {}
+    syncThemeChoices(previous);
+    showToast("午夜墨主題暫時無法載入，已保留目前主題");
+  });
+}
+function syncThemeChoices(mode) {
+  document.querySelectorAll("[data-theme-choice]").forEach(btn => { const on = btn.dataset.themeChoice === mode; btn.classList.toggle("active", on); btn.setAttribute("aria-pressed", String(on)); });
+  document.querySelectorAll("[data-control-theme]").forEach(btn => { const on = btn.dataset.controlTheme === mode; btn.classList.toggle("active", on); btn.setAttribute("aria-pressed", String(on)); });
 }
 function applyThemeNow(themeMode = "system") {
-  const mode = ["dark", "light", "system"].includes(themeMode) ? themeMode : "system";
-  const resolved = mode === "system" ? (systemThemeQuery.matches ? "light" : "dark") : mode;
-  const light = resolved === "light";
+  const { mode, palette, resolved } = OXTheme.resolve(themeMode);
+  const light = resolved === "light", midnight = palette === "midnight";
 
   document.body.classList.toggle("theme-light", light);
+  document.documentElement.classList.toggle("theme-midnight", midnight);
+  document.body.classList.toggle("theme-midnight", midnight);
   document.body.dataset.themeMode = mode;
+  document.documentElement.dataset.oxThemeMode = mode;
   document.documentElement.style.colorScheme = resolved;
   document.querySelector('meta[name="color-scheme"]')?.setAttribute("content", resolved);
-  document.querySelectorAll("[data-theme-choice]").forEach(btn => btn.classList.toggle("active", btn.dataset.themeChoice === mode));
-  document.dispatchEvent(new CustomEvent("ox:themechange", { detail: { mode, resolved } }));
+  OXTheme.setBarColor(palette);
+  syncThemeChoices(mode);
+  document.dispatchEvent(new CustomEvent("ox:themechange", { detail: { mode, resolved, palette } }));
 
+  const colors = OXTheme.chart(palette);
   if (state.candleSeries) {
-    const up = light ? "#4598df" : "#00b8d4", down = light ? "#e86480" : "#ff3078";
+    const { up, down } = colors;
     state.candleSeries.applyOptions({upColor:up,downColor:down,wickUpColor:up,wickDownColor:down,borderUpColor:up,borderDownColor:down});
   }
-  for (const line of state.classicLevelSeries || []) line.applyOptions({color:light?"#8d712e":"#eee7df"});
+  for (const line of state.classicLevelSeries || []) line.applyOptions({color:colors.level});
   if (state.chart) {
     state.chart.applyOptions({
-      layout: { background: { type: "solid", color: light ? "#ffffff" : "#121417" }, textColor: light ? "#616d7c" : "#929995" },
-      grid: { vertLines: { color: light ? "rgba(148,163,184,.16)" : "#202725" }, horzLines: { color: light ? "rgba(148,163,184,.16)" : "#202725" } },
-      crosshair: { vertLine:{labelBackgroundColor:light?"#8d712e":"#4c525e"}, horzLine:{labelBackgroundColor:light?"#8d712e":"#4c525e"} },
-      rightPriceScale: { borderColor: light ? "#d7dee7" : "#343b37" },
-      timeScale: { borderColor: light ? "#d7dee7" : "#343b37" }
+      layout: { background: { type: "solid", color: colors.bg }, textColor: colors.text },
+      grid: { vertLines: { color: colors.grid }, horzLines: { color: colors.grid } },
+      crosshair: { vertLine:{labelBackgroundColor:colors.label}, horzLine:{labelBackgroundColor:colors.label} },
+      rightPriceScale: { borderColor: colors.border },
+      timeScale: { borderColor: colors.border }
     });
   }
 }

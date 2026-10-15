@@ -31,8 +31,9 @@ body.ox-terminal.chart-focus #view-radar .chart-box>#btn-chart-exit-overlay {dis
 body.ox-terminal.chart-focus #view-radar .chart-timeframe-group {padding-right:38px!important}
 body.ox-terminal .chart-tools-overlay {position:fixed;inset:0;z-index:12000;display:grid;place-items:center;padding:20px;background:#02050bc2;backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2);opacity:0;visibility:hidden;transition:opacity .24s ease,visibility .24s ease}
 body.ox-terminal .chart-tools-overlay.is-open {opacity:1;visibility:visible}
-body.ox-terminal .chart-tools-dialog {position:relative;width:min(440px,100%);max-height:min(80dvh,720px);overflow:auto;padding:18px;border:1px solid transparent;border-radius:17px;background:linear-gradient(160deg,#15191fF5,#0d1117F7) padding-box,linear-gradient(125deg,#ffffffb8,#d9e8f37a 32%,#ffffff34 58%,#ffffffa3) border-box;box-shadow:0 18px 55px #000a,inset 0 1px 0 #ffffff24,0 0 22px #eaf4ff1c;color:var(--ink);animation:chart-dialog-edge 5s linear infinite;transform:translateY(8px) scale(.985);transition:transform .32s cubic-bezier(.2,.8,.2,1)}
-body.ox-terminal .chart-tools-overlay.is-open .chart-tools-dialog {transform:translateY(0) scale(1)}
+body.ox-terminal .chart-tools-dialog {position:relative;width:min(440px,100%);max-height:min(80dvh,720px);overflow:auto;padding:18px;border:1px solid transparent;border-radius:17px;background:linear-gradient(160deg,#15191fF5,#0d1117F7) padding-box,linear-gradient(125deg,#ffffffb8,#d9e8f37a 32%,#ffffff34 58%,#ffffffa3) border-box;box-shadow:0 18px 55px #000a,inset 0 1px 0 #ffffff24,0 0 22px #eaf4ff1c;color:var(--ink);transform:translateY(8px) scale(.985);transition:transform .32s cubic-bezier(.2,.8,.2,1)}
+/* The edge shimmer runs only while the dialog is open; a hidden infinite background animation recalculated style every frame. */
+body.ox-terminal .chart-tools-overlay.is-open .chart-tools-dialog {transform:translateY(0) scale(1);animation:chart-dialog-edge 5s linear infinite}
 @keyframes chart-dialog-edge {0%,100%{background:linear-gradient(160deg,#15191ff5,#0d1117f7) padding-box,linear-gradient(125deg,#ffffffa8,#d9e8f366 32%,#ffffff2a 58%,#ffffff8e) border-box}50%{background:linear-gradient(160deg,#15191ff5,#0d1117f7) padding-box,linear-gradient(305deg,#ffffffb8,#d9e8f37a 32%,#ffffff34 58%,#ffffffa3) border-box}}
 body.ox-terminal .chart-tools-head {display:flex;align-items:center;justify-content:space-between;padding-bottom:14px;border-bottom:1px solid #ffffff20}
 body.ox-terminal .chart-tools-overlay[data-active-panel="timeframes"] .chart-tools-head {display:none}
@@ -93,3 +94,24 @@ body.ox-terminal .chart-tools-close svg{display:block;width:15px;height:15px;fil
 body.ox-terminal .chart-tools-dialog:has(.chart-tier-combination:not([hidden])){max-height:80dvh;overflow-y:auto}
 
 body.ox-terminal #crypto-tier-combination .chart-tier-combination{padding-bottom:30px}
+
+/* K-line load failure: same quiet panel language as the chart loading state. */
+.chart-load-error{position:absolute;inset:0;z-index:7;display:grid;place-items:center;padding:16px;pointer-events:none}
+.chart-load-error[hidden]{display:none}
+.chart-load-error-box{display:grid;justify-items:center;gap:8px;max-width:min(280px,100%);padding:14px 16px;border:1px solid var(--line,#223147);border-radius:10px;background:#0d1522ee;color:var(--ink,#eef4fc);font:12px/1.45 Inter,system-ui,sans-serif;text-align:center;box-shadow:0 6px 22px #0007;pointer-events:auto;overflow-wrap:anywhere}
+.chart-load-error-title{font-size:13px;font-weight:600}
+.chart-load-error-detail{color:var(--muted,#8b9db7);font-size:11px}
+.chart-load-error-retry{min-width:88px;min-height:36px;padding:6px 16px;border:1px solid currentColor;border-radius:10px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.chart-load-error-retry:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+.chart-load-error-retry:disabled{opacity:.55;cursor:progress}
+/* Stale mode keeps the previous chart readable and only marks it. */
+/* Leave the right price axis and live price label uncovered. */
+.chart-load-error[data-mode="stale"]{inset:auto 58px auto 8px;top:8px;place-items:start start;padding:0}
+.chart-load-error[data-mode="stale"] .chart-load-error-box{grid-template-columns:minmax(0,1fr) auto;justify-items:start;align-items:center;gap:2px 10px;padding:7px 8px 7px 12px;text-align:left;border-color:#d9a54a99;max-width:min(360px,100%)}
+.chart-load-error[data-mode="stale"] .chart-load-error-title{grid-column:1;color:#f1c36d;font-size:12px;line-height:1.3}
+.chart-load-error[data-mode="stale"] .chart-load-error-detail{grid-column:1;font-size:10px;line-height:1.35}
+.chart-load-error[data-mode="stale"] .chart-load-error-retry{grid-column:2;grid-row:1/span 2;min-width:56px;min-height:32px;padding:4px 10px}
+body.theme-light .chart-load-error-box{background:#fffffff2;color:#111827;border-color:#cbd7e4;box-shadow:0 6px 22px #0002}
+body.theme-light .chart-load-error-detail{color:#4b5563}
+body.theme-light .chart-load-error[data-mode="stale"] .chart-load-error-box{border-color:#c4892a99}
+body.theme-light .chart-load-error[data-mode="stale"] .chart-load-error-title{color:#9a5b00}

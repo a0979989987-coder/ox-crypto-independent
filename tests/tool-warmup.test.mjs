@@ -29,3 +29,10 @@ test('hidden pages stop the idle timer and failure retries are bounded without b
  visible=false;warm.poke();assert.equal(c.count(),0);visible=true;warm.poke();await c.tick(60000);await c.tick(60000);
  assert.equal(starts.filter(s=>s==='broken').length,2);assert.equal(warm.stats()[0].status,'failed');warm.destroy();
 });
+test('idle warm-up needs a known 4g connection without Data Saver',async()=>{
+ const { idleWarmAllowed } = await import('../src/components/tool-warmup.js');
+ assert.equal(idleWarmAllowed({effectiveType:'4g',saveData:false}),true);
+ assert.equal(idleWarmAllowed({effectiveType:'4g',saveData:true}),false);
+ for(const effectiveType of ['3g','2g','slow-2g',undefined])assert.equal(idleWarmAllowed({effectiveType,saveData:false}),false);
+ assert.equal(idleWarmAllowed(undefined),false,'unknown connection (Safari) never prewarms');
+});

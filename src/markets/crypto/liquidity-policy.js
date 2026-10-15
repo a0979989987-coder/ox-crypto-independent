@@ -24,5 +24,8 @@
       rawScore>cap?`24H 成交額限制，評分上限 ${cap}`:null;
     return {...signal,qualityScore,tier,money:{quoteVol:known?value:null,rawScore,rawTier,cap,reason}};
   }
-  root.OXCryptoLiquidity=Object.freeze({ BANDS, apply });
+  // Contracts under the lowest band's floor are excluded from the radar
+  // entirely (scan pool and ranking); the caps above still apply to the rest.
+  const MIN_SCAN_TURNOVER=300000;
+  root.OXCryptoLiquidity=Object.freeze({ BANDS, MIN_SCAN_TURNOVER, apply });
 })(globalThis);

@@ -26,7 +26,7 @@ function updateQuickStats() {
   if (!ticker) return;
   const chg = document.getElementById("quick-change");
   chg.textContent = fmtPct(ticker.change24h); chg.className = num(ticker.change24h) >= 0 ? "positive" : "negative";
-  document.getElementById("quick-volume").textContent = `${fmtCryptoVolume(ticker.usdtVolume)} USDT`;
+  document.getElementById("quick-volume").textContent = fmtCryptoVolumeUSDT(ticker.usdtVolume);
   const secondaryHigh = state.secondaryLevels?.high ? ` / ${fmtPrice(state.secondaryLevels.high)} · ${state.secondaryLevels.sourcePeriod}` : "";
   const secondaryLow = state.secondaryLevels?.low ? ` / ${fmtPrice(state.secondaryLevels.low)} · ${state.secondaryLevels.sourcePeriod}` : "";
   document.getElementById("quick-high").textContent = state.currentLevels.high ? `${fmtPrice(state.currentLevels.high)} · ${state.currentLevels.sourcePeriod || getKeyLevelPeriod()}${secondaryHigh}` : "—";
@@ -39,7 +39,7 @@ function renderOxDetail() {
   const scored = state.analyzedCache.get(symbol);
   const isBenchmark = benchmarkSymbols.has(symbol);
   document.getElementById("detail-symbol").textContent = symbol;
-  document.getElementById("detail-volume").textContent = ticker ? `${fmtCryptoVolume(ticker.usdtVolume)} USDT` : "—";
+  document.getElementById("detail-volume").textContent = ticker ? fmtCryptoVolumeUSDT(ticker.usdtVolume) : "—";
   const primaryLevelText = `${state.currentLevels.sourcePeriod || getKeyLevelPeriod()}｜${state.currentLevels.high ? fmtPrice(state.currentLevels.high) : '—'} / ${state.currentLevels.low ? fmtPrice(state.currentLevels.low) : '—'}`;
   const secondaryLevelText = state.secondaryLevels
     ? ` · ${state.secondaryLevels.sourcePeriod}｜${state.secondaryLevels.high ? fmtPrice(state.secondaryLevels.high) : '—'} / ${state.secondaryLevels.low ? fmtPrice(state.secondaryLevels.low) : '—'}`
@@ -82,7 +82,7 @@ function renderOxDetail() {
     ...(classic?.matchedReasons||[]).map(text=>({ok:true,text})),
     ...(classic?.rejectionReasons||[]).map(text=>({ok:false,text}))];
   if(classic?.money?.reason)reasons.push({ok:false,text:classic.money.reason});
-  document.getElementById("detail-reasons-list").innerHTML = reasons.map(r => `<div class="detail-reason ${r.ok ? 'ok' : 'wait'}">${r.ok ? '✓' : '△'} ${r.text}</div>`).join('');
+  document.getElementById("detail-reasons-list").innerHTML = reasons.map(r => `<div class="detail-reason ${r.ok ? 'ok' : 'wait'}">${r.ok ? '✓' : '△'} ${escapeHtml(fmtSignalReason(r.text))}</div>`).join('');
   updateAlertButtons();
 }
 
@@ -126,7 +126,7 @@ function updateHeaderHUD() {
   chgEl.textContent = fmtPct(ticker.change24h);
   chgEl.className = num(ticker.change24h) >= 0 ? "positive" : "negative";
 
-  document.getElementById("quote").textContent = `${fmtCryptoVolume(ticker.usdtVolume)} USDT`;
+  document.getElementById("quote").textContent = fmtCryptoVolumeUSDT(ticker.usdtVolume);
   document.getElementById("chart-head-title").children[0].textContent = `${ticker.symbol} 永續合約`;
 
   const map=state.tierMapBySide?.[state.directionFilter];
@@ -190,7 +190,7 @@ document.addEventListener('DOMContentLoaded',()=>{
       const price=card.querySelector('.turnover-price,.watch-metric:first-child strong');if(price)price.textContent=fmtPrice(q.lastPr);
       change(card.querySelector('.watch-metric:nth-child(2) strong'),q.change24h);
       const volume=card.querySelector('.coin-volume-value');if(volume)volume.textContent=fmtCryptoVolume(q.usdtVolume).replaceAll(',','');
-      const turnover=card.querySelector('.turnover-volume');if(turnover)turnover.textContent='24H '+fmtCryptoVolume(q.usdtVolume)+' USDT';
+      const turnover=card.querySelector('.turnover-volume');if(turnover)turnover.textContent='24H '+fmtCryptoVolumeUSDT(q.usdtVolume);
     }
     if(bySymbol.has('BTCUSDT')||bySymbol.has('ETHUSDT'))renderBenchmarkBar();
     if(bySymbol.has(state.symbol)){updateHeaderHUD();updateQuickStats();}
@@ -201,10 +201,15 @@ document.addEventListener('DOMContentLoaded',()=>{
     const symbols=[state.symbol,'BTCUSDT','ETHUSDT',...[...visible].map(c=>c.dataset.symbol)];
     if(subscription)subscription.update(symbols);else subscription=globalThis.OXCryptoQuotes?.subscribe(symbols,paint);
   }
+  // One long-lived observer. Keyed list updates keep unchanged cards, so only
+  // added cards are observed; no synchronous layout read on every list change.
+  const observed=new Set();
   function cards(){
-    observer?.disconnect();visible.clear();
-    observer=new IntersectionObserver(entries=>{for(const e of entries)e.isIntersecting?visible.add(e.target):visible.delete(e.target);sync();},{rootMargin:'150px'});
-    list.querySelectorAll('.coin-card[data-symbol]').forEach(card=>{const r=card.getBoundingClientRect();if(r.bottom>-150&&r.top<innerHeight+150)visible.add(card);observer.observe(card);});sync();
+    observer||=new IntersectionObserver(entries=>{for(const e of entries)e.isIntersecting?visible.add(e.target):visible.delete(e.target);sync();},{rootMargin:'150px'});
+    const current=new Set(list.querySelectorAll('.coin-card[data-symbol]'));
+    for(const card of observed)if(!current.has(card)){observer.unobserve(card);observed.delete(card);visible.delete(card);}
+    for(const card of current)if(!observed.has(card)){observed.add(card);observer.observe(card);}
+    sync();
   }
   new MutationObserver(cards).observe(list,{childList:true});
   new MutationObserver(sync).observe(document.body,{attributes:true,attributeFilter:['data-view','data-market','class']});

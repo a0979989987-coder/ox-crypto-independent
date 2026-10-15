@@ -14,3 +14,13 @@ test('a returning radar wakes the existing scan sleeper immediately without crea
  state.activeView='strength';listeners.get('ox:viewchange')();assert.equal(cancelled,1);
  const rest=api.waitForRadar(2500);document.hidden=true;listeners.get('visibilitychange')();await rest;assert.equal(timers.size,0);
 });
+test('refresh and reconnect clear the between-pass rest and wake the sleeping scan loop',async()=>{
+ const listeners=new Map(),timers=new Map();let id=0;
+ const document={hidden:true,addEventListener:(event,fn)=>listeners.set(event,fn)};
+ const state={activeMarket:'crypto',activeView:'radar',scanIndex:7,tickers:[{symbol:'BTCUSDT'}]};
+ const context={state,document,OXPublicFeed:{cancel(){}},setTimeout:(fn,ms)=>{timers.set(++id,{fn,ms});return id;},clearTimeout:key=>timers.delete(key)};
+ const api=runInNewContext(code+'\n({waitForRadar,restartRadarScan,rest:v=>v===undefined?radarRestUntil:(radarRestUntil=v)})',context);
+ api.rest(Date.now()+60000);let woke=false;const sleeping=api.waitForRadar(60000).then(()=>woke=true);
+ await api.restartRadarScan();await sleeping;
+ assert.equal(woke,true);assert.equal(api.rest(),0);assert.equal(state.scanIndex,0);assert.equal(timers.size,0);
+});

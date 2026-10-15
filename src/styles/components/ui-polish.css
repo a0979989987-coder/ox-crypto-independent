@@ -1,0 +1,132 @@
+/* UI polish layer (all themes). Loaded last; changes feel, not layout. */
+
+/* ---- Touch & zoom: page zoom is allowed (viewport), so controls opt out of
+   double-tap zoom and form fields never trigger iOS focus zoom. ---- */
+:where(button,a,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],[role="menuitemradio"],.dock-btn,.coin-card,input[type="checkbox"],input[type="radio"]){touch-action:manipulation}
+@media (max-width:720px),(pointer:coarse){
+  :root body :is(input:not([type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="button"],[type="submit"],[type="reset"],[type="file"],[type="hidden"]),select,textarea){font-size:max(16px,1em)!important}
+}
+
+/* ---- Touch targets: on touch screens an invisible ::after grows small
+   controls towards 40px. Look and layout are unchanged; packed rows grow
+   vertically and only into their own gaps so neighbours never overlap. ---- */
+@media (pointer:coarse){
+  :root body :is(#view-radar .chart-tool-icon,#view-radar .chart-timeframe-strip .btn-tf,.ox-text-button,.oxn-article-actions>button,.oxn-text-button,.oxn-root .oxn-month-nav .oxn-month-arrow,.v34-home-mini-tf,.ox-market-chip,.ox-control-toggle){position:relative}
+  :root body :is(#view-radar .chart-tool-icon,#view-radar .chart-timeframe-strip .btn-tf,.ox-text-button,.oxn-article-actions>button,.oxn-text-button,.oxn-root .oxn-month-nav .oxn-month-arrow,.v34-home-mini-tf,.ox-market-chip,.ox-control-toggle,#ox-control-close.ox-control-edge-close)::after{content:"";position:absolute;inset:var(--ox-hit,-6px);border-radius:inherit;pointer-events:auto}
+  :root body #view-radar .chart-tool-icon{--ox-hit:-8px -2px}
+  :root body #view-radar .chart-controls>.ctrl-group.chart-tool-actions:nth-child(2){overflow:visible!important}
+  /* the scrolling strip clips at its padding box: give the pills room to grow */
+  :root body #view-radar .chart-timeframe-group{overflow:visible!important}
+  :root body #view-radar .chart-timeframe-strip{padding-block:6px!important;margin-block:-6px!important}
+  :root body #view-radar .chart-timeframe-strip .tf-glass-indicator{top:7px!important;bottom:7px!important}
+  :root body #view-radar .chart-timeframe-strip .btn-tf{--ox-hit:-6px -1px}
+  :root body #view-radar .chart-controls .chart-timeframe-strip .btn-tf::after{display:block!important}
+  :root body .ox-text-button{--ox-hit:-5px -9px}
+  :root body .oxn-article-actions>button{--ox-hit:-3px -8px}
+  :root body .oxn-text-button{--ox-hit:-7px -4px}
+  :root body .oxn-root .oxn-month-nav .oxn-month-arrow{--ox-hit:-2px -6px}
+  :root body .v34-home-mini-tf{--ox-hit:-5px -1px}
+  :root body .ox-market-chip{--ox-hit:-9px -3px}
+  :root body .ox-control-toggle{--ox-hit:-10px -2px}
+  :root body #ox-control-close.ox-control-edge-close{--ox-hit:-4px 0 -4px -26px}
+  /* the symbol picker label clips its own overflow: grow it with padding instead */
+  :root body #view-radar .market-line-item label#ticker-pair{padding-block:9px 14px!important;margin-block:-9px -13px!important}
+}
+
+/* ---- Focus: one keyboard ring for every control, in the theme's accent.
+   2px offset so rows that clip overflow still show it. :not(#_) only lifts
+   specificity above the older per-component focus rules. ---- */
+:root body.ox-terminal{--ox-focus-ring:var(--ink)}
+:root body.ox-terminal.theme-light{--ox-focus-ring:#8d712e}
+:root body.ox-terminal :is(button,a[href],summary,select,label[role="button"],[role="button"],[role="tab"],[role="menuitem"],[role="menuitemradio"],[tabindex]:not([tabindex="-1"]):not(input):not(textarea)):focus-visible:not(#_):not(#_){outline:2px solid var(--ox-focus-ring)!important;outline-offset:2px!important}
+
+/* ---- Press feedback: one gentle press everywhere. Controls shrink to .96,
+   rows and cards to .985, with a tiny brightness lift; release eases back.
+   Older per-component transform presses are folded into this single scale
+   so nothing double-shrinks. ---- */
+:root{--ox-press:.96;--ox-press-row:.985}
+:where(button,a[href],summary,label,[role="button"],[role="tab"],[role="menuitemradio"],.dock-btn,.coin-card){-webkit-tap-highlight-color:transparent}
+:where(button,summary,[role="button"],[role="tab"],[role="menuitemradio"],.ox-control-toggle):active:not(:disabled){scale:var(--ox-press);filter:brightness(1.06)}
+:where(a[href],.coin-card,.oxn-event-row,.ox-home-t1-row,.ox-control-row,.ox-feature-result,.v33-action,.media-function-item,.benchmark-card):active:not(:disabled){scale:var(--ox-press-row);filter:brightness(1.04)}
+:root body :is(.glass-button,.dock-btn,.v34-home-mini-tf,.tab-btn,.direction-toggle-btn,#view-radar .chart-tool-icon,.ox-menu-btn):active{transform:none!important}
+@media (prefers-reduced-motion:reduce){
+  :root body :active{scale:none!important}
+}
+
+/* ---- States: loading / empty / error / stale share one vocabulary —
+   12px muted copy, a 16px line icon, a pill-shaped retry. Colours are the
+   theme's own (Midnight Ink re-maps them like every other rule). ---- */
+:root body.ox-terminal{
+  --ox-state-text:var(--muted);--ox-state-error:#e48a95;--ox-state-stale:#f1c36d;
+  --ox-skel-base:rgba(255,255,255,.035);--ox-skel-line:rgba(255,255,255,.075);--ox-skel-shine:rgba(255,255,255,.04);
+  --ox-icon-empty:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M5.4 8h5.2' stroke='%23000' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ox-icon-error:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M8 4.7v4' stroke='%23000' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='.85'/%3E%3C/svg%3E");
+  --ox-icon-stale:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M8 4.9V8l2.2 1.5' fill='none' stroke='%23000' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+:root body.ox-terminal.theme-light{--ox-state-error:#c2415c;--ox-state-stale:#a8741a;--ox-skel-base:#f2f4f7;--ox-skel-line:#e3e7ec;--ox-skel-shine:rgba(255,255,255,.75)}
+:root body.ox-terminal :is(#view-radar .turnover-empty,.ox-feature-empty){color:var(--ox-state-text)!important;font-size:12px!important;line-height:1.6!important}
+:root body.ox-terminal :is(#view-radar .turnover-empty,.ox-feature-empty)::before,
+:root body.ox-terminal .chart-load-error-box::before,
+:root body.ox-terminal .ox-tool-load-error::before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;background:currentColor;opacity:.62;-webkit-mask:var(--ox-icon-empty) center/contain no-repeat;mask:var(--ox-icon-empty) center/contain no-repeat}
+:root body.ox-terminal :is(.chart-load-error-box,.ox-tool-load-error)::before{-webkit-mask-image:var(--ox-icon-error);mask-image:var(--ox-icon-error);background:var(--ox-state-error);opacity:1;margin:0}
+:root body.ox-terminal .chart-load-error[data-mode="stale"] .chart-load-error-box::before{display:none}
+:root body.ox-terminal .chart-load-error[data-mode="stale"] .chart-load-error-title::before{content:"";display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-1px;background:var(--ox-state-stale);-webkit-mask:var(--ox-icon-stale) center/contain no-repeat;mask:var(--ox-icon-stale) center/contain no-repeat}
+:root body.ox-terminal .ox-tool-load-error{color:var(--ox-state-text)!important;font-size:12px}
+:root body.ox-terminal .ox-tool-load-error>p{color:var(--ink)}
+/* radar list states (scanner.js) */
+.ox-state{padding:22px 12px;text-align:center;color:var(--ox-state-text);font-size:12px;line-height:1.6}
+.ox-state b{display:block;color:var(--ink);font-size:12px;font-weight:600}
+.ox-state p{margin:4px 0 0;font-size:11px}
+.ox-state::before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;background:currentColor;opacity:.62;-webkit-mask:var(--ox-icon-empty) center/contain no-repeat;mask:var(--ox-icon-empty) center/contain no-repeat}
+.ox-state--error::before{-webkit-mask-image:var(--ox-icon-error);mask-image:var(--ox-icon-error);background:var(--ox-state-error);opacity:1}
+.ox-state-retry{margin-top:10px;font:inherit;font-size:12px;color:var(--ink);background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 16px;min-height:36px;cursor:pointer}
+/* one retry pill everywhere */
+:root body.ox-terminal :is(.chart-load-error-retry,.ox-tool-load-error>button,.ox-style-loading button,#ox-runtime-recovery button){border-radius:999px!important;min-height:36px!important;padding:6px 16px!important;border:1px solid currentColor!important;background:transparent!important}
+/* loading overlays get the shared ring */
+:root body.ox-terminal #chart-loading.chart-loading-overlay{gap:8px;color:var(--ox-state-text)!important;font-size:12px!important}
+:root body.ox-terminal #chart-loading.chart-loading-overlay::before{content:"";width:16px;height:16px;flex:none;border:2px solid rgba(255,255,255,.14);border-top-color:var(--ink);border-radius:50%;animation:ox-loading-turn .85s linear infinite}
+:root body.ox-terminal.theme-light #chart-loading.chart-loading-overlay::before{border-color:rgba(0,0,0,.12);border-top-color:var(--ink)}
+
+/* ---- Skeletons: radar list before the first scan and tool pages while the
+   tool module loads. Quiet shimmer, none with reduced motion. ---- */
+.ox-radar-loading{display:grid;gap:8px;padding:8px}
+.ox-state-note{display:grid;gap:2px;margin:4px 0 0;text-align:center;font-size:11px;line-height:1.5;color:var(--ox-state-text)}
+.ox-state-note b{color:var(--ink);font-size:12px;font-weight:600}
+.ox-skeleton-card{position:relative;display:block;height:64px;overflow:hidden;border-radius:10px;
+  background:linear-gradient(var(--ox-skel-line) 0 0) 10px 12px/44% 9px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 30px/64% 7px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 45px/34% 7px no-repeat,var(--ox-skel-base)}
+@media (min-width:900px){.ox-skeleton-card{height:96px}}
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:not([hidden]){position:relative;min-height:min(62vh,520px);place-items:center;
+  background:linear-gradient(var(--ox-skel-base) 0 0) 0 0/100% 40px no-repeat,linear-gradient(var(--ox-skel-base) 0 0) 0 52px/100% calc(100% - 52px) no-repeat;border-radius:12px;overflow:hidden}
+:is(.ox-skeleton-card,#ox-crypto-tools-inline>.ox-tool-loading:not([hidden]))::after{content:"";position:absolute;inset:0;pointer-events:none;transform:translateX(-100%);background:linear-gradient(90deg,transparent,var(--ox-skel-shine),transparent);animation:ox-skeleton-sheen 1.5s ease-in-out infinite}
+/* an error replaces the skeleton inside the same slot */
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:has(.ox-tool-load-error){background:none}
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:has(.ox-tool-load-error)::after{display:none}
+@keyframes ox-skeleton-sheen{to{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){:is(.ox-skeleton-card,#ox-crypto-tools-inline>.ox-tool-loading)::after{animation:none;opacity:0}}
+
+/* ---- Page switch: a 160ms opacity-only fade (no transform, so no layout
+   shift and taps/scroll stay live during the fade). ---- */
+@keyframes ox-view-in{from{opacity:.5}to{opacity:1}}
+:root body.ox-terminal .app-view.active.ox-mobile-view-in{animation:ox-view-in 160ms cubic-bezier(.2,.8,.2,1) both!important}
+@media (prefers-reduced-motion:reduce){:root body.ox-terminal .app-view.active.ox-mobile-view-in{animation:none!important}}
+
+/* ---- Long content: off-screen radar cards and media sections skip render
+   work. `auto` remembers each element's real size after its first paint, so
+   keyed card updates, the live-quote IntersectionObserver (it still sees
+   every card box) and scroll positions keep working. ---- */
+:root body.ox-terminal #screener-list .coin-card{content-visibility:auto;contain-intrinsic-size:auto 78px}
+@media (min-width:900px){:root body.ox-terminal #screener-list .coin-card{contain-intrinsic-size:auto 248px}}
+:root body.ox-terminal #view-media .media-section{content-visibility:auto;contain-intrinsic-size:auto 480px}
+
+/* ---- Phone bottom spacing: body padding already clears the bottom dock
+   (88px = dock + ~16px). Pages stacked their own 32–95px on top of that,
+   leaving up to ~260px of empty space above the dock at the end of a page. ---- */
+@media (max-width:620px){
+  :root body.ox-terminal main.wrap{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root{padding-bottom:0!important}
+  :root body.ox-terminal #view-home .ox-editorial-home{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root .oxn-upcoming-events{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root .oxn-upcoming-day:last-child{margin-bottom:0!important}
+  :root body.ox-terminal :is(.media-page,#view-strength .strength-page){padding-bottom:0!important}
+  :root body.ox-terminal #ox-crypto-tools-inline{margin-bottom:0!important}
+}

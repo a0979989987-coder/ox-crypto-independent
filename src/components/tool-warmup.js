@@ -1,3 +1,8 @@
+// Optional idle warm-up runs only on a known fast connection without Data
+// Saver. Browsers without navigator.connection (Safari) never warm up.
+export function idleWarmAllowed(connection = globalThis.navigator?.connection) {
+  return !!connection && !connection.saveData && connection.effectiveType === '4g';
+}
 // One idle preparation job at a time. Transport, modules and CSS retain their
 // existing shared caches; this coordinator never mounts an offscreen tool.
 export function createToolWarmup({ jobs, eligible, enabled = () => true, quietMs = 750, now = Date.now,

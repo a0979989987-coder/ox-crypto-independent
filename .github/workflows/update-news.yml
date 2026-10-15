@@ -8,8 +8,9 @@ on:
   schedule:
     - cron: '23 */6 * * *'
 
+# Least privilege by default; only the publish job may write.
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: update-verified-news
@@ -21,21 +22,59 @@ jobs:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Runs third-party code (npm packages, news providers) with a read-only token
+    # that is not persisted in .git/config.
+    permissions:
+      contents: read
+    outputs:
+      changed: ${{ steps.diff.outputs.changed }}
     steps:
       - uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          persist-credentials: false
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: npm
-      - run: npm ci
+      - run: npm ci --ignore-scripts
       - run: npm run news:collect
       - run: npm test
-      - name: Publish changed snapshot
-        if: github.ref == 'refs/heads/main'
+      - name: Detect snapshot change
+        id: diff
         run: |
-          if git diff --quiet -- data/news.json; then exit 0; fi
+          if git diff --quiet -- data/news.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Hand verified snapshot to publish job
+        if: steps.diff.outputs.changed == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: verified-news-snapshot
+          path: data/news.json
+          if-no-files-found: error
+          retention-days: 1
+
+  publish:
+    needs: collect
+    if: needs.collect.outputs.changed == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Write access only here; this job runs no npm install and no repository scripts.
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: verified-news-snapshot
+          path: data
+      - name: Publish changed snapshot
+        run: |
+          jq empty data/news.json
+          if git diff --quiet -- data/news.json; then echo "Snapshot unchanged; nothing to commit."; exit 0; fi
+          if [ "$(git status --porcelain)" != " M data/news.json" ]; then git status --porcelain; echo "Unexpected files changed"; exit 1; fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/news.json

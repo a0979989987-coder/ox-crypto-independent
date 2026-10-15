@@ -42,8 +42,9 @@ function saveRadarSnapshot() {
 function closedTierCandles(candles,frame,now=Date.now()) {
  const duration=({m:60,H:3600,D:86400,W:604800})[frame.slice(-1)]*Number(frame.slice(0,-1));
  return candles.filter(c=>{
-  const local=new Date(c.time*1000+8*3600000);
-  const end=frame.endsWith('M')?Date.UTC(local.getUTCFullYear(),local.getUTCMonth()+Number(frame.slice(0,-1)),1)/1000-8*3600:c.time+duration;
+  // Bitget 1Dutc/1Wutc/1Mutc bars open at 00:00 UTC; a month closes at the next UTC month start.
+  const open=new Date(c.time*1000);
+  const end=frame.endsWith('M')?Date.UTC(open.getUTCFullYear(),open.getUTCMonth()+Number(frame.slice(0,-1)),1)/1000:c.time+duration;
   return Number.isFinite(end)&&end<=now/1000;
  });
 }
@@ -81,13 +82,86 @@ function intradayClassicObservation(frames,side) {
    stage:'短線帶量觀察 · 4H '+(active4H?'資金推進':'新型態確認'),
    matchedReasons:['1H 有效壓力／支撐與同向放量',active4H?'4H 近期明顯推進':'4H 新壓力／支撐形成',...(fast.matchedReasons||[])]};
 }
+// One symbol index per ticker refresh. Ranking used to call
+// state.tickers.find() for every analysed row (O(rows x tickers)).
+let tickerIndexSource=null,tickerIndexMap=new Map();
+function tickerIndex(){
+ if(tickerIndexSource!==state.tickers){tickerIndexSource=state.tickers;tickerIndexMap=new Map((state.tickers||[]).map(t=>[t.symbol,t]));}
+ return tickerIndexMap;
+}
+// Keyed list patching: unchanged cards keep their DOM node (and any live quote
+// text patched into it); only changed, added or moved cards touch the DOM.
+const radarCardCache={container:null,byKey:new Map(),placeholder:null,placeholderHost:null};
+function resetRadarCards(container,html){
+ radarCardCache.container=null;radarCardCache.byKey.clear();
+ if(radarCardCache.placeholderHost===container&&radarCardCache.placeholder===html&&container.firstElementChild)return;
+ radarCardCache.placeholder=html;radarCardCache.placeholderHost=container;container.innerHTML=html;
+}
+function renderRadarCards(container,items){
+ radarCardCache.placeholder=null;radarCardCache.placeholderHost=null;
+ if(radarCardCache.container!==container){radarCardCache.container=container;radarCardCache.byKey.clear();container.replaceChildren();}
+ const next=new Map(),nodes=[];
+ for(const [key,html] of items){
+  let entry=radarCardCache.byKey.get(key);
+  if(!entry||entry.html!==html||entry.node.parentNode&&entry.node.parentNode!==container){
+   const template=document.createElement('template');template.innerHTML=html.trim();
+   entry={html,node:template.content.firstElementChild};
+  }
+  next.set(key,entry);nodes.push(entry.node);
+ }
+ // Remove nodes that are no longer listed (including non-card placeholders).
+ for(const child of [...container.children])if(!nodes.includes(child))child.remove();
+ for(let i=0;i<nodes.length;i++)if(container.children[i]!==nodes[i])container.insertBefore(nodes[i],container.children[i]||null);
+ radarCardCache.byKey=next;
+}
+function setTextIfChanged(id,text){const el=document.getElementById(id);if(el&&el.textContent!==text)el.textContent=text;}
 function cryptoFrameTier(row,frame,side) {
  const data=row.timeframeTiers?.[frame];
  return data&&data.eligible&&Date.now()-data.at<=RADAR_RETAIN_MS&&(!side||data.side?.toLowerCase()===side.toLowerCase())?data:null;
 }
+// Contracts below the lowest turnover band never enter the scan pool or the
+// ranking. liquidity-policy.js keeps the band caps for everything above it.
+const scanTurnoverOK=turnover=>{const value=Number(turnover);return Number.isFinite(value)&&value>=(OXCryptoLiquidity.MIN_SCAN_TURNOVER??300000);};
+// A missing frame is marked on the row and its setups cannot be T1. The
+// liquidity policy keeps the lowered tier as rawTier, so turnover can never
+// promote it back.
+function markDataGap(signal,reason){
+ if(!signal)return signal;
+ const note=reason+' · 不列 T1';
+ return {...signal,tier:signal.tier==='T1'?'T2':signal.tier,dataGap:reason,
+  reasons:[...(signal.reasons||[]),note],rejectionReasons:signal.eligible?(signal.rejectionReasons||[]):[...(signal.rejectionReasons||[]),note]};
+}
+// Weekly bars only add the higher-frame overhead check to daily setups. They
+// are fetched for daily candidates only (Bitget 1Wutc, Monday 00:00 UTC) and
+// kept until the next weekly open, because closed weekly bars cannot change.
+const WEEK_SECONDS=604800,WEEK_ANCHOR=345600,weeklyContext=new Map();
+const nextUtcWeek=(nowMs=Date.now())=>(Math.floor((nowMs/1000-WEEK_ANCHOR)/WEEK_SECONDS)+1)*WEEK_SECONDS+WEEK_ANCHOR;
+function fetchWeeklyContext(symbol,now=Date.now()){
+ const cached=weeklyContext.get(symbol);
+ if(cached&&now/1000<cached.until)return cached.promise;
+ const options={owner:'radar-scan',priority:0},needed=OXClassic.CLASSIC_RULES.minimumBars+5;
+ const promise=(async()=>{
+  let rows=await BitgetAPI.fetchCandles(symbol,'1W',200,null,options);
+  // The recent endpoint returns only a few months of weekly bars; page the
+  // history endpoint (at most three requests) until enough closed weeks exist.
+  for(let page=0;page<3&&rows.length&&rows.filter(c=>c.time+WEEK_SECONDS<=now/1000).length<needed;page++){
+   const earliest=rows[0].time,older=(await BitgetAPI.fetchCandles(symbol,'1W',200,earliest*1000,options)).filter(c=>c.time<earliest);
+   if(!older.length)break;rows=[...older,...rows];
+  }
+  return cryptoClassicBars(rows,'1W',now);
+ })();
+ const entry={until:nextUtcWeek(now),promise};weeklyContext.set(symbol,entry);
+ // A cancelled request (leaving the radar, background tab) is not a data gap:
+ // drop it so the next scan fetches again. Real failures retry after 5 minutes.
+ promise.catch(error=>{if(weeklyContext.get(symbol)!==entry)return;if(error?.name==='AbortError')weeklyContext.delete(symbol);else entry.until=now/1000+300;});
+ if(weeklyContext.size>600)weeklyContext.delete(weeklyContext.keys().next().value);
+ return promise;
+}
 let refreshingMarketTickers=false;
 async function refreshMarketTickers() {
   if (state.activeMarket && state.activeMarket !== "crypto") return;
+  // Background tabs keep the last snapshot; runtime-boot refreshes on return.
+  if (typeof document !== "undefined" && document.hidden && state.tickers?.length) return;
   if(refreshingMarketTickers)return;
   refreshingMarketTickers=true;state.radarLoadError=false;
   const loading=window.OXLoading?.begin('crypto','加密行情載入中',{views:['home','strength']});
@@ -139,7 +213,7 @@ async function refreshMarketTickers() {
 
     // Rank the whole active crypto universe. The former 3m turnover cutoff
     // silently removed genuine lower-turnover setups before they were scored.
-    const eligible = state.tickers.filter(t => num(t.usdtVolume) > 0);
+    const eligible = state.tickers.filter(t => scanTurnoverOK(t.usdtVolume));
     const scanOrder=orderCryptoScanTickers(eligible);
     
     if (!state.scanQueue.length) {
@@ -167,15 +241,31 @@ async function refreshMarketTickers() {
   } finally { refreshingMarketTickers=false;loading?.finish();if(state.activeMarket==='crypto'&&state.activeView==='radar')renderCurrentTab(); }
 }
 
-let radarPaintTimer=0, initialScanLoading=null, passCompleted=0, passFailed=0, radarWake=null;
+let radarPaintTimer=0, radarPaintedAt=0, initialScanLoading=null, passCompleted=0, passFailed=0, radarWake=null, radarRestUntil=0;
+// A qualifying symbol is still published as soon as it is analysed (the first
+// one immediately); later updates are coalesced to at most one ranking/render
+// per second instead of one every 100 ms during a 480-symbol pass.
+const RADAR_PAINT_MS=1000, RADAR_PASS_REST_MS=60000;
+let radarRankDirty=true,radarPassId=0;
+const RADAR_FAILED_REST_MS=10000;
+// User-initiated refresh / reconnect: drop the between-pass rest and wake the
+// sleeping scan loop so a new pass starts now instead of after the rest.
+function restartRadarScan(){
+  radarRestUntil=0;state.scanIndex=0;radarRankDirty=true;radarPassId++;
+  radarWake?.();
+  return refreshMarketTickers();
+}
 function waitForRadar(ms){return new Promise(resolve=>{let timer;const done=()=>{clearTimeout(timer);if(radarWake===done)radarWake=null;resolve();};radarWake=done;timer=setTimeout(done,ms);});}
 function publishRadarProgress(immediate=false) {
   if (!immediate) {
-    if (!radarPaintTimer) radarPaintTimer=setTimeout(()=>publishRadarProgress(true),100);
+    if (!radarPaintTimer) radarPaintTimer=setTimeout(()=>publishRadarProgress(true),Math.max(0,RADAR_PAINT_MS-(Date.now()-radarPaintedAt)));
     return;
   }
-  clearTimeout(radarPaintTimer);radarPaintTimer=0;
+  clearTimeout(radarPaintTimer);radarPaintTimer=0;radarPaintedAt=Date.now();
   if (state.activeMarket !== 'crypto') return;
+  // Rank again only when a scan result or the ticker snapshot changed.
+  if (!radarRankDirty && tickerIndexSource === state.tickers) return;
+  radarRankDirty=false;
   rebuildTierLists();
   if (state.activeView === 'radar') {
     renderCurrentTab();updateHeaderHUD();renderBenchmarkBar();
@@ -191,6 +281,12 @@ async function runScanQueueLoop() {
     }
     if (!state.scanQueue.length) {
       await new Promise(r => setTimeout(r, 1000));
+      continue;
+    }
+    // Rest after a complete pass. Waking (view/visibility change) re-checks
+    // the deadline instead of starting the next 480-symbol pass early.
+    if (Date.now() < radarRestUntil) {
+      await waitForRadar(radarRestUntil - Date.now());
       continue;
     }
 
@@ -210,72 +306,94 @@ async function runScanQueueLoop() {
     document.getElementById("dot").style.background = "#38c99b";
 
     await scanCryptoPool(nextScan,async symbol => {
-      const ticker = state.tickers.find(t => t.symbol === symbol);
+      const ticker = tickerIndex().get(symbol);
       if (!ticker) return;
+      const pass=radarPassId,current=()=>!document.hidden&&state.activeMarket==='crypto'&&['home','radar'].includes(state.activeView)&&pass===radarPassId;
 
       try {
-        const [candles,contextBars,dailyBars] = await Promise.all([
+        const [candles,contextBars,dailyResult] = await Promise.all([
           BitgetAPI.fetchCandles(symbol, '1H', 180,null,{owner:'radar-scan',priority:0}), BitgetAPI.fetchCandles(symbol, '4H', 180,null,{owner:'radar-scan',priority:0}),
-          BitgetAPI.fetchCandles(symbol,'1D',180,null,{owner:'radar-scan',priority:0}).catch(()=>[])
+          BitgetAPI.fetchCandles(symbol,'1D',180,null,{owner:'radar-scan',priority:0}).then(bars=>({bars}),error=>({error}))
         ]);
         if(state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView))return;
-        const frames={'1H':cryptoClassicBars(candles,'1H'),'4H':cryptoClassicBars(contextBars,'4H'),'1D':cryptoClassicBars(dailyBars,'1D')};
+        // A failed daily request is a data gap, not an empty market: the row is
+        // marked and none of its setups (all use daily context) can be T1.
+        const dailyGap=!!dailyResult.error;
+        const frames={'1H':cryptoClassicBars(candles,'1H'),'4H':cryptoClassicBars(contextBars,'4H'),'1D':cryptoClassicBars(dailyGap?[]:dailyResult.bars,'1D')};
         // A rate-limit or malformed candle response must not replace a valid
         // prior scan with a neutral row and make the symbol disappear.
         if(frames['1H'].length<OXClassic.CLASSIC_RULES.minimumBars||
            frames['4H'].length<OXClassic.CLASSIC_RULES.minimumBars)throw Error('核心級別 K 線不足');
+        const dailySetup=side=>OXClassic.evaluateFrames(frames,{side,setupFrame:'1D',triggerFrame:'4H',confirmationFrame:'1H'});
+        let daily={long:dailySetup('long'),short:dailySetup('short')},weeklyGap=false;
+        if(!dailyGap&&Object.values(daily).some(s=>s.eligible||s.observationEligible)){
+          try {frames['1W']=await fetchWeeklyContext(symbol);}
+          catch (error) {if(error?.name==='AbortError')throw error;weeklyGap=true;}
+          // The weekly request can outlive the view or the pass that started it.
+          if(!current())return;
+          if(frames['1W'])daily={long:dailySetup('long'),short:dailySetup('short')};
+        }
+        const dataGaps=[...(dailyGap?['1D']:[]),...(weeklyGap?['1W']:[])];
         const classic=Object.fromEntries(['long','short'].map(side=>{
-          const signals=[['4H','1H'],['1D','4H']].map(([setupFrame,triggerFrame])=>OXClassic.evaluateFrames(frames,{side,setupFrame,triggerFrame,
-            ...(setupFrame==='1D'?{confirmationFrame:'1H'}:{})}));
+          const signals=[OXClassic.evaluateFrames(frames,{side,setupFrame:'4H',triggerFrame:'1H'}),
+            weeklyGap?markDataGap(daily[side],'週線 K 線暫缺，未確認週線上方空間'):daily[side]];
           const fast=intradayClassicObservation(frames,side);
           if(fast)signals.push(fast);
-          const qualified=signals.filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
-          return [side,qualified[0]||signals[0]];
+          const ranked=signals.map(s=>dailyGap?markDataGap(s,'日線 K 線暫缺'):s);
+          const qualified=ranked.filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
+          return [side,qualified[0]||ranked[0]];
         }));
         const candidates=Object.values(classic).filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
         const signal=candidates[0]||classic.long;
         const row=OXEngine.describe(signal,classic),liq=OXEngine.computeLiquidity(ticker,state.tickers),rs=OXEngine.computeRelativeStrength(ticker,state.btcTicker);
-        const timeframeTiers=Object.fromEntries(Object.entries(frames).map(([frame,bars])=>[frame,classifyTierFrame(bars,frame)]));
+        const timeframeTiers=Object.fromEntries(['1H','4H','1D'].map(frame=>[frame,classifyTierFrame(frames[frame],frame)]));
         const tierConfig=globalThis.OXTierFilters?.get('crypto');
-        if(tierConfig?.enabled)await Promise.all(tierConfig.rules.filter(r=>!frames[r.frame]).map(async rule=>{
+        if(tierConfig?.enabled&&frames['1W']&&tierConfig.rules.some(r=>r.frame==='1W'))timeframeTiers['1W']=classifyTierFrame(frames['1W'],'1W');
+        if(tierConfig?.enabled)await Promise.all(tierConfig.rules.filter(r=>!timeframeTiers[r.frame]&&!['1H','4H','1D'].includes(r.frame)).map(async rule=>{
           try {timeframeTiers[rule.frame]=classifyTierFrame(await BitgetAPI.fetchCandles(symbol,rule.frame,180,null,{owner:'radar-scan',priority:0}),rule.frame);}
           catch {timeframeTiers[rule.frame]=null;}
         }));
         state.analyzedCache.set(symbol, OXEngine.withTurnover({
-          ...row,timeframeTiers,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
+          ...row,timeframeTiers,dataGaps,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
           signalFrame:signal.frame||'4H',triggerFrame:signal.triggerFrame||'1H',sparkline:candles.slice(-24).map(c=>c.close),
           liqScore:liq.score,rsScore:rs.score,quoteVol:liq.quoteVol,liqPercentile:liq.percentileStr,
           reasons:row.reasons,
           change24h:num(ticker.change24h),ret1h:candleReturn(candles,1),ret4h:candleReturn(candles,4),
           ret24h:candleReturn(candles,24),
         },ticker.usdtVolume));
-        passCompleted++;
+        passCompleted++;radarRankDirty=true;
         const firstCandidate=(signal.eligible||signal.observationEligible)&&
           !['t1','t2','t3'].some(tier=>['long','short'].some(side=>state.tierMapBySide?.[side]?.[tier]?.length));
         publishRadarProgress(firstCandidate);
-      } catch (e) {if(state.activeMarket==='crypto'&&['home','radar'].includes(state.activeView))passFailed++;} finally { const n=(initialScanLoading?.done||0)+1;if(initialScanLoading){initialScanLoading.done=n;initialScanLoading.update(n,state.scanQueue.length);} }
+      } catch (e) {if(e?.name!=='AbortError'&&state.activeMarket==='crypto'&&['home','radar'].includes(state.activeView))passFailed++;} finally { const n=(initialScanLoading?.done||0)+1;if(initialScanLoading){initialScanLoading.done=n;initialScanLoading.update(n,state.scanQueue.length);} }
     },Math.min(3,batchLimit));
 
     if(document.hidden||state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView)){state.scanIndex=Math.max(0,state.scanIndex-Math.min(3,batchSymbols.length));continue;}
     const completed = state.scanIndex >= state.scanQueue.length;
     // A completed pass persists the snapshot; visible rows are published as
     // their own analysis completes, even while another request is pending.
+    let passFailedEntirely=false;
     if (completed) {
       initialScanLoading?.finish();initialScanLoading=null;
+      passFailedEntirely=passCompleted===0;radarPassId++;
       // Refresh the universe between full passes so newly listed contracts
       // can enter the radar without a page reload.
-      state.scanQueue=orderCryptoScanTickers(state.tickers.filter(t=>num(t.usdtVolume)>0)).map(t=>t.symbol);
+      state.scanQueue=orderCryptoScanTickers(state.tickers.filter(t=>scanTurnoverOK(t.usdtVolume))).map(t=>t.symbol);
       state.scanIndex = 0;
       state.radarSnapshotReady = passCompleted>0&&passFailed===0;
       state.radarScanFailed = passFailed>0||passCompleted===0;
       if(passCompleted>0)saveRadarSnapshot();
       passCompleted=0;passFailed=0;
+      // The pass outcome changes the list state (ready / error), so repaint it now.
+      radarRankDirty=true;
     }
     publishRadarProgress(true);
     // All tools share the public-feed scheduler and its 429 cooldown.
-    // Rate limiting belongs to public-feed. Do not add 2.5 seconds of idle
-    // time to every batch; only rest between complete passes and yield CPU.
-    await waitForRadar(completed?Math.max(CONFIG.batchIntervalMs,1000):0);
+    // Rate limiting belongs to public-feed. Batches continue back to back; a
+    // completed pass rests before the next one so an idle radar stays quiet.
+    // A pass that produced nothing retries after a short pause instead of the full rest.
+    if(completed)radarRestUntil=Date.now()+(passFailedEntirely?RADAR_FAILED_REST_MS:Math.max(CONFIG.batchIntervalMs,RADAR_PASS_REST_MS));
+    await waitForRadar(0);
   }
 }
 
@@ -291,12 +409,16 @@ function radarSideRows(row) {
 }
 function rebuildTierLists() {
   const tierConfig=globalThis.OXTierFilters?.get('crypto');
+  const tickers=tickerIndex();
   const rankedPool=Array.from(state.analyzedCache.values())
     .filter(c=>isCryptoSymbolAllowed(c.symbol))
-    .map(c=>OXEngine.withTurnover(c,state.tickers.find(t=>t.symbol===c.symbol)?.usdtVolume??c.quoteVol))
+    .map(c=>OXEngine.withTurnover(c,tickers.get(c.symbol)?.usdtVolume??c.quoteVol))
+    // Known turnover below the scan floor drops out (e.g. a restored snapshot
+    // row whose live 24H turnover has since fallen under 300,000 USDT).
+    .filter(c=>c.quoteVol===null||c.quoteVol===undefined||scanTurnoverOK(c.quoteVol))
     .flatMap(c=>tierConfig?.enabled?[c]:radarSideRows(c)).filter(c=>{
     if(benchmarkSymbols.has(c.symbol)||(!tierConfig?.enabled&&!OXClassic.qualifyClassicRow(c,c.side,{observations:true})))return false;
-    const signal=c.classicSignal,price=num(state.tickers.find(t=>t.symbol===c.symbol)?.lastPr)||c.lastPrice;
+    const signal=c.classicSignal,price=num(tickers.get(c.symbol)?.lastPr)||c.lastPrice;
     if(!tierConfig?.enabled&&price&&signal?.invalidation?.level){const dir=c.side==='SHORT'?-1:1;
       if(dir*(price-signal.invalidation.level)<-.2*signal.atr||c.lastPrice&&dir*(price-c.lastPrice)<-.9*signal.atr)return false;}
     return !c.at||Date.now()-c.at<=RADAR_RETAIN_MS;
@@ -308,29 +430,30 @@ function rebuildTierLists() {
     const directional=globalThis.OXTierFilters.resolve(c,tierConfig,cryptoFrameTier,match.value.side);
     if(!directional)return [];
     const selected=OXEngine.withTurnover({...c,...directional.value,reasons:[`${directional.frame} 時間組合`,...(directional.value.reasons||[])]},c.quoteVol);
-    const price=num(state.tickers.find(t=>t.symbol===c.symbol)?.lastPr)||c.lastPrice,signal=selected.classicSignal,dir=selected.side==='SHORT'?-1:1;
+    const price=num(tickers.get(c.symbol)?.lastPr)||c.lastPrice,signal=selected.classicSignal,dir=selected.side==='SHORT'?-1:1;
     if(price&&signal?.invalidation?.level&&dir*(price-signal.invalidation.level)<-.2*signal.atr)return [];
     return [selected];
   }):rankedPool;
   const buildTierSet = pool => {
-    // Money and actual directional candles break nearby setup scores. Daily
-    // price change is supporting context, never a replacement for volume.
+    // Setup quality plus money (turnover and sustained same-direction volume)
+    // decides the order: a setup at its critical level with volume ranks above
+    // a plain price move. 24H change and the 4H return only break exact ties.
     const evidence = row => {
-      const dir=row.side==='SHORT'?-1:1;
-      const daily=dir*(Number(row.change24h)||0)*100;
-      const recent=dir*(Number(row.ret4h)||0)*100;
       const turnover=Number(row.quoteVol)||0;
       const volume=row.classicSignal.triggerVolume||row.classicSignal.volume;
       const sustained=Number(volume?.sustainedBars)||0;
       const activeVolume=Number(volume?.recentRatio)||0;
-      return Math.max(-2,Math.min(2,daily*.08))+
-        Math.max(-3,Math.min(3,recent*.3))+
-        Math.max(-6,Math.min(8,5*Math.log10(Math.max(1,turnover)/1e6)))+
+      return Math.max(-6,Math.min(8,5*Math.log10(Math.max(1,turnover)/1e6)))+
         Math.max(-3,Math.min(4,(sustained-1)*2+Math.log2(Math.max(.5,activeVolume))));
+    };
+    const momentum = row => {
+      const dir=row.side==='SHORT'?-1:1;
+      return Math.max(-2,Math.min(2,dir*(Number(row.change24h)||0)*100*.08))+
+        Math.max(-3,Math.min(3,dir*(Number(row.ret4h)||0)*100*.3));
     };
     const ranked = OXClassic.rankClassicTiers(pool, { compare: (a,b) =>
       (b.classicSignal.qualityScore+evidence(b))-(a.classicSignal.qualityScore+evidence(a)) ||
-      OXClassic.compareClassic(a,b) || a.symbol.localeCompare(b.symbol) });
+      OXClassic.compareClassic(a,b) || momentum(b)-momentum(a) || a.symbol.localeCompare(b.symbol) });
     return Object.fromEntries(['t1','t2','t3'].map(tier => [tier, ranked
       .filter(row => row.tier.toLowerCase() === tier).map(row => ({...row,tier,displayTier:tier}))]));
   };
@@ -370,17 +493,17 @@ function renderCurrentTab() {
       .filter(t => Number.isFinite(num(t.usdtVolume)) && num(t.usdtVolume) > 0)
       .sort((a, b) => num(b.usdtVolume) - num(a.usdtVolume))
       .slice(0, 50);
-    document.getElementById("pool-count").textContent = `24H 成交額前 ${top.length} 檔`;
+    setTextIfChanged("pool-count", `24H 成交額前 ${top.length} 檔`);
     if (!top.length) {
-      container.innerHTML = '<div class="turnover-empty">正在取得合約成交額…</div>';
+      resetRadarCards(container, '<div class="turnover-empty">正在取得合約成交額…</div>');
       return;
     }
-    container.innerHTML = top.map((t, index) => `<div class="coin-card turnover-card ${t.symbol === state.symbol ? 'selected' : ''}" data-symbol="${t.symbol}" role="button" tabindex="0" aria-label="第 ${index + 1} 名 ${t.symbol}，24 小時成交額 ${fmtCryptoVolume(t.usdtVolume)} USDT，最新價格 ${fmtPrice(t.lastPr)}，漲跌 ${fmtPct(t.change24h)}">
-      <div class="turnover-name"><span class="turnover-rank">#${index + 1}</span><span class="turnover-symbol" title="${t.symbol}">${t.symbol.replace(/USDT$/, '')}</span></div>
-      <div class="turnover-volume">24H ${fmtCryptoVolume(t.usdtVolume)} USDT</div>
+    renderRadarCards(container, top.map((t, index) => ['surge:'+t.symbol, `<div class="coin-card turnover-card ${t.symbol === state.symbol ? 'selected' : ''}" data-symbol="${escapeHtml(t.symbol)}" role="button" tabindex="0" aria-label="第 ${index + 1} 名 ${escapeHtml(t.symbol)}，24 小時成交額 ${fmtCryptoVolumeUSDT(t.usdtVolume)}，最新價格 ${fmtPrice(t.lastPr)}，漲跌 ${fmtPct(t.change24h)}">
+      <div class="turnover-name"><span class="turnover-rank">#${index + 1}</span><span class="turnover-symbol" title="${escapeHtml(t.symbol)}">${escapeHtml(t.symbol.replace(/USDT$/, ''))}</span></div>
+      <div class="turnover-volume">24H ${fmtCryptoVolumeUSDT(t.usdtVolume)}</div>
       <div class="turnover-price">${fmtPrice(t.lastPr)}</div>
       <div class="turnover-change ${num(t.change24h) >= 0 ? 'positive' : 'negative'}">${fmtPct(t.change24h)}</div>
-    </div>`).join('');
+    </div>`]));
     return;
   }
 
@@ -390,36 +513,36 @@ function renderCurrentTab() {
       const analyzed = state.analyzedCache.get(rec.symbol);
       return passesDirectionFilter(analyzed?.side || rec.side || "—");
     });
-    document.getElementById("pool-count").textContent = `${saved.length} 檔${state.directionFilter === "long" ? "多頭" : "空頭"}收藏`;
+    setTextIfChanged("pool-count", `${saved.length} 檔${state.directionFilter === "long" ? "多頭" : "空頭"}收藏`);
     syncWatchBadge();
     if (!saved.length) {
       const dir = state.directionFilter === "long" ? "LONG" : "SHORT";
-      container.innerHTML = `<div style="padding:30px 16px;text-align:center;color:var(--muted)"><b>${savedAll.length ? `觀察列表目前沒有 ${dir} 標的` : "還沒有收藏標的"}</b><p style="font-size:11px">在 T1 / T2 / T3 點 ☆ 即可加入 ⭐觀察。</p></div>`;
+      resetRadarCards(container, `<div style="padding:30px 16px;text-align:center;color:var(--muted)"><b>${savedAll.length ? `觀察列表目前沒有 ${dir} 標的` : "還沒有收藏標的"}</b><p style="font-size:11px">在 T1 / T2 / T3 點 ☆ 即可加入 ⭐觀察。</p></div>`);
       return;
     }
-    container.innerHTML = saved.map((rec, idx) => {
+    renderRadarCards(container, saved.map((rec, idx) => {
       const analyzed = state.analyzedCache.get(rec.symbol);
-      const ticker = state.tickers.find(t => t.symbol === rec.symbol);
+      const ticker = tickerIndex().get(rec.symbol);
       const c = analyzed || rec;
       const current=analyzed&&OXClassic.qualifyClassicRow(analyzed,analyzed.side);
       const tier = current?.tier?.toLowerCase() || "待確認";
       const side = c.side || rec.side || "—";
       const price = ticker ? ticker.lastPr : (c.lastPr || rec.lastPr);
       const change = ticker ? ticker.change24h : (c.change24h ?? rec.change24h);
-      return `<div class="coin-card watch-list-card ${rec.symbol === state.symbol ? 'selected' : ''}" data-symbol="${rec.symbol}" role="button" tabindex="0">
+      return ['watch:'+rec.symbol, `<div class="coin-card watch-list-card ${rec.symbol === state.symbol ? 'selected' : ''}" data-symbol="${escapeHtml(rec.symbol)}" role="button" tabindex="0">
         <div class="watch-card-main">
           <div class="watch-card-copy">
-            <div class="coin-title watch-coin-title"><span class="coin-rank">#${idx+1}</span><span class="watch-symbol" title="${rec.symbol}">${rec.symbol.replace(/USDT$/, "")}</span><span class="badge badge-${side === 'SHORT' ? 'short' : 'long'}">${side}</span><span class="badge badge-${['t1','t2','t3'].includes(tier)?tier:'t3'}">${tier.toUpperCase()}</span></div>
+            <div class="coin-title watch-coin-title"><span class="coin-rank">#${idx+1}</span><span class="watch-symbol" title="${escapeHtml(rec.symbol)}">${escapeHtml(rec.symbol.replace(/USDT$/, ""))}</span><span class="badge badge-${side === 'SHORT' ? 'short' : 'long'}">${escapeHtml(side)}</span><span class="badge badge-${['t1','t2','t3'].includes(tier)?tier:'t3'}">${tier.toUpperCase()}</span></div>
             <div class="watch-metrics">
               <span class="watch-metric"><label>最新價格</label><strong>${fmtPrice(price)}</strong></span>
               <span class="watch-metric"><label>24H 漲跌</label><strong class="${num(change)>=0?'positive':'negative'}">${fmtPct(change)}</strong></span>
               <span class="watch-metric"><label>OX 分數</label><strong style="color:var(--gold)">${c.oxScore ?? rec.oxScore ?? '—'}</strong></span>
             </div>
           </div>
-          <button class="watch-star is-starred" type="button" data-watch-symbol="${rec.symbol}" aria-pressed="true" aria-label="移除 ${rec.symbol} 收藏">${WATCH_STAR_SVG}</button>
+          <button class="watch-star is-starred" type="button" data-watch-symbol="${escapeHtml(rec.symbol)}" aria-pressed="true" aria-label="移除 ${escapeHtml(rec.symbol)} 收藏">${WATCH_STAR_SVG}</button>
         </div>
-      </div>`;
-    }).join('');
+      </div>`];
+    }));
     return;
   }
 
@@ -434,20 +557,27 @@ function renderCurrentTab() {
     : (state.tierMap[tab] || []).filter(c => passesDirectionFilter(c.side));
   const list = window.OXChartToolbar?.filterList(sourceList) || sourceList;
   const directionLabel = state.directionFilter === "long" ? "多頭" : "空頭";
-  document.getElementById("pool-count").textContent = `${list.length} 檔${directionLabel}${!state.radarSnapshotReady&&state.isQueueRunning?` · 已分析 ${state.analyzedCache.size}/${state.scanQueue.length}`:''}`;
+  setTextIfChanged("pool-count", `${list.length} 檔${directionLabel}${!state.radarSnapshotReady&&state.isQueueRunning?` · 已分析 ${state.analyzedCache.size}/${state.scanQueue.length}`:''}`);
   syncWatchBadge();
   if (!list.length) {
     if(state.radarLoadError||state.radarScanFailed||!state.radarSnapshotReady){
       const failed=state.radarLoadError||state.radarScanFailed;
-      container.innerHTML=`<div style="padding:20px 12px;text-align:center;color:var(--muted)"><b>${failed?'行情資料尚未取得':'正在載入與分析行情'}</b><p style="font-size:12px;line-height:1.6">${failed?'目前無法判斷入選標的，連線恢復後會自動重試。':`已處理 ${state.scanIndex||0} / ${state.scanQueue.length||'—'} 檔`}</p></div>`;
-      if(failed){const retry=document.createElement('button');retry.type='button';retry.textContent='重新連線';retry.style.cssText='font:inherit;color:inherit;background:transparent;border:1px solid currentColor;border-radius:10px;padding:8px;min-height:44px';retry.onclick=()=>{state.radarScanFailed=false;state.radarSnapshotReady=false;refreshMarketTickers();};container.firstElementChild.append(retry);}
+      if(!failed){
+        // Skeleton cards stay mounted while only the progress note changes, so the sheen never restarts.
+        const note=`已處理 ${state.scanIndex||0} / ${state.scanQueue.length||'—'} 檔`,current=container.querySelector(':scope > .ox-radar-loading .ox-state-progress');
+        if(current&&radarCardCache.placeholderHost===container){if(current.textContent!==note)current.textContent=note;return;}
+        resetRadarCards(container,`<div class="ox-radar-loading" role="status">${'<span class="ox-skeleton-card" aria-hidden="true"></span>'.repeat(3)}<p class="ox-state-note"><b>正在載入與分析行情</b><span class="ox-state-progress">${note}</span></p></div>`);
+        return;
+      }
+      resetRadarCards(container,`<div class="ox-state ox-state--error" role="alert"><b>行情資料尚未取得</b><p>目前無法判斷入選標的，連線恢復後會自動重試。</p></div>`);
+      if(!container.querySelector('button')){const retry=document.createElement('button');retry.type='button';retry.className='ox-state-retry';retry.textContent='重新連線';retry.onclick=()=>{state.radarScanFailed=false;state.radarSnapshotReady=false;restartRadarScan();};container.firstElementChild.append(retry);}
       return;
     }
-    container.innerHTML = `<div style="padding:30px 16px;text-align:center;color:var(--muted)"><b>目前沒有符合 OX 經典的${directionLabel}標的</b><p style="font-size:11px">符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。</p></div>`;
+    resetRadarCards(container, `<div class="ox-state ox-state--empty"><b>目前沒有符合 OX 經典的${directionLabel}標的</b><p>符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。</p></div>`);
     return;
   }
 
-  container.innerHTML = list.map((c, idx) => {
+  renderRadarCards(container, list.map((c, idx) => {
     const displayTier = tab === "surge" ? (c.tier !== "none" ? c.tier : "t3") : (c.displayTier || c.tier || "t3");
     const status = c.at&&Date.now()-c.at>300000 ? "上次結果 · 更新中" : tab === "surge" ? "SURGE" : (c.rankStatus || c.statusText || "WATCH");
     const fit = displayTier === "t1" ? c.t1Fit : displayTier === "t2" ? c.t2Fit : c.t3Fit;
@@ -458,35 +588,35 @@ function renderCurrentTab() {
     // Follow real group boundaries even while a scan or custom filter has fewer results.
     const nextTier=list[idx+1] && (list[idx+1].displayTier||list[idx+1].tier||'t3');
     const endsTier=combinedRadar && nextTier && nextTier!==displayTier;
-    return `<div class="coin-card ${startsTier?'is-tier-start ':''}${endsTier?'is-tier-end ':''}${c.symbol === state.symbol ? 'selected' : ''}" data-symbol="${c.symbol}" data-tier="${displayTier}" role="button" tabindex="0">
+    return [tab+':'+c.symbol+':'+c.side, `<div class="coin-card ${startsTier?'is-tier-start ':''}${endsTier?'is-tier-end ':''}${c.symbol === state.symbol ? 'selected' : ''}" data-symbol="${escapeHtml(c.symbol)}" data-tier="${displayTier}" role="button" tabindex="0">
       ${startsTier?`<small class="coin-tier-heading">${displayTier.toUpperCase()}</small>`:''}
       <div class="coin-top">
         <span class="coin-title">
           <span class="coin-rank">#${idx + 1}</span>
-          <span class="coin-symbol-full">${c.symbol}</span><span class="coin-symbol-mobile" title="${c.symbol.replace(/USDT$/, "")}">${c.symbol.replace(/USDT$/, "")}</span>
-          <span class="badge badge-${c.side === 'SHORT' ? 'short' : 'long'}">${c.side}</span>
+          <span class="coin-symbol-full">${escapeHtml(c.symbol)}</span><span class="coin-symbol-mobile" title="${escapeHtml(c.symbol.replace(/USDT$/, ""))}">${escapeHtml(c.symbol.replace(/USDT$/, ""))}</span>
+          <span class="badge badge-${c.side === 'SHORT' ? 'short' : 'long'}">${escapeHtml(c.side)}</span>
           <span class="badge badge-${displayTier}">${displayTier.toUpperCase()}</span>
           ${c.isSurge ? '<span class="badge badge-surge">🔥</span>' : ''}
         </span>
-        <span class="coin-top-right"><span class="coin-ox" aria-label="OX 分數 ${c.oxScore}"><span class="coin-ox-label">OX</span> <strong class="coin-ox-value">${c.oxScore}</strong></span>${allowStar ? `<button class="watch-star watch-star-desktop ${starred?'is-starred':''}" type="button" data-watch-symbol="${c.symbol}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${c.symbol} 收藏">${WATCH_STAR_SVG}</button>` : ''}</span>
+        <span class="coin-top-right"><span class="coin-ox" aria-label="OX 分數 ${c.oxScore}"><span class="coin-ox-label">OX</span> <strong class="coin-ox-value">${c.oxScore}</strong></span>${allowStar ? `<button class="watch-star watch-star-desktop ${starred?'is-starred':''}" type="button" data-watch-symbol="${escapeHtml(c.symbol)}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${escapeHtml(c.symbol)} 收藏">${WATCH_STAR_SVG}</button>` : ''}</span>
       </div>
       <div class="coin-mid">
-        <span class="meta desktop-coin-meta">${status} · Fit ${fit ?? '—'} · 24H 量 ${fmtCryptoVolume(c.quoteVol)} USDT</span>
-        <span class="mobile-coin-volume" title="24H 成交量 ${fmtCryptoVolume(c.quoteVol)} USDT" aria-label="24 小時成交量 ${fmtCryptoVolume(c.quoteVol)} USDT"><span class="coin-volume-label">24H 量</span><span class="coin-volume-value">${fmtCryptoVolume(c.quoteVol).replaceAll(",", "")}</span></span>
+        <span class="meta desktop-coin-meta">${escapeHtml(status)} · Fit ${fit ?? '—'} · 24H 量 ${fmtCryptoVolumeUSDT(c.quoteVol)}</span>
+        <span class="mobile-coin-volume" title="24H 成交量 ${fmtCryptoVolumeUSDT(c.quoteVol)}" aria-label="24 小時成交量 ${fmtCryptoVolumeUSDT(c.quoteVol)}"><span class="coin-volume-label">24H 量</span><span class="coin-volume-value">${fmtCryptoVolume(c.quoteVol).replaceAll(",", "")}</span></span>
         <span class="coin-change desktop-coin-change ${c.change24h >= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtPct(c.change24h)}</span>
       </div>
       <div class="coin-mobile-bottom">
-        ${allowStar ? `<button class="watch-star watch-star-mobile ${starred?'is-starred':''}" type="button" data-watch-symbol="${c.symbol}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${c.symbol} 收藏">${WATCH_STAR_SVG}</button>` : '<span></span>'}
+        ${allowStar ? `<button class="watch-star watch-star-mobile ${starred?'is-starred':''}" type="button" data-watch-symbol="${escapeHtml(c.symbol)}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${escapeHtml(c.symbol)} 收藏">${WATCH_STAR_SVG}</button>` : '<span></span>'}
         <span class="coin-change ${c.change24h >= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtPct(c.change24h)}</span>
       </div>
-      <div class="coin-reason"><div class="setup-head">${c.setupName}</div><div>• ${c.reasons.join('</div><div>• ')}</div></div>
+      <div class="coin-reason"><div class="setup-head">${escapeHtml(c.setupName)}</div><div>• ${(c.reasons||[]).map(fmtSignalReason).map(escapeHtml).join('</div><div>• ')}</div></div>
       <div class="score-pills">
         <span class="score-pill">流動 ${c.liqScore}</span><span class="score-pill">資金 ${c.flowScore}</span>
         <span class="score-pill">結構 ${c.structScore}</span><span class="score-pill">RS ${c.rsScore}</span>
         <span class="score-pill">Progress ${c.setupProgress ?? '—'}%</span>
       </div>
-    </div>`;
-  }).join('');
+    </div>`];
+  }));
 }
 
 if(typeof document!=='undefined')document.addEventListener('ox:timeframe-tier-change',event=>{

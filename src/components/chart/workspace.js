@@ -406,6 +406,7 @@ function startChartLiveCandles(symbol, period, options = {}) {
       state.candleData=incoming;
       state.oldestCandleTime=incoming[0]?.time || 0;
       state.hasMoreHistory=true;
+      if (document.getElementById('chart-load-error')?.dataset.mode === 'empty') clearChartLoadError();
       renderChartData(incoming,true);
       return;
     }
@@ -429,6 +430,58 @@ function startChartLiveCandles(symbol, period, options = {}) {
   return feed;
 }
 
+// A failed K-line request must stay visible in the chart region. Without
+// candles the chart shows a retry state; with the same chart's earlier candles
+// the old chart stays but is explicitly marked as possibly stale.
+function chartErrorClock(date = new Date()) {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+function clearChartLoadError() {
+  const host = document.getElementById('chart-load-error');
+  if (!host) return;
+  host.hidden = true;
+  host.replaceChildren();
+  delete host.dataset.mode;
+  delete host.dataset.scope;
+}
+function showChartLoadError(error, { symbol = state.symbol, period = state.period, stale = false, retry, at = new Date() } = {}) {
+  const chart = document.getElementById('chart');
+  if (!chart) return null;
+  let host = document.getElementById('chart-load-error');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'chart-load-error';
+    host.className = 'chart-load-error';
+    chart.append(host);
+  }
+  const base = String(symbol || '').replace(/USDT$/, '');
+  host.dataset.mode = stale ? 'stale' : 'empty';
+  host.dataset.scope = `${symbol}:${period}`;
+  host.setAttribute('role', 'alert');
+  const box = document.createElement('div');
+  box.className = 'chart-load-error-box';
+  const title = document.createElement('strong');
+  title.className = 'chart-load-error-title';
+  title.textContent = stale ? `資料可能過期・更新失敗 ${chartErrorClock(at)}` : `${base} ${period} K 線載入失敗`;
+  const detail = document.createElement('span');
+  detail.className = 'chart-load-error-detail';
+  const reason = String(error?.message || '').slice(0, 120);
+  detail.textContent = stale ? `${base} ${period} 顯示的是上次取得的 K 線${reason ? `（${reason}）` : ''}` : (reason || '暫時無法取得交易所 K 線資料');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'chart-load-error-retry';
+  button.textContent = '重試';
+  button.addEventListener('click', () => {
+    button.disabled = true;
+    button.textContent = '重試中…';
+    (retry || (() => loadSymbolCandles(true)))();
+  });
+  box.append(title, detail, button);
+  host.replaceChildren(box);
+  host.hidden = false;
+  return host;
+}
+
 async function loadSymbolCandles(isInitial = true) {
   if (state.activeMarket && state.activeMarket !== "crypto") return;
   state.abortCtrl?.abort();
@@ -437,6 +490,7 @@ async function loadSymbolCandles(isInitial = true) {
   const feed=startChartLiveCandles(symbol,period);
   const overlay = document.getElementById("chart-loading");
   if (isInitial) { overlay.innerHTML=window.OXLoading?.markup(`${symbol} K 線載入中`,0,1)||"K 線載入中…";overlay.classList.add("show"); }
+  if (document.getElementById('chart-load-error')?.dataset.scope !== `${symbol}:${period}`) clearChartLoadError();
   if (state.chartPriceScope !== `${symbol}:${period}`) {
     state.chartPriceViewport = null;
     state.chartAutoPriceRange = null;
@@ -461,9 +515,14 @@ async function loadSymbolCandles(isInitial = true) {
     state.candleData = raw;
     state.oldestCandleTime = raw[0].time;
     state.hasMoreHistory = true;
+    clearChartLoadError();
     renderChartData(raw, isInitial);
   } catch (err) {
-    if (err.name === "AbortError") return;
+    if (err?.name === "AbortError") return;
+    // A response for a chart the user already left must not paint an error.
+    if (state.symbol !== symbol || state.period !== period || state.chartLiveFeed !== feed) return;
+    const stale = state.chartPriceScope === `${symbol}:${period}` && state.candleData.length > 0;
+    showChartLoadError(err, { symbol, period, stale });
   } finally {
     if (state.symbol === symbol && state.period === period) overlay.classList.remove("show");
   }
