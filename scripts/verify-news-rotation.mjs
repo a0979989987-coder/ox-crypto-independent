@@ -13,7 +13,7 @@ const imagePrefix=browserName==='webkit'?'bubble-webkit':'bubble';
 const reports=[];
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
 const tool=(p,id)=>p.locator(`button[data-crypto-tool="${id}"]`).click();
-async function setup(width,theme='dark',clockTime=null){
+async function setup(width,theme='dark',clockTime=null,beforeLoad=null){
  const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',...(browserName==='webkit'&&width<600?{isMobile:true,hasTouch:true}: {})}),{page,audit}=await preparePage(context,{width,height:900});
  if(clockTime)await page.clock.install({time:clockTime});
  const requests=[];page.on('request',r=>requests.push(r.url()));
@@ -28,6 +28,7 @@ async function setup(width,theme='dark',clockTime=null){
  await page.route('**/api/v1/account/**',r=>r.fulfill({json:new URL(r.request().url()).pathname.endsWith('feature-access')?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:{ok:true,user:null,configured:false}}));
  await page.route('https://api.bitget.com/**',async r=>{await new Promise(done=>setTimeout(done,80));return r.fulfill({json:fixtureBody(r.request().url())});});
  await routeSnapshots(page);await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:[]}));
+ if(beforeLoad)await beforeLoad(page);
  await page.goto(testBase,{waitUntil:'domcontentloaded'});await page.locator('#view-radar .coin-card').first().waitFor({timeout:30000});await page.evaluate(()=>switchAppView('strength'));
  return {page,context,audit,requests};
 }
@@ -263,8 +264,10 @@ try{
  await tool(fp,'rotation');await active(fp,'.cfx-research-panel').waitFor();await active(fp,'[data-action="view-rank"]').click();await active(fp,'.cfx-rank-row').first().click();await active(fp,'.cfx-sector-dialog [data-member-detail]').first().locator('td').nth(1).click();
  await active(fp,'.cfx-asset-chart canvas[data-symbol]').waitFor();await active(fp,'[data-control="asset-period"]').selectOption('1m');await active(fp,'[data-action="retry-asset"]').waitFor({timeout:16000});assert.equal(candleAttempts,2,'one initial request and one bounded 429 retry');
  failed=false;await active(fp,'[data-action="retry-asset"]').click();try{await active(fp,'.cfx-asset-chart canvas[data-period="1m"]').waitFor({timeout:15000});}catch(error){throw new Error(`幣種 K 線恢復：${await active(fp,'.cfx-asset-chart-status').textContent()}；請求 ${candleAttempts}`,{cause:error});}assert.equal(candleAttempts,3);assert.deepEqual(faultSetup.audit.pageErrors,[]);reports.push({fault:'detail-429',boundedAttempts:2,manualRecovery:true});await faultSetup.context.close();
- const {page,context,audit,requests}=await setup(390);let blocked=true;
- await page.route('**/src/generated/tool-news.js*',r=>blocked?r.abort('failed'):r.continue());
+ // Block the news module from the first request: idle warm-up prepares 資訊
+ // first, so blocking only after load would test an already cached module.
+ let blocked=true;
+ const {page,context,audit,requests}=await setup(390,'dark',null,page=>page.route('**/src/generated/tool-news.js*',r=>blocked?r.abort('failed'):r.continue()));
  await page.evaluate(()=>OXNews.openMarket());await page.getByRole('button',{name:'重試',exact:true}).waitFor();
  const failedCalls=requests.filter(u=>u.includes('tool-news.js')).length;assert.ok(failedCalls<=2,'failed module cannot trigger unlimited imports');blocked=false;
  await page.getByRole('button',{name:'重試',exact:true}).click();await page.locator('.oxn-event-row').first().waitFor();assert.deepEqual(audit.pageErrors,[]);

@@ -1784,14 +1784,18 @@ html.theme-midnight{background:var(--mi-bg)!important}
 .theme-midnight .ox-state--error::before{background:var(--ox-state-error)}
 .theme-midnight .ox-state-retry{color:var(--ink);background:transparent;border:1px solid currentColor}
 :root.theme-midnight body.ox-terminal :is(.chart-load-error-retry,.ox-tool-load-error>button,.ox-style-loading button,#ox-runtime-recovery button){border:1px solid currentColor!important;background:transparent!important}
-:root.theme-midnight body.ox-terminal #chart-loading.chart-loading-overlay{color:var(--ox-state-text)!important}
-:root.theme-midnight body.ox-terminal #chart-loading.chart-loading-overlay::before{border:2px solid rgb(var(--mi-haze-rgb) / .14);border-top-color:var(--ink)}
+:root.theme-midnight body #chart-loading.chart-loading-overlay{border:0!important;background:transparent!important;box-shadow:none!important;color:var(--ox-state-text,var(--muted))!important}
+:root.theme-midnight body #chart-loading.chart-loading-overlay::after{background:linear-gradient(90deg,transparent,currentColor,transparent) no-repeat;background-size:38% 100%}
+.theme-midnight #chart-loading .chart-skeleton i{background:currentColor}
+.theme-midnight #chart-loading .chart-skeleton i::before{background:currentColor}
 .theme-midnight .ox-state-note{color:var(--ox-state-text)}
 .theme-midnight .ox-state-note b{color:var(--ink)}
 .theme-midnight .ox-skeleton-card{background:linear-gradient(var(--ox-skel-line) 0 0) 10px 12px/44% 9px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 30px/64% 7px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 45px/34% 7px no-repeat,var(--ox-skel-base)}
 :root.theme-midnight body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:not([hidden]){background:linear-gradient(var(--ox-skel-base) 0 0) 0 0/100% 40px no-repeat,linear-gradient(var(--ox-skel-base) 0 0) 0 52px/100% calc(100% - 52px) no-repeat}
 .theme-midnight :is(.ox-skeleton-card,#ox-crypto-tools-inline>.ox-tool-loading:not([hidden]))::after{background:linear-gradient(90deg,transparent,var(--ox-skel-shine),transparent)}
 :root.theme-midnight body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:has(.ox-tool-load-error){background:none}
+.theme-midnight .ox-news-skeleton{color:var(--ox-state-text,var(--muted))}
+.theme-midnight .ox-news-skeleton i{background:currentColor}
 
 /* ---- hand-tuned layer: wins over the generated clones ---- */
 :root.theme-midnight body.ox-terminal{background:var(--mi-bg)!important;color:var(--mi-ink)!important;--ox-focus-ring:var(--mi-accent)}

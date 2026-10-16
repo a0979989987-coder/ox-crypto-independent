@@ -79,10 +79,11 @@ const prepareModule = async (kind, path, signal) => {
   const module = await loadToolModule(new URL(path, import.meta.url).href, { current: () => !signal.aborted });
   modules.set(kind, module); return module;
 };
+// 資訊 is opened most often and is the smallest download, so it warms first.
 const warmJobs = [
+  { id:'news-assets', features:['news.calendar','news.feed'], run:signal => window.OXNews.preload({signal}) },
   { id:'bubbles-assets', features:['bubbles'], run:async signal => (await prepareModule('bubbles','../markets/crypto/bubbles/view.js',signal)).preloadBubblesStyles() },
   { id:'analytics-assets', features:['heatmap','rotation','flow'], run:async signal => (await prepareModule('analytics','../markets/crypto/analytics/flow-view.js',signal)).preloadAnalyticsStyles() },
-  { id:'news-assets', features:['news.calendar','news.feed'], run:signal => window.OXNews.preload({signal}) },
   { id:'patterns-assets', features:['patterns'], run:async signal => (await prepareModule('patterns','../markets/crypto/patterns/view.js',signal)).preloadPatternStyles() }
 ];
 const idleSchedule = (fn, ms) => {

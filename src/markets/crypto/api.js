@@ -105,9 +105,9 @@ async function fetchBitgetJSON(url, timeoutMs=30000,options={}) {
   return globalThis.OXPublicFeed.json(url,{timeoutMs,...options});
 }
 const BitgetAPI = {
-  peekCandles(symbol,frame,now=Date.now()) {
+  peekCandles(symbol,frame,now=Date.now(),maxAgeMs=300000) {
     const observation=cryptoCandleObservations.get(symbol+':'+frame);
-    return observation&&now-observation.serverTime<=300000?observation:null;
+    return observation&&now-observation.serverTime<=maxAgeMs?observation:null;
   },
   async fetchTickers() {
     const json = await fetchBitgetJSON(`${CONFIG.apiBase}/tickers?productType=${CONFIG.productType}`);

@@ -35,7 +35,8 @@ test('prepending history preserves the candles in view', async () => {
       return [{ time: 100 }, { time: 200 }];
     } },
     document: { getElementById: () => ({ classList: { add() {}, remove() {} } }) },
-    renderChartData: (data, fit, visible) => seen.push({ data, fit, visible })
+    renderChartData: (data, fit, visible) => seen.push({ data, fit, visible }),
+    setChartLoading() {}
   });
   await load();
   assert.equal(state.oldestCandleTime, 100);

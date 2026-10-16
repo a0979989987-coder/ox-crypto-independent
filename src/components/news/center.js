@@ -20,6 +20,7 @@
     if (!seconds) return '預定時間已到，待官方確認實際解鎖';
     return `倒數 ${Math.floor(seconds / 86400)} 天 ${String(Math.floor(seconds / 3600) % 24).padStart(2, '0')}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   }
+  const NEWS_SKELETON = '<div class="ox-news-skeleton" role="status" aria-label="資訊載入中"><i class="ox-news-skeleton-head"></i><i class="ox-news-skeleton-tabs"></i><i></i><i></i><i></i><i></i></div>';
   let workspaceModule=null, workspaceAttempt=0;
   function loadWorkspace() {
     if(state.workspaceError)return Promise.reject(state.workspaceError);
@@ -87,6 +88,9 @@
     const scope = document.body.dataset.newsMode === '1' ? 'all' : currentMarket();
     const host = document.querySelector(`[data-news-surface="${scope === 'all' ? 'all' : 'market'}"]`);
     if (!host) return;
+    // While the workspace code/CSS is still arriving, show its shape at once
+    // instead of an empty (black) page. Mounting replaces this placeholder.
+    if (state.workspace?.host !== host && !host.firstElementChild) host.innerHTML = NEWS_SKELETON;
     let mountNewsWorkspace;
     try { [{mountNewsWorkspace}]=await Promise.all([loadWorkspace(),loadNewsStyles()]); }
     catch(error) {
@@ -181,6 +185,12 @@
     await refresh(false,{priority:'low'});
   }
   window.OXNews = Object.freeze({ open, openMarket, close, refresh, render, unlockCountdown, preload });
+  // Touch-down on 資訊 starts its code, styles and data; the tap that follows
+  // opens a page that is already arriving. Delegated, so the entry itself keeps
+  // a single click action.
+  document.addEventListener('pointerdown', event => {
+    if (event.target?.closest?.('.app-dock [data-view-target="data"], .ox-desktop-nav [data-view-target="data"], [data-open-cross-news], #ox-open-news')) preload({ data: true }).catch(() => {});
+  }, { passive: true, capture: true });
   const restoreInitialRoute = () => setTimeout(() => {
     const [path, query = ''] = initialNewsHash.split('?'), market = path.split('/')[1];
     if (markets.includes(market)) openMarket({ historyEntry: false, market }); else open({ historyEntry: false, previous: history.state?.oxPrevious });

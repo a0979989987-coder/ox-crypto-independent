@@ -118,8 +118,8 @@
     {
       "path": "src/markets/crypto/api.js",
       "sourceSha256": "422644421259ef776f8da824dbfe90141e71f9bc44d1134d2d5e1d1552b72cd5",
-      "sha256": "5c752f39f21a0f1b9bd6259ca3f4d5d92b5be2ea6dd67995746a611ebbb4019e",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: Bitget 1D/1W/1M requests use UTC granularities (1Dutc/1Wutc/1Mutc)."
+      "sha256": "433c4d05e2d4b95b09f3091df8c48f52d63f682f789f7fe1a9721e08b0799ea9",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: Bitget 1D/1W/1M requests use UTC granularities (1Dutc/1Wutc/1Mutc). 2026-10-16 (load): peekCandles accepts a max age for chart reuse."
     },
     {
       "path": "src/markets/crypto/presentation.js",
@@ -160,8 +160,8 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "a39e5d286894cb2e14cbc38f9ad30c7758f85a5b433b9601012e503cd62ae51f",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. User-requested visible K-line load failure state with retry and stale-data marker (2026-10-15)."
+      "sha256": "3518b796f688413f3b69de7fc6c6cdd3b30b048b7439bab74c47471a01e13c29",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. User-requested visible K-line load failure state with retry and stale-data marker (2026-10-15). 2026-10-16 (load): charts already seen or fetched by the radar scan paint at once and refresh in place; one-tap timeframes prefetched quietly; press on a coin/timeframe starts its request; skeleton candles plus a 2px refresh bar replace the double spinner and 0/1 counter."
     },
     {
       "path": "src/components/chart/drawings.js",

@@ -1,7 +1,10 @@
-// Optional idle warm-up runs only on a known fast connection without Data
-// Saver. Browsers without navigator.connection (Safari) never warm up.
+// Optional idle warm-up of tool code/CSS (never tool data). It skips Data Saver
+// and known slow links (2G/3G).
 export function idleWarmAllowed(connection = globalThis.navigator?.connection) {
-  return !!connection && !connection.saveData && connection.effectiveType === '4g';
+  // Safari (iPhone) exposes no connection info: warm code/CSS there too; only a
+  // known slow link or Data Saver opts out. Tool data is never prewarmed.
+  if (!connection) return true;
+  return !connection.saveData && (connection.effectiveType === undefined || connection.effectiveType === '4g');
 }
 // One idle preparation job at a time. Transport, modules and CSS retain their
 // existing shared caches; this coordinator never mounts an offscreen tool.

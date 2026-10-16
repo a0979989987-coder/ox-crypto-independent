@@ -82,10 +82,22 @@
 .ox-state-retry{margin-top:10px;font:inherit;font-size:12px;color:var(--ink);background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 16px;min-height:36px;cursor:pointer}
 /* one retry pill everywhere */
 :root body.ox-terminal :is(.chart-load-error-retry,.ox-tool-load-error>button,.ox-style-loading button,#ox-runtime-recovery button){border-radius:999px!important;min-height:36px!important;padding:6px 16px!important;border:1px solid currentColor!important;background:transparent!important}
-/* loading overlays get the shared ring */
-:root body.ox-terminal #chart-loading.chart-loading-overlay{gap:8px;color:var(--ox-state-text)!important;font-size:12px!important}
-:root body.ox-terminal #chart-loading.chart-loading-overlay::before{content:"";width:16px;height:16px;flex:none;border:2px solid rgba(255,255,255,.14);border-top-color:var(--ink);border-radius:50%;animation:ox-loading-turn .85s linear infinite}
-:root body.ox-terminal.theme-light #chart-loading.chart-loading-overlay::before{border-color:rgba(0,0,0,.12);border-top-color:var(--ink)}
+/* Chart loading: faint skeleton candles when nothing is cached yet, and only a
+   2px running bar on the top edge while an already painted chart refreshes.
+   No spinner, no counter, no box over the chart. */
+:root body #chart-loading.chart-loading-overlay{inset:0;top:0;left:0;padding:0;margin:0;display:block!important;border:0!important;border-radius:0;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;color:var(--ox-state-text,var(--muted))!important;font-size:12px!important;pointer-events:none;overflow:hidden}
+:root body #chart-loading.chart-loading-overlay::before{content:none!important}
+:root body #chart-loading.chart-loading-overlay::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) no-repeat;background-size:38% 100%;opacity:.75;animation:ox-chart-bar 1.15s cubic-bezier(.45,0,.25,1) infinite}
+#chart-loading .chart-skeleton{position:absolute;left:3%;right:70px;top:16%;bottom:16%;animation:ox-chart-pulse 1.6s ease-in-out infinite}
+#chart-loading .chart-skeleton i{position:absolute;display:block;width:clamp(4px,1.9%,13px);border-radius:2px;background:currentColor;opacity:.12}
+/* the previous chart's price/countdown chip must not float over the skeleton */
+#chart:has(#chart-loading.show[data-mode=empty]) :is(#price-timer,.chart-current-price){visibility:hidden}
+#chart-loading .chart-skeleton i::before{content:"";position:absolute;left:50%;top:-14%;bottom:-14%;width:1px;background:currentColor;opacity:.7}
+#chart-loading .chart-loading-label{position:absolute;left:12px;top:12px;font-size:12px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+#chart-loading .sr-only{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+@keyframes ox-chart-bar{from{background-position:-45% 0}to{background-position:145% 0}}
+@keyframes ox-chart-pulse{0%,100%{opacity:.65}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#chart-loading .chart-skeleton,:root body #chart-loading.chart-loading-overlay::after{animation:none}}
 
 /* ---- Skeletons: radar list before the first scan and tool pages while the
    tool module loads. Quiet shimmer, none with reduced motion. ---- */
@@ -130,3 +142,10 @@
   :root body.ox-terminal :is(.media-page,#view-strength .strength-page){padding-bottom:0!important}
   :root body.ox-terminal #ox-crypto-tools-inline{margin-bottom:0!important}
 }
+
+/* 資訊 page placeholder while its workspace code/CSS arrives (replaced on mount). */
+.ox-news-skeleton{display:grid;gap:10px;padding:14px 12px;color:var(--ox-state-text,var(--muted));animation:ox-chart-pulse 1.6s ease-in-out infinite}
+.ox-news-skeleton i{display:block;height:64px;border-radius:12px;background:currentColor;opacity:.08}
+.ox-news-skeleton .ox-news-skeleton-head{height:30px;width:46%;border-radius:8px}
+.ox-news-skeleton .ox-news-skeleton-tabs{height:34px;border-radius:999px}
+@media(prefers-reduced-motion:reduce){.ox-news-skeleton{animation:none}}

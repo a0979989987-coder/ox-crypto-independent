@@ -25,7 +25,10 @@ async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,li
 }
 const tool=(p,id)=>p.locator('#ox-crypto-tools-nav [data-crypto-tool="'+id+'"]').click();
 // Tool data is never fetched by the idle radar: snapshots, news, the 15m sector pool or flow candles.
-const toolData=u=>/crypto-tools-snapshot\.json|crypto-flow-snapshot\.json|\/data\/news\.json|granularity=15m|taker-buy-sell/.test(u);
+// Tool data: snapshots, news, the heatmap's 15m pool (limit=200) and taker flow.
+// A chart's own one-tap timeframes (the selected coin only) are not tool data.
+const toolData=u=>/crypto-tools-snapshot\.json|crypto-flow-snapshot\.json|\/data\/news\.json|granularity=15m&limit=200|taker-buy-sell/.test(u);
+const chartPrefetch=u=>/\/candles\?symbol=[A-Z0-9]+&productType=USDT-FUTURES&granularity=(?:15m|1H|4H|1Dutc)&limit=(?:100|160)$/.test(u);
 const poolRequests=list=>list.filter(u=>u.includes('granularity=15m')&&u.includes('limit=200'));
 async function settledPool(page,requests,from){
  let last=-1,stableSince=Date.now();const deadline=Date.now()+30000;
@@ -47,6 +50,9 @@ try{
   assert.ok((await page.evaluate(()=>OXToolWarmup.stats().map(j=>j.id))).every(id=>id.endsWith('-assets')),'warm-up has no data jobs');
   await page.waitForTimeout(2000);
   assert.deepEqual(requests.filter(toolData),[],'the idle radar never downloads tool data');
+  // The visible chart may prefetch its one-tap timeframes, for the selected coin only.
+  const prefetched=requests.filter(chartPrefetch).map(u=>new URL(u).searchParams.get('symbol'));
+  assert.ok(prefetched.every(symbol=>symbol===prefetched[0])&&prefetched.length<=8,'chart prefetch stays on the selected coin');
   // Tool data loads when a tool opens. Heatmap refreshes the stale recorded pool once; rotation reuses that fresh complete pool.
   const before=requests.length;await page.evaluate(()=>switchAppView('strength'));
   await tool(page,'heatmap');await active(page,'.cfx[data-scan-state="complete"]').waitFor();
