@@ -52,6 +52,7 @@ function setChartFocus(enabled) {
   if (enabled) {
     state.candleSeries?.setMarkers([]);
     clearKeyLevelPriceLines();
+    globalThis.OXStructureLayer?.repaint();
   } else {
     renderKeyLevelPriceLinesFromState();
     if (state.candleData?.length) renderChartData(state.candleData, false, range);

@@ -141,10 +141,17 @@ function markDataGap(signal,reason){
 // kept until the next weekly open, because closed weekly bars cannot change.
 const WEEK_SECONDS=604800,WEEK_ANCHOR=345600,weeklyContext=new Map();
 const nextUtcWeek=(nowMs=Date.now())=>(Math.floor((nowMs/1000-WEEK_ANCHOR)/WEEK_SECONDS)+1)*WEEK_SECONDS+WEEK_ANCHOR;
-function fetchWeeklyContext(symbol,now=Date.now()){
+// Weekly bars already in memory for this week (any coin, any pass). Coins that
+// are not candidates get theirs fetched quietly in the background, so from the
+// next pass every coin has weekly structure and the 1W setup can be checked.
+function weeklyReady(symbol,now=Date.now()){
+ const cached=weeklyContext.get(symbol);
+ return cached&&now/1000<cached.until&&cached.value?cached.value:null;
+}
+function fetchWeeklyContext(symbol,now=Date.now(),priority=0){
  const cached=weeklyContext.get(symbol);
  if(cached&&now/1000<cached.until)return cached.promise;
- const options={owner:'radar-scan',priority:0},needed=OXClassic.CLASSIC_RULES.minimumBars+5;
+ const options={owner:'radar-scan',priority},needed=OXClassic.CLASSIC_RULES.minimumBars+5;
  const promise=(async()=>{
   let rows=await BitgetAPI.fetchCandles(symbol,'1W',200,null,options);
   // The recent endpoint returns only a few months of weekly bars; page the
@@ -156,11 +163,29 @@ function fetchWeeklyContext(symbol,now=Date.now()){
   return cryptoClassicBars(rows,'1W',now);
  })();
  const entry={until:nextUtcWeek(now),promise};weeklyContext.set(symbol,entry);
+ promise.then(value=>{entry.value=value;},()=>{});
  // A cancelled request (leaving the radar, background tab) is not a data gap:
  // drop it so the next scan fetches again. Real failures retry after 5 minutes.
  promise.catch(error=>{if(weeklyContext.get(symbol)!==entry)return;if(error?.name==='AbortError')weeklyContext.delete(symbol);else entry.until=now/1000+300;});
  if(weeklyContext.size>600)weeklyContext.delete(weeklyContext.keys().next().value);
  return promise;
+}
+// Daily bars: Bitget's recent endpoint returns about 90 days. The page before
+// the earliest of those never changes, so it is fetched once per coin in the
+// background (lowest priority) and kept for the session; from the next pass the
+// daily setups, daily structure and overhead walls see about 180 days.
+const dailyHistory=new Map();
+function dailyHistoryFor(symbol,earliest){
+ const cached=dailyHistory.get(symbol);
+ if(cached?.value)return cached.value.filter(c=>c.time<earliest);
+ if(cached||!earliest)return null;
+ const entry={};
+ entry.promise=BitgetAPI.fetchCandles(symbol,'1D',200,earliest*1000,{owner:'radar-scan',priority:-1})
+  .then(rows=>{entry.value=rows.filter(c=>c.time<earliest);return entry.value;});
+ entry.promise.catch(()=>{if(dailyHistory.get(symbol)===entry)dailyHistory.delete(symbol);});
+ dailyHistory.set(symbol,entry);
+ if(dailyHistory.size>800)dailyHistory.delete(dailyHistory.keys().next().value);
+ return null;
 }
 let refreshingMarketTickers=false;
 async function refreshMarketTickers() {
@@ -324,7 +349,10 @@ async function runScanQueueLoop() {
         // A failed daily request is a data gap, not an empty market: the row is
         // marked and none of its setups (all use daily context) can be T1.
         const dailyGap=!!dailyResult.error;
-        const frames={'1H':cryptoClassicBars(candles,'1H'),'4H':cryptoClassicBars(contextBars,'4H'),'1D':cryptoClassicBars(dailyGap?[]:dailyResult.bars,'1D')};
+        const recentDaily=dailyGap?[]:dailyResult.bars,olderDaily=recentDaily.length?dailyHistoryFor(symbol,recentDaily[0].time):null;
+        const frames={'1H':cryptoClassicBars(candles,'1H'),'4H':cryptoClassicBars(contextBars,'4H'),'1D':cryptoClassicBars(olderDaily?.length?[...olderDaily,...recentDaily]:recentDaily,'1D')};
+        const cachedWeekly=weeklyReady(symbol);
+        if(cachedWeekly)frames['1W']=cachedWeekly;
         // A rate-limit or malformed candle response must not replace a valid
         // prior scan with a neutral row and make the symbol disappear.
         if(frames['1H'].length<OXClassic.CLASSIC_RULES.minimumBars||
@@ -337,20 +365,25 @@ async function runScanQueueLoop() {
         const fourHourLong=fourHour('long');
         // Each setup frame on its own (with its larger context): a qualifying
         // setup stays visible as "smaller frame pending" in the strategy layer.
+        // 1W setups (weekly pressure / pattern / reversal) confirmed on 1D, once weekly bars are in memory.
+        const weeklyEnough=()=>(frames['1W']?.length||0)>=OXClassic.CLASSIC_RULES.minimumBars;
         const standalone=side=>[OXClassic.evaluateClassic(frames['4H'],{side,frame:'4H',contextFrame:'1D',contextBars:frames['1D']}),
-          ...(frames['1D'].length?[OXClassic.evaluateClassic(frames['1D'],{side,frame:'1D',contextFrame:'1W',contextBars:frames['1W']})]:[])];
+          ...(frames['1D'].length?[OXClassic.evaluateClassic(frames['1D'],{side,frame:'1D',contextFrame:'1W',contextBars:frames['1W']})]:[]),
+          ...(side==='long'&&weeklyEnough()?[OXClassic.evaluateClassic(frames['1W'],{side,frame:'1W'})]:[])];
         const qualifies=s=>s.eligible||s.observationEligible;
-        if(!dailyGap&&(Object.values(daily).some(qualifies)||qualifies(fourHourLong)||standalone('long').some(qualifies))){
+        if(!frames['1W']&&!dailyGap&&(Object.values(daily).some(qualifies)||qualifies(fourHourLong)||standalone('long').some(qualifies))){
           try {frames['1W']=await fetchWeeklyContext(symbol);}
           catch (error) {if(error?.name==='AbortError')throw error;weeklyGap=true;}
           // The weekly request can outlive the view or the pass that started it.
           if(!current())return;
           if(frames['1W'])daily={long:dailySetup('long'),short:dailySetup('short')};
-        }
+        } else if(!frames['1W'])fetchWeeklyContext(symbol,Date.now(),-1).catch(()=>{});
+        const weeklySetup=!dailyGap&&weeklyEnough()?OXClassic.evaluateFrames(frames,{side:'long',setupFrame:'1W',triggerFrame:'1D',confirmationFrame:'4H'}):null;
         const dataGaps=[...(dailyGap?['1D']:[]),...(weeklyGap?['1W']:[])];
         const sideSignals=Object.fromEntries(['long','short'].map(side=>{
           const signals=[side==='long'?fourHourLong:fourHour('short'),
-            weeklyGap?markDataGap(daily[side],'週線 K 線暫缺，未確認週線上方空間'):daily[side]];
+            weeklyGap?markDataGap(daily[side],'週線 K 線暫缺，未確認週線上方空間'):daily[side],
+            ...(side==='long'&&weeklySetup?[weeklySetup]:[])];
           const fast=intradayClassicObservation(frames,side);
           if(fast)signals.push(fast);
           return [side,signals];
@@ -510,6 +543,8 @@ function rebuildTierLists() {
   if(useStrategy){
     // 雷達策略：多單依入選途徑與四要素排名，空單改用頂部確認，各自獨立成榜。
     state.tierMapBySide={long:strategyTierSet('long'),short:strategyTierSet('short')};
+    // 雷達成績單：進榜的幣自動記下（只記這台裝置看到的、30 分鐘內的分析）。
+    try{globalThis.OXRadarReport?.record(state.tierMapBySide,{priceOf:symbol=>num(tickers.get(symbol)?.lastPr)||null});}catch{}
   } else {
     // 雷達則使用獨立六榜：LONG T1/T2/T3 與 SHORT T1/T2/T3，各自從全市場符合方向者重新排名。
     state.tierMapBySide = {

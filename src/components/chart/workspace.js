@@ -685,6 +685,8 @@ function renderChartData(candles, fitContent = false, preservedLogicalRange = nu
   } else {
     state.candleSeries.setMarkers([]);
   }
+  // 雙極結構指標：同一批 K 線，切換商品／級別或補入更早 K 線時立即重算。
+  try { globalThis.OXStructureLayer?.refresh(candles); } catch {}
 
   if (fitContent) {
     refreshChartPriceViewport();

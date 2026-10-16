@@ -25,7 +25,7 @@ function rank(rows) {
   return state;
 }
 const radarRow = (symbol, long, short = { listed: false, rejections: ['4H 近期沒有急漲段'] }) =>
-  ({ symbol, radar: { version: 1, product: 'crypto', long, short } });
+  ({ symbol, radar: { version: 2, product: 'crypto', long, short } });
 
 test('radar lists come from the strategy layer: T1 only for T1-qualified rows', () => {
   const state = rank([

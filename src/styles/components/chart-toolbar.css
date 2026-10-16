@@ -115,3 +115,20 @@ body.theme-light .chart-load-error-box{background:#fffffff2;color:#111827;border
 body.theme-light .chart-load-error-detail{color:#4b5563}
 body.theme-light .chart-load-error[data-mode="stale"] .chart-load-error-box{border-color:#c4892a99}
 body.theme-light .chart-load-error[data-mode="stale"] .chart-load-error-title{color:#9a5b00}
+/* 雙極結構指標：開關＋顯示項目 */
+body.ox-terminal .chart-structure-section {margin-top:10px}
+body.ox-terminal .chart-structure-toggle {flex-direction:column;gap:3px;width:100%;min-height:50px}
+body.ox-terminal .chart-structure-toggle small {color:var(--muted);font-size:9.5px;font-weight:400;letter-spacing:.02em}
+body.ox-terminal .chart-structure-layers {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:8px}
+body.ox-terminal .chart-structure-layers[hidden] {display:none!important}
+body.ox-terminal .chart-structure-layers label {position:relative;display:flex;align-items:center;justify-content:center;min-height:34px;padding:6px;border:1px solid #ffffff22;border-radius:9px;font-size:10.5px;cursor:pointer;transition:border-color .3s ease,background .3s ease}
+body.ox-terminal .chart-structure-layers input {position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+body.ox-terminal .chart-structure-layers label:has(input:checked) {border-color:#ffffff9c;background:linear-gradient(145deg,#ffffff24,#ffffff08)}
+body.ox-terminal .chart-structure-layers label:has(input:focus-visible) {outline:2px solid #fff;outline-offset:2px}
+body.ox-terminal.theme-light .chart-structure-layers label {border-color:rgba(156,169,185,.45)}
+body.ox-terminal.theme-light .chart-structure-layers label:has(input:checked) {color:#1f2937;border-color:rgba(100,116,139,.7);background:linear-gradient(145deg,rgba(148,163,184,.12),rgba(148,163,184,.03))}
+body.ox-terminal.theme-light .chart-structure-layers label:has(input:focus-visible) {outline-color:#334155}
+body.ox-terminal .chart-structure-layers label span {display:inline-flex;align-items:center;gap:6px;opacity:.62;transition:opacity .25s ease}
+body.ox-terminal .chart-structure-layers label span::before {content:'';width:7px;height:7px;border:1px solid currentColor;border-radius:50%;flex:none}
+body.ox-terminal .chart-structure-layers label:has(input:checked) span {opacity:1}
+body.ox-terminal .chart-structure-layers label:has(input:checked) span::before {background:currentColor;box-shadow:0 0 6px currentColor}

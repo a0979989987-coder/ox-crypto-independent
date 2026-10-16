@@ -2,6 +2,9 @@
   "functions": {
     "api/v1/account/*.js": {
       "maxDuration": 60
+    },
+    "api/v1/news/*.js": {
+      "maxDuration": 25
     }
   },
   "buildCommand": "npm run build:tools && npm run check",

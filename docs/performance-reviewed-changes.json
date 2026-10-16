@@ -130,8 +130,8 @@
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "297ef4db911a244851fb1385b13b9fd3f0d97a93573a9715cb1a75a0e9c54898",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: throttled keyed radar renders, rest between rounds, hidden-tab pause, <300k USDT turnover excluded, weekly upside room, change-only tie-breaker, UTC frames. 2026-10-15: radar card symbols, side, setup, status and reasons plus detail reasons escaped with shared escapeHtml; missing turnover shows only \"—\" (fmtCryptoVolumeUSDT). 2026-10-15: raw reference prices in displayed signal reasons use fmtPrice precision (fmtSignalReason); engine values unchanged. UI polish (2026-10-15): radar list loading shows skeleton cards with an in-place progress note; failed/empty states use the shared ox-state classes. Scan logic unchanged. 2026-10-15: refresh/reconnect clear the between-pass rest and wake the scan loop; a wholly failed pass shows the error at once and retries after 10 s. 2026-10-15: a cancelled weekly request is dropped from the cache instead of a 5-minute data gap; weekly results are only applied while the radar and the same pass are current. 2026-10-16: radar ranks through the OXRadarStrategy layer (entry pathways, money, deductions, four elements, top-confirmation shorts); stablecoins/gold tokens excluded; snapshot v9; per side T1 ≤10 (never padded), T2/T3 filled to 15 each: selections scoring 35+ first, then lower selections and labelled fill candidates (補位) by score, one direction per coin (a fill never sits opposite a selection; a coin selected on both sides stays on the higher-scoring side); fill rows carry a 補位 badge and mobile mark."
+      "sha256": "9fcb6a1a4d003493d951d67ebdf6398b537d3db50dc43667e256d5969c767ea6",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: throttled keyed radar renders, rest between rounds, hidden-tab pause, <300k USDT turnover excluded, weekly upside room, change-only tie-breaker, UTC frames. 2026-10-15: radar card symbols, side, setup, status and reasons plus detail reasons escaped with shared escapeHtml; missing turnover shows only \"—\" (fmtCryptoVolumeUSDT). 2026-10-15: raw reference prices in displayed signal reasons use fmtPrice precision (fmtSignalReason); engine values unchanged. UI polish (2026-10-15): radar list loading shows skeleton cards with an in-place progress note; failed/empty states use the shared ox-state classes. Scan logic unchanged. 2026-10-15: refresh/reconnect clear the between-pass rest and wake the scan loop; a wholly failed pass shows the error at once and retries after 10 s. 2026-10-15: a cancelled weekly request is dropped from the cache instead of a 5-minute data gap; weekly results are only applied while the radar and the same pass are current. 2026-10-16: radar ranks through the OXRadarStrategy layer (entry pathways, money, deductions, four elements, top-confirmation shorts); stablecoins/gold tokens excluded; snapshot v9; per side T1 ≤10 (never padded), T2/T3 filled to 15 each: selections scoring 35+ first, then lower selections and labelled fill candidates (補位) by score, one direction per coin (a fill never sits opposite a selection; a coin selected on both sides stays on the higher-scoring side); fill rows carry a 補位 badge and mobile mark. 2026-10-16 (structure): daily history paged to ~180 bars and weekly bars kept for every coin (background, lowest priority, cached); 1W setups confirmed on 1D; radar report records listed coins."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
@@ -160,8 +160,8 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "3518b796f688413f3b69de7fc6c6cdd3b30b048b7439bab74c47471a01e13c29",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. User-requested visible K-line load failure state with retry and stale-data marker (2026-10-15). 2026-10-16 (load): charts already seen or fetched by the radar scan paint at once and refresh in place; one-tap timeframes prefetched quietly; press on a coin/timeframe starts its request; skeleton candles plus a 2px refresh bar replace the double spinner and 0/1 counter."
+      "sha256": "f5d27228c1701d6721ef37cd7566c5a2436f14bba316b786dd0b8cb92c8699b2",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. User-requested visible K-line load failure state with retry and stale-data marker (2026-10-15). 2026-10-16 (load): charts already seen or fetched by the radar scan paint at once and refresh in place; one-tap timeframes prefetched quietly; press on a coin/timeframe starts its request; skeleton candles plus a 2px refresh bar replace the double spinner and 0/1 counter. 2026-10-16 (structure): renderChartData refreshes the 雙極結構 indicator layer with the same candles."
     },
     {
       "path": "src/components/chart/drawings.js",
@@ -210,6 +210,12 @@
       "sourceSha256": "8112393e3565ebbda9dcf47d0b0832f13902c739507b011f8dd07232a9b9094d",
       "sha256": "fe97d2fe17aa2bb4f528146024e6cc8cac31e8cbbe6b0afb93e7d8bcbe035847",
       "reason": "User-requested Midnight Ink theme: the home preview chart reads the shared Midnight palette (2026-10-15)."
+    },
+    {
+      "path": "src/components/chart/toolbar.js",
+      "sourceSha256": "95fd921df956d16f442bb9472609c961b0be54a03f0e60c85794417cafc08a88",
+      "sha256": "831801f90e1843b5228459ba0928d268e508f6699c461c3150324351ea367926",
+      "reason": "2026-10-16 (structure): the 雙極結構 toggle is remembered with the other chart indicators."
     }
   ]
 }

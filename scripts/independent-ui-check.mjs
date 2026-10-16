@@ -22,6 +22,16 @@ try{
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');
     assert.deepEqual(await page.evaluate(()=>OXModules.router.list().map(m=>m.id)),['crypto']);
     assert.equal(await page.locator('[data-market-choice="tw"],[data-tw-tool]').count(),0);
+    // 雙極結構指標：從指標設定打開後，圖表左上角顯示目前狀態，K 線圖照常可用。
+    await page.evaluate(()=>{const box=document.getElementById('chk-structure');box.checked=true;box.dispatchEvent(new Event('change',{bubbles:true}));});
+    await page.waitForFunction(()=>OXStructureLayer.current()&&!document.getElementById('chart-structure-layers').hidden);
+    // 多級別狀態：1H／4H／1D／1W 四個級別都讀到結構狀態。
+    await page.waitForFunction(()=>Object.values(OXStructureLayer.frames()).every(Boolean)&&document.querySelectorAll('#chart-structure-legend .sl-frame').length===4,null,{timeout:15000});
+    const structure=await page.evaluate(()=>({label:OXStructureLayer.current().label,legend:document.getElementById('chart-structure-legend')?.textContent||'',saved:JSON.parse(localStorage.getItem('ox-chart-indicators')||'{}')['chk-structure']}));
+    assert.match(structure.label,/^(極陽|平衡|極陰|結構未成形)$/);
+    assert.equal(structure.saved,true,'the structure toggle is remembered with the other indicators');
+    await page.evaluate(()=>{const box=document.getElementById('chk-structure');box.checked=false;box.dispatchEvent(new Event('change',{bubbles:true}));});
+    assert.equal(await page.locator('#chart-structure-legend').isHidden(),true);
     await page.evaluate(()=>OXMarketController.setMarket('tw'));
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');
     await page.evaluate(()=>switchAppView('strength'));
@@ -41,6 +51,15 @@ try{
     assert.equal(await page.locator('.oxn-day').count()>27,true);
     await page.locator('[data-news-tab="key"]').click();
     await page.locator('.oxn-root').waitFor();
+    // Live headline merged into the snapshot, its summary and a direct link to the original.
+    const liveRow=page.locator('.oxn-news-row',{hasText:'端對端即時新聞'});
+    await liveRow.waitFor();
+    assert.equal(await liveRow.locator('.oxn-news-gist').innerText(),'來源提供的一段短摘要。');
+    assert.equal(await liveRow.locator('a.oxn-news-open').getAttribute('href'),'https://www.coindesk.com/e2e-live');
+    assert.equal(await liveRow.locator('a.oxn-news-open').getAttribute('target'),'_blank');
+    // An untranslated headline is shown as itself (never a placeholder) and translated in the background.
+    await page.locator('.oxn-news-row h3',{hasText:'（譯）E2E untranslated headline'}).waitFor();
+    assert.equal(await page.locator('.oxn-news-row h3',{hasText:'中文翻譯準備中'}).count(),0);
     await page.evaluate(()=>switchAppView('media'));
     await page.locator('#view-media.active').waitFor();
     const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();
@@ -66,7 +85,7 @@ try{
       assert.deepEqual(midnightCss,[],'other themes never download Midnight Ink');
     }
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow');
-    console.log(JSON.stringify({theme,width,cryptoTools:6,radar:true,calendar:true,news:true,media:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
+    console.log(JSON.stringify({theme,width,structure:structure.label,cryptoTools:6,radar:true,calendar:true,news:true,media:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
     await context.close();
   }
   // Switching: the four-way control loads Midnight Ink on demand and returns cleanly.

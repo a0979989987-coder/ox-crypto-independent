@@ -153,6 +153,14 @@ async function preparePage(context, viewport, { holdCandle } = {}) {
     status: 200, contentType: "application/json",
     body: JSON.stringify({ configured: false, providerConnectionVerified: false, databaseConnected: false })
   }));
+  // The live news endpoint (a Vercel function in production) and the public
+  // hosts the news page reads directly: deterministic fixtures, no real network.
+  await page.route("**/api/v1/news/latest", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(latestNewsFixture()) }));
+  await page.route(/^https:\/\/(?:translate\.googleapis\.com|clients5\.google\.com)\/translate_a\/t/, route => {
+    const q = new URL(route.request().url()).searchParams.getAll("q");
+    return route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(q.map(text => `（譯）${text}`)) });
+  });
+  await page.route("https://api.foresightnews.pro/**", route => route.fulfill({ status: 200, contentType: "text/calendar", body: foresightFixture() }));
   await page.route("https://api.bitget.com/**", async route => {
     const url=new URL(route.request().url());
     if(url.pathname.endsWith('/candles')&&holdCandle)await holdCandle(url);
@@ -162,6 +170,20 @@ async function preparePage(context, viewport, { holdCandle } = {}) {
   await page.route("https://api.bybit.com/**", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ retCode: 0, result: { list: [{ lastPrice: "63250", price24hPcnt: ".012", turnover24h: "900000000", volume24h: "12000" }] } }) }));
   await page.route("https://www.tradingview-widget.com/**", route => route.fulfill({contentType:"text/html",body:"<p>Isolated widget fixture, no prices</p>"}));
   return { page, audit };
+}
+
+function latestNewsFixture(now = Date.now()) {
+  const at = minutes => new Date(now - minutes * 60000).toISOString();
+  return { schemaVersion: 1, kind: "news-latest", generatedAt: at(0), windowHours: 36, sources: [{ id: "coindesk", status: "ready", count: 2, lastSuccessAt: at(0) }],
+    news: [
+      { id: "e2e-live-1", title: "E2E live headline", titleZh: "端對端即時新聞", translationStatus: "translated", translationMethod: "machine-title-only", summary: "A short publisher summary.", summaryZh: "來源提供的一段短摘要。", summaryType: "source", summaryMethod: "machine",
+        link: "https://www.coindesk.com/e2e-live", publishedAt: at(5), source: "CoinDesk", sourceId: "coindesk", markets: ["crypto"], kind: "news", contentType: "news", assets: [], live: true },
+      { id: "e2e-live-2", title: "E2E untranslated headline", titleZh: null, translationStatus: "pending", link: "https://www.coindesk.com/e2e-pending", publishedAt: at(8), source: "CoinDesk", sourceId: "coindesk", markets: ["crypto"], kind: "news", contentType: "news", assets: [], live: true }
+    ], translation: { attempted: 0, translated: 0, failed: 0, deferred: 0, requests: 0 } };
+}
+function foresightFixture(now = new Date()) {
+  const day = now.toISOString().slice(0, 10).replaceAll("-", "");
+  return ["BEGIN:VCALENDAR", "PRODID:foresightnews.pro", "BEGIN:VEVENT", "UID:e2e-1", `DTSTART:${day}`, "SUMMARY:E2E 代币解锁", "URL:https://foresightnews.pro/e2e", "END:VEVENT", "END:VCALENDAR"].join("\r\n");
 }
 
 // Compatibility helpers used by dedicated Crypto UI checks.

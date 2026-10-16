@@ -3,7 +3,7 @@
   const SAVED_KEY = 'ox-news-preferences-v1';
   const initialNewsHash = /^#news(?:\/[^?]*)?(?:\?|$)/.test(location.hash || '') ? location.hash : '';
   let restoringInitialRoute = Boolean(initialNewsHash);
-  const state = { snapshot: null, candidate: null, pending: null, lastError: null, request: 0, previous: null, route: {}, navigating: false, workspace: null, scope: null, loadedAt:0, workspaceError:null };
+  const state = { snapshot: null, candidate: null, candidateNew: 0, base: null, live: null, liveAt: 0, foresight: null, foresightAt: 0, macro: null, ticks: 0, timer: null, pending: null, lastError: null, request: 0, previous: null, route: {}, navigating: false, workspace: null, scope: null, loadedAt:0, workspaceError:null };
   const markets = ['crypto'];
   const currentMarket = () => markets.includes(document.body.dataset.market) ? document.body.dataset.market : 'crypto';
   const preferences = () => { try { return JSON.parse(localStorage.getItem(SAVED_KEY) || '{}'); } catch { return {}; } };
@@ -21,10 +21,10 @@
     return `倒數 ${Math.floor(seconds / 86400)} 天 ${String(Math.floor(seconds / 3600) % 24).padStart(2, '0')}:${String(Math.floor(seconds / 60) % 60).padStart(2, '0')}:${String(seconds % 60).padStart(2, '0')}`;
   }
   const NEWS_SKELETON = '<div class="ox-news-skeleton" role="status" aria-label="資訊載入中"><i class="ox-news-skeleton-head"></i><i class="ox-news-skeleton-tabs"></i><i></i><i></i><i></i><i></i></div>';
-  let workspaceModule=null, workspaceAttempt=0;
+  let workspaceModule=null, workspaceAttempt=0, liveModule=null;
   function loadWorkspace() {
     if(state.workspaceError)return Promise.reject(state.workspaceError);
-    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261015-midnight1&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
+    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261016-news1&attempt=${workspaceAttempt}`).then(module=>(liveModule=module,module)),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
     return workspaceModule;
   }
   // News page CSS is not render-blocking for the rest of the app. Its link
@@ -51,7 +51,58 @@
     });
     return newsStyles;
   }
+  // The displayed snapshot = the static base + newer live headlines + the
+  // browser-read Foresight calendar + official macro results.
+  function compose(base) {
+    let next = liveModule?.composeSnapshot && (state.live || state.foresight) ? liveModule.composeSnapshot(base, { latest: state.live, foresight: state.foresight, foresightAt: state.foresightAt ? new Date(state.foresightAt).toISOString() : null }) : base;
+    if (next && state.macro) next = state.macro.merge(next, state.macro.supplement);
+    return next;
+  }
+  const allIds = snapshot => new Set([...(snapshot?.news || []), ...(snapshot?.pendingNews || [])].map(item => item.id));
+  // Updates land at once unless the reader is in the middle of something
+  // (an open article or event, a menu, scrolled down); then they wait behind
+  // the "有 N 則新消息" button instead of moving the page under them.
+  function quiet() {
+    if (!['news', 'data'].includes(currentView())) return true;
+    return !document.querySelector('.oxn-news-row[open], .oxn-modal, .oxn-popover.is-open') && !state.route.day && !state.route.event && (window.scrollY || 0) < 160;
+  }
+  function offer(next) {
+    if (!next) return;
+    if (!state.snapshot) { state.snapshot = next; state.candidate = null; state.candidateNew = 0; return; }
+    const current = state.candidate || state.snapshot;
+    if ((next.signature ?? null) === (current.signature ?? null) && next.generatedAt === current.generatedAt) return;
+    const known = allIds(state.snapshot), added = [...allIds(next)].filter(id => !known.has(id)).length;
+    if (quiet()) { state.snapshot = next; state.candidate = null; state.candidateNew = 0; }
+    else { state.candidate = next; state.candidateNew = added; }
+  }
+  let liveRun = null;
+  function syncLive({ force = false } = {}) {
+    if (liveRun) return liveRun;
+    if (!force && (!['news', 'data'].includes(currentView()) || Date.now() - state.liveAt < 60000)) return Promise.resolve();
+    liveRun = loadWorkspace().then(async module => {
+      if (!module.fetchLatest) return;
+      const wantForesight = Date.now() - state.foresightAt > module.FORESIGHT_INTERVAL_MS;
+      const [latest, foresight] = await Promise.allSettled([module.fetchLatest(), wantForesight ? module.fetchForesight() : Promise.resolve(null)]);
+      state.liveAt = Date.now();
+      if (latest.status === 'fulfilled') state.live = latest.value;
+      if (wantForesight) { state.foresightAt = Date.now(); if (foresight.status === 'fulfilled' && foresight.value?.length) state.foresight = foresight.value; }
+      if (state.base && (latest.status === 'fulfilled' || foresight.value?.length)) { offer(compose(state.base)); render(); }
+    }).catch(() => {}).finally(() => { liveRun = null; });
+    return liveRun;
+  }
+  // While the news page is open and visible: newest headlines every 3 minutes,
+  // the snapshot (calendar, history, official sources) every 15 minutes.
+  function startTicker() {
+    if (state.timer || typeof setInterval !== 'function') return;
+    state.timer = setInterval(() => {
+      if (document.hidden || !['news', 'data'].includes(currentView())) return;
+      state.ticks++; syncLive();
+      if (state.ticks % 5 === 0) refresh(true, { priority: 'low' });
+    }, 180000);
+    document.addEventListener('visibilitychange', () => { if (!document.hidden && ['news', 'data'].includes(currentView()) && Date.now() - state.liveAt > 180000) syncLive(); });
+  }
   function refresh(force = false, {priority='high'}={}) {
+    void syncLive(); startTicker();
     if (state.pending) return state.pending;
     if (state.snapshot && !force && Date.now()-state.loadedAt<300000) return Promise.resolve(state.snapshot);
     const request = ++state.request, controller = new AbortController();
@@ -59,8 +110,7 @@
     state.pending = fetch(`data/news.json${force ? `?t=${Date.now()}` : ''}`, { signal: controller.signal, cache: force ? 'reload' : 'default', priority })
       .then(async response => { if (!response.ok) throw Error(`HTTP ${response.status}`); const data = await response.json(); if (data.schemaVersion !== 1 || !Array.isArray(data.news) || !Array.isArray(data.events)) throw Error('新聞資料格式不正確'); return data; })
       .then(data => { if (request !== state.request) return state.snapshot; state.lastError = null; state.loadedAt=Date.now();
-        if (state.snapshot && data.generatedAt !== state.snapshot.generatedAt) state.candidate = data;
-        else if (!state.snapshot) state.snapshot = data;
+        state.base = data; offer(compose(data));
         render(); refreshMacro(force,priority); return state.snapshot;
       }).catch(error => { if (request === state.request) { state.lastError = error; render(); } return state.snapshot; })
       .finally(() => { clearTimeout(timeout); state.pending = null; render(); });
@@ -73,6 +123,7 @@
       const [response, { mergeMacroResults }] = await Promise.all([fetch(`data/macro-results.json${force ? `?t=${Date.now()}` : ''}`, { cache: force ? 'reload' : 'default', signal: AbortSignal.timeout(8000), priority }), import('./macro.js?v=20261005-weeklist4')]);
       if (!response.ok) return;
       const supplement = await response.json();
+      state.macro = { merge: mergeMacroResults, supplement };
       if (state.snapshot) state.snapshot = mergeMacroResults(state.snapshot, supplement);
       if (state.candidate) state.candidate = mergeMacroResults(state.candidate, supplement);
       render();
@@ -102,9 +153,9 @@
     if (token !== generation || !host.isConnected) return;
     if (state.scope !== scope || state.workspace?.host !== host) {
       state.workspace?.destroy(); state.scope = scope;
-      state.workspace = mountNewsWorkspace(host, { scope, preferences, save, navigate, back: detailBack, exit: scope === 'all' ? () => close({ useHistory: true }) : exitMarket, refresh: () => refresh(true), applyUpdate() { state.snapshot = state.candidate; state.candidate = null; render(); }, unlockCountdown });
+      state.workspace = mountNewsWorkspace(host, { scope, preferences, save, navigate, back: detailBack, exit: scope === 'all' ? () => close({ useHistory: true }) : exitMarket, refresh: () => refresh(true), applyUpdate() { if (state.candidate) state.snapshot = state.candidate; state.candidate = null; state.candidateNew = 0; render(); }, unlockCountdown });
     }
-    state.workspace.update({ snapshot: state.snapshot, error: state.lastError, pending: Boolean(state.pending), candidate: Boolean(state.candidate), route: state.route });
+    state.workspace.update({ snapshot: state.snapshot, error: state.lastError, pending: Boolean(state.pending), candidate: state.candidate ? (state.candidateNew || true) : false, route: state.route });
   }
   function currentView() { return document.querySelector('.app-view.active')?.dataset.appView || 'radar'; }
   const baseURL = () => (location.pathname || '/') + (location.search || '');

@@ -304,3 +304,97 @@ test('T2 and T3 put selections scoring 35+ first, then low selections and fill c
   assert.equal(few.t2.length, 8);
   assert.equal(few.t3.length, 0);
 });
+
+// ---------- 雙極結構與火箭模型進評分（structure 以結果物件直接給，與引擎分開測） ----------
+const structureOf = (state, extra = {}) => ({ current: { state, label: { bull: '極陽', balance: '平衡', bear: '極陰' }[state], from: state === 'balance' ? 'bull' : null,
+  structureLow: state === 'bull' ? 101 : null, structureHigh: state === 'bear' ? 104 : null, lastEvent: null, ...extra.current }, lastEventAge: extra.lastEventAge ?? null, liquidity: extra.liquidity ?? null });
+const evaluateWith = structure => {
+  const frames = breakoutFrames();
+  return S.evaluateLong({ signal: breakoutSignal(frames), frames, money: { turnover: 3e6, expansion: 3 }, price: 102.6, structure });
+};
+
+test('4H 極陽 adds certainty and is named in the reasons', () => {
+  const plain = evaluateWith(null), bull = evaluateWith({ '4H': structureOf('bull') });
+  assert.equal(bull.elements.certainty - plain.elements.certainty, Math.min(6, 100 - plain.elements.certainty));
+  assert.ok(bull.matched.some(t => t.startsWith('4H 雙極結構 極陽（結構底 101）')), bull.matched.join(' | '));
+});
+
+test('4H 極陰 is a deduction and keeps the coin out of T1; 平衡 after a broken 結構底 too', () => {
+  const bear = evaluateWith({ '4H': structureOf('bear') });
+  assert.ok(bear.deductions.some(d => d.text === '4H 雙極結構仍為極陰' && d.points === 10));
+  assert.ok(bear.gates.includes('4H 結構極陰'));
+  assert.equal(bear.t1, false);
+  const balance = evaluateWith({ '4H': structureOf('balance') });
+  assert.ok(balance.deductions.some(d => d.text.startsWith('4H 跌破結構底')));
+  assert.equal(balance.t1, false);
+});
+
+test('a fresh 4H 轉多 or 延續 adds certainty', () => {
+  const base = evaluateWith({ '4H': structureOf('bull') });
+  const fresh = evaluateWith({ '4H': structureOf('bull', { current: { lastEvent: { type: 'continue', dir: 'up', label: '延續' } }, lastEventAge: 1 }) });
+  assert.equal(fresh.elements.certainty - base.elements.certainty, Math.min(4, 100 - base.elements.certainty));
+  assert.ok(fresh.matched.some(t => t.includes('延續（1 根前）')));
+});
+
+test('火箭模型: a setup-frame dump start below the old high becomes the first wall; fuel before it raises 幅度', () => {
+  const walls = [{ dir: 1, price: 106, sources: ['爆量下跌起點'], larger: false }];
+  const noFuel = evaluateWith({ '4H': structureOf('bull', { liquidity: { walls, fuel: [] } }) });
+  assert.equal(noFuel.target.label, '4H 爆量下跌起點');
+  assert.equal(noFuel.target.level, 106);
+  const fuel = evaluateWith({ '4H': structureOf('bull', { liquidity: { walls, fuel: [{ dir: 1, bottom: 103.5, top: 105.5 }] } }) });
+  assert.equal(fuel.elements.fuel, 1);
+  assert.equal(fuel.elements.roomScore - noFuel.elements.roomScore, Math.min(8, 100 - noFuel.elements.roomScore));
+  assert.ok(fuel.matched.some(t => t.startsWith('火箭燃料')));
+  const beyond = evaluateWith({ '4H': structureOf('bull', { liquidity: { walls, fuel: [{ dir: 1, bottom: 107, top: 109 }] } }) });
+  assert.equal(beyond.elements.fuel, 0, 'fuel past the first wall does not count');
+});
+
+test('a 1W setup triggers on 1D while it waits for confirmation', () => {
+  const frames = breakoutFrames();
+  frames['1W'] = frames['4H']; // 只為了有足夠的週線根數；這個測試看的是觸發級別
+  const weekly = { ...breakoutSignal(frames), frame: '1W', triggerFrame: '1D', eligible: true };
+  const out = S.evaluateSymbol({ symbol: 'AAAUSDT', contract: { baseCoin: 'AAA' }, ticker: ticker(3e6), frames, longSignals: [], setupSignals: [weekly], price: 102.6 });
+  assert.equal(out.long.triggerFrame, '1D');
+  assert.ok(out.long.deductions.some(d => d.text.startsWith('1D 啟動待確認（1W 機會保留）')), out.long.deductions.map(d => d.text).join(' | '));
+});
+
+test('雙極結構延續: 4H and 1D 極陽 with a fresh break of a top fractal is a pathway, stopped at the 4H 結構底', () => {
+  const ev = { type: 'bos', dir: 'up', index: 118, level: 101.8, label: '結構上移', provisional: false };
+  const bull = (extra = {}) => structureOf('bull', { current: { lastEvent: ev, lastFake: null, ...extra.current }, lastEventAge: extra.lastEventAge ?? 1 });
+  const trend = S.structureTrend({ '4H': bull(), '1D': structureOf('bull') });
+  assert.equal(trend.group, '結構延續');
+  assert.equal(trend.stop, 101);
+  assert.equal(S.structureTrend({ '4H': bull(), '1D': structureOf('balance') }), null, 'daily must be 極陽 too');
+  assert.equal(S.structureTrend({ '4H': bull({ lastEventAge: 5 }), '1D': structureOf('bull') }), null, 'only within 3 bars');
+  assert.equal(S.structureTrend({ '4H': bull({ current: { lastFake: { index: 118 } } }), '1D': structureOf('bull') }), null, 'not on a 假突破 bar');
+  const frames = breakoutFrames();
+  const structure = { '4H': bull(), '1D': structureOf('bull') };
+  const result = S.evaluateLong({ signal: { ...breakoutSignal(frames), phase: 'none', rejectionReasons: ['最新價格已破壞結構'], structureTrend: trend },
+    frames, money: { turnover: 3e6, expansion: 3 }, price: 102.6, structure, dailyContext: 'aligned' });
+  assert.equal(result.pathway.key, 'structure-trend');
+  assert.equal(result.stop, 101);
+  assert.equal(result.listed, true, result.rejections.join('、'));
+  assert.ok(result.matched[0].startsWith('途徑 · 結構延續 · 4H 雙極結構上移'));
+});
+
+test('a 1D setup is marked down when the 4H trigger frame is 極陰', () => {
+  const frames = breakoutFrames();
+  frames['1D'] = frames['4H'];
+  const signal = { ...breakoutSignal(frames), frame: '1D', triggerFrame: '4H' };
+  const result = S.evaluateLong({ signal, frames, money: { turnover: 3e6, expansion: 3 }, price: 102.6, structure: { '4H': structureOf('bear'), '1D': structureOf('bull') } });
+  assert.ok(result.deductions.some(d => d.text === '4H 雙極結構極陰（啟動級別逆向）'));
+  assert.ok(result.gates.includes('4H 結構極陰'));
+});
+
+test('a 1W setup waits for the daily: daily 極陰 is fill only, 4H 極陰 is marked down', () => {
+  const frames = breakoutFrames();
+  frames['1W'] = frames['4H'];
+  const signal = { ...breakoutSignal(frames), frame: '1W', triggerFrame: '1D' };
+  const bearDaily = S.evaluateLong({ signal, frames, money: { turnover: 3e6, expansion: 3 }, price: 102.6, structure: { '1D': structureOf('bear'), '4H': structureOf('bull') } });
+  assert.equal(bearDaily.listed, false);
+  assert.equal(bearDaily.fillable, true);
+  assert.ok(bearDaily.rejections.includes('日線雙極結構極陰：週線機會等日線轉強'));
+  const bear4h = S.evaluateLong({ signal, frames, money: { turnover: 3e6, expansion: 3 }, price: 102.6, structure: { '1D': structureOf('bull'), '4H': structureOf('bear') } });
+  assert.ok(bear4h.deductions.some(d => d.text === '4H 雙極結構極陰' && d.points === 6));
+  assert.ok(bear4h.gates.includes('4H 結構極陰'));
+});

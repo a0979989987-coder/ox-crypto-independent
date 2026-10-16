@@ -149,3 +149,112 @@
 .ox-news-skeleton .ox-news-skeleton-head{height:30px;width:46%;border-radius:8px}
 .ox-news-skeleton .ox-news-skeleton-tabs{height:34px;border-radius:999px}
 @media(prefers-reduced-motion:reduce){.ox-news-skeleton{animation:none}}
+
+/* 雙極結構指標：圖表左上角目前狀態、關鍵價位與多級別狀態 */
+.chart-structure-legend {position:absolute;left:8px;top:8px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:5px;max-width:calc(100% - 96px);padding:5px 9px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(13,16,19,.78);color:#e8ecef;font-size:10.5px;line-height:1.35;pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.chart-structure-legend[hidden] {display:none!important}
+.chart-structure-legend .sl-row {display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.chart-structure-legend .sl-head {display:inline-flex;align-items:baseline;gap:6px}
+.chart-structure-legend .sl-head b {font-size:12px;font-weight:700;letter-spacing:.04em}
+.chart-structure-legend .sl-head small {color:rgba(232,236,239,.62);font-size:9.5px}
+.chart-structure-legend .sl-level {display:inline-flex;align-items:baseline;gap:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart-structure-legend .sl-level i {font-style:normal;color:rgba(232,236,239,.6)}
+.chart-structure-legend .sl-level small {color:rgba(232,236,239,.6);font-size:9.5px}
+.chart-structure-legend .sl-mtf {display:flex;flex-wrap:wrap;gap:4px;pointer-events:auto}
+.chart-structure-legend .sl-frame {display:inline-flex;align-items:center;gap:4px;min-height:22px;padding:2px 7px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.04);color:inherit;font:inherit;font-size:10px;cursor:pointer}
+.chart-structure-legend .sl-frame i {font-style:normal;color:rgba(232,236,239,.6);font-variant-numeric:tabular-nums}
+.chart-structure-legend .sl-frame.is-active {border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.1)}
+.chart-structure-legend .sl-frame.is-bull {color:#00b8d4}
+.chart-structure-legend .sl-frame.is-bear {color:#ff3078}
+.chart-structure-legend .sl-frame.is-balance {color:#e6c76f}
+.chart-structure-legend .sl-frame:focus-visible {outline:2px solid #fff;outline-offset:1px}
+.chart-structure-legend .sl-short {display:none}
+.chart-structure-legend.is-bull {border-color:rgba(0,184,212,.5)}
+.chart-structure-legend.is-bull .sl-head b {color:#00b8d4}
+.chart-structure-legend.is-bear {border-color:rgba(255,48,120,.5)}
+.chart-structure-legend.is-bear .sl-head b {color:#ff3078}
+.chart-structure-legend.is-balance {border-color:rgba(230,199,111,.55)}
+.chart-structure-legend.is-balance .sl-head b {color:#e6c76f}
+.ox-structure-tooltip {white-space:pre-line;line-height:1.5;font-size:11px}
+body.theme-light .chart-structure-legend {border-color:rgba(112,140,166,.3);background:rgba(255,255,255,.9);color:#1f2937}
+body.theme-light .chart-structure-legend :is(.sl-head small,.sl-level i,.sl-level small,.sl-frame i) {color:#64748b}
+body.theme-light .chart-structure-legend .sl-frame {border-color:rgba(100,116,139,.3);background:rgba(148,163,184,.06)}
+body.theme-light .chart-structure-legend .sl-frame.is-active {border-color:rgba(51,65,85,.6);background:rgba(148,163,184,.16)}
+body.theme-light .chart-structure-legend .sl-frame.is-bull {color:#2f7fc9}
+body.theme-light .chart-structure-legend .sl-frame.is-bear,body.theme-light .chart-structure-legend.is-bear .sl-head b {color:#d94c6c}
+body.theme-light .chart-structure-legend .sl-frame.is-balance,body.theme-light .chart-structure-legend.is-balance .sl-head b {color:#a87b17}
+body.theme-light .chart-structure-legend.is-bull .sl-head b {color:#2f7fc9}
+body.theme-light .chart-structure-legend .sl-frame:focus-visible {outline-color:#334155}
+@media (max-width:720px) {
+  .chart-structure-legend {left:6px;top:6px;max-width:calc(100% - 70px);padding:4px 7px;gap:4px;font-size:9.5px}
+  .chart-structure-legend .sl-head b {font-size:11px}
+  .chart-structure-legend .sl-row .sl-level:nth-of-type(n+4) {display:none}
+  .chart-structure-legend .sl-mtf {flex-wrap:nowrap;gap:3px}
+  .chart-structure-legend .sl-frame {min-height:24px;padding:2px 6px;font-size:9.5px;gap:3px}
+  .chart-structure-legend .sl-full {display:none}
+  .chart-structure-legend .sl-short {display:inline}
+}
+
+/* 雷達成績單 */
+#radar-tier-menu .radar-report-entry {border-top:1px solid rgba(255,255,255,.12);margin-top:4px;padding-top:8px}
+.ox-radar-report {position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:rgba(5,7,9,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ox-radar-report[hidden] {display:none!important}
+.ox-radar-report .orr-dialog {width:min(760px,100%);max-height:min(88vh,860px);overflow:auto;padding:18px 18px 20px;border:1px solid rgba(255,255,255,.16);border-radius:16px;background:#121417;color:#e8ecef;box-shadow:0 24px 60px rgba(0,0,0,.45);outline:none}
+.ox-radar-report .orr-head {display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ox-radar-report h2 {margin:0;font-size:17px;font-weight:700}
+.ox-radar-report h3 {margin:18px 0 8px;font-size:13px;font-weight:600}
+.ox-radar-report .orr-head p {margin:6px 0 0;color:rgba(232,236,239,.62);font-size:11px;line-height:1.6}
+.ox-radar-report .orr-close {flex:none;width:34px;height:34px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.ox-radar-report .orr-controls {display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 10px}
+.ox-radar-report .orr-seg {display:inline-flex;border:1px solid rgba(255,255,255,.16);border-radius:9px;overflow:hidden}
+.ox-radar-report .orr-seg button,.ox-radar-report .orr-refresh {min-height:32px;padding:0 12px;border:0;background:transparent;color:inherit;font-size:11.5px;cursor:pointer}
+.ox-radar-report .orr-seg button[aria-pressed="true"] {background:rgba(255,255,255,.14);font-weight:600}
+.ox-radar-report .orr-refresh {border:1px solid rgba(255,255,255,.18);border-radius:9px}
+.ox-radar-report .orr-status {color:rgba(232,236,239,.6);font-size:11px}
+.ox-radar-report :is(button):focus-visible {outline:2px solid #fff;outline-offset:2px}
+.ox-radar-report .orr-table {width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.ox-radar-report .orr-table :is(th,td) {padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right;white-space:nowrap}
+.ox-radar-report .orr-table :is(thead th) {color:rgba(232,236,239,.6);font-weight:500;font-size:11px}
+.ox-radar-report .orr-table :is(th:first-child) {text-align:left}
+.ox-radar-report .orr-table small {display:block;color:rgba(232,236,239,.55);font-size:10px}
+.ox-radar-report .orr-table .is-total :is(th,td) {font-weight:700;border-bottom:0}
+.ox-radar-report .orr-list {margin:0;padding:0;list-style:none;font-size:12px}
+.ox-radar-report .orr-list li {display:grid;grid-template-columns:76px 80px 58px 1fr auto auto;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ox-radar-report .orr-when,.ox-radar-report .orr-path {color:rgba(232,236,239,.6);font-size:11px}
+.ox-radar-report .orr-path {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ox-radar-report .orr-symbol {padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.ox-radar-report .orr-entry {font-variant-numeric:tabular-nums}
+.ox-radar-report .orr-outcome {text-align:right;white-space:nowrap}
+.ox-radar-report .orr-outcome small {color:rgba(232,236,239,.55);font-size:10px}
+.ox-radar-report .is-target .orr-outcome {color:#00b8d4}
+.ox-radar-report .is-stop .orr-outcome {color:#ff3078}
+.ox-radar-report .is-expired .orr-outcome {color:#e6c76f}
+.ox-radar-report .orr-empty {color:rgba(232,236,239,.6);font-size:12px}
+body.ox-radar-report-open {overflow:hidden}
+body.theme-light .ox-radar-report {background:rgba(30,41,59,.28)}
+body.theme-light .ox-radar-report .orr-dialog {border-color:rgba(100,116,139,.25);background:#fff;color:#1f2937;box-shadow:0 24px 60px rgba(15,23,42,.18)}
+body.theme-light .ox-radar-report :is(.orr-head p,.orr-status,.orr-when,.orr-path,.orr-table thead th,.orr-table small,.orr-outcome small,.orr-empty) {color:#64748b}
+body.theme-light .ox-radar-report :is(.orr-seg,.orr-refresh,.orr-close) {border-color:rgba(100,116,139,.3)}
+body.theme-light .ox-radar-report .orr-seg button[aria-pressed="true"] {background:rgba(148,163,184,.2)}
+body.theme-light .ox-radar-report .orr-table :is(th,td),body.theme-light .ox-radar-report .orr-list li {border-color:rgba(100,116,139,.15)}
+body.theme-light .ox-radar-report .is-target .orr-outcome {color:#2f7fc9}
+body.theme-light .ox-radar-report .is-stop .orr-outcome {color:#d94c6c}
+body.theme-light .ox-radar-report .is-expired .orr-outcome {color:#a87b17}
+body.theme-light .ox-radar-report :is(button):focus-visible {outline-color:#334155}
+body.theme-light #radar-tier-menu .radar-report-entry {border-top-color:rgba(100,116,139,.2)}
+@media (max-width:600px) {
+  .ox-radar-report {padding:0;place-items:end stretch}
+  .ox-radar-report .orr-dialog {max-height:92vh;border-radius:16px 16px 0 0;padding:16px 14px 22px}
+  .ox-radar-report .orr-table {font-size:11px}
+  .ox-radar-report .orr-table :is(th,td) {padding:7px 3px}
+  .ox-radar-report .orr-table :is(th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7)) {display:none}
+  .ox-radar-report .orr-list li {grid-template-columns:62px 1fr auto;grid-template-areas:"when sym out" "when tier out";row-gap:2px}
+  .ox-radar-report .orr-when {grid-area:when}
+  .ox-radar-report .orr-symbol {grid-area:sym}
+  .ox-radar-report .orr-tier {grid-area:tier;font-size:10.5px;color:#9aa3a8}
+  .ox-radar-report .orr-outcome {grid-area:out}
+  .ox-radar-report :is(.orr-path,.orr-entry) {display:none}
+}
+/* 打開時把焦點放在對話框本身（給鍵盤與讀屏），不畫焦點框。 */
+:root body .ox-radar-report .orr-dialog.orr-dialog.orr-dialog:is(:focus,:focus-visible) {outline:none!important;box-shadow:0 24px 60px rgba(0,0,0,.45)!important}
+:root body.theme-light .ox-radar-report .orr-dialog.orr-dialog.orr-dialog:is(:focus,:focus-visible) {box-shadow:0 24px 60px rgba(15,23,42,.18)!important}

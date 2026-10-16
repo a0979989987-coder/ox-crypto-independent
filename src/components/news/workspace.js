@@ -4,9 +4,17 @@ import { MARKET_NAMES, CATEGORY_NAMES, MARKET_CATEGORIES, TIME_CHOICES, sourceNa
 import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, eventCategory, importance, matchesImportance, newsBase, filterNews, hotWords, ranking, sourcesFor, coverage, safeLink, plain, agendaDays, inMarket, upcomingEventDays } from './model.js?v=20261005-load16';
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
 import { node, button, anchoredPanel, modal } from './layers.js';
+import { applyCachedTranslations, translateItems, needsTranslation } from './live.js';
+// center.js (a classic script) reaches the live-update helpers through this bundle.
+export { fetchLatest, fetchForesight, composeSnapshot, applyCachedTranslations, LIVE_INTERVAL_MS, FORESIGHT_INTERVAL_MS } from './live.js';
 const newsDateFormatter = new Intl.DateTimeFormat('zh-TW', { timeZone:'Asia/Taipei', dateStyle:'short', timeStyle:'short', hour12:false });
 const fmt = value => Number.isFinite(Date.parse(value)) ? newsDateFormatter.format(new Date(value)) : '時間待確認';
-const label = item => localizeNewsText(item.titleZh || (/[\u4e00-\u9fff]/.test(item.title||'') ? item.title : '中文翻譯準備中'));
+// Never a placeholder: until a translation exists the original headline is shown (tagged 原文).
+const HAN = /[\u4e00-\u9fff]/;
+const label = item => localizeNewsText(item.titleZh || item.title || '');
+const untranslated = item => !item.titleZh && !HAN.test(item.title || '');
+// The list shows the publisher's own short summary in Chinese; English-only summaries stay in the expanded body.
+const gist = item => item.summaryZh || (item.summary && HAN.test(item.summary) ? item.summary : null);
 const calendarTone = category => ({ macro: 'red', regulation: 'red', unlock: 'yellow', 'dividend-preview': 'yellow', payment: 'yellow', dividend: 'green', earnings: 'blue', exchange: 'blue', listing: 'blue', network: 'blue', governance: 'green', airdrop: 'green', burn: 'gray', holiday: 'gray' }[category] || 'gray');
 const statusLabel = item => item.announcementStatus === 'cancelled' ? '已取消' : item.announcementStatus === 'estimated' || item.kind === 'token-unlock' && item.date ? '預估排程' : item.announcementStatus === 'announced' ? '媒體所列排程' : item.announcementStatus === 'preview' ? '預告' : item.status === 'confirmed' || item.announcementStatus === 'confirmed' ? '已公告' : '狀態待確認';
 const sourceState = source => source.access === 'authorization-required' ? '需取得授權' : source.status === 'not-connected' ? '尚未接入' : source.status === 'error' ? '更新失敗' : source.lastSuccessAt && Date.now() - Date.parse(source.lastSuccessAt) > 18 * 3600000 ? '資料過期' : source.status === 'ready' && source.count === 0 ? '成功・零篇' : source.status === 'ready' ? source.access==='public-aggregated-rss'?'聚合接入':'已接入' : '尚未載入';
@@ -31,7 +39,7 @@ export function mountNewsWorkspace(host, api) {
   }), 'oxn-pill'); if (api.scope === 'all') header.append(marketChoice);
   const more = button('⋯', '閱讀偏好與快照更新', () => showPanel(more, '閱讀偏好', body => {
     const tags = node('div', 'oxn-tags'); for (const [id, text] of [['all', '全部閱讀狀態'], ['unread', '僅未讀'], ['following', '追蹤來源']]) { const b = button(text, '', () => { state.reader = id; persist(); renderContent(); [...tags.children].forEach(n => n.setAttribute('aria-pressed', String(n === b))); }); b.setAttribute('aria-pressed', String((state.reader || 'all') === id)); tags.append(b); }
-    body.append(tags, button('恢復隱藏新聞／來源', '', () => { api.save({ hidden: [], mutedSources: [] }); renderContent(); }, 'oxn-action'), button('更新來源快照', '', api.refresh, 'oxn-action'), node('p', 'oxn-caption', '資料依來源快照更新，並非即時串流；重新讀取會保留最後成功資料。'));
+    body.append(tags, button('恢復隱藏新聞／來源', '', () => { api.save({ hidden: [], mutedSources: [] }); renderContent(); }, 'oxn-action'), button('更新來源快照', '', api.refresh, 'oxn-action'), node('p', 'oxn-caption', '新聞每 3 分鐘自動檢查最新消息（最近 36 小時）；行事曆與完整歷史依來源快照更新。重新讀取會保留最後成功資料。'));
   }), 'oxn-close oxn-more'); header.append(more);
   const rail = createToolsRail({ tabs: [['calendar', '行事曆'], ['key', '關鍵新聞']], selected: state.tab, label: '新聞內容', attribute: 'data-news-tab', equal: true,
     onSelect(tab) { state.tab = tab; persist(); panel?.destroy({ focus: false }); renderControls(); renderContent(); } }); rail.element.classList.add('oxn-tabs');
@@ -120,7 +128,7 @@ export function mountNewsWorkspace(host, api) {
   function baseItems() { return newsBase(data.snapshot, scope(), state, api.preferences()); }
   function statsText(items) { const names=new Map([['week','本週'],...TIME_CHOICES,['custom',state.customTime?`${state.customTime.from}～${state.customTime.to}`:'自訂時間']]); const range=(state.times||[]).map(id=>names.get(id)).filter(Boolean).join('／')||'未選時間';return `${range}・${scope() === 'all' ? '全部市場' : MARKET_NAMES[scope()]}・目前快照去重 ${items.length} 篇，標題提及・非全網統計`; }
   function status() {
-    notification.replaceChildren(); if (data.candidate) notification.append(button('有新消息・點此更新', '', api.applyUpdate, 'oxn-update'));
+    notification.replaceChildren(); if (data.candidate) notification.append(button(typeof data.candidate === 'number' && data.candidate > 0 ? `有 ${data.candidate} 則新消息・點此更新` : '有新消息・點此更新', '', api.applyUpdate, 'oxn-update'));
     if (data.error) notification.append(node('p', 'oxn-caption', data.snapshot ? '更新失敗，保留最後成功資料' : '來源快照讀取失敗'), button('重試', '', api.refresh, 'oxn-action'));
     else if (!data.snapshot) notification.append(node('p', 'oxn-caption', data.pending ? '正在讀取來源快照…' : '尚未載入'));
   }
@@ -128,7 +136,7 @@ export function mountNewsWorkspace(host, api) {
     if(window.OXFeatures&&!window.OXFeatures.enterTool(state.tab,'data-news-tab',renderContent))return;
     content.replaceChildren(); marketChoice.textContent = state.market === 'all' ? '全部市場' : MARKET_NAMES[state.market]; status();
     if (!data.snapshot) { content.append(node('div', 'oxn-empty', data.error ? '暫時無法讀取資料，請重試。' : '載入新聞與事件…')); return; }
-    if (state.tab === 'calendar') {if(innerWidth<=600)renderMobileCalendar();else if(state.calendarView==='agenda')renderAgenda();else renderCalendar();} else renderNews();
+    if (state.tab === 'calendar') {if(innerWidth<=600)renderMobileCalendar();else if(state.calendarView==='agenda')renderAgenda();else renderCalendar();translateEvents();} else renderNews();
     positionCalendar();
   }
   function selectedDate() { return state.selectedDay?.slice(0,7) === state.month ? state.selectedDay : taipeiDay().slice(0,7) === state.month ? taipeiDay() : `${state.month}-01`; }
@@ -236,26 +244,57 @@ export function mountNewsWorkspace(host, api) {
   function renderNews() {
     const base = baseItems(), prefs = api.preferences(); let items = filterNews(base, state);
     if (state.reader === 'unread') items = items.filter(i => !(prefs.read || []).includes(i.id)); if (state.reader === 'following') items = items.filter(i => (prefs.followedSources || []).includes(i.sourceId));
-    const range = node('div', 'oxn-news-range'); range.append(node('span', '', `${items.length} 篇・台北時間`), node('span', '', data.snapshot.generatedAt ? `快照 ${fmt(data.snapshot.generatedAt)}` : '快照時間未提供')); content.append(range);
+    const range = node('div', 'oxn-news-range'); range.append(node('span', '', `${items.length} 篇・台北時間`), node('span', '', [data.snapshot.liveAt ? `即時 ${fmt(data.snapshot.liveAt)}` : '', data.snapshot.generatedAt ? `快照 ${fmt(data.snapshot.generatedAt)}` : '快照時間未提供'].filter(Boolean).join('・'))); content.append(range);
     if (state.asset || state.query || state.words.length) { const selected = node('div', 'oxn-active-filters'); selected.append(node('span', '', [state.asset ? ranking(base).find(a => a.id === state.asset)?.name || '資產篩選' : '', state.query, ...state.words].filter(Boolean).join(' · ')), button('清除', '', () => { state.asset = null; state.query = ''; state.words = []; persist(); renderControls(); renderContent(); })); content.append(selected); }
-    const list = node('div', 'oxn-news-list'); for (const item of items.slice(0, state.limit)) list.append(newsRow(item));
+    const shown = items.slice(0, state.limit);
+    const list = node('div', 'oxn-news-list'); for (const item of shown) list.append(newsRow(item));
+    translateShown(shown, list);
     if (!items.length) list.append(node('p', 'oxn-empty', !state.times.length || state.sources?.length === 0 ? '沒有選取時間或來源。可在藥丸中選擇「全部」或恢復預設。' : '已收錄資料中沒有符合條件的新聞。'));
     content.append(list); if (items.length > state.limit) content.append(button(`載入更多（尚有 ${items.length - state.limit} 篇）`, '', () => { state.limit += 40; persist(); renderContent(); }, 'oxn-load-more'));
     const published = [...(data.snapshot.news || []), ...(data.snapshot.pendingNews || [])].filter(i => scope() === 'all' || i.markets?.includes(scope())).map(i => i.publishedAt).sort();
     content.append(node('p', 'oxn-caption', `${statsText(base)}。${published.length ? `現有文章發布範圍：${fmt(published[0])}～${fmt(published.at(-1))}；來源 RSS 篇數有限，未完整覆蓋所選區間。` : '目前没有本市場來源資料。'}`));
   }
+  // Untranslated titles and summaries on screen are translated in the background and
+  // patched in place (open rows stay open); the result is remembered in this browser.
+  let translating = 0;
+  function syncTranslations(snapshot = data.snapshot) { if (snapshot) applyCachedTranslations([...(snapshot.news || []), ...(snapshot.pendingNews || []), ...(snapshot.events || [])]); }
+  function translateShown(shown, list) {
+    const todo = shown.filter(needsTranslation); if (!todo.length) return;
+    const token = ++translating;
+    translateItems(todo).then(changed => {
+      if (!changed.length) return; syncTranslations();
+      if (token !== translating || !list.isConnected) return;
+      for (const item of changed) {
+        const row = [...list.children].find(child => child.dataset?.newsId === item.id); if (!row) continue;
+        const next = newsRow(item); next.open = row.open; row.replaceWith(next);
+      }
+    }).catch(() => {});
+  }
+  function translateEvents() {
+    if (!data.snapshot || state.tab !== 'calendar') return;
+    const month = state.month, todo = (data.snapshot.events || []).filter(e => !e.titleZh && e.title && eventDay(e)?.slice(0, 7) === month && inMarket(e, scope()));
+    if (!todo.length) return;
+    const token = ++translating;
+    translateItems(todo, { maxRequests: 2 }).then(changed => { if (changed.length && token === translating && state.tab === 'calendar' && state.month === month && !panel?.element.isConnected && !detail) renderContent(); }).catch(() => {});
+  }
   function newsRow(item) {
     const row = node('details', 'oxn-news-row'); row.dataset.newsId = item.id;
     const summary = node('summary'), meta = node('div', 'oxn-news-meta');
+    const markRead = () => { const set = new Set(api.preferences().read || []); if (set.has(item.id)) return; set.add(item.id); api.save({ read: [...set] }); row.classList.add('is-read'); };
     meta.append(node('span', 'oxn-source', sourceName(item)), node('time', '', fmt(item.publishedAt))); if (api.scope === 'all') meta.append(node('span', '', item.markets?.map(m => MARKET_NAMES[m]).filter(Boolean).join('／')));
-    summary.append(meta, node('h3', '', label(item)), node('span', 'oxn-expand', '＋'));
-    const tags = node('div', 'oxn-article-tags'); for (const asset of (item.assets || []).slice(0, 4)) tags.append(node('span', '', `${asset.symbol} ${asset.name}`)); if (item.translationStatus !== 'translated') tags.append(node('span', '', '翻譯待補')); if (tags.children.length) summary.append(tags);
+    // One tap from the list to the original article (a link inside <summary> opens it without toggling the row).
+    const direct = link('原文 ↗', item.link); if (direct) { direct.className = 'oxn-news-open'; direct.setAttribute('aria-label', `開啟原文（${sourceName(item)}，新分頁）`); direct.addEventListener('click', markRead); meta.append(direct); }
+    const short = gist(item);
+    summary.append(meta, node('h3', '', label(item)), ...(short ? [node('p', 'oxn-news-gist', plain(short))] : []), node('span', 'oxn-expand', '＋'));
+    const tags = node('div', 'oxn-article-tags'); for (const asset of (item.assets || []).slice(0, 4)) tags.append(node('span', '', `${asset.symbol} ${asset.name}`)); if (untranslated(item)) tags.append(node('span', 'oxn-tag-original', '原文')); if (tags.children.length) summary.append(tags);
     const body = node('div', 'oxn-article-body');
     if(item.translationMethod==='machine-title-only')body.append(node('small','oxn-caption','標題機器翻譯・原文保留供核對'));
-    if (item.summaryZh) { body.append(node('small', 'oxn-caption', item.summaryType === 'system' ? '系統整理' : '來源摘要'), node('p', '', plain(item.summaryZh))); } else body.append(node('p', 'oxn-caption', item.translationStatus === 'translated' ? '來源未提供摘要，可點下方閱讀原文。' : '來源尚未提供繁中內容，可點下方閱讀原文。'));
+    if (item.summaryZh) { body.append(node('small', 'oxn-caption', item.summaryType === 'system' ? '系統整理' : item.summaryMethod === 'machine' ? '來源摘要・機器翻譯' : '來源摘要'), node('p', 'oxn-summary', plain(item.summaryZh))); if (item.summary && item.summary !== item.summaryZh) { const originalSummary = node('details', 'oxn-original'); originalSummary.append(node('summary', '', '查看原文摘要'), node('p', '', plain(item.summary))); body.append(originalSummary); } }
+    else if (item.summary) body.append(node('small', 'oxn-caption', '來源摘要（原文，翻譯中）'), node('p', 'oxn-summary', plain(item.summary)));
+    else body.append(node('p', 'oxn-caption', '來源沒有提供摘要，點「原文 ↗」可閱讀全文。'));
     if (item.titleZh && item.title && item.title !== item.titleZh) { const originalTitle=node('details','oxn-original');originalTitle.append(node('summary','','查看原文標題'),node('p','',item.title));body.append(originalTitle); }
     if(item.aggregation)body.append(node('p','oxn-caption',`公開標題由 ${item.aggregation} 聚合 · ${item.publisher?`原始發布者：${item.publisher}`:`入口來源：${sourceName(item)}`}；非官方 API，不轉載全文。`));
-    const actions = node('div', 'oxn-article-actions'), original = link(item.aggregation?'前往聚合連結／原文':'閱讀原文', item.link); if (original) actions.append(original);
+    const actions = node('div', 'oxn-article-actions'), original = link(item.aggregation?'前往聚合連結／原文':'閱讀原文 ↗', item.link); if (original) { original.addEventListener('click', markRead); actions.append(original); }
     const read = button((api.preferences().read || []).includes(item.id) ? '標為未讀' : '標為已讀', '', () => { const set = new Set(api.preferences().read || []); set.has(item.id) ? set.delete(item.id) : set.add(item.id); api.save({ read: [...set] }); read.textContent = set.has(item.id) ? '標為未讀' : '標為已讀'; row.classList.toggle('is-read', set.has(item.id)); });
     const follow = button((api.preferences().followedSources || []).includes(item.sourceId) ? '取消追蹤' : '追蹤來源', '', () => { const set = new Set(api.preferences().followedSources || []); set.has(item.sourceId) ? set.delete(item.sourceId) : set.add(item.sourceId); api.save({ followedSources: [...set] }); follow.textContent = set.has(item.sourceId) ? '取消追蹤' : '追蹤來源'; });
     actions.append(read, follow, button('隱藏', '', () => { api.save({ hidden: [...new Set([...(api.preferences().hidden || []), item.id])] }); row.remove(); })); body.append(actions);
@@ -307,7 +346,7 @@ export function mountNewsWorkspace(host, api) {
         box.append(node('small', 'oxn-caption', `公布：${item.releasedAt ? fmt(item.releasedAt) : '待公布'} · 更新：${item.updatedAt ? fmt(item.updatedAt) : '待更新'}`));
         detail.body.append(box);
       }
-      if (category === 'governance') detail.body.append(fieldList([['治理議案', item.proposalTitleZh || '中文翻譯準備中'], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
+      if (category === 'governance') detail.body.append(fieldList([['治理議案', item.proposalTitleZh || item.proposalTitle], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
       if (item.eventTimeType) detail.body.append(node('p', 'oxn-caption', item.eventTimeType === 'software-release-publication' ? '此時間為官方軟體版本發布時間，不是主網硬分叉生效時間。' : item.eventTimeType));
       if (category === 'unlock') { const counter = node('p', 'oxn-countdown', api.unlockCountdown(item)); detail.body.append(counter); if (item.status === 'confirmed' && item.occursAt && !item.date) countdown = setInterval(() => { counter.textContent = api.unlockCountdown(item); }, 1000); }
       if (item.scheduleBasis) detail.body.append(node('p', 'oxn-caption', item.scheduleBasis));
@@ -346,5 +385,5 @@ export function mountNewsWorkspace(host, api) {
   window.visualViewport?.addEventListener('resize', positionCalendar, { signal: life.signal });
   let scrollTimer; window.addEventListener('scroll', () => { if (!root.closest('.app-view.active')) return; clearTimeout(scrollTimer); scrollTimer = setTimeout(() => { state.scroll = scrollY; persist(); }, 180); }, { signal: life.signal, passive: true });
   renderControls();
-  return { host, update(next) { const changed = next.snapshot !== data.snapshot || !content.firstChild; data = next; if (changed) { detailKey = ''; renderContent(); } else status(); renderRoute(data.route); rail.position(); if (restorePosition) { restorePosition = false; requestAnimationFrame(() => window.scrollTo(0, state.scroll || 0)); } }, suspend() { closePanel(); detail?.destroy(); detail = null; detailKey = ''; clearInterval(countdown); countdown = null; }, destroy() { state.scroll = root.closest('.app-view.active') ? scrollY : state.scroll; persist(); closePanel(); detail?.destroy(); clearInterval(countdown); clearTimeout(scrollTimer); life.abort(); rail.destroy(); root.remove(); } };
+  return { host, update(next) { const changed = next.snapshot !== data.snapshot || !content.firstChild; data = next; if (changed) { syncTranslations(); detailKey = ''; renderContent(); } else status(); renderRoute(data.route); rail.position(); if (restorePosition) { restorePosition = false; requestAnimationFrame(() => window.scrollTo(0, state.scroll || 0)); } }, suspend() { closePanel(); detail?.destroy(); detail = null; detailKey = ''; clearInterval(countdown); countdown = null; }, destroy() { state.scroll = root.closest('.app-view.active') ? scrollY : state.scroll; persist(); closePanel(); detail?.destroy(); clearInterval(countdown); clearTimeout(scrollTimer); life.abort(); rail.destroy(); root.remove(); } };
 }

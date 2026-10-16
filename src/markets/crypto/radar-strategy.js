@@ -18,7 +18,7 @@
  */
 (function (root) {
   'use strict';
-  const RADAR_STRATEGY_VERSION = 1;
+  const RADAR_STRATEGY_VERSION = 2;
   const RADAR_RULES = Object.freeze({
     historyBars: 180,
     minScanTurnover: 300000,      // 低於 30 萬 USDT 不掃描、不排名
@@ -263,12 +263,25 @@
   // 這類絕不上榜；軟性（過度拉升、明顯回吐、沒有入選途徑但仍有同向觀察證據），
   // 這類不算入選、不進 T1，只在 T2／T3 名額不足時依綜合分補位，並標明原因。
   const ENGINE_HARD = ['最新價格已破壞結構', '近期突破失敗，壓力已上下貫穿', '下跌放量／派發'];
+  // 雙極結構延續（使用者的結構規則）：4H 極陽、日線也極陽，4H 剛在 3 根內突破頂分型高點
+  // （結構上移／延續／轉多），而且那根不是假突破。經典引擎找不到途徑的強勢趨勢幣靠這條入選；
+  // 停損＝4H 結構底（跌破＝多空平衡）。
+  function structureTrend(structure, frame = '4H') {
+    const sf = structure?.[frame], sd = structure?.['1D'];
+    const ev = sf?.current?.lastEvent;
+    if (sf?.current?.state !== 'bull' || sd?.current?.state !== 'bull' || !ev || ev.dir !== 'up') return null;
+    if (!['bos', 'continue', 'reversal', 'start'].includes(ev.type) || !(sf.lastEventAge <= 3)) return null;
+    if (sf.current.lastFake && sf.current.lastFake.index === ev.index) return null;
+    return { key: 'structure-trend', group: '結構延續', closed: !ev.provisional, level: ev.level, stop: sf.current.structureLow,
+      name: '雙極結構' + (ev.type === 'reversal' ? '轉多' : ev.type === 'continue' ? '延續' : '上移') + '：突破頂分型高點 ' + fmt(ev.level) +
+        (sf.lastEventAge ? '（' + sf.lastEventAge + ' 根前）' : ev.provisional ? '（未收 K）' : '（本根）') };
+  }
   // The engine feature that earned an observation without an entry pathway.
   function watchFeature(signal) {
     const pick = (signal.matchedReasons || []).find(text => /高低點|推進|同向量|放量|收復|壓力|支撐/.test(text));
     return pick ? pick.replace(/^\d+[HDWM]\s+/, '') : '同向結構仍成立';
   }
-  function evaluateLong({ signal, frames, money: moneyInfo, price, dailyContext, weeklyContext, dataGaps = [] }) {
+  function evaluateLong({ signal, frames, money: moneyInfo, price, dailyContext, weeklyContext, dataGaps = [], structure = null }) {
     const setupFrame = signal.frame || '4H';
     const { closed: bars, atr: a } = frameData(frames?.[setupFrame]);
     const result = { side: 'LONG', frame: setupFrame, triggerFrame: signal.triggerFrame || null, listed: false, t1: false, fillable: false, hard: false,
@@ -277,7 +290,7 @@
     const blockT1 = text => result.gates.push(text);
     const exclude = (text, soft = false) => { result.rejections.push(text); if (!soft) result.hard = true; };
     if (!(a > 0) || bars.length < 35) { exclude(setupFrame + ' 已收 K 歷史不足'); return result; }
-    let path = longPathway(signal, bars, a);
+    let path = signal.structureTrend || longPathway(signal, bars, a);
     if (!path) {
       // 沒有入選途徑：仍有引擎的同向觀察證據時只當補位，名稱寫明證據，不冒充突破。
       exclude('沒有入選途徑：未帶量接近有效壓力、未突破、也沒有結構反轉', true);
@@ -287,11 +300,13 @@
     result.pathway = path;
     const watch = path.key === 'watch';
     const last = bars.at(-1), live = finite(price) ? price : last.close;
-    const stop = signal.invalidation?.level ?? null;
+    const trend = path.key === 'structure-trend';
+    const stop = trend ? path.stop : signal.invalidation?.level ?? null;
     result.stop = stop;
 
-    // 結構失效、派發與舊壓力被貫穿：引擎已判定，直接沿用。
-    for (const r of signal.rejectionReasons || []) if (ENGINE_HARD.includes(r)) exclude(r);
+    // 結構失效、派發與舊壓力被貫穿：引擎已判定，直接沿用。結構延續以雙極結構為準，
+    // 經典引擎自己的「價格已破壞結構」不適用（結構底沒破就是極陽）。
+    for (const r of signal.rejectionReasons || []) if (ENGINE_HARD.includes(r) && !(trend && r === '最新價格已破壞結構')) exclude(r);
     if (!finite(stop) || live <= stop) exclude('價格已在結構失效位之下');
 
     // 過度拉升：所有途徑一律檢查（包含結構反轉）；超過 2 ATR 不算入選，只能補位且扣分照算。
@@ -320,7 +335,7 @@
       if (near && finite(path.level) && path.level - near.top.high <= 0.3 * a) { deduct('臨界處出現頂分型（被壓回）', 8); blockT1('臨界處被壓回'); }
     }
     if (path.key === 'forming') { deduct('尚未帶量，型態形成中', 10); blockT1('尚未帶量'); }
-    if (!path.closed && (path.key === 'pressure' || path.key === 'pattern' || path.key === 'structure-break' || path.key === 'reversal')) blockT1('突破尚未收 K');
+    if (!path.closed && (path.key === 'pressure' || path.key === 'pattern' || path.key === 'structure-break' || path.key === 'reversal' || trend)) blockT1('突破尚未收 K');
 
     // 小級別待確認：大級別機會保留，但不能進 T1。（觀察補位本來就不是入選，不再重複扣）
     const pending = !signal.eligible && !watch;
@@ -343,9 +358,38 @@
     if (!finite(moneyInfo.expansion)) blockT1('成交額歷史不足，無法判斷是否放大');
     else if (moneyInfo.expansion < RADAR_RULES.t1Expansion) blockT1('今日成交額為 7 日平均 ' + moneyInfo.expansion.toFixed(1) + ' 倍，未達 2 倍');
 
+    // 雙極結構：設定級別的極陽／平衡／極陰（日線、週線由 dailyContext／weeklyContext 計入）。
+    const sf = structure?.[setupFrame];
+    let structureBonus = 0;
+    if (sf?.current?.state && setupFrame !== '1D') {
+      const st = sf.current;
+      if (st.state === 'bull') structureBonus += 6;
+      else if (st.state === 'balance' && st.from === 'bull') { deduct(setupFrame + ' 跌破結構底（多空平衡），多方結構待重建', 6); blockT1(setupFrame + ' 結構平衡'); }
+      else if (st.state === 'balance') structureBonus += 2;
+      else if (st.state === 'bear') { deduct(setupFrame + ' 雙極結構仍為極陰', 10); blockT1(setupFrame + ' 結構極陰'); }
+    }
+    if (sf?.current?.state === 'bear' && setupFrame === '1D') blockT1('日線結構極陰');
+    // 1H 機會看上一級、1D 機會看啟動級別：4H 極陰＝逆向，扣分且不列 T1；4H 極陽小加分。
+    const s4 = (setupFrame === '1H' || setupFrame === '1D') ? structure?.['4H']?.current : null;
+    if (s4?.state === 'bear') { deduct('4H 雙極結構極陰（' + (setupFrame === '1D' ? '啟動級別' : '上一級') + '逆向）', 6); blockT1('4H 結構極陰'); }
+    else if (s4?.state === 'bull') structureBonus += 3;
+    if (setupFrame === '4H' && structure?.['1D']?.current?.state === 'bear') blockT1('日線結構極陰');
+    // 週線機會由日線啟動：日線極陰＝還沒轉強，只能補位；日線跌破結構底扣分；4H 極陰扣分。都不列 T1。
+    if (setupFrame === '1W') {
+      const d = structure?.['1D']?.current, h4 = structure?.['4H']?.current;
+      if (d?.state === 'bear') exclude('日線雙極結構極陰：週線機會等日線轉強', true);
+      else if (d?.state === 'balance' && d.from === 'bull') { deduct('日線跌破結構底（平衡）', 4); blockT1('日線結構平衡'); }
+      if (h4?.state === 'bear') { deduct('4H 雙極結構極陰', 6); blockT1('4H 結構極陰'); }
+    }
+    const freshTurn = sf?.current?.lastEvent && ['reversal', 'continue'].includes(sf.current.lastEvent.type) && sf.current.lastEvent.dir === 'up' && sf.lastEventAge <= 3;
+    if (freshTurn) structureBonus += 4;
+
     // 目標、盈虧比、幅度：引擎的下一個有效壓力＋日線／週線的前高、近期與今日高點、
     // 區間高點、爆量下跌起點、長上影；取最近的一個，當作第一個要面對的賣壓。
+    // 火箭模型：設定級別的爆量下跌起點、假突破高點也是牆（日線、週線的長上影已在上面）。
     const candidates = [...overheadLevels(frames, live, 1, a)];
+    const rocket = sf?.liquidity;
+    for (const w of rocket?.walls || []) if (w.dir === 1 && !w.larger) candidates.push({ level: w.price, label: setupFrame + ' ' + w.sources.join('＋'), frame: setupFrame, atr: a });
     if (signal.target && finite(signal.target.level)) candidates.push({ level: signal.target.level,
       label: signal.target.kind === 'historical-swing' ? (signal.target.frame || '') + ' 歷史前高' : setupFrame + ' 下一個有效壓力', frame: signal.target.frame || setupFrame });
     // 正在攻擊的壓力帶（觸發位附近、以及價格與觸發位之間的大級別壓力）屬於同一個區域，
@@ -366,21 +410,25 @@
 
     // 確定性
     const p = signal.pressure || {};
-    let certainty = { reversal: 26, 'structure-break': 22, pattern: 28, pressure: 26, prebreakout: 24, forming: 12, watch: 6 }[path.key] ?? 10;
+    let certainty = { reversal: 26, 'structure-break': 22, pattern: 28, pressure: 26, prebreakout: 24, forming: 12, watch: 6, 'structure-trend': 24 }[path.key] ?? 10;
     if (!path.closed && (path.key === 'pattern' || path.key === 'pressure' || path.key === 'reversal' || path.key === 'structure-break')) certainty -= 8;
     certainty += p.touches >= 4 ? 18 : p.touches === 3 ? 14 : p.touches === 2 ? 8 : 0;
     if (p.kind === 'horizontal') certainty += 4;
-    certainty += { '1W': 14, '1D': 10, '4H': 6, '1H': 0 }[setupFrame] || 0;
+    // 週線機會的級別加分要等日線啟動確認；還在等的先只算一般 4H 的加分，不讓未啟動的大級別擠掉現在就強的幣。
+    certainty += { '1W': signal.eligible ? 14 : 6, '1D': 10, '4H': 6, '1H': 0 }[setupFrame] || 0;
     if (path.key === 'pattern') certainty += 6;
     const d = signal.direction || {};
     certainty += (d.higherLows ? 6 : 0) + (d.higherHighs ? 3 : 0) + (d.confirmed ? 6 : 0);
     if (signal.eligible) certainty += 8;
     if (dailyContext === 'aligned') certainty += 6; else if (dailyContext === 'opposing') { certainty -= 8; result.deductions.push({ text: '日線結構仍逆向', points: 0 }); }
     if (weeklyContext === 'aligned') certainty += 4; else if (weeklyContext === 'opposing') certainty -= 4;
+    certainty += structureBonus;
     certainty = Math.round(clamp(certainty));
 
+    // 火箭模型：第一道牆之前若有緩跌燃料（上次下跌沒有量、K 線小又密），上去阻力小，幅度加分。
+    const fuel = (rocket?.fuel || []).filter(f => f.dir === 1 && (!target || f.bottom < target.level));
     const elements = { certainty, strength, rr: rr === null ? null : Number(rr.toFixed(2)), room: room === null ? null : Number(room.toFixed(4)),
-      rrScore: rrScore(rr), roomScore: roomScore(room) };
+      rrScore: rrScore(rr), roomScore: Math.min(100, roomScore(room) + 8 * Math.min(2, fuel.length)), fuel: fuel.length };
     result.elements = elements;
     let score = 0.35 * certainty + 0.30 * strength + 0.20 * elements.rrScore + 0.15 * elements.roomScore;
     score -= result.deductions.reduce((s, x) => s + x.points, 0);
@@ -396,8 +444,10 @@
     if (moneyInfo.turnover) result.matched.push('24H 成交額 ' + money(moneyInfo.turnover) + (finite(moneyInfo.expansion) ? ' · 7 日均 ' + moneyInfo.expansion.toFixed(1) + ' 倍' : ''));
     if (driven) result.matched.push('放量帶動價格上行 · 同向量 ' + Math.round((volume.upwardShare ?? signal.reversal?.upwardShare ?? 0) * 100) + '%');
     if (signal.eligible && signal.triggerFrame) result.matched.push(signal.triggerFrame + ' 啟動已確認');
-    if (dailyContext === 'aligned') result.matched.push('日線結構同向');
-    if (weeklyContext === 'aligned') result.matched.push('週線結構同向');
+    if (sf?.current?.state && setupFrame !== '1D') result.matched.push(setupFrame + ' 雙極結構 ' + stateText(sf.current) + (freshTurn ? ' · ' + sf.current.lastEvent.label + (sf.lastEventAge ? '（' + sf.lastEventAge + ' 根前）' : '（本根）') : ''));
+    if (dailyContext === 'aligned') result.matched.push(structure?.['1D'] ? '日線雙極結構 ' + stateText(structure['1D'].current) : '日線結構同向');
+    if (weeklyContext === 'aligned') result.matched.push(structure?.['1W'] ? '週線雙極結構 ' + stateText(structure['1W'].current) : '週線結構同向');
+    if (fuel.length) result.matched.push('火箭燃料 · 第一道牆前有 ' + fuel.length + ' 段緩跌（' + fuel.map(f => fmt(f.bottom) + '–' + fmt(f.top)).join('、') + '）');
     if (target) result.matched.push('目標 ' + target.label + ' ' + fmt(target.level) + '（' + pct(room) + '）' + (rr !== null ? ' · 盈虧比 ' + rr.toFixed(1) : ''));
     else result.matched.push(openSky ? '上方日線、週線已無未突破高點（約 ' + weeks + ' 週新高）· 空間以中性計算' : '上方歷史目標未辨識 · 不假設無限空間');
     if (finite(stop)) result.matched.push('結構失效 ' + fmt(stop));
@@ -415,6 +465,28 @@
   }
 
   // ---------- 空單：頂部確認 ----------
+  // ---------- 雙極結構與火箭模型（src/core/structure-engine.js、liquidity-engine.js） ----------
+  // 每個級別各自的極陽／平衡／極陰、結構底／頂與最近事件；設定級別另外算流動性（牆與燃料）。
+  // 兩個引擎沒載入時（例如舊快照或獨立測試）回傳 null，雷達照原本規則運作。
+  const STATE_CONTEXT = { bull: 'aligned', bear: 'opposing', balance: 'neutral' };
+  function structureContext(frames, { now } = {}) {
+    const engine = root.OXStructure;
+    if (!engine) return null;
+    const out = {};
+    for (const frame of ['1H', '4H', '1D', '1W']) {
+      const { closed, live, provisional } = frameData(frames?.[frame], now);
+      if (closed.length < 20) continue;
+      const bars = provisional && live ? [...closed, live] : closed;
+      const analysis = engine.analyze(bars, { lastOpen: !!provisional });
+      const lastIndex = bars.length - 1, ev = analysis.current.lastEvent;
+      out[frame] = { bars, analysis, current: analysis.current, lastEventAge: ev ? lastIndex - ev.index : null,
+        liquidity: root.OXLiquidity ? root.OXLiquidity.map(bars, { structure: analysis, lastOpen: !!provisional, frame }) : null };
+    }
+    return out;
+  }
+  const stateText = c => c?.label ? c.label + (c.state === 'bull' && finite(c.structureLow) ? '（結構底 ' + fmt(c.structureLow) + '）' :
+    c.state === 'bear' && finite(c.structureHigh) ? '（結構頂 ' + fmt(c.structureHigh) + '）' : '') : '';
+
   function topStructure(input, { now } = {}) {
     const { closed: bars, live, provisional, atr: a } = frameData(input, now);
     const n = bars.length;
@@ -432,10 +504,20 @@
     let confirmedAt = -1; for (let i = h + 1; i < n; i++) if (bars[i].low < bars[h].low) { confirmedAt = i; break; }
     const liveBreak = confirmedAt < 0 && provisional && live.low < bars[h].low;
     const piv = pivots(bars, 2);
-    const structureLow = piv.lows.filter(p => p.index > l && p.index < h).at(-1) || null;
+    let structureLow = piv.lows.filter(p => p.index > l && p.index < h).at(-1) || null;
     const after = bars.slice(h + 1);
     // 跌破與突破一樣，影線碰到就算（使用者定義）。
-    const structureBroken = !!structureLow && (after.some(c => c.low < structureLow.price) || provisional && live.low < structureLow.price);
+    let structureBroken = !!structureLow && (after.some(c => c.low < structureLow.price) || provisional && live.low < structureLow.price);
+    // 有雙極結構引擎時，結構底改用使用者定義（頂分型後的回調低點，突破頂分型高點時成立），
+    // 與圖表上的雙極結構指標一致：頂部之後跌破結構底＝已跌破；仍是極陽＝目前的結構底。
+    if (root.OXStructure) {
+      const all = provisional && live ? [...bars, live] : bars;
+      const s = root.OXStructure.analyze(all, { lastOpen: !!provisional });
+      const brk = s.events.find(e => e.type === 'balance' && e.dir === 'down' && e.index > h);
+      if (brk) { structureLow = { index: brk.index, price: brk.level, time: all[brk.index].time }; structureBroken = true; }
+      else if (s.current.state === 'bull') { const seg = s.segments.find(g => g.kind === 'low' && g.endIndex == null); structureLow = seg ? { index: seg.index, price: seg.price, time: seg.time } : null; structureBroken = false; }
+      else { structureLow = null; structureBroken = s.current.state === 'bear'; }
+    }
     const price = provisional && live ? live.close : bars.at(-1).close;
     const retrace = (H - price) / Math.max(H - L, a);
     const dropATR = (bars[h].low - price) / a;
@@ -445,7 +527,7 @@
     return { bars, a, n, h, l, H, L, top: bars[h], rallyPct, rallyATR, nakedRun, strongRally, liveNewHigh, confirmedAt, liveBreak,
       fresh: confirmedAt >= 0 && n - 1 - confirmedAt <= RADAR_RULES.topFreshBars, structureLow, structureBroken, price, retrace, dropATR, downShare };
   }
-  function evaluateShort({ frames, money: moneyInfo, price, dataGaps = [] }) {
+  function evaluateShort({ frames, money: moneyInfo, price, dataGaps = [], structure = null }) {
     const result = { side: 'SHORT', frame: '4H', triggerFrame: '1H', listed: false, t1: false, fillable: false, hard: false, pathway: null, elements: null, score: null,
       matched: [], deductions: [], gates: [], rejections: [], stop: null, target: null };
     const t4 = topStructure(frames?.['4H']), t1h = topStructure(frames?.['1H']), t1d = topStructure(frames?.['1D']);
@@ -503,6 +585,8 @@
     const stop = t4.H;
     result.stop = stop;
     const candidates = [...overheadLevels(frames, live, -1, a)];
+    const s4 = structure?.['4H'], rocket = s4?.liquidity;
+    for (const w of rocket?.walls || []) if (w.dir === -1 && !w.larger) candidates.push({ level: w.price, label: '4H ' + w.sources.join('＋'), frame: '4H', atr: a });
     if (t4.structureLow && !t4.structureBroken) candidates.push({ level: t4.structureLow.price, label: '4H 結構底', frame: '4H' });
     candidates.push({ level: t4.L, label: watch ? '4H 前段低點' : '4H 急漲起點', frame: '4H' });
     const target = nearestTarget(candidates, live, 0.5 * a, -1);
@@ -523,9 +607,15 @@
     if (dailyStructureBreak) certainty += 8;
     if (t4.fresh && t4.n - 1 - t4.confirmedAt <= 3) certainty += 4;
     if (dailyStrong) certainty -= 8;
+    // 雙極結構：4H、日線已是極陰＝下跌結構成立；日線仍極陽則扣分（大級別多方結構未破）。
+    const s1d = structure?.['1D']?.current;
+    if (s4?.current?.state === 'bear') certainty += 4;
+    if (s1d?.state === 'bear') certainty += 4;
+    else if (s1d?.state === 'bull' && !dailyStrong) deduct('日線雙極結構仍為極陽', 4);
     certainty = Math.round(clamp(certainty));
+    const fuel = (rocket?.fuel || []).filter(f => f.dir === -1 && (!target || f.top > target.level));
     const elements = { certainty, strength: Math.round(clamp(strength)), rr: rr === null ? null : Number(rr.toFixed(2)),
-      room: room === null ? null : Number(room.toFixed(4)), rrScore: rrScore(rr), roomScore: roomScore(room) };
+      room: room === null ? null : Number(room.toFixed(4)), rrScore: rrScore(rr), roomScore: Math.min(100, roomScore(room) + 8 * Math.min(2, fuel.length)), fuel: fuel.length };
     result.elements = elements;
     let score = 0.35 * certainty + 0.30 * elements.strength + 0.20 * elements.rrScore + 0.15 * elements.roomScore;
     score -= result.deductions.reduce((s, x) => s + x.points, 0);
@@ -540,6 +630,9 @@
     result.matched.push('頂部 ' + fmt(t4.H) + ' · 最高 K 低點 ' + fmt(t4.top.low));
     if (t4.structureBroken && t4.structureLow) result.matched.push('4H 結構底 ' + fmt(t4.structureLow.price) + ' 已跌破');
     if (dailyTop) result.matched.push('日線頂分型已確認');
+    if (s4?.current?.state) result.matched.push('4H 雙極結構 ' + stateText(s4.current));
+    if (s1d?.state) result.matched.push('日線雙極結構 ' + stateText(s1d));
+    if (fuel.length) result.matched.push('火箭燃料 · 下方第一道牆前有 ' + fuel.length + ' 段緩漲（' + fuel.map(f => fmt(f.bottom) + '–' + fmt(f.top)).join('、') + '）');
     if (dailyStructureBreak) result.matched.push('日線結構第一次跌破（大級別結構反轉）');
     if (moneyInfo.turnover) result.matched.push('24H 成交額 ' + money(moneyInfo.turnover) + (finite(moneyInfo.expansion) ? ' · 7 日均 ' + moneyInfo.expansion.toFixed(1) + ' 倍' : ''));
     if (driven) result.matched.push('下跌量能占 ' + Math.round(t4.downShare * 100) + '%');
@@ -570,7 +663,7 @@
     const covered = new Set(longSignals.filter(Boolean).filter(s => s.eligible || s.observationEligible).map(s => s.frame));
     return setupSignals.filter(Boolean).filter(s => (s.eligible || s.observationEligible) && !covered.has(s.frame))
       .map(s => ({ ...s, eligible: false, observationEligible: true, pendingTrigger: true,
-        triggerFrame: s.frame === '1D' ? '4H' : '1H' }));
+        triggerFrame: s.frame === '1W' ? '1D' : s.frame === '1D' ? '4H' : '1H' }));
   }
   function evaluateSymbol({ symbol, contract, ticker, frames, longSignals = [], setupSignals = [], dataGaps = [], price }) {
     const product = productClass(symbol, contract);
@@ -579,16 +672,30 @@
       return { ...base, excluded: PRODUCT_LABEL[product] + '不參與加密雷達排名', long: null, short: null };
     const moneyInfo = moneyEvidence(ticker, frames?.['1D']);
     const live = finite(price) ? price : Number(ticker?.lastPr);
-    const dailyContext = frameContext(frames?.['1D']), weeklyContext = frameContext(frames?.['1W']);
+    // 日線、週線背景：有雙極結構引擎時直接用它的狀態（極陽＝同向、極陰＝逆向、平衡＝中性），
+    // 與圖表指標一致；沒有時沿用高低點判斷。
+    const structure = structureContext(frames);
+    const contextOf = frame => structure ? (structure[frame] ? STATE_CONTEXT[structure[frame].current.state] || 'neutral' : null) : frameContext(frames?.[frame]);
+    const dailyContext = contextOf('1D'), weeklyContext = contextOf('1W');
     const evaluated = [...longSignals.filter(Boolean).filter(s => s.eligible || s.observationEligible), ...pendingSetups(longSignals, setupSignals)]
-      .map(signal => evaluateLong({ signal, frames, money: moneyInfo, price: live, dailyContext, weeklyContext, dataGaps }));
+      .map(signal => evaluateLong({ signal, frames, money: moneyInfo, price: live, dailyContext, weeklyContext, dataGaps, structure }));
+    // 經典引擎沒有入選途徑、但雙極結構是強勢延續的幣：用 4H 的引擎資料（量能、方向）加上結構途徑評估。
+    const trend = !evaluated.some(r => r.listed) ? structureTrend(structure, '4H') : null;
+    if (trend) {
+      const base = longSignals.find(s => s?.frame === '4H') || setupSignals.find(s => s?.frame === '4H') || { frame: '4H' };
+      const confirmed = trend.closed && structure['1H']?.current?.state !== 'bear';
+      evaluated.push(evaluateLong({ signal: { ...base, frame: '4H', triggerFrame: '1H', structureTrend: trend, eligible: confirmed, pendingTrigger: false },
+        frames, money: moneyInfo, price: live, dailyContext, weeklyContext, dataGaps, structure }));
+    }
     // 同一檔取最好的一組：完整入選（T1 優先）→ 補位候選 → 其他有途徑的結果。
     const rank = r => r.listed ? (r.t1 ? 0 : 1) : r.fillable ? 2 : r.pathway ? 3 : 4;
     let long = evaluated.sort((x, y) => rank(x) - rank(y) || (y.score ?? -1) - (x.score ?? -1))[0] || null;
     if (!long) long = { side: 'LONG', listed: false, t1: false, fillable: false, hard: true, pathway: null, elements: null, score: null, matched: [], deductions: [], gates: [],
       rejections: ['沒有入選途徑：未帶量接近有效壓力、未突破、也沒有結構反轉', ...(longSignals.find(Boolean)?.rejectionReasons || []).slice(0, 3)] };
-    const short = evaluateShort({ frames, money: moneyInfo, price: live, dataGaps });
-    return { ...base, money: moneyInfo, dailyContext, weeklyContext, long, short };
+    const short = evaluateShort({ frames, money: moneyInfo, price: live, dataGaps, structure });
+    const states = structure ? Object.fromEntries(Object.entries(structure).map(([frame, x]) => [frame, { state: x.current.state, label: x.current.label,
+      structureLow: x.current.structureLow, structureHigh: x.current.structureHigh, since: x.current.bars }])) : null;
+    return { ...base, money: moneyInfo, dailyContext, weeklyContext, structure: states, long, short };
   }
 
   // ---------- 排名 ----------
@@ -610,5 +717,5 @@
   }
 
   root.OXRadarStrategy = Object.freeze({ RADAR_STRATEGY_VERSION, RADAR_RULES, TIER_LIMITS, productClass, PRODUCT_LABEL, moneyEvidence,
-    evaluateLong, evaluateShort, topStructure, evaluateSymbol, rankRadar, frameContext });
+    evaluateLong, evaluateShort, topStructure, evaluateSymbol, rankRadar, frameContext, structureContext, structureTrend });
 })(globalThis);
