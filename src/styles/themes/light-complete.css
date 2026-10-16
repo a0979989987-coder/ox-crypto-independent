@@ -114,6 +114,8 @@
     body.theme-light .detail-reason { color:#52647b !important; }
     body.theme-light .detail-reason.ok { color:#158a6d !important; }
     body.theme-light .detail-reason.wait { color:#9f7516 !important; }
+    body.theme-light .detail-reason.minus { color:#b8551c !important; }
+    body.theme-light .detail-reason.no { color:#a23549 !important; }
     body.theme-light .alert-chip {
       color:#536a83 !important;
       background:#f3f7fb !important;

@@ -64,6 +64,8 @@
 .theme-midnight .badge-t1{background:#f7bd5226;color:var(--gold);border:1px solid #f7bd5255}
 .theme-midnight .badge-t2{background:#5ca5ff26;color:var(--blue);border:1px solid #5ca5ff55}
 .theme-midnight .badge-t3{background:#ad7cff26;color:var(--purple);border:1px solid #ad7cff55}
+.theme-midnight .badge-fill{background:transparent;color:var(--muted);border:1px dashed var(--muted)}
+.theme-midnight .coin-fill-mark{color:var(--muted);border:1px dashed var(--muted)}
 .theme-midnight .badge-surge{background:#ff708826;color:var(--red);border:1px solid #ff708855}
 .theme-midnight .badge-long{background:#38c99b24;color:var(--green);border:1px solid #38c99b55}
 .theme-midnight .badge-short{background:#ee617c24;color:var(--red);border:1px solid #ee617c55}
@@ -91,6 +93,8 @@
 .theme-midnight .detail-reason{color:#b8c7d9}
 .theme-midnight .detail-reason.ok{color:#8fe4c3}
 .theme-midnight .detail-reason.wait{color:#e4c978}
+.theme-midnight .detail-reason.minus{color:#f0a46b}
+.theme-midnight .detail-reason.no{color:#d98a96}
 .theme-midnight .alert-state-row{border-top:1px solid var(--line)}
 .theme-midnight .alert-chip{color:#bdd0e4;background:var(--mi-surface-2);border:1px solid #304764}
 @media (max-width: 720px){.theme-midnight .coin-symbol-mobile{color:var(--ink)}

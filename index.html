@@ -39,15 +39,15 @@
   <!-- build-refine: v3.8-ui-glass-fluid-2026-09-22 -->
   <!-- TradingView Lightweight Charts™ Copyright (c) TradingView, Inc. https://www.tradingview.com/ -->
   <script defer src="src/vendor/lightweight-charts-4.2.3.js"></script>
-  <link rel="stylesheet" href="src/styles/core/foundation.css?v=20261005-touch1">
-  <link rel="stylesheet" href="src/styles/components/benchmark-alert-detail.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/core/foundation.css?v=20261016-radar2">
+  <link rel="stylesheet" href="src/styles/components/benchmark-alert-detail.css?v=20261016-radar1">
   <link rel="stylesheet" href="src/styles/layout/three-view-shell.css?v=20261004-markets2">
   <link rel="stylesheet" href="src/styles/releases/v31-ui-refinement.css?v=20261004-markets2">
   <link rel="stylesheet" href="src/styles/layout/command-center.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/navigation/compact-dock.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/navigation/final-dock.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/themes/light-system.css?v=20261001-tiercomb2">
-  <link rel="stylesheet" href="src/styles/themes/light-complete.css?v=20261001-tiercomb2">
+  <link rel="stylesheet" href="src/styles/themes/light-complete.css?v=20261016-radar1">
   <link rel="stylesheet" href="src/styles/themes/light-readability.css?v=20261001-tiercomb2" media="not all" data-ox-theme-css="light">
   <link rel="stylesheet" href="src/styles/components/control-center.css?v=20261001-tiercomb2">
   <link rel="stylesheet" href="src/styles/layout/compact-header.css?v=20261001-tiercomb2">
@@ -477,18 +477,18 @@
       <span class="pill" id="detail-tier">Benchmark</span>
     </div>
     <div class="detail-grid">
-      <div class="detail-cell"><label>OX Score</label><strong id="detail-ox">—</strong></div>
-      <div class="detail-cell"><label>流動性</label><strong id="detail-liq">—</strong></div>
-      <div class="detail-cell"><label>資金活躍</label><strong id="detail-flow">—</strong></div>
-      <div class="detail-cell"><label>結構</label><strong id="detail-structure">—</strong></div>
-      <div class="detail-cell"><label>Relative Strength</label><strong id="detail-rs">—</strong></div>
-      <div class="detail-cell"><label>Setup</label><strong id="detail-setup">—</strong></div>
+      <div class="detail-cell"><label>OX 綜合分</label><strong id="detail-ox">—</strong></div>
+      <div class="detail-cell"><label>確定性</label><strong id="detail-liq">—</strong></div>
+      <div class="detail-cell"><label>強度</label><strong id="detail-flow">—</strong></div>
+      <div class="detail-cell"><label>盈虧比</label><strong id="detail-structure">—</strong></div>
+      <div class="detail-cell"><label>幅度</label><strong id="detail-rs">—</strong></div>
+      <div class="detail-cell"><label>入選途徑</label><strong id="detail-setup">—</strong></div>
       <div class="detail-cell"><label>方向</label><strong id="detail-side">—</strong></div>
-      <div class="detail-cell"><label>Setup Progress</label><strong id="detail-progress-text">—</strong><div class="detail-progress"><i id="detail-progress-bar"></i></div></div>
+      <div class="detail-cell"><label>綜合分進度</label><strong id="detail-progress-text">—</strong><div class="detail-progress"><i id="detail-progress-bar"></i></div></div>
       <div class="detail-cell"><label>入選狀態</label><strong id="detail-confidence">—</strong></div>
-      <div class="detail-cell"><label>Trigger</label><strong id="detail-trigger">—</strong></div>
+      <div class="detail-cell"><label>途徑類型</label><strong id="detail-trigger">—</strong></div>
       <div class="detail-cell detail-volume-cell"><label>24H USDT 成交量</label><strong id="detail-volume">—</strong></div>
-      <div class="detail-cell"><label>前高 / 前低</label><strong id="detail-levels">—</strong></div>
+      <div class="detail-cell"><label>目標 / 結構失效</label><strong id="detail-levels">—</strong></div>
     </div>
     <div class="detail-reasons">
       <h4>為什麼 OX 選到這顆？</h4>
@@ -788,10 +788,11 @@
 <script src="src/core/classic-engine.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/liquidity-policy.js?v=20261015-utc1"></script>
 <script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
-<script src="src/markets/crypto/scanner.js?v=20261015-weekly2"></script>
+<script src="src/markets/crypto/radar-strategy.js?v=20261016-radar2"></script>
+<script src="src/markets/crypto/scanner.js?v=20261016-radar2"></script>
 <script src="src/components/chart/gestures.js?v=20261007-tools2"></script>
 <script src="src/components/chart/workspace.js?v=20261015-review1"></script>
-<script src="src/markets/crypto/presentation.js?v=20261015-reason1"></script>
+<script src="src/markets/crypto/presentation.js?v=20261016-radar2"></script>
 <script src="src/components/account/store.js?v=20261007-stable-dialog8"></script>
 <script src="src/components/control-panel/feature-pack.js?v=20261005-first24"></script>
 <script src="src/components/navigation/runtime-actions.js?v=20261015-rescan1"></script>

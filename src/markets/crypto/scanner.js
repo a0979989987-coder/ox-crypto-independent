@@ -1,7 +1,7 @@
 const WATCH_STAR_SVG = '<svg class="watch-star-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91Z"/></svg>';
 
 const RADAR_RETAIN_MS=2*60*60*1000;
-const RADAR_SNAPSHOT_KEY = 'ox-radar-snapshot-v8-liquidity';
+const RADAR_SNAPSHOT_KEY = 'ox-radar-snapshot-v9-strategy';
 // Scan active liquid markets first; eligibility and final T1/T2/T3 ranking
 // still use the unchanged structural/volume engine after fetching candles.
 function orderCryptoScanTickers(tickers){const sorted=[...tickers].sort((a,b)=>
@@ -28,7 +28,9 @@ function restoreRadarSnapshot() {
     const tickers = new Map(state.tickers.map(t=>[t.symbol,t]));
     for (const row of snapshot.rows) {
       const ticker=tickers.get(row.symbol);
-      if (!ticker || !isCryptoSymbolAllowed(row.symbol) || !['long','short'].some(side=>
+      const strategyListed=!!row.radar&&row.radar.version===globalThis.OXRadarStrategy?.RADAR_STRATEGY_VERSION&&
+        ['long','short'].some(side=>row.radar[side]?.listed||row.radar[side]?.fillable);
+      if (!ticker || !isCryptoSymbolAllowed(row.symbol) || !strategyListed&&!['long','short'].some(side=>
         OXClassic.qualifyClassicRow(row,side,{observations:true}))) continue;
       state.analyzedCache.set(row.symbol,OXEngine.withTurnover({...row,ticker,change24h:num(ticker.change24h)},ticker.usdtVolume));
     }
@@ -122,6 +124,9 @@ function cryptoFrameTier(row,frame,side) {
 // Contracts below the lowest turnover band never enter the scan pool or the
 // ranking. liquidity-policy.js keeps the band caps for everything above it.
 const scanTurnoverOK=turnover=>{const value=Number(turnover);return Number.isFinite(value)&&value>=(OXCryptoLiquidity.MIN_SCAN_TURNOVER??300000);};
+// Stablecoins and gold-backed tokens are separate products: they never share
+// the crypto radar ranking. BTC/ETH stay benchmarks (see benchmarkSymbols).
+const radarProductOK=symbol=>{const cls=globalThis.OXRadarStrategy?.productClass(symbol,state.instrumentCatalog?.get(symbol));return cls!=='stablecoin'&&cls!=='gold-token';};
 // A missing frame is marked on the row and its setups cannot be T1. The
 // liquidity policy keeps the lowered tier as rawTier, so turnover can never
 // promote it back.
@@ -213,7 +218,7 @@ async function refreshMarketTickers() {
 
     // Rank the whole active crypto universe. The former 3m turnover cutoff
     // silently removed genuine lower-turnover setups before they were scored.
-    const eligible = state.tickers.filter(t => scanTurnoverOK(t.usdtVolume));
+    const eligible = state.tickers.filter(t => scanTurnoverOK(t.usdtVolume)&&radarProductOK(t.symbol));
     const scanOrder=orderCryptoScanTickers(eligible);
     
     if (!state.scanQueue.length) {
@@ -325,8 +330,17 @@ async function runScanQueueLoop() {
         if(frames['1H'].length<OXClassic.CLASSIC_RULES.minimumBars||
            frames['4H'].length<OXClassic.CLASSIC_RULES.minimumBars)throw Error('核心級別 K 線不足');
         const dailySetup=side=>OXClassic.evaluateFrames(frames,{side,setupFrame:'1D',triggerFrame:'4H',confirmationFrame:'1H'});
+        const fourHour=side=>OXClassic.evaluateFrames(frames,{side,setupFrame:'4H',triggerFrame:'1H'});
         let daily={long:dailySetup('long'),short:dailySetup('short')},weeklyGap=false;
-        if(!dailyGap&&Object.values(daily).some(s=>s.eligible||s.observationEligible)){
+        // Weekly bars give daily setups their overhead check and give any long
+        // candidate the weekly structure / remaining-space context.
+        const fourHourLong=fourHour('long');
+        // Each setup frame on its own (with its larger context): a qualifying
+        // setup stays visible as "smaller frame pending" in the strategy layer.
+        const standalone=side=>[OXClassic.evaluateClassic(frames['4H'],{side,frame:'4H',contextFrame:'1D',contextBars:frames['1D']}),
+          ...(frames['1D'].length?[OXClassic.evaluateClassic(frames['1D'],{side,frame:'1D',contextFrame:'1W',contextBars:frames['1W']})]:[])];
+        const qualifies=s=>s.eligible||s.observationEligible;
+        if(!dailyGap&&(Object.values(daily).some(qualifies)||qualifies(fourHourLong)||standalone('long').some(qualifies))){
           try {frames['1W']=await fetchWeeklyContext(symbol);}
           catch (error) {if(error?.name==='AbortError')throw error;weeklyGap=true;}
           // The weekly request can outlive the view or the pass that started it.
@@ -334,15 +348,21 @@ async function runScanQueueLoop() {
           if(frames['1W'])daily={long:dailySetup('long'),short:dailySetup('short')};
         }
         const dataGaps=[...(dailyGap?['1D']:[]),...(weeklyGap?['1W']:[])];
-        const classic=Object.fromEntries(['long','short'].map(side=>{
-          const signals=[OXClassic.evaluateFrames(frames,{side,setupFrame:'4H',triggerFrame:'1H'}),
+        const sideSignals=Object.fromEntries(['long','short'].map(side=>{
+          const signals=[side==='long'?fourHourLong:fourHour('short'),
             weeklyGap?markDataGap(daily[side],'週線 K 線暫缺，未確認週線上方空間'):daily[side]];
           const fast=intradayClassicObservation(frames,side);
           if(fast)signals.push(fast);
+          return [side,signals];
+        }));
+        const classic=Object.fromEntries(Object.entries(sideSignals).map(([side,signals])=>{
           const ranked=signals.map(s=>dailyGap?markDataGap(s,'日線 K 線暫缺'):s);
           const qualified=ranked.filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
           return [side,qualified[0]||ranked[0]];
         }));
+        // 雷達策略層：入選途徑、資金、扣分、四要素與頂部確認空單。
+        const radar=globalThis.OXRadarStrategy?.evaluateSymbol({symbol,contract:state.instrumentCatalog?.get(symbol),ticker,frames,
+          longSignals:sideSignals.long,setupSignals:standalone('long'),dataGaps,price:num(ticker.lastPr)})||null;
         const candidates=Object.values(classic).filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
         const signal=candidates[0]||classic.long;
         const row=OXEngine.describe(signal,classic),liq=OXEngine.computeLiquidity(ticker,state.tickers),rs=OXEngine.computeRelativeStrength(ticker,state.btcTicker);
@@ -354,7 +374,7 @@ async function runScanQueueLoop() {
           catch {timeframeTiers[rule.frame]=null;}
         }));
         state.analyzedCache.set(symbol, OXEngine.withTurnover({
-          ...row,timeframeTiers,dataGaps,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
+          ...row,timeframeTiers,dataGaps,radar,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
           signalFrame:signal.frame||'4H',triggerFrame:signal.triggerFrame||'1H',sparkline:candles.slice(-24).map(c=>c.close),
           liqScore:liq.score,rsScore:rs.score,quoteVol:liq.quoteVol,liqPercentile:liq.percentileStr,
           reasons:row.reasons,
@@ -362,7 +382,7 @@ async function runScanQueueLoop() {
           ret24h:candleReturn(candles,24),
         },ticker.usdtVolume));
         passCompleted++;radarRankDirty=true;
-        const firstCandidate=(signal.eligible||signal.observationEligible)&&
+        const firstCandidate=(radar?['long','short'].some(side=>radar[side]?.listed||radar[side]?.fillable):(signal.eligible||signal.observationEligible))&&
           !['t1','t2','t3'].some(tier=>['long','short'].some(side=>state.tierMapBySide?.[side]?.[tier]?.length));
         publishRadarProgress(firstCandidate);
       } catch (e) {if(e?.name!=='AbortError'&&state.activeMarket==='crypto'&&['home','radar'].includes(state.activeView))passFailed++;} finally { const n=(initialScanLoading?.done||0)+1;if(initialScanLoading){initialScanLoading.done=n;initialScanLoading.update(n,state.scanQueue.length);} }
@@ -378,7 +398,7 @@ async function runScanQueueLoop() {
       passFailedEntirely=passCompleted===0;radarPassId++;
       // Refresh the universe between full passes so newly listed contracts
       // can enter the radar without a page reload.
-      state.scanQueue=orderCryptoScanTickers(state.tickers.filter(t=>scanTurnoverOK(t.usdtVolume))).map(t=>t.symbol);
+      state.scanQueue=orderCryptoScanTickers(state.tickers.filter(t=>scanTurnoverOK(t.usdtVolume)&&radarProductOK(t.symbol))).map(t=>t.symbol);
       state.scanIndex = 0;
       state.radarSnapshotReady = passCompleted>0&&passFailed===0;
       state.radarScanFailed = passFailed>0||passCompleted===0;
@@ -407,16 +427,40 @@ function radarSideRows(row) {
       triggerFrame:signal.triggerFrame,reasons:described.reasons}];
   });
 }
+// A strategy row for one side: the radar decision decides membership, score
+// and wording. Live price beyond the structure invalidation drops the row.
+// Fill candidates (only soft rejections) may take the T2／T3 places the
+// selected rows leave empty, never T1, and never on the side opposite to a
+// side where the coin is actually selected.
+function radarRowFor(c,side,tickers){
+  const r=c.radar?.[side],other=c.radar?.[side==='long'?'short':'long'];
+  if(!(r?.listed||r?.fillable)||!r.elements||!r.pathway)return null;
+  // One coin, one direction: a fill never sits opposite a selection, and a
+  // coin selected on both sides stays only where it scores higher (score,
+  // then certainty, then strength; an exact tie stays on the long side).
+  const edge=other?.listed&&r.listed?(other.score-r.score)||((other.elements?.certainty??0)-(r.elements?.certainty??0))||
+    ((other.elements?.strength??0)-(r.elements?.strength??0)):0;
+  if(other?.listed&&(!r.listed||edge>0||edge===0&&side==='short'))return null;
+  const price=num(tickers.get(c.symbol)?.lastPr)||c.lastPrice;
+  if(price&&Number.isFinite(r.stop)&&(side==='long'?price<r.stop:price>r.stop))return null;
+  const deductions=(r.deductions||[]).filter(d=>d.points>0),fill=!r.listed;
+  return {...c,side:side.toUpperCase(),radarSide:r,radarFill:fill,oxScore:r.score,signalFrame:r.frame,triggerFrame:r.triggerFrame,
+    setupName:'OX 雷達 · '+(fill?'補位':r.pathway.group),statusText:r.pathway.name,rankStatus:r.pathway.name,
+    reasons:[...(fill?['補位（未完全入選）：'+(r.fillReason||'條件不足')]:[]),...(r.matched||[]).slice(0,fill?3:4),
+      ...deductions.slice(0,2).map(d=>d.text+' −'+d.points)],observationOnly:!r.t1};
+}
 function rebuildTierLists() {
   const tierConfig=globalThis.OXTierFilters?.get('crypto');
   const tickers=tickerIndex();
+  const strategy=globalThis.OXRadarStrategy,useStrategy=!tierConfig?.enabled&&!!strategy;
   const rankedPool=Array.from(state.analyzedCache.values())
-    .filter(c=>isCryptoSymbolAllowed(c.symbol))
+    .filter(c=>isCryptoSymbolAllowed(c.symbol)&&radarProductOK(c.symbol))
     .map(c=>OXEngine.withTurnover(c,tickers.get(c.symbol)?.usdtVolume??c.quoteVol))
     // Known turnover below the scan floor drops out (e.g. a restored snapshot
     // row whose live 24H turnover has since fallen under 300,000 USDT).
     .filter(c=>c.quoteVol===null||c.quoteVol===undefined||scanTurnoverOK(c.quoteVol))
-    .flatMap(c=>tierConfig?.enabled?[c]:radarSideRows(c)).filter(c=>{
+    .flatMap(c=>tierConfig?.enabled||useStrategy?[c]:radarSideRows(c)).filter(c=>{
+    if(useStrategy)return !benchmarkSymbols.has(c.symbol)&&c.radar?.version===strategy.RADAR_STRATEGY_VERSION&&(!c.at||Date.now()-c.at<=RADAR_RETAIN_MS);
     if(benchmarkSymbols.has(c.symbol)||(!tierConfig?.enabled&&!OXClassic.qualifyClassicRow(c,c.side,{observations:true})))return false;
     const signal=c.classicSignal,price=num(tickers.get(c.symbol)?.lastPr)||c.lastPrice;
     if(!tierConfig?.enabled&&price&&signal?.invalidation?.level){const dir=c.side==='SHORT'?-1:1;
@@ -458,15 +502,23 @@ function rebuildTierLists() {
       .filter(row => row.tier.toLowerCase() === tier).map(row => ({...row,tier,displayTier:tier}))]));
   };
 
-  // 保留原本 combined tierMap 供首頁、OX LIVE、其他既有模組讀取。
-  const combined = buildTierSet(allAnalyzed.filter(c => c.side === "LONG"));
-  const longPool = allAnalyzed.filter(c => String(c.side || "").toUpperCase() === "LONG");
-  const shortPool = allAnalyzed.filter(c => String(c.side || "").toUpperCase() === "SHORT");
-  // 雷達則使用獨立六榜：LONG T1/T2/T3 與 SHORT T1/T2/T3，各自從全市場符合方向者重新排名。
-  state.tierMapBySide = {
-    long: buildTierSet(longPool),
-    short: buildTierSet(shortPool)
+  const strategyTierSet=side=>{
+    const ranked=strategy.rankRadar(allAnalyzed.map(c=>radarRowFor(c,side,tickers)).filter(Boolean));
+    return Object.fromEntries(['t1','t2','t3'].map(tier=>[tier,ranked[tier].map(row=>({...row,tier,displayTier:tier,
+      qualityTier:row.radarSide.t1?'T1':null}))]));
   };
+  if(useStrategy){
+    // 雷達策略：多單依入選途徑與四要素排名，空單改用頂部確認，各自獨立成榜。
+    state.tierMapBySide={long:strategyTierSet('long'),short:strategyTierSet('short')};
+  } else {
+    // 雷達則使用獨立六榜：LONG T1/T2/T3 與 SHORT T1/T2/T3，各自從全市場符合方向者重新排名。
+    state.tierMapBySide = {
+      long: buildTierSet(allAnalyzed.filter(c => String(c.side || "").toUpperCase() === "LONG")),
+      short: buildTierSet(allAnalyzed.filter(c => String(c.side || "").toUpperCase() === "SHORT"))
+    };
+  }
+  // 保留原本 combined tierMap 供首頁、OX LIVE、其他既有模組讀取。
+  const combined = useStrategy ? state.tierMapBySide.long : buildTierSet(allAnalyzed.filter(c => c.side === "LONG"));
 
   const surge = allAnalyzed.filter(c => c.isSurge).sort((a, b) => b.flowScore - a.flowScore).slice(0, 15);
   const gainers = state.tickers.filter(t => num(t.change24h) > 0 && !benchmarkSymbols.has(t.symbol))
@@ -480,6 +532,17 @@ function rebuildTierLists() {
   if (state.activeView === 'strength') renderMarketStrength();
   if (state.activeView === 'home') renderHomeOverview();
   renderOxLive();
+}
+
+// 四要素：確定性、盈虧比、幅度、強度（使用者的進場要素）。未知空間顯示「—」，不假設無限空間。
+function radarElementPills(r){
+  const e=r.elements||{},sign=r.side==='SHORT'?'−':'+';
+  const room=e.room===null||e.room===undefined?'—':sign+(e.room*100).toFixed(e.room>=.1?0:1)+'%';
+  const rr=e.rr===null||e.rr===undefined?'—':e.rr.toFixed(1);
+  return `<span class="score-pill" title="確定性：途徑、壓力測試次數、級別與結構">確定性 ${e.certainty??'—'}</span>`+
+    `<span class="score-pill" title="盈虧比：到目標的距離 ÷ 到結構失效的距離">盈虧比 ${rr}</span>`+
+    `<span class="score-pill" title="幅度：到下一個目標的剩餘空間">幅度 ${room}</span>`+
+    `<span class="score-pill" title="強度：成交額、相對 7 日平均的放大倍數與量價配合">強度 ${e.strength??'—'}</span>`;
 }
 
 function renderCurrentTab() {
@@ -588,7 +651,7 @@ function renderCurrentTab() {
     // Follow real group boundaries even while a scan or custom filter has fewer results.
     const nextTier=list[idx+1] && (list[idx+1].displayTier||list[idx+1].tier||'t3');
     const endsTier=combinedRadar && nextTier && nextTier!==displayTier;
-    return [tab+':'+c.symbol+':'+c.side, `<div class="coin-card ${startsTier?'is-tier-start ':''}${endsTier?'is-tier-end ':''}${c.symbol === state.symbol ? 'selected' : ''}" data-symbol="${escapeHtml(c.symbol)}" data-tier="${displayTier}" role="button" tabindex="0">
+    return [tab+':'+c.symbol+':'+c.side, `<div class="coin-card ${startsTier?'is-tier-start ':''}${endsTier?'is-tier-end ':''}${c.radarFill?'is-fill ':''}${c.symbol === state.symbol ? 'selected' : ''}" data-symbol="${escapeHtml(c.symbol)}" data-tier="${displayTier}" role="button" tabindex="0"${c.radarFill?' title="補位：T2／T3 依序補滿名額，這檔沒有完全入選"':''}>
       ${startsTier?`<small class="coin-tier-heading">${displayTier.toUpperCase()}</small>`:''}
       <div class="coin-top">
         <span class="coin-title">
@@ -596,24 +659,26 @@ function renderCurrentTab() {
           <span class="coin-symbol-full">${escapeHtml(c.symbol)}</span><span class="coin-symbol-mobile" title="${escapeHtml(c.symbol.replace(/USDT$/, ""))}">${escapeHtml(c.symbol.replace(/USDT$/, ""))}</span>
           <span class="badge badge-${c.side === 'SHORT' ? 'short' : 'long'}">${escapeHtml(c.side)}</span>
           <span class="badge badge-${displayTier}">${displayTier.toUpperCase()}</span>
+          ${c.radarFill ? '<span class="badge badge-fill" title="T2／T3 依序補滿名額：這檔沒有完全入選，原因見下方">補位</span>' : ''}
           ${c.isSurge ? '<span class="badge badge-surge">🔥</span>' : ''}
         </span>
         <span class="coin-top-right"><span class="coin-ox" aria-label="OX 分數 ${c.oxScore}"><span class="coin-ox-label">OX</span> <strong class="coin-ox-value">${c.oxScore}</strong></span>${allowStar ? `<button class="watch-star watch-star-desktop ${starred?'is-starred':''}" type="button" data-watch-symbol="${escapeHtml(c.symbol)}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${escapeHtml(c.symbol)} 收藏">${WATCH_STAR_SVG}</button>` : ''}</span>
       </div>
       <div class="coin-mid">
-        <span class="meta desktop-coin-meta">${escapeHtml(status)} · Fit ${fit ?? '—'} · 24H 量 ${fmtCryptoVolumeUSDT(c.quoteVol)}</span>
+        <span class="meta desktop-coin-meta">${escapeHtml(status)}${c.radarSide?'':` · Fit ${fit ?? '—'}`} · 24H 量 ${fmtCryptoVolumeUSDT(c.quoteVol)}</span>
         <span class="mobile-coin-volume" title="24H 成交量 ${fmtCryptoVolumeUSDT(c.quoteVol)}" aria-label="24 小時成交量 ${fmtCryptoVolumeUSDT(c.quoteVol)}"><span class="coin-volume-label">24H 量</span><span class="coin-volume-value">${fmtCryptoVolume(c.quoteVol).replaceAll(",", "")}</span></span>
         <span class="coin-change desktop-coin-change ${c.change24h >= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtPct(c.change24h)}</span>
       </div>
       <div class="coin-mobile-bottom">
         ${allowStar ? `<button class="watch-star watch-star-mobile ${starred?'is-starred':''}" type="button" data-watch-symbol="${escapeHtml(c.symbol)}" aria-pressed="${starred}" aria-label="${starred?'移除':'加入'} ${escapeHtml(c.symbol)} 收藏">${WATCH_STAR_SVG}</button>` : '<span></span>'}
+        ${c.radarFill ? '<span class="coin-fill-mark">補位</span>' : ''}
         <span class="coin-change ${c.change24h >= 0 ? 'positive' : 'negative'}" style="font-weight:700">${fmtPct(c.change24h)}</span>
       </div>
       <div class="coin-reason"><div class="setup-head">${escapeHtml(c.setupName)}</div><div>• ${(c.reasons||[]).map(fmtSignalReason).map(escapeHtml).join('</div><div>• ')}</div></div>
-      <div class="score-pills">
+      <div class="score-pills">${c.radarSide?radarElementPills(c.radarSide):`
         <span class="score-pill">流動 ${c.liqScore}</span><span class="score-pill">資金 ${c.flowScore}</span>
         <span class="score-pill">結構 ${c.structScore}</span><span class="score-pill">RS ${c.rsScore}</span>
-        <span class="score-pill">Progress ${c.setupProgress ?? '—'}%</span>
+        <span class="score-pill">Progress ${c.setupProgress ?? '—'}%</span>`}
       </div>
     </div>`];
   }));

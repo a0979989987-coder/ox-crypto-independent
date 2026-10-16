@@ -47,6 +47,7 @@ function renderOxDetail() {
   document.getElementById("detail-levels").textContent = primaryLevelText + secondaryLevelText;
 
   if (!scored) {
+    setDetailLabels(globalThis.OXTierFilters?.get('crypto')?.enabled ? 'classic' : 'radar', '前高 / 前低');
     document.getElementById("detail-tier").textContent = isBenchmark ? "Benchmark" : "等待分析";
     for (const id of ["detail-ox","detail-liq","detail-flow","detail-structure","detail-rs","detail-setup","detail-side","detail-progress-text","detail-confidence","detail-trigger"]) {
       document.getElementById(id).textContent = isBenchmark && id === "detail-side" ? "Benchmark" : "—";
@@ -59,6 +60,8 @@ function renderOxDetail() {
 
   const shownMap=state.tierMapBySide?.[state.directionFilter]||state.tierMap;
   const ranked = [...(shownMap.t1||[]), ...(shownMap.t2||[]), ...(shownMap.t3||[])].find(x => x.symbol === symbol);
+  if(scored.radar&&!globalThis.OXTierFilters?.get('crypto')?.enabled){renderRadarDetail(scored,ranked,isBenchmark);return;}
+  setDetailLabels('classic','觸發 / 目標 / 失效');
   const displayed=ranked||OXEngine.withTurnover(scored,ticker?.usdtVolume??scored.quoteVol);
   const shownTier = ranked?.displayTier || displayed.tier;
   const status = ranked?.rankStatus || displayed.classicSignal?.stage || '待確認';
@@ -83,6 +86,55 @@ function renderOxDetail() {
     ...(classic?.rejectionReasons||[]).map(text=>({ok:false,text}))];
   if(classic?.money?.reason)reasons.push({ok:false,text:classic.money.reason});
   document.getElementById("detail-reasons-list").innerHTML = reasons.map(r => `<div class="detail-reason ${r.ok ? 'ok' : 'wait'}">${r.ok ? '✓' : '△'} ${escapeHtml(fmtSignalReason(r.text))}</div>`).join('');
+  updateAlertButtons();
+}
+
+// The same eight cells show the radar's four elements or, with a custom
+// timeframe filter (or before a coin is analysed), the classic scores; the
+// labels follow whichever mode filled them.
+const DETAIL_LABEL_IDS=['detail-ox','detail-liq','detail-flow','detail-structure','detail-rs','detail-setup','detail-progress-text','detail-trigger'];
+const DETAIL_LABELS={
+  radar:['OX 綜合分','確定性','強度','盈虧比','幅度','入選途徑','綜合分進度','途徑類型'],
+  classic:['OX Score','流動性','資金活躍','結構','Relative Strength','Setup','Setup Progress','Trigger']
+};
+function setDetailLabels(mode,levels){
+  const label=(id,text)=>{const el=document.getElementById(id)?.previousElementSibling;if(el?.tagName==='LABEL'&&el.textContent!==text)el.textContent=text;};
+  DETAIL_LABEL_IDS.forEach((id,i)=>label(id,DETAIL_LABELS[mode][i]));
+  label('detail-levels',levels);
+}
+
+// 雷達策略詳情：四要素、入選途徑，以及入選、扣分、T1 未通過與未入選原因。
+function renderRadarDetail(scored,ranked,isBenchmark){
+  setDetailLabels('radar','目標 / 結構失效');
+  const side=state.directionFilter==='short'?'short':'long';
+  const radar=scored.radar,r=ranked?.radarSide||radar[side]||null,e=r?.elements||{};
+  const set=(id,text)=>{const el=document.getElementById(id);if(el)el.textContent=text;};
+  const sign=side==='short'?'−':'+';
+  const tier=ranked?.displayTier?ranked.displayTier.toUpperCase()+(ranked.radarFill?' 補位':''):r?.listed||r?.fillable?'候補':'未入選';
+  set('detail-tier',isBenchmark?'Benchmark':radar.excluded?radar.productLabel:`${tier} · ${r?.frame||'—'}${r?.triggerFrame?'＋'+r.triggerFrame:''}`);
+  set('detail-ox',r?.score??'—');
+  set('detail-liq',e.certainty??'—');
+  set('detail-flow',e.strength??'—');
+  set('detail-structure',e.rr===null||e.rr===undefined?'—':e.rr.toFixed(2));
+  set('detail-rs',e.room===null||e.room===undefined?'—':sign+(e.room*100).toFixed(1)+'%');
+  set('detail-setup',radar.excluded||(r?.pathway?.name||'沒有入選途徑'));
+  set('detail-side',isBenchmark?'Benchmark':side.toUpperCase());
+  const score=r?.score??0;
+  set('detail-progress-text',r?.score===null||r?.score===undefined?'—':score+' / 99');
+  const bar=document.getElementById('detail-progress-bar');
+  if(bar){bar.style.width=Math.max(0,Math.min(100,score))+'%';bar.style.setProperty('--meter-color',score<40?'var(--meter-weak)':score<70?'var(--meter-mid)':'var(--meter-strong)');}
+  set('detail-confidence',r?.t1?'T1 完整條件':r?.listed?'入選 · 待完整確認':r?.fillable?'補位（未完全入選）':'未入選');
+  set('detail-trigger',r?.pathway?.group||'—');
+  set('detail-levels',`目標 ${r?.target?(r.target.label+' '+fmtPrice(r.target.level)):'尚未辨識'} · 結構失效 ${Number.isFinite(r?.stop)?fmtPrice(r.stop):'—'}`);
+  const rows=[];
+  if(radar.excluded)rows.push({cls:'no',text:'× '+radar.excluded});
+  if(r?.fillable)rows.push({cls:'wait',text:'△ 補位：T2／T3 名額依序補滿，這檔沒有完全入選，原因見下方 ×'});
+  for(const text of r?.matched||[])rows.push({cls:'ok',text:'✓ '+text});
+  for(const d of r?.deductions||[])rows.push(d.points>0?{cls:'minus',text:'− '+d.text+'（−'+d.points+'）'}:{cls:'wait',text:'△ '+d.text});
+  if(r?.listed&&!r.t1)for(const text of r.gates||[])rows.push({cls:'wait',text:'△ T1 未通過：'+text});
+  for(const text of r?.rejections||[])rows.push({cls:'no',text:'× 未入選：'+text});
+  if(!rows.length)rows.push({cls:'wait',text:'△ 等待全市場輪巡完成這顆幣的分析。'});
+  document.getElementById('detail-reasons-list').innerHTML=rows.map(x=>`<div class="detail-reason ${x.cls}">${escapeHtml(fmtSignalReason(x.text))}</div>`).join('');
   updateAlertButtons();
 }
 
