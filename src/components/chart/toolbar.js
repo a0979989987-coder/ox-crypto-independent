@@ -86,7 +86,7 @@
   // Restore user's chart indicator choices without firing render handlers prematurely.
   const savedIndicators = store('ox-chart-indicators', null);
   if (savedIndicators) Object.entries(savedIndicators).forEach(([id, checked]) => { const input = document.getElementById(id); if (input) input.checked = !!checked; });
-  const indicatorInputs = ['chk-vol','chk-ox-markers','chk-key-levels'].map(id => document.getElementById(id)).filter(Boolean);
+  const indicatorInputs = ['chk-vol','chk-ox-markers','chk-key-levels','chk-structure'].map(id => document.getElementById(id)).filter(Boolean);
   indicatorInputs.forEach(input => input.addEventListener('change', () => {
     localStorage.setItem('ox-chart-indicators', JSON.stringify(Object.fromEntries(indicatorInputs.map(item => [item.id,item.checked]))));
   }));

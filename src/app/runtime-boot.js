@@ -34,8 +34,17 @@ window.addEventListener("DOMContentLoaded", () => {
   // Offscreen summaries are calculated when their view opens, so startup can paint sooner.
   renderOxLive();
   updateAlertButtons();
-  setInterval(refreshMarketTickers, CONFIG.tickerRefreshMs);
-  setInterval(renderOxLive, CONFIG.tickerRefreshMs);
+  // A hidden tab does not poll tickers or rebuild OX LIVE; returning to the
+  // foreground catches up immediately instead of waiting for the next tick.
+  let lastTickerPoll = Date.now();
+  const pollTickers = () => { if (document.hidden) return; lastTickerPoll = Date.now(); refreshMarketTickers(); };
+  setInterval(pollTickers, CONFIG.tickerRefreshMs);
+  setInterval(() => { if (!document.hidden) renderOxLive(); }, CONFIG.tickerRefreshMs);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden || Date.now() - lastTickerPoll < 3000) return;
+    if (state.activeMarket === "crypto") pollTickers();
+    renderOxLive();
+  });
   setInterval(updatePriceTimer, 1000);
   setInterval(checkLevelAlerts, 5000);
 });

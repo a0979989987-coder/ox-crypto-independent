@@ -7,11 +7,14 @@
   // A portal avoids clipping by the scanner's scroll/overflow containers.
   document.body.append(menu);
   const holdMs = 2000;
+  // A triangle tap waits this long for a second tap before cycling the tier.
+  const doubleTapMs = 250;
   const tiers = ['all', 't1', 't2', 't3'];
   let press = null;
   let timer = 0;
   let suppressClick = false;
   let scrollOrigins = new Map();
+  let cycleTimer = 0;
 
   function rememberScroll() {
     scrollOrigins = new Map([[document, [window.scrollX || 0, window.scrollY || 0]]]);
@@ -25,6 +28,22 @@
     clearTimeout(timer);
     timer = 0;
     press = null;
+    logo.classList?.remove('is-holding');
+  }
+  function clearPendingCycle() {
+    clearTimeout(cycleTimer);
+    cycleTimer = 0;
+  }
+  function cycleTier() {
+    select(tiers[(tiers.indexOf(state.currentTab) + 1) % tiers.length]);
+  }
+  function scheduleCycle() {
+    cycleTimer = setTimeout(() => {
+      // A second press is still down: let its click, hold or cancellation decide.
+      if (press) { scheduleCycle(); return; }
+      cycleTimer = 0;
+      cycleTier();
+    }, doubleTapMs);
   }
   function closeMenu(restoreFocus = false) {
     menu.hidden = true;
@@ -57,10 +76,14 @@
     suppressClick = false;
     press = { kind, id, x, y, started: performance.now() };
     rememberScroll();
+    // Visual hold progress; CSS delays it so ordinary taps do not flash.
+    logo.classList?.add('is-holding');
     timer = setTimeout(() => {
       timer = 0;
       if (!press) return;
       suppressClick = true;
+      clearPendingCycle();
+      logo.classList?.remove('is-holding');
       openMenu();
     }, holdMs);
   }
@@ -68,6 +91,7 @@
     // A busy mobile event loop may deliver release before the hold timer.
     if (!cancelled && press && !suppressClick && performance.now() - press.started >= holdMs) {
       suppressClick = true;
+      clearPendingCycle();
       openMenu();
     }
     if (cancelled) suppressClick = true;
@@ -133,17 +157,25 @@
     event.preventDefault();
     event.stopPropagation();
     if (suppressClick) { suppressClick = false; return; }
-    if (event.target.closest('[data-radar-tier-cycle]')) {
-      select(tiers[(tiers.indexOf(state.currentTab) + 1) % tiers.length]);
+    if (event.target?.closest?.('[data-radar-tier-cycle]')) {
+      // Triangle: one tap cycles 全部→T1→T2→T3 after a short wait; a second
+      // tap inside that wait is a double tap and opens the choices instead.
+      if (cycleTimer) {
+        clearPendingCycle();
+        if (menu.hidden) openMenu();
+      } else scheduleCycle();
     } else {
+      // Logo body (existing behaviour): a tap opens the choices.
       // Opening is idempotent: a rapid second tap must not close the menu.
       if (menu.hidden) openMenu(event.detail === 0);
     }
   });
   logo.addEventListener('dblclick', event => {
-    if (event.target.closest('[data-radar-tier-cycle]')) return;
     event.preventDefault();
     event.stopPropagation();
+    // A slow native double click may arrive after the first cycle already ran;
+    // never cycle a second time for the same gesture.
+    clearPendingCycle();
     if (menu.hidden) openMenu();
   });
   logo.addEventListener('keydown', event => {
@@ -179,7 +211,7 @@
     if (event.relatedTarget && !menu.contains(event.relatedTarget) && event.relatedTarget !== logo) closeMenu();
   });
   for (const type of ['ox:viewchange', 'ox:marketchange', 'ox:radarvisibilitychange']) {
-    document.addEventListener(type, () => { cancelPress(); closeMenu(); });
+    document.addEventListener(type, () => { cancelPress(); clearPendingCycle(); closeMenu(); });
   }
   // Mobile browser chrome can resize the viewport during a stationary hold.
   window.addEventListener('resize', () => { if (!menu.hidden) positionMenu(); }, { passive: true });

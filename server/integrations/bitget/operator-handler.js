@@ -19,7 +19,7 @@ function allowAttempt(key, now) {
   return entry.count <= 5;
 }
 
-export function createTestHandler({ env = process.env, createClient = createBitgetAffiliateClient, now = Date.now, limit = allowAttempt } = {}) {
+export function createTestHandler({ env = process.env, createClient = createBitgetAffiliateClient, now = Date.now, limit = allowAttempt, audit = () => {} } = {}) {
   return async (req, res) => {
     res.setHeader('Cache-Control', 'no-store, private');
     res.setHeader('Vercel-CDN-Cache-Control', 'no-store');
@@ -87,8 +87,11 @@ export function createTestHandler({ env = process.env, createClient = createBitg
     if (!limit('query:' + session.nonce, now())) { res.setHeader('Retry-After', '60'); return page(429, { session, message: '查詢次數較多，請等一分鐘再試。' }); }
     try {
       const result = await createClient({ env }).lookupCustomer({ uid: body.uid });
-      return page(200, { session, result, uid: body.uid });
+      const sent = page(200, { session, result, uid: body.uid });
+      audit({ channel: 'operator-page', outcome: 'ok', status: 200, uid: body.uid });
+      return sent;
     } catch (error) {
+      audit({ channel: 'operator-page', outcome: error instanceof BitgetLookupError ? error.code : 'LOOKUP_FAILED', status: error instanceof BitgetLookupError ? error.status : 500, uid: body.uid });
       const message = error instanceof BitgetLookupError ? error.message + (error.upstreamCode ? `（代碼 ${error.upstreamCode}）` : '') : '暫時無法完成查詢，請稍後再試。';
       return page(error instanceof BitgetLookupError ? error.status : 500, { session, message, uid: body.uid });
     }

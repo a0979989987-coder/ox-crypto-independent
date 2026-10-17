@@ -64,6 +64,8 @@
     .detail-reason { font-size:10px; line-height:1.55; margin:3px 0; color:#b8c7d9; }
     .detail-reason.ok { color:#8fe4c3; }
     .detail-reason.wait { color:#e4c978; }
+    .detail-reason.minus { color:#f0a46b; }
+    .detail-reason.no { color:#d98a96; }
     .alert-state-row { display:flex; gap:6px; flex-wrap:wrap; padding:9px 14px; border-top:1px solid var(--line); }
     .alert-chip { font-size:9px; color:#bdd0e4; background:#132132; border:1px solid #304764; border-radius:var(--ox-radius-pill); padding:3px 7px; }
 

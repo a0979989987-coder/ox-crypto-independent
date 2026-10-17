@@ -86,7 +86,6 @@ body.theme-light.theme-light .ox-feature-results{background:var(--panel)!importa
 body.theme-light.theme-light .ox-feature-result{grid-template-columns:28px minmax(0,1fr) 14px;min-height:52px;gap:8px;padding:9px 10px;background:transparent;color:var(--ink);border-bottom:1px solid #e3e8ef}
 body.theme-light.theme-light .ox-feature-result:is(:hover,:focus-visible){background:#f1f4f8!important}
 body.theme-light.theme-light .ox-feature-result-icon{width:27px;height:27px;background:transparent;border:0;color:var(--gold);border-radius:8px;font-size:13px}
-.ox-feature-result-icon svg{width:18px;height:18px;display:block}
 body.theme-light.theme-light .ox-feature-result-copy b{font-size:12px;font-weight:600;line-height:1.5}
 body.theme-light.theme-light .ox-feature-result-copy small{font-size:10px;line-height:1.5;color:var(--muted);margin-top:2px}
 body.theme-light.theme-light .ox-feature-result-state{padding:0;border:0;border-radius:0;font-size:18px;color:#9c844e}
@@ -202,7 +201,6 @@ body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #vi
 body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar .coin-card.selected{background:#f4f6f8!important;border-left-color:#aeb8c6!important;box-shadow:none!important}
 body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar :is(.coin-card,.chart-controls)::before,body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar :is(.coin-card,.chart-controls)::after{display:none!important}
 body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar .chart-controls{background:#fff!important;box-shadow:none!important}
-body[data-view="radar"] .app-dock .ox-dock-indicator{display:none!important}
 body.ox-terminal.theme-light.theme-light.theme-light #view-radar{--radar-price-rgb:174,184,198!important}
 body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar .coin-card.ox-coin-new-selection{animation:none!important}
 body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #view-radar #ox-detail-panel .detail-cell{background:#fff!important;border-color:#dde1e6!important;box-shadow:none!important}

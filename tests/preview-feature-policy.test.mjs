@@ -15,13 +15,13 @@ test('preview reads authoritative public catalog without login configuration or 
  }});
  const r=response();await handler(request(),r);assert.equal(r.statusCode,200);assert.equal(clients,1);
  assert.equal(r.body.features.find(f=>f.id==='crypto.radar').mode,'login','must preserve locked policies');
- assert.equal(r.headers['Cache-Control'],'no-store, private');assert.equal(r.headers['Set-Cookie'],undefined);
+ assert.equal(r.headers['Cache-Control'],'public, s-maxage=60, stale-while-revalidate=600','the shared public catalog may be edge cached');assert.equal(r.headers['Vercel-CDN-Cache-Control'],'max-age=60, stale-while-revalidate=600');assert.equal(r.headers['Set-Cookie'],undefined);
  const login=response();await handler(request('session'),login);assert.equal(login.statusCode,503);assert.equal(clients,1,'policy configuration does not enable preview login');
 });
 test('preview policy stays closed for missing connection, rejected RPC, or incomplete catalog',async()=>{
  for(const result of [{error:{message:'private-upstream-detail'}},{data:{ok:true,features:features.slice(1)}}]){
   const r=response();await createAccountHandler({env,clientFactory:()=>({rpc:async()=>result})})(request(),r);
-  assert.equal(r.statusCode,503);assert.equal(r.body.code,'FEATURE_POLICY_UNAVAILABLE');assert.equal(JSON.stringify(r.body).includes('private-upstream-detail'),false);
+  assert.equal(r.statusCode,503);assert.equal(r.body.code,'FEATURE_POLICY_UNAVAILABLE');assert.equal(r.headers['Cache-Control'],'no-store, private','a failed catalog read is never cached');assert.equal(JSON.stringify(r.body).includes('private-upstream-detail'),false);
  }
  const r=response();await createAccountHandler({env:{},clientFactory:()=>{throw Error('unexpected');}})(request(),r);
  assert.equal(r.statusCode,503);assert.equal(r.body.code,'FEATURE_POLICY_NOT_CONFIGURED');

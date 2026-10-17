@@ -16,16 +16,22 @@ try{
  const board=()=>page.locator('#ox-crypto-tools-inline .px-board');
  assert.equal(await board().count(),0);
  if(!locked){
-  await page.waitForFunction(async()=>{if(!(await indexedDB.databases()).some(db=>db.name==='ox-crypto-pattern-index'))return false;const db=await new Promise(resolve=>{const r=indexedDB.open('ox-crypto-pattern-index',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>resolve(null);});if(!db)return false;if(!db.objectStoreNames.contains('series')){db.close();return false;}return new Promise(resolve=>{const r=db.transaction('series').objectStore('series').count();r.onsuccess=()=>{db.close();resolve(r.result>=4);};});},{},{timeout:15000});
+  // Tool data loads when the tool opens: idle radar time prepares code/CSS only and never builds the pattern index.
+  await page.locator('#view-radar .coin-card').first().waitFor({timeout:30000});
+  await page.waitForFunction(()=>OXToolWarmup.stats().every(job=>job.status==='ready'),null,{timeout:30000});await page.waitForTimeout(2000);
+  const indexed=await page.evaluate(async()=>{if(!(await indexedDB.databases()).some(db=>db.name==='ox-crypto-pattern-index'))return 0;const db=await new Promise(resolve=>{const r=indexedDB.open('ox-crypto-pattern-index',1);r.onsuccess=()=>resolve(r.result);r.onerror=()=>resolve(null);});if(!db)return 0;if(!db.objectStoreNames.contains('series')){db.close();return 0;}return new Promise(resolve=>{const r=db.transaction('series').objectStore('series').count();r.onsuccess=()=>{db.close();resolve(r.result);};r.onerror=()=>{db.close();resolve(0);};});});
+  assert.equal(indexed,0,'idle radar does not prebuild the pattern index');
   const before=requests;await page.evaluate(()=>switchAppView('strength'));await board().waitFor();
-  await page.locator('#ox-crypto-tools-inline .px-card').first().waitFor({timeout:10000});
+  await page.locator('#ox-crypto-tools-inline .px-card').first().waitFor({timeout:30000});
+  // The refresh pill animates while the on-open scan runs; measure the resting glyph.
+  await page.locator('#ox-crypto-tools-inline .px-refresh-pill:not(.is-scanning)').waitFor({timeout:45000});await page.waitForTimeout(400);
   const icon=await page.locator('#ox-crypto-tools-inline .px-refresh-glyph svg').boundingBox(),pill=await page.locator('#ox-crypto-tools-inline .px-refresh-pill').boundingBox();
   assert(Math.abs(icon.x+icon.width/2-pill.x-pill.width/2)<1);assert(Math.abs(icon.y+icon.height/2-pill.y-pill.height/2)<1);
   await page.evaluate(()=>{switchAppView('radar');switchAppView('strength');switchAppView('radar');});await page.waitForTimeout(500);
-  console.log(JSON.stringify({public:true,warmedBeforeOpening:true,cachedCards:true,centeredIcon:true,requestsBeforeOpening:before,errors:audit.pageErrors}));
+  console.log(JSON.stringify({public:true,indexBeforeOpening:indexed,cardsAfterOpening:true,centeredIcon:true,requestsBeforeOpening:before,errors:audit.pageErrors}));
  }else{
   await page.waitForTimeout(2300);await page.evaluate(()=>{globalThis.OXPublicFeed.cancel('radar-scan');});
-  const preloadRequests=await page.evaluate(async()=>{let count=0;const original=globalThis.OXPublicFeed;globalThis.OXPublicFeed={...original,json:(url,options)=>{if(options?.owner==='patterns-preload')count++;return original.json(url,options);}};await OXToolModules['/src/markets/crypto/patterns/view.js'].preloadPatternSearch();globalThis.OXPublicFeed=original;return count;});assert.equal(preloadRequests,0,'Protected board cannot preload');
+  const preloadRequests=await page.evaluate(async()=>{let count=0;const original=globalThis.OXPublicFeed;globalThis.OXPublicFeed={...original,json:(url,options)=>{if(options?.owner==='patterns-preload')count++;return original.json(url,options);}};const patterns=await import('/src/generated/tool-patterns.js?v=20261007-stable-dialog8');await patterns.preloadPatternSearch();globalThis.OXPublicFeed=original;return count;});assert.equal(preloadRequests,0,'Protected board cannot preload');
   console.log('Protected board did not preload');
  }
  assert.deepEqual(audit.pageErrors,[]);await context.close();

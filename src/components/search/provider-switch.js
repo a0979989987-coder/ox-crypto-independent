@@ -213,7 +213,7 @@
       updateRadarMarketGlow();
       const price=q("#price"),chg=q("#change"),quote=q("#quote"),meta=q("#ticker-meta"),rank=q("#quote-rank");
       if(price)price.textContent=fmtPrice(t.price);
-      if(chg){chg.textContent=fmtPct(t.change24h);chg.classList.toggle("positive",t.change24h>=0);chg.classList.toggle("negative",t.change24h<0)}
+      if(chg){const change=toNumberOrNull(t.change24h);chg.textContent=fmtPct(change);chg.classList.toggle("positive",change!==null&&change>=0);chg.classList.toggle("negative",change!==null&&change<0)}
       if(quote)quote.textContent=Number.isFinite(t.quoteVolume)?compact(t.quoteVolume)+" USDT":"—";
       if(meta)meta.textContent=this.label()+" · "+this.adapter().contractType;
       if(rank&&this.active!=="bitget")rank.textContent="目前 Data Provider";
@@ -230,7 +230,7 @@
     restartTicker(){
       clearInterval(this.timer);this.timer=0;
       this.refreshTicker({quiet:true});
-      this.timer=setInterval(()=>{if(state.activeView==="radar")this.refreshTicker({quiet:true})},6000);
+      this.timer=setInterval(()=>{if(state.activeView==="radar"&&!document.hidden)this.refreshTicker({quiet:true})},6000);
     },
     async select(id){
       id=String(id||"").toLowerCase();
@@ -338,14 +338,23 @@
       const adapter=ProviderController.adapter();
       const feed=startChartLiveCandles(symbol,period,{websocket:false,fetchCandles:(...args)=>adapter.candles(...args)});
       const overlay=q("#chart-loading");if(isInitial)overlay?.classList.add("show");
+      if(typeof clearChartLoadError==="function"&&q("#chart-load-error")?.dataset.scope!==`${symbol}:${period}`)clearChartLoadError();
       try{
         const raw=await feed.load(window.matchMedia("(max-width:720px)").matches?160:100);
         if(state.chartLiveFeed!==feed || state.symbol!==symbol || state.period!==period || ProviderController.active!==provider)return;
         if(!raw.length)throw new Error("無可用 K 線");
         state.candleData=raw;state.oldestCandleTime=raw[0].time;state.hasMoreHistory=true;
+        if(typeof clearChartLoadError==="function")clearChartLoadError();
         renderChartData(raw,isInitial);
         await ProviderController.refreshTicker({quiet:true});
-      }catch(e){showToast(ProviderController.label()+" K 線 unavailable")}
+      }catch(e){
+        if(e?.name==="AbortError")return;
+        if(state.chartLiveFeed!==feed || state.symbol!==symbol || state.period!==period || ProviderController.active!==provider)return;
+        const stale=state.chartPriceScope===`${symbol}:${period}`&&state.candleData.length>0;
+        const error=new Error(`${ProviderController.label()}：${e?.message||"K 線暫時無法取得"}`);
+        if(typeof showChartLoadError==="function")showChartLoadError(error,{symbol,period,stale});
+        else showToast(ProviderController.label()+" K 線暫時無法取得");
+      }
       finally{overlay?.classList.remove("show")}
     };
   }

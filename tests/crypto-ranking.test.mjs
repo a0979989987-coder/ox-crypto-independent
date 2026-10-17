@@ -76,20 +76,29 @@ test('radar publishes qualified rows while the first scan remains unfinished', (
   assert.equal(result.t1[0].symbol,'SOLUSDT');
   assert.equal(result.t2.length+result.t3.length,0);
 });
-test('nearby quality uses current directional strength to break scan-order ties',()=>{
- const rows=[
-  {symbol:'DEXEUSDT',side:'LONG',tier:'t1',change24h:.003,ret4h:.002,quoteVol:220000},
-  {symbol:'CAPUSDT',side:'LONG',tier:'t1',change24h:.27,ret4h:.12,quoteVol:4000000}
+test('24H change and 4H return only break exact score ties',()=>{
+ const tie=[
+  {symbol:'AAAUSDT',side:'LONG',tier:'t2',change24h:.003,ret4h:.002},
+  {symbol:'ZZZUSDT',side:'LONG',tier:'t2',change24h:.27,ret4h:.12}
  ];
- assert.deepEqual(rank(rows).t1.map(r=>r.symbol),['CAPUSDT']);
- assert.equal(rank(rows).t2[0].symbol,'DEXEUSDT');
- assert.equal(rank(rows).t2[0].oxScore,54);
+ assert.deepEqual(rank(tie).t2.map(r=>r.symbol),['ZZZUSDT','AAAUSDT'],'equal setup and money: stronger move first');
+ const short=tie.map(r=>({...r,side:'SHORT',classic:{short:rankingSignal('T2','short')},classicSignal:rankingSignal('T2','short')}));
+ assert.deepEqual(rank(short,{},'short').t2.map(r=>r.symbol),['AAAUSDT','ZZZUSDT'],'a short ranks the larger rally last');
+});
+test('a critical setup with volume outranks a plain price move',()=>{
+ const critical=rankingSignal('T2'),chase=rankingSignal('T2');
+ critical.volume={recentRatio:1.3,sustainedBars:1};chase.volume={recentRatio:1,sustainedBars:1};
+ const rows=[
+  {symbol:'CHASEUSDT',side:'LONG',tier:'t2',classicSignal:chase,classic:{long:chase},change24h:.35,ret4h:.15},
+  {symbol:'LEVELUSDT',side:'LONG',tier:'t2',classicSignal:critical,classic:{long:critical},change24h:.01,ret4h:.002}
+ ];
+ assert.deepEqual(rank(rows).t2.map(r=>r.symbol),['LEVELUSDT','CHASEUSDT']);
 });
 test('turnover and sustained volume outrank an equally graded thin fast spike',()=>{
  const rich=rankingSignal('T2'),thin=rankingSignal('T2');
  rich.volume={recentRatio:2,sustainedBars:3};thin.volume={recentRatio:3,sustainedBars:1};
  const rows=[
-  {symbol:'THINUSDT',side:'LONG',tier:'t2',classicSignal:thin,classic:{long:thin},change24h:.2,quoteVol:200000},
+  {symbol:'THINUSDT',side:'LONG',tier:'t2',classicSignal:thin,classic:{long:thin},change24h:.2,quoteVol:400000},
   {symbol:'FUNDEDUSDT',side:'LONG',tier:'t2',classicSignal:rich,classic:{long:rich},change24h:.03,quoteVol:15000000}
  ];
  assert.equal(rank(rows).t2[0].symbol,'FUNDEDUSDT');
@@ -163,23 +172,32 @@ test('new RWA listings and HPQ never fall into the crypto fallback',()=>{
  assert.equal(classify({symbol:'NEWCOINUSDT',symbolType:'perpetual',quoteCoin:'USDT',isRwa:'NO'}),'crypto');
 });
 
-test('a 97-point setup with 114k turnover cannot enter T1 or retain a high display score',()=>{
+test('a 97-point setup under 300k turnover is excluded; the 300k band cannot enter T1',()=>{
  for(const side of ['long','short']){
   const signal={...rankingSignal('T1',side),qualityScore:97};
-  const result=rank([{symbol:'THINUSDT',side:side.toUpperCase(),tier:'t1',quoteVol:114000,
-   classicSignal:signal,classic:{[side]:signal}}],{},side);
+  const row=quoteVol=>({symbol:'THINUSDT',side:side.toUpperCase(),tier:'t1',quoteVol,classicSignal:signal,classic:{[side]:signal}});
+  const excluded=rank([row(114000)],{},side);
+  assert.equal(excluded.t1.length+excluded.t2.length+excluded.t3.length,0,'24H turnover < 300,000 USDT never ranks');
+  const result=rank([row(300000)],{},side);
   assert.equal(result.t1.length,0);
-  assert.equal(result.t2[0].oxScore,54);
-  assert.equal(result.t2[0].classicSignal.qualityScore,54);
+  assert.equal(result.t2[0].oxScore,69);
+  assert.equal(result.t2[0].classicSignal.qualityScore,69);
   assert.equal(result.t2[0].qualityTier,'T3');
   assert.match(result.t2[0].classicSignal.money.reason,/300 萬/);
  }
 });
+test('contracts under 300,000 USDT 24H turnover never enter the scan pool',()=>{
+ const tickers=[['AUSDT','5000000'],['BUSDT','299999'],['CUSDT','300000'],['DUSDT','0'],['EUSDT','']].map(([symbol,usdtVolume])=>({symbol,usdtVolume,change24h:'0.01'}));
+ const pool=runInNewContext(`${policy}\n${scanner}\norderCryptoScanTickers(tickers.filter(t=>scanTurnoverOK(t.usdtVolume))).map(t=>t.symbol)`,{state:{},num:Number,OXClassic:OXClassicForTests,tickers});
+ assert.deepEqual([...pool].sort(),['AUSDT','CUSDT']);
+});
 
 test('live turnover overrides a stale high-volume snapshot without cumulatively penalizing it',()=>{
  const row={symbol:'SOLUSDT',side:'LONG',tier:'t1',quoteVol:15000000};
- const live=rank([row],{tickers:[{symbol:'SOLUSDT',usdtVolume:'114000'}]});
- assert.equal(live.t1.length,0);assert.equal(live.t2[0].oxScore,54);
+ const live=rank([row],{tickers:[{symbol:'SOLUSDT',usdtVolume:'500000'}]});
+ assert.equal(live.t1.length,0);assert.equal(live.t2[0].oxScore,69);
+ const dropped=rank([row],{tickers:[{symbol:'SOLUSDT',usdtVolume:'114000'}]});
+ assert.equal(dropped.t1.length+dropped.t2.length+dropped.t3.length,0,'a snapshot row whose live turnover fell under 300k drops out');
  const setup={...rankingSignal('T1'),qualityScore:97};
  const apply=(s,v)=>runInNewContext(`${policy}\nOXCryptoLiquidity.apply(signal,turnover)`,{signal:s,turnover:v});
  const thin=apply(setup,114000);
@@ -201,8 +219,8 @@ test('liquidity gates apply at each monetary band without changing setup validit
 });
 
 test('liquidity adjustment leaves low-turnover evidence available for 15 plus 15 observation slots',()=>{
- const rows=Array.from({length:30},(_,i)=>({symbol:`THIN${i}USDT`,side:'LONG',tier:'t1',quoteVol:114000}));
+ const rows=Array.from({length:30},(_,i)=>({symbol:`THIN${i}USDT`,side:'LONG',tier:'t1',quoteVol:500000}));
  const result=rank(rows);
  assert.equal(result.t1.length,0);assert.equal(result.t2.length,15);assert.equal(result.t3.length,15);
- assert.ok([...result.t2,...result.t3].every(r=>r.oxScore===54));
+ assert.ok([...result.t2,...result.t3].every(r=>r.oxScore===69));
 });

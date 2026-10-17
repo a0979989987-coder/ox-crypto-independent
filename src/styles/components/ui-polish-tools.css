@@ -1,0 +1,35 @@
+/* UI polish for Crypto tool shadow roots (all themes). Mounted with each tool's
+   sheets by style-ready.js; changes feel, not layout. */
+
+/* ---- Touch targets: invisible ::after grows small controls towards 40px. ---- */
+@media (pointer:coarse){
+  :is(.cfx-bottom-tools button,.cfx-segment>button,.cfx-zoom>button,.cfx-research-toolbar>button,.oxb-zoom>button,.px-board-bottom>.px-icon,.px-controls>.px-control,.cfx-flow-symbols>button){position:relative}
+  :is(.cfx-bottom-tools button,.cfx-segment>button,.cfx-zoom>button,.cfx-research-toolbar>button,.oxb-zoom>button,.px-board-bottom>.px-icon,.px-controls>.px-control,.cfx-flow-symbols>button)::after{content:"";position:absolute;inset:var(--ox-hit,-5px);border-radius:inherit;pointer-events:auto}
+  .cfx-bottom-tools button{--ox-hit:-5px 0}
+  .cfx-segment>button,.cfx-research-toolbar>button,.px-controls>.px-control{--ox-hit:-6px 0}
+  .cfx-zoom>button{--ox-hit:-5px -1px}
+  .oxb-zoom>button{--ox-hit:-7px -1px}
+  .px-board-bottom>.px-icon{--ox-hit:-5px}
+  .cfx-flow-symbols>button{--ox-hit:-7px 0}
+}
+
+/* ---- Focus: same ring as the page (the colour inherits from the document). ---- */
+:is(button,a[href],select,summary,[role="button"],[role="tab"],[tabindex]:not([tabindex="-1"]):not(input):not(textarea)):focus-visible{outline:2px solid var(--ox-focus-ring,#eee8da)!important;outline-offset:2px!important}
+
+/* ---- Press feedback: same press as the page. ---- */
+/* patterns and flow already press with transform; the rail and bubbles had none */
+:where(.ox-tool-root button,.oxb button):active:not(:disabled){scale:.96;filter:brightness(1.06)}
+:where(button,[role="button"],[role="tab"]){-webkit-tap-highlight-color:transparent}
+@media (prefers-reduced-motion:reduce){:active{scale:none!important}}
+
+/* ---- States: same vocabulary as the page (see ui-polish.css). ---- */
+:host{--ox-icon-empty:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M5.4 8h5.2' stroke='%23000' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");--ox-icon-error:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M8 4.7v4' stroke='%23000' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='.85'/%3E%3C/svg%3E")}
+:is(.px-empty,.oxb-empty,.cfx-empty,.oxb-assets-empty){font-size:12px!important;line-height:1.6!important}
+:is(.px-empty,.oxb-empty,.cfx-empty,.oxb-assets-empty)::before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;background:currentColor;opacity:.62;-webkit-mask:var(--ox-icon-empty) center/contain no-repeat;mask:var(--ox-icon-empty) center/contain no-repeat}
+:is(.px-empty,.oxb-empty,.cfx-empty,.oxb-assets-empty):has(.ox-loading)::before{display:none}
+.oxb-empty{align-content:center;justify-items:center}
+.cfx-empty{flex-direction:column}
+/* inline scan errors: an error icon carries the severity, the copy stays readable */
+.px-scan-error{color:var(--ox-state-text,#a0a5aa)!important;font-size:11px}
+.px-scan-error::before{content:"";display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-2px;background:var(--ox-state-error,#e48a95);-webkit-mask:var(--ox-icon-error) center/contain no-repeat;mask:var(--ox-icon-error) center/contain no-repeat}
+.px-scan-error:empty::before{display:none}

@@ -9,13 +9,18 @@ const browser=await chromium.launch({headless:true,executablePath:process.env.OX
 try{
  for(const width of [390,1440]){
   const context=await browser.newContext({viewport:{width,height:width<600?844:900}}),{page}=await preparePage(context,{width,height:width<600?844:900});
-  let sessionStatus=200,sessionDelay=0,policyStatus=200,policyDelay=900,locked=false;
+  let sessionStatus=200,sessionDelay=0,policyStatus=200,locked=false;
+  // Policy responses are held until the test releases them, so the pending
+  // state is asserted deterministically instead of racing a fixed delay.
+  let policyGate=null,releasePolicy=()=>{};
+  const holdPolicy=()=>{policyGate=new Promise(resolve=>{releasePolicy=()=>{policyGate=null;resolve();};});};
+  holdPolicy();
   await page.addInitScript(()=>{window.pendingGateFlashes=0;new MutationObserver(()=>{const panel=document.getElementById('ox-feature-gate');if(panel&&!panel.hidden&&getComputedStyle(panel).display!=='none'&&panel.textContent.includes('正在確認'))window.pendingGateFlashes++;}).observe(document,{subtree:true,childList:true,attributes:true});});
   await page.route('**/api/v1/account/**',async route=>{
    const path=new URL(route.request().url()).pathname.split('/').at(-1);
    assert.ok(['config','session','feature-access'].includes(path),'No login/email/private mutation in this check');
    if(path==='session'&&sessionDelay)await new Promise(r=>setTimeout(r,sessionDelay));
-   if(path==='feature-access'&&policyDelay)await new Promise(r=>setTimeout(r,policyDelay));
+   if(path==='feature-access'&&policyGate)await policyGate;
    return route.fulfill({status:path==='session'?sessionStatus:path==='feature-access'?policyStatus:200,json:path==='config'?{configured:true}:path==='session'?{ok:true,user:null}:{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:locked&&f.id==='crypto.radar'?'login':'public',version:'fixture'}))}});
   });
   await page.goto(testBase+'/?ox_feature=crypto.radar');
@@ -24,8 +29,8 @@ try{
   assert.equal(await page.locator('#ox-feature-gate').isVisible(),false,'No loading error panel, even on early viewchange');
   assert.equal(await page.locator('main').isVisible(),false,'Unverified products stay hidden');
   assert.equal(await page.evaluate(()=>window.pendingGateFlashes),0,'No transient loading-card flash');
-  await page.screenshot({path:new URL(`../../imports/account-pending-${width}.png`,import.meta.url).pathname.replace(/^\/([A-Z]:)/,'$1'),fullPage:false});
-  policyDelay=0;await page.waitForFunction(()=>OXFeatures.ready&&OXAuth.status.configured);
+  await page.screenshot({path:process.env.OX_SCREENSHOT_DIR?`${process.env.OX_SCREENSHOT_DIR}/account-pending-${width}.png`:new URL(`../../imports/account-pending-${width}.png`,import.meta.url).pathname.replace(/^\/([A-Z]:)/,'$1'),fullPage:false});
+  releasePolicy();await page.waitForFunction(()=>OXFeatures.state==='ready'&&OXAuth.status.configured);
   const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();await opener.click();await page.locator('#ox-control-account-open').click();
   await page.locator('#ox-account-overlay.is-open').waitFor();assert.equal(await page.locator('#ox-account-google').isVisible(),true);assert.equal(await page.locator('#ox-account-email').isVisible(),true);
   assert.equal(await page.locator('#ox-control-overlay').evaluate(e=>e.classList.contains('is-open')),false);
@@ -37,10 +42,10 @@ try{
    await page.evaluate(()=>window.checkRefresh);assert.equal(await page.locator('main').isVisible(),true,'Public policy survives userinfo error');
    assert.equal(await page.evaluate(()=>OXFeatures.ready),true);
   }
-  sessionDelay=0;policyDelay=250;await page.evaluate(()=>{window.checkRefresh=OXFeatures.refresh();document.dispatchEvent(new CustomEvent('ox:viewchange'));});
-  assert.equal(await page.locator('main').isVisible(),true,'Confirmed public policy remains visible during refresh');await page.evaluate(()=>window.checkRefresh);
-  policyDelay=0;locked=true;await page.evaluate(()=>OXFeatures.refresh());assert.equal(await page.locator('main').isVisible(),false,'Stale session never unlocks login policy');
-  locked=false;policyStatus=503;await page.evaluate(()=>OXFeatures.refresh());assert.equal(await page.locator('main').isVisible(),false,'Unavailable policy fails closed');
+  sessionDelay=0;holdPolicy();await page.evaluate(()=>{window.checkRefresh=OXFeatures.refresh();document.dispatchEvent(new CustomEvent('ox:viewchange'));});
+  assert.equal(await page.locator('main').isVisible(),true,'Confirmed public policy remains visible during refresh');releasePolicy();await page.evaluate(()=>window.checkRefresh);
+  locked=true;await page.evaluate(()=>OXFeatures.refresh());assert.equal(await page.locator('main').isVisible(),false,'Stale session never unlocks login policy');
+  locked=false;policyStatus=503;await page.evaluate(()=>OXFeatures.refresh());assert.equal(await page.evaluate(()=>OXFeatures.state),'stale','A failed check keeps the last verified policy');assert.equal(await page.locator('main').isVisible(),false,'The last verified policy still requires login for this product');assert.equal(await page.locator('#ox-feature-retry').isVisible(),true,'Login products show a retryable gate, never a blank page');
   policyStatus=200;await page.evaluate(()=>OXFeatures.refresh());assert.equal(await page.locator('main').isVisible(),true);
   await context.close();
  }

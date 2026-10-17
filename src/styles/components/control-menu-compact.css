@@ -18,7 +18,14 @@ body.ox-terminal .ox-feature-search-box {padding:7px 9px!important}
 body.ox-terminal .ox-control-view.active {animation:ox-menu-view-in .28s cubic-bezier(.22,.8,.24,1) both}
 @keyframes ox-menu-view-in {from {opacity:.35;transform:translateX(8px)}to {opacity:1;transform:none}}
 body.ox-terminal .ox-control-advanced-back {display:flex;align-items:center;gap:8px;width:100%;min-height:38px;padding:5px 8px;margin-bottom:5px;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font-size:12px;text-align:left}
-body.ox-terminal .ox-theme-segment {width:105px!important;border-radius:10px!important;overflow:hidden!important}
+/* Four theme pills (深色／白金／午夜墨／自動), same size as the Taiwan site:
+   10px/600 text, 30px pills with 7px side padding and 2px gaps inside a 5px
+   padded track (12px radius, width follows content, ~164px). Each pill's hit
+   area fills the track padding (40px tall) without changing the look. */
+body.ox-terminal .ox-theme-segment {width:auto!important;grid-template-columns:repeat(4,auto)!important;gap:2px!important;padding:5px!important;border-radius:12px!important;overflow:hidden!important}
+body.ox-terminal .ox-theme-segment button {position:relative;min-height:30px!important;padding:0 7px!important;font-size:10px!important;font-weight:600!important;line-height:1!important;white-space:nowrap!important}
+body.ox-terminal .ox-theme-segment button::after {content:"";position:absolute;inset:-6px -1px}
+body.ox-terminal .ox-control-row:has(.ox-theme-segment) .ox-control-copy b {white-space:nowrap}
 body.ox-terminal .ox-theme-segment button {border-radius:7px!important;transition:color .5s ease,background .5s cubic-bezier(.22,.8,.24,1),border-color .5s ease,box-shadow .5s ease!important}
 body.ox-terminal .ox-market-segment {gap:2px!important;max-width:116px}
 body.ox-terminal .ox-market-chip {padding:4px 5px!important}
@@ -31,8 +38,9 @@ body.ox-terminal .ox-theme-segment button.active,body.ox-terminal .ox-market-chi
 body.ox-terminal .ox-control-icon:has(+ .ox-control-copy b) {font-size:10px;font-weight:600}
 body.ox-terminal .ox-mobile-location {color:var(--ink)!important;font-size:13px!important;font-weight:600!important;letter-spacing:.02em!important}
 @media(max-width:720px){
-  body.ox-terminal .ox-control-panel {width:clamp(238px,64vw,265px)!important;max-width:calc(100% - 16px)!important}
-  body.ox-terminal .ox-control-edge-close {right:clamp(238px,64vw,265px)}
+  /* 250px minimum: the 164px theme track, its icon and label fit on one row on 320–375px phones */
+  body.ox-terminal .ox-control-panel {width:clamp(250px,64vw,265px)!important;max-width:calc(100% - 16px)!important}
+  body.ox-terminal .ox-control-edge-close {right:clamp(250px,64vw,265px)}
   body.ox-terminal .ox-control-scroll {padding-top:7px!important;padding-inline:7px!important}
   body.ox-terminal:not(.chart-focus) #view-radar .chart-container {height:clamp(430px,calc(100dvh - 320px),650px)!important}
 }

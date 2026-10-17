@@ -16,8 +16,8 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "6cd510c589281264e081430073c2c1821a0d62f24e4ad022119ccfb96498771a",
-      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
+      "sha256": "53a0d42fa8da48720f88323c897348b9f28c026d04b8db0a6cc5d310c96cfd33",
+      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12). Escape sector names, symbols and bases interpolated into innerHTML (2026-10-15)."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
@@ -76,14 +76,14 @@
     {
       "path": "server/account/feature-catalog.js",
       "sourceSha256": "f6804a8cb687fb3a61570436bc8e2f366d2e6c83fbfcd13727df39bc80a83b67",
-      "sha256": "9edf6358768f487e3ed6502c46f81984aea5c0758581b028c975ed3d1250ee0b",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "9903d8d4381071b9178c6ecd3bbabe1b500d3184016a94bc9201c1d6e4a2d4a9",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. 2026-10-15: catalog declares a provisional defaultMode (login) for the browser while the authoritative policy is unknown; the API response omits it."
     },
     {
       "path": "server/account/feature-access.js",
       "sourceSha256": "7148b8bbda0679c541f75edd770a5d2e47a2ec8c716a9db8360a05c6273099fa",
-      "sha256": "faeac289eabff7a8b9d85f081cd86738786ef7c24a5495e67bf56548ae023816",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "0215dfab330e7931797a9621cc1680874a0bfc1de25b343625e6783218e33462",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. 2026-10-15: catalog declares a provisional defaultMode (login) for the browser while the authoritative policy is unknown; the API response omits it."
     },
     {
       "path": "src/core/public-feed.js",
@@ -112,26 +112,26 @@
     {
       "path": "server/account/handler.js",
       "sourceSha256": "cccd5494dc81ad8586124f909705e2a83ecaf10a76fd3e313f05522cfe633cab",
-      "sha256": "1a64911d9085f445cd21ea5374232ae0552388e5a5d7b50f93604f452525fc01",
-      "reason": "Public catalog reads are independent of login/session configuration; preview uses existing public DB endpoint/key. Policy validity and login enforcement remain unchanged."
+      "sha256": "57eb8ddcb80f4c6353f3e2ebabf3126084769704348b3d74261acb2a960b963c",
+      "reason": "Public catalog reads are independent of login/session configuration; preview uses existing public DB endpoint/key. Policy validity and login enforcement remain unchanged. 2026-10-15: successful public feature-policy responses cacheable (s-maxage=60, stale-while-revalidate=600); failures stay no-store."
     },
     {
       "path": "src/markets/crypto/api.js",
       "sourceSha256": "422644421259ef776f8da824dbfe90141e71f9bc44d1134d2d5e1d1552b72cd5",
-      "sha256": "2677965045ee0087994687ee531aa18b4b901d31624dcca93712792c62339c1a",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "433c4d05e2d4b95b09f3091df8c48f52d63f682f789f7fe1a9721e08b0799ea9",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: Bitget 1D/1W/1M requests use UTC granularities (1Dutc/1Wutc/1Mutc). 2026-10-16 (load): peekCandles accepts a max age for chart reuse."
     },
     {
       "path": "src/markets/crypto/presentation.js",
       "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
-      "sha256": "8d4d8bb070a4fc2c9c23b284abccd784f6a3440f23b95617ad159401238d2851",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+      "sha256": "e044221186c7c35d51b9464a5d34940328e08b9e467d13c054a2800f64956b51",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. 2026-10-15: keyed card updates, IntersectionObserver visibility, no per-render layout reads; missing turnover shows \"—\". 2026-10-15: radar card symbols, side, setup, status and reasons plus detail reasons escaped with shared escapeHtml; missing turnover shows only \"—\" (fmtCryptoVolumeUSDT). 2026-10-15: raw reference prices in displayed signal reasons use fmtPrice precision (fmtSignalReason); engine values unchanged. 2026-10-16: detail panel shows radar four elements, pathway, matched/deducted/T1-gate/rejection reasons; cell labels follow the radar or classic (custom timeframe) mode; fill candidates show their fill status."
     },
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "84a6c5a5398b1d80e8e2240146f11b72dc7e75b866de19db292489a61a6d31fd",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "9fcb6a1a4d003493d951d67ebdf6398b537d3db50dc43667e256d5969c767ea6",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 2026-10-15: throttled keyed radar renders, rest between rounds, hidden-tab pause, <300k USDT turnover excluded, weekly upside room, change-only tie-breaker, UTC frames. 2026-10-15: radar card symbols, side, setup, status and reasons plus detail reasons escaped with shared escapeHtml; missing turnover shows only \"—\" (fmtCryptoVolumeUSDT). 2026-10-15: raw reference prices in displayed signal reasons use fmtPrice precision (fmtSignalReason); engine values unchanged. UI polish (2026-10-15): radar list loading shows skeleton cards with an in-place progress note; failed/empty states use the shared ox-state classes. Scan logic unchanged. 2026-10-15: refresh/reconnect clear the between-pass rest and wake the scan loop; a wholly failed pass shows the error at once and retries after 10 s. 2026-10-15: a cancelled weekly request is dropped from the cache instead of a 5-minute data gap; weekly results are only applied while the radar and the same pass are current. 2026-10-16: radar ranks through the OXRadarStrategy layer (entry pathways, money, deductions, four elements, top-confirmation shorts); stablecoins/gold tokens excluded; snapshot v9; per side T1 ≤10 (never padded), T2/T3 filled to 15 each: selections scoring 35+ first, then lower selections and labelled fill candidates (補位) by score, one direction per coin (a fill never sits opposite a selection; a coin selected on both sides stays on the higher-scoring side); fill rows carry a 補位 badge and mobile mark. 2026-10-16 (structure): daily history paged to ~180 bars and weekly bars kept for every coin (background, lowest priority, cached); 1W setups confirmed on 1D; radar report records listed coins."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
@@ -160,8 +160,8 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "797859f7e88a5686352cf8d7a9135c866620a0dfee11b4d152aa00091b973569",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return."
+      "sha256": "f5d27228c1701d6721ef37cd7566c5a2436f14bba316b786dd0b8cb92c8699b2",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. User-requested visible K-line load failure state with retry and stale-data marker (2026-10-15). 2026-10-16 (load): charts already seen or fetched by the radar scan paint at once and refresh in place; one-tap timeframes prefetched quietly; press on a coin/timeframe starts its request; skeleton candles plus a 2px refresh bar replace the double spinner and 0/1 counter. 2026-10-16 (structure): renderChartData refreshes the 雙極結構 indicator layer with the same candles."
     },
     {
       "path": "src/components/chart/drawings.js",
@@ -174,6 +174,48 @@
       "sourceSha256": "375ef44d53a823bc4d07f80e5e80c3e4c3d25fee16cfc29586eed568bf413123",
       "sha256": "0175670d954fa3b179a34f5aff4a8197c21fbc6dca4357ff83e26d52bc1536e6",
       "reason": "Reviewed two-row orbit login UI: preserve existing Google/email/register calls, member and UID flows, and the current main removal of account admin entries. Add concise feedback, stable labels, keyboard focus and visual viewport handling; authentication configuration and backend are unchanged."
+    },
+    {
+      "path": "src/core/runtime-config.js",
+      "sourceSha256": "ecbf9571a713a50d8d6409993562f554b14d907fd3108056cacbafbe626a7067",
+      "sha256": "205ae661a986f1c7f4e649121da5966619a87edef9a3434148e1b3457837fa51",
+      "reason": "User-requested missing-value display: formatters show — instead of 0; toNumberOrNull for calculations (2026-10-15). Shared escapeHtml for market-data markup (2026-10-15). 2026-10-15: radar card symbols, side, setup, status and reasons plus detail reasons escaped with shared escapeHtml; missing turnover shows only \"—\" (fmtCryptoVolumeUSDT). 2026-10-15: raw reference prices in displayed signal reasons use fmtPrice precision (fmtSignalReason); engine values unchanged."
+    },
+    {
+      "path": "server/integrations/bitget/http-handler.js",
+      "sourceSha256": "322204c5e786d1b9b9a7f3ca0010077e480380ebc88960633c3a624a84e5119c",
+      "sha256": "ba7a7a30e6dfe35b7ce87c41755df3285e8796c7feac27eaa4cfc9d0046f3dd7",
+      "reason": "Operator bitget-status lookup off unless OX_ENABLE_OPERATOR_LOOKUP=1; per-client throttle and hashed audit log (2026-10-15)."
+    },
+    {
+      "path": "server/integrations/bitget/operator-handler.js",
+      "sourceSha256": "5abc8fe4f03463844852ccd11da2cd063adfdcc79b025ba6ded5d2a65b2d1b2b",
+      "sha256": "2b8ff3a811d6abae8591ce19c206e50e46cfeaeb67813e6f6635f397a15f0963",
+      "reason": "Audit hook for operator page lookups (2026-10-15)."
+    },
+    {
+      "path": "src/markets/crypto/liquidity-policy.js",
+      "sourceSha256": "b1978476b58e1abe9e45f637a48fbd0525400063c5f7604f6af00ddf16fabb30",
+      "sha256": "c5ce840237d4eb0db74ab9145810bdd967ff1327da7d0917832e7cde60df3311",
+      "reason": "Radar spec: turnover below 300,000 USDT excluded from scan pool (2026-10-15)."
+    },
+    {
+      "path": "src/markets/crypto/live-candles.js",
+      "sourceSha256": "2b5ba4b8fa630119acfba00e0b3998a1e7e362ebe40c11ca393c5a37d8e9dba0",
+      "sha256": "915e95eb199fd2dc9c23065bb7e0651a74f1823703c360fc03775cd737b0d41a",
+      "reason": "2026-10-15: live candles use UTC daily/weekly/monthly granularities."
+    },
+    {
+      "path": "src/components/chart/home-preview.js",
+      "sourceSha256": "8112393e3565ebbda9dcf47d0b0832f13902c739507b011f8dd07232a9b9094d",
+      "sha256": "fe97d2fe17aa2bb4f528146024e6cc8cac31e8cbbe6b0afb93e7d8bcbe035847",
+      "reason": "User-requested Midnight Ink theme: the home preview chart reads the shared Midnight palette (2026-10-15)."
+    },
+    {
+      "path": "src/components/chart/toolbar.js",
+      "sourceSha256": "95fd921df956d16f442bb9472609c961b0be54a03f0e60c85794417cafc08a88",
+      "sha256": "831801f90e1843b5228459ba0928d268e508f6699c461c3150324351ea367926",
+      "reason": "2026-10-16 (structure): the 雙極結構 toggle is remembered with the other chart indicators."
     }
   ]
 }

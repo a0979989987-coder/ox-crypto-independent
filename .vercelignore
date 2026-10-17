@@ -1,0 +1,17 @@
+# Files that neither the build (npm run build:tools && npm run check) nor the
+# api/ function (imports api/ + server/ only) needs. Keeping them out of the
+# upload also keeps them out of the public static output (outputDirectory ".").
+# Do NOT add server/ (imported by api/v1/account/[endpoint].js), scripts/
+# (build-toolkit.mjs and check-build.mjs run in buildCommand), src/, data/,
+# assets/, previews/data/ or previews/account-admin/ (live site and admin page).
+/docs/
+/tests/
+/supabase/
+/.github/
+/previews/crypto-flow.html
+/previews/crypto-replay-layout-check.html
+/qa-shots/
+/chart-check-artifacts/
+/artifacts/
+/.env.example
+/README.md

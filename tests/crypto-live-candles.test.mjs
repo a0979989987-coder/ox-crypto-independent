@@ -65,8 +65,14 @@ test('live updates retain loaded history and do not call setData for same-bar ti
   data=h.updateCryptoLiveSeries(series,null,data,[candle(120,13)]);assert.equal(data.length,3);assert(writes.every(([op])=>op==='update'));
   h.updateCryptoLiveSeries(series,null,data,[candle(-60),candle(0,11),candle(120,13)]);assert.equal(writes.at(-1)[0],'set');assert.equal(writes.at(-1)[1][0].time,0);
 });
-test('countdown uses candle start including weekly anchors and actual calendar month length',()=>{
-  const h=harness();const feb=Date.UTC(2024,0,31,16)/1000;
-  assert.equal(h.CryptoLiveCandles.closeTime({time:feb},'1M'),Date.UTC(2024,1,29,16)/1000);
-  const anchor=Date.UTC(2026,8,27,16)/1000;assert.equal(h.CryptoLiveCandles.closeTime({time:anchor},'1W'),anchor+604800);
+test('countdown uses UTC candle starts including weekly anchors and actual calendar month length',()=>{
+  const h=harness();const feb=Date.UTC(2024,1,1)/1000;
+  assert.equal(h.CryptoLiveCandles.closeTime({time:feb},'1M'),Date.UTC(2024,2,1)/1000,'1Mutc February 2024 closes at 1 March 00:00 UTC');
+  const anchor=Date.UTC(2026,8,28)/1000;assert.equal(h.CryptoLiveCandles.closeTime({time:anchor},'1W'),anchor+604800,'1Wutc opens Monday 00:00 UTC');
+});
+test('daily and larger streams subscribe to Bitget UTC candle channels',async()=>{
+  for(const [period,channel] of [['1D','candle1Dutc'],['1W','candle1Wutc'],['4H','candle4H']]){
+    const h=harness(),feed=h.subscribe(period);h.sockets[0].open();
+    assert.equal(JSON.parse(h.sockets[0].sent[0]).args[0].channel,channel);feed.stop();
+  }
 });

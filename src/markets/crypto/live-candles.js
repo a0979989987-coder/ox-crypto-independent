@@ -3,10 +3,10 @@ const CryptoLiveCandles = (() => {
   const streamPeriods = new Set(['1m','5m','15m','30m','1H','4H','6H','12H','1D','3D','1W','1M']);
   function closeTime(candle, period) {
     if (period === '1M') {
-      // Classic 1M bars open at midnight UTC+8 (the previous UTC month's last day).
-      const date = new Date(candle.time * 1000 + 8 * 3600000);
+      // 1Mutc bars open at 00:00 UTC on the 1st and close at the next UTC month start.
+      const date = new Date(candle.time * 1000);
       date.setUTCMonth(date.getUTCMonth() + 1);
-      return date.getTime() / 1000 - 8 * 3600;
+      return date.getTime() / 1000;
     }
     return candle.time + (periods[period] || 60);
   }
@@ -19,7 +19,9 @@ const CryptoLiveCandles = (() => {
   function subscribe(symbol, period, onCandles, options = {}) {
     const fetchCandles = options.fetchCandles || ((...args) => BitgetAPI.fetchCandles(...args));
     const useSocket = options.websocket !== false && streamPeriods.has(period) && typeof WebSocket !== 'undefined';
-    const arg = {instType:'USDT-FUTURES',channel:`candle${period}`,instId:symbol};
+    // Same UTC sessions as REST (BitgetAPI.fetchCandles): candle1Dutc/1Wutc/1Mutc.
+    const channel = ({'1D':'1Dutc','1W':'1Wutc','1M':'1Mutc'})[period] || period;
+    const arg = {instType:'USDT-FUTURES',channel:`candle${channel}`,instId:symbol};
     let stopped=false, ready=false, socket=null, retry=null, attempts=0, heartbeat=0, lastPush=0, lastSync=0, lastTs=0, revision=0, loading=null;
     let cache=new Map();
     const rows = () => [...cache.values()].map(v=>v.candle).sort((a,b)=>a.time-b.time);

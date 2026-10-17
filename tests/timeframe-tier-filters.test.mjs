@@ -16,7 +16,7 @@ test('timeframe combinations enforce all/any, real classifications and independe
  assert.equal(f.normalize(null).rules.length,0);
  assert.equal(f.normalize({rules:[...rules,{frame:'1H',tier:'T3'},{frame:'bogus',tier:'T1'}]}).rules.length,2);
 });
-test('combination direction rejects opposite setups, and Crypto excludes unfinished hourly and calendar-month candles',()=>{
+test('combination direction rejects opposite setups, and Crypto excludes unfinished hourly and UTC calendar-month candles',()=>{
  const f=filters(),config=f.normalize({enabled:true,rules:[{frame:'1H',tier:'T1'},{frame:'4H',tier:'T2'}]});
  const row={'1H':{tier:'T1',side:'LONG'},'4H':{tier:'T2',side:'SHORT'}};
  assert.equal(f.resolve(row,config,(r,frame,side)=>r[frame].side===side?r[frame]:null,'LONG'),null);
@@ -26,6 +26,8 @@ test('combination direction rejects opposite setups, and Crypto excludes unfinis
  assert.equal(runInNewContext("closedTierCandles(bars,'1H',now).length",context),1);
  context.bars=[{time:Date.parse('2026-09-01T00:00:00Z')/1000},{time:Date.parse('2026-10-01T00:00:00Z')/1000}];
  assert.equal(runInNewContext("closedTierCandles(bars,'1M',now).length",context),1);
- context.bars=[{time:Date.parse('2026-09-30T16:00:00Z')/1000}];
- assert.equal(runInNewContext("closedTierCandles(bars,'1M',now).length",context),0,'Bitget UTC+8 October candle is still forming after UTC midnight');
+ context.bars=[{time:Date.parse('2026-10-01T00:00:00Z')/1000}];
+ assert.equal(runInNewContext("closedTierCandles(bars,'1M',now).length",context),0,'Bitget 1Mutc October candle is still forming');
+ context.bars=[{time:Date.parse('2026-09-01T00:00:00Z')/1000}];context.now=Date.parse('2026-09-30T23:59:00Z');
+ assert.equal(runInNewContext("closedTierCandles(bars,'1M',now).length",context),0,'a UTC month closes at the next UTC month start, not at UTC+8 midnight');
 });

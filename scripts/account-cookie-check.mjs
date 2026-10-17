@@ -4,7 +4,7 @@ import { chromium } from 'playwright';
 import { cookie, cookieName, seal, unseal } from '../server/account/cookies.js';
 
 // Separate synthetic browser; never uses the user's browser or real providers.
-const executablePath = ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);
+const executablePath = process.env.OX_TEST_BROWSER || ['C:/Program Files/Google/Chrome/Application/chrome.exe', 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'].find(existsSync);
 const browser = await chromium.launch({ headless: true, ...(executablePath ? { executablePath } : {}) });
 try {
   const context = await browser.newContext();
