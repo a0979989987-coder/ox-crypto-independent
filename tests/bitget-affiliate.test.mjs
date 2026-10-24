@@ -10,7 +10,9 @@ const env = {
   BITGET_AFFILIATE_API_KEY: 'test-only-key',
   BITGET_AFFILIATE_SECRET_KEY: 'test-only-secret',
   BITGET_AFFILIATE_PASSPHRASE: 'test-only-passphrase',
-  OX_ACCOUNT_LOOKUP_TOKEN: 'test-only-operator-token-32-characters'
+  OX_ACCOUNT_LOOKUP_TOKEN: 'test-only-operator-token-32-characters',
+  // The bitget-status operator endpoint is off unless explicitly enabled.
+  OX_ENABLE_OPERATOR_LOOKUP: '1'
 };
 const customer = { uid: 123456, registerTime: '1679991960110' };
 const response = (data, code = '00000', status = 200) => ({ ok: status >= 200 && status < 300, status, json: async () => ({ code, data, msg: 'must never be exposed' }) });
@@ -114,7 +116,7 @@ test('UID and time inputs reject injection, precision loss and invalid windows b
 async function invoke(req, options = {}) {
   const headers = {};
   const res = { setHeader(key, value) { headers[key] = value; }, status(code) { this.statusCode = code; return this; }, json(body) { this.body = body; return this; } };
-  await createHandler(options)(req, res);
+  await createHandler({ limit: () => true, audit: () => {}, ...options })(req, res);
   return { ...res, headers };
 }
 const validRequest = () => ({ method: 'POST', headers: { authorization: `Bearer ${env.OX_ACCOUNT_LOOKUP_TOKEN}`, 'content-type': 'application/json' }, body: { uid } });
@@ -122,7 +124,10 @@ const validRequest = () => ({ method: 'POST', headers: { authorization: `Bearer 
 test('unconfigured/unauthorized HTTP queries cannot contact Bitget', async () => {
   let calls = 0;
   const createClient = () => { calls++; throw new Error('must not execute'); };
-  const disabled = await invoke(validRequest(), { env: {}, createClient });
+  const off = await invoke(validRequest(), { env: { ...env, OX_ENABLE_OPERATOR_LOOKUP: undefined }, createClient });
+  assert.equal(off.statusCode, 404);
+  assert.equal(off.body.code, 'OPERATOR_LOOKUP_DISABLED');
+  const disabled = await invoke(validRequest(), { env: { OX_ENABLE_OPERATOR_LOOKUP: '1' }, createClient });
   assert.equal(disabled.statusCode, 503);
   const unauthorized = validRequest();
   unauthorized.headers.authorization = 'Bearer incorrect';

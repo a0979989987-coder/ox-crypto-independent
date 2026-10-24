@@ -256,6 +256,9 @@
     .badge-t1 { background: #f7bd5226; color: var(--gold); border: 1px solid #f7bd5255; }
     .badge-t2 { background: #5ca5ff26; color: var(--blue); border: 1px solid #5ca5ff55; }
     .badge-t3 { background: #ad7cff26; color: var(--purple); border: 1px solid #ad7cff55; }
+    .badge-fill { background: transparent; color: var(--muted); border: 1px dashed var(--muted); }
+    /* 補位列：手機卡片標題不放徽章，改在底列標示 */
+    .coin-fill-mark { font-size: 9px; line-height: 1.4; color: var(--muted); border: 1px dashed var(--muted); border-radius: 4px; padding: 0 3px; white-space: nowrap; }
     .badge-surge { background: #ff708826; color: var(--red); border: 1px solid #ff708855; }
     .badge-long { background: #38c99b24; color: var(--green); border: 1px solid #38c99b55; }
     .badge-short { background: #ee617c24; color: var(--red); border: 1px solid #ee617c55; }

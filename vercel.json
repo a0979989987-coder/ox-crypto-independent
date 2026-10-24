@@ -2,8 +2,46 @@
   "functions": {
     "api/v1/account/*.js": {
       "maxDuration": 60
+    },
+    "api/v1/news/*.js": {
+      "maxDuration": 25
     }
   },
   "buildCommand": "npm run build:tools && npm run check",
-  "outputDirectory": "."
+  "outputDirectory": ".",
+  "routes": [
+    {
+      "src": "/.*",
+      "headers": {
+        "Strict-Transport-Security": "max-age=63072000; includeSubDomains",
+        "X-Content-Type-Options": "nosniff"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/(?!api(?:/|$)).*$",
+      "headers": {
+        "X-Frame-Options": "DENY",
+        "Referrer-Policy": "strict-origin-when-cross-origin",
+        "Permissions-Policy": "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+        "Content-Security-Policy": "frame-ancestors 'none'; object-src 'none'; base-uri 'self'"
+      },
+      "continue": true
+    },
+    {
+      "src": "^/(?:server|scripts|docs|tests|supabase|node_modules|\\.github|\\.vercel|qa-shots)(?:/.*)?$",
+      "status": 404,
+      "dest": "/__ox_not_found"
+    },
+    {
+      "src": "^/(?:package\\.json|package-lock\\.json|vercel\\.json|README\\.md|\\.env\\.example|\\.vercelignore|\\.gitignore)$",
+      "status": 404,
+      "dest": "/__ox_not_found"
+    },
+    {
+      "src": "^/previews/[^/]+\\.html$",
+      "status": 404,
+      "dest": "/__ox_not_found"
+    }
+  ]
 }

@@ -1,0 +1,94 @@
+/* Midnight Ink (午夜墨) — document layer.
+ * Loaded only while the theme is chosen (src/app/theme-boot.js); every rule is
+ * scoped to html.theme-midnight, so the sheet is inert for other themes.
+ * Palette tokens are shared verbatim with the Taiwan independent site. */
+:root.theme-midnight{
+  color-scheme:dark;
+  --mi-bg:#0A0E16;--mi-surface-1:#0F1520;--mi-surface-2:#151C29;--mi-surface-3:#1B2433;
+  --mi-line:rgba(226,232,240,.08);--mi-line-strong:rgba(226,232,240,.16);
+  --mi-ink:#ECE7DE;--mi-ink-2:#A9B0BC;--mi-ink-3:#6E7685;
+  --mi-accent:#D9C79A;--mi-accent-soft:rgba(217,199,154,.14);
+  /* channel triplets for alpha variants: rgb(var(--mi-*-rgb) / a) */
+  --mi-bg-rgb:10 14 22;--mi-s1-rgb:15 21 32;--mi-s2-rgb:21 28 41;--mi-s3-rgb:27 36 51;
+  --mi-ink-rgb:236 231 222;--mi-ink2-rgb:169 176 188;--mi-ink3-rgb:110 118 133;
+  --mi-accent-rgb:217 199 154;--mi-haze-rgb:226 232 240;--mi-shade-rgb:3 6 12;
+  /* selected = champagne hairline over a soft champagne wash */
+  --mi-select-line:rgba(217,199,154,.6);
+  --mi-select-ring:inset 0 0 0 1px rgba(217,199,154,.6);
+  background:var(--mi-bg);
+}
+
+/* ---- generated colour layer (scripts/theme/midnight-map.mjs) ---- */
+/* @midnight-map */
+
+/* ---- hand-tuned layer: wins over the generated clones ---- */
+:root.theme-midnight body.ox-terminal{background:var(--mi-bg)!important;color:var(--mi-ink)!important;--ox-focus-ring:var(--mi-accent)}
+/* Long/short text keeps the dark-theme hues. Long #00b8d4 is ≥6.5:1 on every
+   surface; short #ff3078 is 4.4:1 on the raised surface, so its text tone is
+   lifted to #ff3d81 (same 339° hue, ≥4.6:1). Candles keep #ff3078. */
+:root.theme-midnight body.ox-terminal{--red:#ff3d81}
+
+/* Focus: champagne ring; keep each control's own offset. */
+:root.theme-midnight body.ox-terminal :is(button,a,input,select,textarea,summary,[role="button"],[role="tab"],[tabindex]):focus-visible:not(#_):not(#_){outline-color:var(--mi-accent)!important}
+:root.theme-midnight body.ox-terminal :is(.chart-indicator-option,.chart-timeframe-preferences label,.chart-custom-filters label):has(input:focus-visible){outline-color:var(--mi-accent)!important}
+
+/* Selected pills and segments: champagne hairline + soft wash, never white neon. */
+:root.theme-midnight body.ox-terminal :is(
+  .ox-market-chip.active,.theme-choice.active,
+  .chart-filter-mode button[aria-pressed="true"],
+  .chart-indicator-option:is(:has(input:checked),[aria-pressed="true"]),
+  .oxn-tags button[aria-pressed="true"],.oxn-panel-actions .oxn-action[aria-pressed="true"],
+  .oxn-controls button[data-calendar-switch][aria-pressed="true"],.oxn-importance-toggle[aria-pressed="true"],
+  .v34-home-mini-tf.active){
+  color:var(--mi-ink)!important;background:var(--mi-accent-soft)!important;
+  border-color:var(--mi-select-line)!important;box-shadow:var(--mi-select-ring)!important;text-shadow:none!important;
+}
+:root.theme-midnight body.ox-terminal #view-radar .chart-timeframe-strip .tf-glass-indicator{
+  border-color:var(--mi-select-line)!important;background:var(--mi-accent-soft)!important;box-shadow:none!important;
+}
+:root.theme-midnight body.ox-terminal .ox-desktop-nav button.active::after{background:var(--mi-accent)!important}
+:root.theme-midnight body.ox-terminal .oxn-ranking button[aria-pressed="true"]{color:var(--mi-accent)!important;text-shadow:none!important}
+
+/* Theme pills keep the same width in every theme: the champagne edge is a 1px inset ring, not a border. */
+:root.theme-midnight body.ox-terminal .ox-theme-segment button.active{
+  color:var(--mi-ink)!important;background:var(--mi-accent-soft)!important;border-color:transparent!important;
+  box-shadow:inset 0 0 0 1px var(--mi-accent)!important;text-shadow:none!important;
+}
+
+/* Switches */
+:root.theme-midnight body.ox-terminal .ox-control-toggle input:checked+span{
+  background:var(--mi-accent-soft)!important;border-color:var(--mi-select-line)!important;box-shadow:none!important;
+}
+:root.theme-midnight body.ox-terminal .ox-control-toggle input:checked+span::after{background:var(--mi-accent)!important;box-shadow:none!important}
+
+/* Calendar: today/selected in champagne instead of a bright blue block. */
+:root.theme-midnight body.ox-terminal .oxn-week-date[aria-pressed="true"]{
+  background:var(--mi-accent-soft)!important;color:var(--mi-ink)!important;box-shadow:var(--mi-select-ring)!important;
+}
+:root.theme-midnight body.ox-terminal .oxn-week-date[aria-pressed="true"] small{color:var(--mi-accent)!important}
+:root.theme-midnight body.ox-terminal .oxn-day.is-selected{box-shadow:var(--mi-select-ring)!important;background:var(--mi-accent-soft)!important}
+:root.theme-midnight body.ox-terminal .oxn-day.is-today::after{background:var(--mi-accent)!important;box-shadow:none!important}
+:root.theme-midnight body.ox-terminal .ox-mini-day.is-selected{background:var(--mi-accent-soft)!important;color:var(--mi-accent)!important}
+
+/* Cards: smoked glass with a hairline; direction keeps its border colour, no halo. */
+:root.theme-midnight body.ox-terminal #view-home :is(.ox-home-chart,.ox-home-t1,.ox-score-panel){box-shadow:inset 0 1px 0 rgb(var(--mi-haze-rgb) / .06)!important}
+:root.theme-midnight body.ox-terminal #view-home :is(.ox-home-t1,.ox-score-panel){border-color:var(--mi-line-strong)!important}
+:root.theme-midnight body.ox-terminal #view-home .ox-home-chart.ox-market-up{border-color:rgba(128,184,165,.42)!important}
+:root.theme-midnight body.ox-terminal #view-home .ox-home-chart.ox-market-down{border-color:rgba(199,137,145,.42)!important}
+
+/* Bottom dock: smoked glass, active item in warm white with a champagne hairline. */
+:root.theme-midnight body.ox-terminal .app-dock.glass-nav{
+  background:rgb(var(--mi-s1-rgb) / .86)!important;border-color:var(--mi-line-strong)!important;
+  box-shadow:0 10px 30px rgb(var(--mi-shade-rgb) / .55)!important;
+}
+:root.theme-midnight body.ox-terminal .app-dock .dock-btn.active{color:var(--mi-ink)!important}
+:root.theme-midnight body.ox-terminal .app-dock .ox-dock-indicator{background:var(--mi-accent-soft)!important;border-color:var(--mi-select-line)!important;box-shadow:none!important}
+
+/* Loading / empty / error states (loading-state.js injects its own base colours). */
+:root.theme-midnight .ox-loading{color:var(--mi-ink-2)!important}
+:root.theme-midnight .ox-loading-ring{border-color:rgb(var(--mi-haze-rgb) / .14)!important;border-top-color:var(--mi-accent)!important}
+:root.theme-midnight .ox-loading-count{color:var(--mi-ink-2)!important}
+:root.theme-midnight #ox-control-resource-shell{background:var(--mi-surface-2)!important;border-color:var(--mi-line-strong)!important;color:var(--mi-ink)!important}
+
+/* Selection colour */
+:root.theme-midnight ::selection{background:rgba(217,199,154,.32);color:var(--mi-ink)}

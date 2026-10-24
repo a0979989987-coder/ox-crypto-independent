@@ -15,7 +15,7 @@
   }
   async function ensure(overlay,onClose){overlay.dataset.resourceState='pending';let shell=overlay.querySelector('#ox-control-resource-shell');if(!shell){shell=document.createElement('div');shell.id='ox-control-resource-shell';shell.setAttribute('role','status');overlay.append(shell);}
     shell.replaceChildren();const message=document.createElement('div');message.textContent='正在載入選單樣式…';const close=document.createElement('button');close.textContent='關閉';close.onclick=onClose;shell.append(message,close);
-    try{await Promise.all([...document.querySelectorAll('link[rel="stylesheet"]')].filter(l=>critical.test(l.href)).map(load));shell.remove();delete overlay.dataset.resourceState;return true;}
+    try{await Promise.all([...document.querySelectorAll('link[rel="stylesheet"][href]')].filter(l=>l.media!=='not all'&&critical.test(l.href)).map(load));shell.remove();delete overlay.dataset.resourceState;return true;}
     catch(error){overlay.dataset.resourceState='error';message.textContent='選單樣式暫時未載入，請重新連線。';const retry=document.createElement('button');retry.textContent='重新連線';retry.onclick=()=>ensure(overlay,onClose);shell.append(retry);return false;}
   }
   globalThis.OXControlResources=Object.freeze({ensure});

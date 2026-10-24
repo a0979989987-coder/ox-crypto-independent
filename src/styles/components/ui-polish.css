@@ -1,0 +1,260 @@
+/* UI polish layer (all themes). Loaded last; changes feel, not layout. */
+
+/* ---- Touch & zoom: page zoom is allowed (viewport), so controls opt out of
+   double-tap zoom and form fields never trigger iOS focus zoom. ---- */
+:where(button,a,summary,label,select,[role="button"],[role="tab"],[role="menuitem"],[role="menuitemradio"],.dock-btn,.coin-card,input[type="checkbox"],input[type="radio"]){touch-action:manipulation}
+@media (max-width:720px),(pointer:coarse){
+  :root body :is(input:not([type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="button"],[type="submit"],[type="reset"],[type="file"],[type="hidden"]),select,textarea){font-size:max(16px,1em)!important}
+}
+
+/* ---- Touch targets: on touch screens an invisible ::after grows small
+   controls towards 40px. Look and layout are unchanged; packed rows grow
+   vertically and only into their own gaps so neighbours never overlap. ---- */
+@media (pointer:coarse){
+  :root body :is(#view-radar .chart-tool-icon,#view-radar .chart-timeframe-strip .btn-tf,.ox-text-button,.oxn-article-actions>button,.oxn-text-button,.oxn-root .oxn-month-nav .oxn-month-arrow,.v34-home-mini-tf,.ox-market-chip,.ox-control-toggle){position:relative}
+  :root body :is(#view-radar .chart-tool-icon,#view-radar .chart-timeframe-strip .btn-tf,.ox-text-button,.oxn-article-actions>button,.oxn-text-button,.oxn-root .oxn-month-nav .oxn-month-arrow,.v34-home-mini-tf,.ox-market-chip,.ox-control-toggle,#ox-control-close.ox-control-edge-close)::after{content:"";position:absolute;inset:var(--ox-hit,-6px);border-radius:inherit;pointer-events:auto}
+  :root body #view-radar .chart-tool-icon{--ox-hit:-8px -2px}
+  :root body #view-radar .chart-controls>.ctrl-group.chart-tool-actions:nth-child(2){overflow:visible!important}
+  /* the scrolling strip clips at its padding box: give the pills room to grow */
+  :root body #view-radar .chart-timeframe-group{overflow:visible!important}
+  :root body #view-radar .chart-timeframe-strip{padding-block:6px!important;margin-block:-6px!important}
+  :root body #view-radar .chart-timeframe-strip .tf-glass-indicator{top:7px!important;bottom:7px!important}
+  :root body #view-radar .chart-timeframe-strip .btn-tf{--ox-hit:-6px -1px}
+  :root body #view-radar .chart-controls .chart-timeframe-strip .btn-tf::after{display:block!important}
+  :root body .ox-text-button{--ox-hit:-5px -9px}
+  :root body .oxn-article-actions>button{--ox-hit:-3px -8px}
+  :root body .oxn-text-button{--ox-hit:-7px -4px}
+  :root body .oxn-root .oxn-month-nav .oxn-month-arrow{--ox-hit:-2px -6px}
+  :root body .v34-home-mini-tf{--ox-hit:-5px -1px}
+  :root body .ox-market-chip{--ox-hit:-9px -3px}
+  :root body .ox-control-toggle{--ox-hit:-10px -2px}
+  :root body #ox-control-close.ox-control-edge-close{--ox-hit:-4px 0 -4px -26px}
+  /* the symbol picker label clips its own overflow: grow it with padding instead */
+  :root body #view-radar .market-line-item label#ticker-pair{padding-block:9px 14px!important;margin-block:-9px -13px!important}
+}
+
+/* ---- Focus: one keyboard ring for every control, in the theme's accent.
+   2px offset so rows that clip overflow still show it. :not(#_) only lifts
+   specificity above the older per-component focus rules. ---- */
+:root body.ox-terminal{--ox-focus-ring:var(--ink)}
+:root body.ox-terminal.theme-light{--ox-focus-ring:#8d712e}
+:root body.ox-terminal :is(button,a[href],summary,select,label[role="button"],[role="button"],[role="tab"],[role="menuitem"],[role="menuitemradio"],[tabindex]:not([tabindex="-1"]):not(input):not(textarea)):focus-visible:not(#_):not(#_){outline:2px solid var(--ox-focus-ring)!important;outline-offset:2px!important}
+
+/* ---- Press feedback: one gentle press everywhere. Controls shrink to .96,
+   rows and cards to .985, with a tiny brightness lift; release eases back.
+   Older per-component transform presses are folded into this single scale
+   so nothing double-shrinks. ---- */
+:root{--ox-press:.96;--ox-press-row:.985}
+:where(button,a[href],summary,label,[role="button"],[role="tab"],[role="menuitemradio"],.dock-btn,.coin-card){-webkit-tap-highlight-color:transparent}
+:where(button,summary,[role="button"],[role="tab"],[role="menuitemradio"],.ox-control-toggle):active:not(:disabled){scale:var(--ox-press);filter:brightness(1.06)}
+:where(a[href],.coin-card,.oxn-event-row,.ox-home-t1-row,.ox-control-row,.ox-feature-result,.v33-action,.media-function-item,.benchmark-card):active:not(:disabled){scale:var(--ox-press-row);filter:brightness(1.04)}
+:root body :is(.glass-button,.dock-btn,.v34-home-mini-tf,.tab-btn,.direction-toggle-btn,#view-radar .chart-tool-icon,.ox-menu-btn):active{transform:none!important}
+@media (prefers-reduced-motion:reduce){
+  :root body :active{scale:none!important}
+}
+
+/* ---- States: loading / empty / error / stale share one vocabulary —
+   12px muted copy, a 16px line icon, a pill-shaped retry. Colours are the
+   theme's own (Midnight Ink re-maps them like every other rule). ---- */
+:root body.ox-terminal{
+  --ox-state-text:var(--muted);--ox-state-error:#e48a95;--ox-state-stale:#f1c36d;
+  --ox-skel-base:rgba(255,255,255,.035);--ox-skel-line:rgba(255,255,255,.075);--ox-skel-shine:rgba(255,255,255,.04);
+  --ox-icon-empty:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M5.4 8h5.2' stroke='%23000' stroke-width='1.3' stroke-linecap='round'/%3E%3C/svg%3E");
+  --ox-icon-error:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M8 4.7v4' stroke='%23000' stroke-width='1.4' stroke-linecap='round'/%3E%3Ccircle cx='8' cy='11.1' r='.85'/%3E%3C/svg%3E");
+  --ox-icon-stale:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6.2' fill='none' stroke='%23000' stroke-width='1.3'/%3E%3Cpath d='M8 4.9V8l2.2 1.5' fill='none' stroke='%23000' stroke-width='1.3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+:root body.ox-terminal.theme-light{--ox-state-error:#c2415c;--ox-state-stale:#a8741a;--ox-skel-base:#f2f4f7;--ox-skel-line:#e3e7ec;--ox-skel-shine:rgba(255,255,255,.75)}
+:root body.ox-terminal :is(#view-radar .turnover-empty,.ox-feature-empty){color:var(--ox-state-text)!important;font-size:12px!important;line-height:1.6!important}
+:root body.ox-terminal :is(#view-radar .turnover-empty,.ox-feature-empty)::before,
+:root body.ox-terminal .chart-load-error-box::before,
+:root body.ox-terminal .ox-tool-load-error::before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;background:currentColor;opacity:.62;-webkit-mask:var(--ox-icon-empty) center/contain no-repeat;mask:var(--ox-icon-empty) center/contain no-repeat}
+:root body.ox-terminal :is(.chart-load-error-box,.ox-tool-load-error)::before{-webkit-mask-image:var(--ox-icon-error);mask-image:var(--ox-icon-error);background:var(--ox-state-error);opacity:1;margin:0}
+:root body.ox-terminal .chart-load-error[data-mode="stale"] .chart-load-error-box::before{display:none}
+:root body.ox-terminal .chart-load-error[data-mode="stale"] .chart-load-error-title::before{content:"";display:inline-block;width:12px;height:12px;margin-right:5px;vertical-align:-1px;background:var(--ox-state-stale);-webkit-mask:var(--ox-icon-stale) center/contain no-repeat;mask:var(--ox-icon-stale) center/contain no-repeat}
+:root body.ox-terminal .ox-tool-load-error{color:var(--ox-state-text)!important;font-size:12px}
+:root body.ox-terminal .ox-tool-load-error>p{color:var(--ink)}
+/* radar list states (scanner.js) */
+.ox-state{padding:22px 12px;text-align:center;color:var(--ox-state-text);font-size:12px;line-height:1.6}
+.ox-state b{display:block;color:var(--ink);font-size:12px;font-weight:600}
+.ox-state p{margin:4px 0 0;font-size:11px}
+.ox-state::before{content:"";display:block;width:16px;height:16px;margin:0 auto 6px;background:currentColor;opacity:.62;-webkit-mask:var(--ox-icon-empty) center/contain no-repeat;mask:var(--ox-icon-empty) center/contain no-repeat}
+.ox-state--error::before{-webkit-mask-image:var(--ox-icon-error);mask-image:var(--ox-icon-error);background:var(--ox-state-error);opacity:1}
+.ox-state-retry{margin-top:10px;font:inherit;font-size:12px;color:var(--ink);background:transparent;border:1px solid currentColor;border-radius:999px;padding:6px 16px;min-height:36px;cursor:pointer}
+/* one retry pill everywhere */
+:root body.ox-terminal :is(.chart-load-error-retry,.ox-tool-load-error>button,.ox-style-loading button,#ox-runtime-recovery button){border-radius:999px!important;min-height:36px!important;padding:6px 16px!important;border:1px solid currentColor!important;background:transparent!important}
+/* Chart loading: faint skeleton candles when nothing is cached yet, and only a
+   2px running bar on the top edge while an already painted chart refreshes.
+   No spinner, no counter, no box over the chart. */
+:root body #chart-loading.chart-loading-overlay{inset:0;top:0;left:0;padding:0;margin:0;display:block!important;border:0!important;border-radius:0;background:transparent!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;box-shadow:none!important;color:var(--ox-state-text,var(--muted))!important;font-size:12px!important;pointer-events:none;overflow:hidden}
+:root body #chart-loading.chart-loading-overlay::before{content:none!important}
+:root body #chart-loading.chart-loading-overlay::after{content:"";position:absolute;left:0;right:0;top:0;height:2px;background:linear-gradient(90deg,transparent,currentColor,transparent) no-repeat;background-size:38% 100%;opacity:.75;animation:ox-chart-bar 1.15s cubic-bezier(.45,0,.25,1) infinite}
+#chart-loading .chart-skeleton{position:absolute;left:3%;right:70px;top:16%;bottom:16%;animation:ox-chart-pulse 1.6s ease-in-out infinite}
+#chart-loading .chart-skeleton i{position:absolute;display:block;width:clamp(4px,1.9%,13px);border-radius:2px;background:currentColor;opacity:.12}
+/* the previous chart's price/countdown chip must not float over the skeleton */
+#chart:has(#chart-loading.show[data-mode=empty]) :is(#price-timer,.chart-current-price){visibility:hidden}
+#chart-loading .chart-skeleton i::before{content:"";position:absolute;left:50%;top:-14%;bottom:-14%;width:1px;background:currentColor;opacity:.7}
+#chart-loading .chart-loading-label{position:absolute;left:12px;top:12px;font-size:12px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
+#chart-loading .sr-only{position:absolute!important;width:1px!important;height:1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important}
+@keyframes ox-chart-bar{from{background-position:-45% 0}to{background-position:145% 0}}
+@keyframes ox-chart-pulse{0%,100%{opacity:.65}50%{opacity:1}}
+@media(prefers-reduced-motion:reduce){#chart-loading .chart-skeleton,:root body #chart-loading.chart-loading-overlay::after{animation:none}}
+
+/* ---- Skeletons: radar list before the first scan and tool pages while the
+   tool module loads. Quiet shimmer, none with reduced motion. ---- */
+.ox-radar-loading{display:grid;gap:8px;padding:8px}
+.ox-state-note{display:grid;gap:2px;margin:4px 0 0;text-align:center;font-size:11px;line-height:1.5;color:var(--ox-state-text)}
+.ox-state-note b{color:var(--ink);font-size:12px;font-weight:600}
+.ox-skeleton-card{position:relative;display:block;height:64px;overflow:hidden;border-radius:10px;
+  background:linear-gradient(var(--ox-skel-line) 0 0) 10px 12px/44% 9px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 30px/64% 7px no-repeat,linear-gradient(var(--ox-skel-line) 0 0) 10px 45px/34% 7px no-repeat,var(--ox-skel-base)}
+@media (min-width:900px){.ox-skeleton-card{height:96px}}
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:not([hidden]){position:relative;min-height:min(62vh,520px);place-items:center;
+  background:linear-gradient(var(--ox-skel-base) 0 0) 0 0/100% 40px no-repeat,linear-gradient(var(--ox-skel-base) 0 0) 0 52px/100% calc(100% - 52px) no-repeat;border-radius:12px;overflow:hidden}
+:is(.ox-skeleton-card,#ox-crypto-tools-inline>.ox-tool-loading:not([hidden]))::after{content:"";position:absolute;inset:0;pointer-events:none;transform:translateX(-100%);background:linear-gradient(90deg,transparent,var(--ox-skel-shine),transparent);animation:ox-skeleton-sheen 1.5s ease-in-out infinite}
+/* an error replaces the skeleton inside the same slot */
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:has(.ox-tool-load-error){background:none}
+:root body.ox-terminal #ox-crypto-tools-inline>.ox-tool-loading:has(.ox-tool-load-error)::after{display:none}
+@keyframes ox-skeleton-sheen{to{transform:translateX(100%)}}
+@media (prefers-reduced-motion:reduce){:is(.ox-skeleton-card,#ox-crypto-tools-inline>.ox-tool-loading)::after{animation:none;opacity:0}}
+
+/* ---- Page switch: a 160ms opacity-only fade (no transform, so no layout
+   shift and taps/scroll stay live during the fade). ---- */
+@keyframes ox-view-in{from{opacity:.5}to{opacity:1}}
+:root body.ox-terminal .app-view.active.ox-mobile-view-in{animation:ox-view-in 160ms cubic-bezier(.2,.8,.2,1) both!important}
+@media (prefers-reduced-motion:reduce){:root body.ox-terminal .app-view.active.ox-mobile-view-in{animation:none!important}}
+
+/* ---- Long content: off-screen radar cards and media sections skip render
+   work. `auto` remembers each element's real size after its first paint, so
+   keyed card updates, the live-quote IntersectionObserver (it still sees
+   every card box) and scroll positions keep working. ---- */
+:root body.ox-terminal #screener-list .coin-card{content-visibility:auto;contain-intrinsic-size:auto 78px}
+@media (min-width:900px){:root body.ox-terminal #screener-list .coin-card{contain-intrinsic-size:auto 248px}}
+:root body.ox-terminal #view-media .media-section{content-visibility:auto;contain-intrinsic-size:auto 480px}
+
+/* ---- Phone bottom spacing: body padding already clears the bottom dock
+   (88px = dock + ~16px). Pages stacked their own 32–95px on top of that,
+   leaving up to ~260px of empty space above the dock at the end of a page. ---- */
+@media (max-width:620px){
+  :root body.ox-terminal main.wrap{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root{padding-bottom:0!important}
+  :root body.ox-terminal #view-home .ox-editorial-home{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root .oxn-upcoming-events{padding-bottom:0!important}
+  :root body.ox-terminal .oxn-root .oxn-upcoming-day:last-child{margin-bottom:0!important}
+  :root body.ox-terminal :is(.media-page,#view-strength .strength-page){padding-bottom:0!important}
+  :root body.ox-terminal #ox-crypto-tools-inline{margin-bottom:0!important}
+}
+
+/* 資訊 page placeholder while its workspace code/CSS arrives (replaced on mount). */
+.ox-news-skeleton{display:grid;gap:10px;padding:14px 12px;color:var(--ox-state-text,var(--muted));animation:ox-chart-pulse 1.6s ease-in-out infinite}
+.ox-news-skeleton i{display:block;height:64px;border-radius:12px;background:currentColor;opacity:.08}
+.ox-news-skeleton .ox-news-skeleton-head{height:30px;width:46%;border-radius:8px}
+.ox-news-skeleton .ox-news-skeleton-tabs{height:34px;border-radius:999px}
+@media(prefers-reduced-motion:reduce){.ox-news-skeleton{animation:none}}
+
+/* 雙極結構指標：圖表左上角目前狀態、關鍵價位與多級別狀態 */
+.chart-structure-legend {position:absolute;left:8px;top:8px;z-index:6;display:flex;flex-direction:column;align-items:flex-start;gap:5px;max-width:calc(100% - 96px);padding:5px 9px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(13,16,19,.78);color:#e8ecef;font-size:10.5px;line-height:1.35;pointer-events:none;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.chart-structure-legend[hidden] {display:none!important}
+.chart-structure-legend .sl-row {display:flex;flex-wrap:wrap;align-items:center;gap:4px 8px}
+.chart-structure-legend .sl-head {display:inline-flex;align-items:baseline;gap:6px}
+.chart-structure-legend .sl-head b {font-size:12px;font-weight:700;letter-spacing:.04em}
+.chart-structure-legend .sl-head small {color:rgba(232,236,239,.62);font-size:9.5px}
+.chart-structure-legend .sl-level {display:inline-flex;align-items:baseline;gap:4px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.chart-structure-legend .sl-level i {font-style:normal;color:rgba(232,236,239,.6)}
+.chart-structure-legend .sl-level small {color:rgba(232,236,239,.6);font-size:9.5px}
+.chart-structure-legend .sl-mtf {display:flex;flex-wrap:wrap;gap:4px;pointer-events:auto}
+.chart-structure-legend .sl-frame {display:inline-flex;align-items:center;gap:4px;min-height:22px;padding:2px 7px;border:1px solid rgba(255,255,255,.16);border-radius:999px;background:rgba(255,255,255,.04);color:inherit;font:inherit;font-size:10px;cursor:pointer}
+.chart-structure-legend .sl-frame i {font-style:normal;color:rgba(232,236,239,.6);font-variant-numeric:tabular-nums}
+.chart-structure-legend .sl-frame.is-active {border-color:rgba(255,255,255,.55);background:rgba(255,255,255,.1)}
+.chart-structure-legend .sl-frame.is-bull {color:#00b8d4}
+.chart-structure-legend .sl-frame.is-bear {color:#ff3078}
+.chart-structure-legend .sl-frame.is-balance {color:#e6c76f}
+.chart-structure-legend .sl-frame:focus-visible {outline:2px solid #fff;outline-offset:1px}
+.chart-structure-legend .sl-short {display:none}
+.chart-structure-legend.is-bull {border-color:rgba(0,184,212,.5)}
+.chart-structure-legend.is-bull .sl-head b {color:#00b8d4}
+.chart-structure-legend.is-bear {border-color:rgba(255,48,120,.5)}
+.chart-structure-legend.is-bear .sl-head b {color:#ff3078}
+.chart-structure-legend.is-balance {border-color:rgba(230,199,111,.55)}
+.chart-structure-legend.is-balance .sl-head b {color:#e6c76f}
+.ox-structure-tooltip {white-space:pre-line;line-height:1.5;font-size:11px}
+body.theme-light .chart-structure-legend {border-color:rgba(112,140,166,.3);background:rgba(255,255,255,.9);color:#1f2937}
+body.theme-light .chart-structure-legend :is(.sl-head small,.sl-level i,.sl-level small,.sl-frame i) {color:#64748b}
+body.theme-light .chart-structure-legend .sl-frame {border-color:rgba(100,116,139,.3);background:rgba(148,163,184,.06)}
+body.theme-light .chart-structure-legend .sl-frame.is-active {border-color:rgba(51,65,85,.6);background:rgba(148,163,184,.16)}
+body.theme-light .chart-structure-legend .sl-frame.is-bull {color:#2f7fc9}
+body.theme-light .chart-structure-legend .sl-frame.is-bear,body.theme-light .chart-structure-legend.is-bear .sl-head b {color:#d94c6c}
+body.theme-light .chart-structure-legend .sl-frame.is-balance,body.theme-light .chart-structure-legend.is-balance .sl-head b {color:#a87b17}
+body.theme-light .chart-structure-legend.is-bull .sl-head b {color:#2f7fc9}
+body.theme-light .chart-structure-legend .sl-frame:focus-visible {outline-color:#334155}
+@media (max-width:720px) {
+  .chart-structure-legend {left:6px;top:6px;max-width:calc(100% - 70px);padding:4px 7px;gap:4px;font-size:9.5px}
+  .chart-structure-legend .sl-head b {font-size:11px}
+  .chart-structure-legend .sl-row .sl-level:nth-of-type(n+4) {display:none}
+  .chart-structure-legend .sl-mtf {flex-wrap:nowrap;gap:3px}
+  .chart-structure-legend .sl-frame {min-height:24px;padding:2px 6px;font-size:9.5px;gap:3px}
+  .chart-structure-legend .sl-full {display:none}
+  .chart-structure-legend .sl-short {display:inline}
+}
+
+/* 雷達成績單 */
+#radar-tier-menu .radar-report-entry {border-top:1px solid rgba(255,255,255,.12);margin-top:4px;padding-top:8px}
+.ox-radar-report {position:fixed;inset:0;z-index:1200;display:grid;place-items:center;padding:16px;background:rgba(5,7,9,.62);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.ox-radar-report[hidden] {display:none!important}
+.ox-radar-report .orr-dialog {width:min(760px,100%);max-height:min(88vh,860px);overflow:auto;padding:18px 18px 20px;border:1px solid rgba(255,255,255,.16);border-radius:16px;background:#121417;color:#e8ecef;box-shadow:0 24px 60px rgba(0,0,0,.45);outline:none}
+.ox-radar-report .orr-head {display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.ox-radar-report h2 {margin:0;font-size:17px;font-weight:700}
+.ox-radar-report h3 {margin:18px 0 8px;font-size:13px;font-weight:600}
+.ox-radar-report .orr-head p {margin:6px 0 0;color:rgba(232,236,239,.62);font-size:11px;line-height:1.6}
+.ox-radar-report .orr-close {flex:none;width:34px;height:34px;border:1px solid rgba(255,255,255,.2);border-radius:50%;background:transparent;color:inherit;font-size:20px;cursor:pointer}
+.ox-radar-report .orr-controls {display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:14px 0 10px}
+.ox-radar-report .orr-seg {display:inline-flex;border:1px solid rgba(255,255,255,.16);border-radius:9px;overflow:hidden}
+.ox-radar-report .orr-seg button,.ox-radar-report .orr-refresh {min-height:32px;padding:0 12px;border:0;background:transparent;color:inherit;font-size:11.5px;cursor:pointer}
+.ox-radar-report .orr-seg button[aria-pressed="true"] {background:rgba(255,255,255,.14);font-weight:600}
+.ox-radar-report .orr-refresh {border:1px solid rgba(255,255,255,.18);border-radius:9px}
+.ox-radar-report .orr-status {color:rgba(232,236,239,.6);font-size:11px}
+.ox-radar-report :is(button):focus-visible {outline:2px solid #fff;outline-offset:2px}
+.ox-radar-report .orr-table {width:100%;border-collapse:collapse;font-size:12px;font-variant-numeric:tabular-nums}
+.ox-radar-report .orr-table :is(th,td) {padding:8px 6px;border-bottom:1px solid rgba(255,255,255,.08);text-align:right;white-space:nowrap}
+.ox-radar-report .orr-table :is(thead th) {color:rgba(232,236,239,.6);font-weight:500;font-size:11px}
+.ox-radar-report .orr-table :is(th:first-child) {text-align:left}
+.ox-radar-report .orr-table small {display:block;color:rgba(232,236,239,.55);font-size:10px}
+.ox-radar-report .orr-table .is-total :is(th,td) {font-weight:700;border-bottom:0}
+.ox-radar-report .orr-list {margin:0;padding:0;list-style:none;font-size:12px}
+.ox-radar-report .orr-list li {display:grid;grid-template-columns:76px 80px 58px 1fr auto auto;align-items:center;gap:8px;padding:7px 2px;border-bottom:1px solid rgba(255,255,255,.06)}
+.ox-radar-report .orr-when,.ox-radar-report .orr-path {color:rgba(232,236,239,.6);font-size:11px}
+.ox-radar-report .orr-path {overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ox-radar-report .orr-symbol {padding:0;border:0;background:none;color:inherit;font:inherit;font-weight:700;text-align:left;cursor:pointer}
+.ox-radar-report .orr-entry {font-variant-numeric:tabular-nums}
+.ox-radar-report .orr-outcome {text-align:right;white-space:nowrap}
+.ox-radar-report .orr-outcome small {color:rgba(232,236,239,.55);font-size:10px}
+.ox-radar-report .is-target .orr-outcome {color:#00b8d4}
+.ox-radar-report .is-stop .orr-outcome {color:#ff3078}
+.ox-radar-report .is-expired .orr-outcome {color:#e6c76f}
+.ox-radar-report .orr-empty {color:rgba(232,236,239,.6);font-size:12px}
+body.ox-radar-report-open {overflow:hidden}
+body.theme-light .ox-radar-report {background:rgba(30,41,59,.28)}
+body.theme-light .ox-radar-report .orr-dialog {border-color:rgba(100,116,139,.25);background:#fff;color:#1f2937;box-shadow:0 24px 60px rgba(15,23,42,.18)}
+body.theme-light .ox-radar-report :is(.orr-head p,.orr-status,.orr-when,.orr-path,.orr-table thead th,.orr-table small,.orr-outcome small,.orr-empty) {color:#64748b}
+body.theme-light .ox-radar-report :is(.orr-seg,.orr-refresh,.orr-close) {border-color:rgba(100,116,139,.3)}
+body.theme-light .ox-radar-report .orr-seg button[aria-pressed="true"] {background:rgba(148,163,184,.2)}
+body.theme-light .ox-radar-report .orr-table :is(th,td),body.theme-light .ox-radar-report .orr-list li {border-color:rgba(100,116,139,.15)}
+body.theme-light .ox-radar-report .is-target .orr-outcome {color:#2f7fc9}
+body.theme-light .ox-radar-report .is-stop .orr-outcome {color:#d94c6c}
+body.theme-light .ox-radar-report .is-expired .orr-outcome {color:#a87b17}
+body.theme-light .ox-radar-report :is(button):focus-visible {outline-color:#334155}
+body.theme-light #radar-tier-menu .radar-report-entry {border-top-color:rgba(100,116,139,.2)}
+@media (max-width:600px) {
+  .ox-radar-report {padding:0;place-items:end stretch}
+  .ox-radar-report .orr-dialog {max-height:92vh;border-radius:16px 16px 0 0;padding:16px 14px 22px}
+  .ox-radar-report .orr-table {font-size:11px}
+  .ox-radar-report .orr-table :is(th,td) {padding:7px 3px}
+  .ox-radar-report .orr-table :is(th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7)) {display:none}
+  .ox-radar-report .orr-list li {grid-template-columns:62px 1fr auto;grid-template-areas:"when sym out" "when tier out";row-gap:2px}
+  .ox-radar-report .orr-when {grid-area:when}
+  .ox-radar-report .orr-symbol {grid-area:sym}
+  .ox-radar-report .orr-tier {grid-area:tier;font-size:10.5px;color:#9aa3a8}
+  .ox-radar-report .orr-outcome {grid-area:out}
+  .ox-radar-report :is(.orr-path,.orr-entry) {display:none}
+}
+/* 打開時把焦點放在對話框本身（給鍵盤與讀屏），不畫焦點框。 */
+:root body .ox-radar-report .orr-dialog.orr-dialog.orr-dialog:is(:focus,:focus-visible) {outline:none!important;box-shadow:0 24px 60px rgba(0,0,0,.45)!important}
+:root body.theme-light .ox-radar-report .orr-dialog.orr-dialog.orr-dialog:is(:focus,:focus-visible) {box-shadow:0 24px 60px rgba(15,23,42,.18)!important}

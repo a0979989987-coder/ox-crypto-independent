@@ -11,6 +11,7 @@ function harness() {
     return {
       hidden: true, offsetWidth: 88, offsetHeight: 152, focused: false,
       style: { setProperty() {} },
+      classList: { set: new Set(), add(name) { this.set.add(name); }, remove(name) { this.set.delete(name); }, contains(name) { return this.set.has(name); } },
       addEventListener(type, fn, options) {
         const entries = listeners.get(type) || [];
         entries.push({ fn, options }); listeners.set(type, entries);
@@ -81,10 +82,15 @@ test('unrelated scrolling does not cancel hold and touch listeners never block p
   }
 });
 
+const triangle = { closest: selector => selector === '[data-radar-tier-cycle]' ? {} : null };
+const tapTriangle = (h, held = 60) => { h.start(); h.advance(held); h.end(); h.logo.emit('click', { target: triangle, detail: 1 }); };
+
 test('short taps still cycle existing tiers; keyboard can open and dismiss choices', () => {
   const h = harness();
   for (const tier of ['t1', 't2', 't3', 'all']) {
-    h.start(); h.advance(100); h.end(); h.logo.emit('click', { target: { closest: () => ({}) } });
+    tapTriangle(h, 100);
+    assert.equal(h.menu.hidden, true);
+    h.advance(250);
     assert.equal(h.state.currentTab, tier);
   }
   h.logo.emit('keydown', { key: 'ArrowDown' });
@@ -126,4 +132,67 @@ test('rapid double tap leaves choices open instead of toggling them closed', () 
   assert.equal(h.state.currentTab, 'all');
   h.document.emit('pointerdown', { target: {} });
   assert.equal(h.menu.hidden, true, 'outside tap still dismisses choices');
+});
+
+
+test('triangle single tap waits about 250ms, then advances exactly one tier', () => {
+  const h = harness();
+  tapTriangle(h);
+  h.advance(249);
+  assert.equal(h.state.currentTab, 'all', 'no cycle before the double-tap window closes');
+  h.advance(1);
+  assert.equal(h.state.currentTab, 't1');
+  h.advance(1000);
+  assert.equal(h.state.currentTab, 't1', 'one tap is one step');
+  assert.equal(h.menu.hidden, true);
+});
+
+test('triangle double tap opens the menu and does not cycle', () => {
+  const h = harness();
+  tapTriangle(h); h.advance(120); tapTriangle(h);
+  assert.equal(h.menu.hidden, false, 'second tap inside the window opens choices');
+  h.logo.emit('dblclick', { target: triangle });
+  h.advance(1000);
+  assert.equal(h.state.currentTab, 'all', 'double tap never jumps two tiers');
+  assert.equal(h.menu.hidden, false);
+});
+
+test('a slow native double click on the triangle opens the menu without a second cycle', () => {
+  const h = harness();
+  tapTriangle(h); h.advance(300);
+  assert.equal(h.state.currentTab, 't1');
+  tapTriangle(h); h.logo.emit('dblclick', { target: triangle }); h.advance(1000);
+  assert.equal(h.state.currentTab, 't1');
+  assert.equal(h.menu.hidden, false);
+});
+
+test('triangle long press opens the menu with hold feedback and the release click does not cycle', () => {
+  const h = harness();
+  h.start();
+  assert.equal(h.logo.classList.contains('is-holding'), true, 'hold feedback starts with the press');
+  h.advance(1999);
+  assert.equal(h.menu.hidden, true);
+  h.advance(1);
+  assert.equal(h.menu.hidden, false);
+  assert.equal(h.logo.classList.contains('is-holding'), false);
+  h.end(); h.logo.emit('click', { target: triangle, detail: 1 }); h.advance(1000);
+  assert.equal(h.state.currentTab, 'all');
+  assert.equal(h.menu.hidden, false);
+});
+
+test('tap then hold on the triangle resolves as the menu, not a cycle', () => {
+  const h = harness();
+  tapTriangle(h); h.advance(100);
+  h.start(); h.advance(2000);
+  assert.equal(h.menu.hidden, false);
+  h.end(); h.logo.emit('click', { target: triangle }); h.advance(1000);
+  assert.equal(h.state.currentTab, 'all');
+});
+
+test('tap then drag away still applies the first tap once', () => {
+  const h = harness();
+  tapTriangle(h); h.advance(100);
+  h.start(); h.move(30); h.advance(400);
+  assert.equal(h.state.currentTab, 't1');
+  assert.equal(h.logo.classList.contains('is-holding'), false, 'cancelled press clears hold feedback');
 });

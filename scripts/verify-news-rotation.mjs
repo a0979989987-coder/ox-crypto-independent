@@ -13,7 +13,7 @@ const imagePrefix=browserName==='webkit'?'bubble-webkit':'bubble';
 const reports=[];
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
 const tool=(p,id)=>p.locator(`button[data-crypto-tool="${id}"]`).click();
-async function setup(width,theme='dark',clockTime=null){
+async function setup(width,theme='dark',clockTime=null,beforeLoad=null){
  const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',...(browserName==='webkit'&&width<600?{isMobile:true,hasTouch:true}: {})}),{page,audit}=await preparePage(context,{width,height:900});
  if(clockTime)await page.clock.install({time:clockTime});
  const requests=[];page.on('request',r=>requests.push(r.url()));
@@ -28,12 +28,13 @@ async function setup(width,theme='dark',clockTime=null){
  await page.route('**/api/v1/account/**',r=>r.fulfill({json:new URL(r.request().url()).pathname.endsWith('feature-access')?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:{ok:true,user:null,configured:false}}));
  await page.route('https://api.bitget.com/**',async r=>{await new Promise(done=>setTimeout(done,80));return r.fulfill({json:fixtureBody(r.request().url())});});
  await routeSnapshots(page);await page.route('https://api.coingecko.com/**',r=>r.fulfill({json:[]}));
+ if(beforeLoad)await beforeLoad(page);
  await page.goto(testBase,{waitUntil:'domcontentloaded'});await page.locator('#view-radar .coin-card').first().waitFor({timeout:30000});await page.evaluate(()=>switchAppView('strength'));
  return {page,context,audit,requests};
 }
 async function verifyExpandedResearch(page){
  const geometry=await active(page,'.cfx-research-panel').evaluate(panel=>{const main=panel.closest('.cfx'),content=panel.parentElement,canvas=panel.querySelector('canvas'),a=main.getBoundingClientRect(),b=canvas.getBoundingClientRect();return {outerBorder:parseFloat(getComputedStyle(main).borderLeftWidth),panelBorder:parseFloat(getComputedStyle(panel).borderLeftWidth),radius:parseFloat(getComputedStyle(panel).borderTopLeftRadius),padding:parseFloat(getComputedStyle(content).paddingLeft),mainWidth:a.width,canvasWidth:b.width};});
- assert.equal(geometry.outerBorder,0,'only the outermost research frame is removed');assert.equal(geometry.panelBorder,1,'one chart frame remains');assert.equal(geometry.radius,14);assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth-2)<1,'canvas fills the width within the single border');
+ assert.equal(geometry.outerBorder,0,'only the outermost research frame is removed');assert.equal(geometry.panelBorder,1,'one chart frame remains');assert.equal(geometry.radius,20,'user-requested Taiwan-style glass research panel (fe13e4a, 2026-10-12) uses a 20px radius');assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth-2)<1,'canvas fills the width within the single border');
  assert.equal(await active(page,'[data-control="period"]').count(),1);assert.equal(await active(page,'[data-control="replay-range"]').count(),0,'one header menu owns periods and replay ranges');
 }
 async function verifyDialogBounds(page,selector){
@@ -109,7 +110,8 @@ async function verifySectorDialog(page,width,theme){
  await active(page,'[data-action="view-bubbles"]').click();
  const bubbleCanvas=active(page,'.cfx-plot canvas');await bubbleCanvas.scrollIntoViewIfNeeded();
  const drawn=await bubbleCanvas.evaluate(c=>({points:c.__bubblePoints||[],labels:c.__bubbleLabels||[],width:c.clientWidth,height:c.clientHeight,clips:c.__plotClips||[],text:c.__plotText||[]}));assert.ok(drawn.points.every(p=>p.r>=(width<600?26:30)&&p.r<=(width<600?44:60)),'weak bubbles preserve their readable minimum size');
- assert.ok(drawn.clips.some(c=>c.x===0&&c.y===0&&Math.abs(c.w-drawn.width)<1&&Math.abs(c.h-drawn.height)<1),'grid fills the entire canvas');
+ // Taiwan-style quiet plot (fe13e4a, user-requested 2026-10-12): the plot is clipped to a 42/18/44/44 inset while ticks overlay the edge.
+ assert.ok(drawn.clips.some(c=>c.x===42&&c.y===44&&Math.abs(c.w-(drawn.width-60))<1&&Math.abs(c.h-(drawn.height-88))<1),'plot area keeps the Taiwan-style inset: '+JSON.stringify(drawn.clips.slice(0,3)));
  const coordinates=drawn.text.filter(t=>t.baseline==='alphabetic'&&/^[+−-]?\d/.test(t.text));assert.ok(coordinates.some(t=>t.x===8),'left ticks overlay the grid');assert.ok(coordinates.some(t=>Math.abs(t.y-(drawn.height-27))<1),'bottom ticks overlay the grid');assert.ok(coordinates.every(t=>t.x>=0&&t.x<=drawn.width&&t.y>0&&t.y<drawn.height));
  assert.ok(drawn.labels.length,'bubble labels render');
  for(const label of drawn.labels){const size=Number(/([\d.]+)px/.exec(label.font)?.[1]);assert.doesNotMatch(label.font,/bold|600|700/);assert.ok(drawn.points.some(p=>Math.abs(p.x-label.x)<.1&&Math.hypot(label.width/2,Math.abs(label.y-p.y)+size/2)<=p.r+.1),'text stays inside a bubble');}
@@ -165,9 +167,10 @@ try{
   await active(page,'[data-action="view-rank"]').click();await active(page,'.cfx-rotation-table').waitFor();await active(page,'[data-action="view-bubbles"]').click();
   if(width===390&&theme==='dark'){
    await active(page,'[data-action="settings"]').first().click();
-   assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'false');
-   await active(page,'[data-action="trails"]').click();assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'true');
+   // Taiwan-style trails are on by default since fe13e4a (user-requested, 2026-10-12); the toggle still works both ways.
+   assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'true');
    await active(page,'[data-action="trails"]').click();assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'false');
+   await active(page,'[data-action="trails"]').click();assert.equal(await active(page,'[data-action="trails"]').getAttribute('aria-pressed'),'true');
    await active(page,'[data-action="close-settings"]').click();
   }
   await active(page,'[data-action="replay-toggle"]').click();
@@ -261,8 +264,10 @@ try{
  await tool(fp,'rotation');await active(fp,'.cfx-research-panel').waitFor();await active(fp,'[data-action="view-rank"]').click();await active(fp,'.cfx-rank-row').first().click();await active(fp,'.cfx-sector-dialog [data-member-detail]').first().locator('td').nth(1).click();
  await active(fp,'.cfx-asset-chart canvas[data-symbol]').waitFor();await active(fp,'[data-control="asset-period"]').selectOption('1m');await active(fp,'[data-action="retry-asset"]').waitFor({timeout:16000});assert.equal(candleAttempts,2,'one initial request and one bounded 429 retry');
  failed=false;await active(fp,'[data-action="retry-asset"]').click();try{await active(fp,'.cfx-asset-chart canvas[data-period="1m"]').waitFor({timeout:15000});}catch(error){throw new Error(`幣種 K 線恢復：${await active(fp,'.cfx-asset-chart-status').textContent()}；請求 ${candleAttempts}`,{cause:error});}assert.equal(candleAttempts,3);assert.deepEqual(faultSetup.audit.pageErrors,[]);reports.push({fault:'detail-429',boundedAttempts:2,manualRecovery:true});await faultSetup.context.close();
- const {page,context,audit,requests}=await setup(390);let blocked=true;
- await page.route('**/src/generated/tool-news.js*',r=>blocked?r.abort('failed'):r.continue());
+ // Block the news module from the first request: idle warm-up prepares 資訊
+ // first, so blocking only after load would test an already cached module.
+ let blocked=true;
+ const {page,context,audit,requests}=await setup(390,'dark',null,page=>page.route('**/src/generated/tool-news.js*',r=>blocked?r.abort('failed'):r.continue()));
  await page.evaluate(()=>OXNews.openMarket());await page.getByRole('button',{name:'重試',exact:true}).waitFor();
  const failedCalls=requests.filter(u=>u.includes('tool-news.js')).length;assert.ok(failedCalls<=2,'failed module cannot trigger unlimited imports');blocked=false;
  await page.getByRole('button',{name:'重試',exact:true}).click();await page.locator('.oxn-event-row').first().waitFor();assert.deepEqual(audit.pageErrors,[]);

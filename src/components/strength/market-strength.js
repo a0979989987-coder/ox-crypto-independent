@@ -12,6 +12,20 @@ function qualitative(v, low = 45, high = 65) {
   return "普通";
 }
 
+// Weighted sum over the inputs that exist. Returns null when none exist.
+function weightedAvailable(pairs) {
+  let sum = 0, weight = 0, total = 0;
+  for (const [raw, w] of pairs) {
+    total += w;
+    const value = toNumberOrNull(raw);
+    if (value === null) continue;
+    sum += value * w;
+    weight += w;
+  }
+  if (!weight) return null;
+  return weight === total ? sum : sum * total / weight;
+}
+
 function calculateBTCvsAltStrength() {
   const cfg = BTC_ALT_STRENGTH_CONFIG;
   const btcA = state.analyzedCache.get("BTCUSDT");
@@ -22,33 +36,37 @@ function calculateBTCvsAltStrength() {
     num(c.quoteVol || c.ticker?.usdtVolume) >= cfg.liquidityFloor
   );
 
+  // Missing returns are skipped and the remaining weights renormalised; they
+  // are never scored as a flat 0% move. With complete data this is identical
+  // to the original weighted sum.
   const btcRet = {
-    h1: num(btcA?.ret1h),
-    h4: num(btcA?.ret4h),
-    h24: Number.isFinite(Number(btcA?.ret24h)) ? num(btcA?.ret24h) : num(btcTicker?.change24h)
+    h1: toNumberOrNull(btcA?.ret1h),
+    h4: toNumberOrNull(btcA?.ret4h),
+    h24: toNumberOrNull(btcA?.ret24h) ?? toNumberOrNull(btcTicker?.change24h)
   };
   const w = cfg.momentumWeights;
-  const composite = r => num(r.h1)*w.h1 + num(r.h4)*w.h4 + num(r.h24)*w.h24;
-  const btcMomentum = composite(btcRet);
+  const composite = r => weightedAvailable([[r.h1, w.h1], [r.h4, w.h4], [r.h24, w.h24]]);
+  const btcMomentum = composite(btcRet) ?? 0;
 
   const altRows = alts.map(c => ({
     c,
-    h1: num(c.ret1h),
-    h4: num(c.ret4h),
-    h24: Number.isFinite(Number(c.ret24h)) ? num(c.ret24h) : num(c.change24h)
+    h1: toNumberOrNull(c.ret1h),
+    h4: toNumberOrNull(c.ret4h),
+    h24: toNumberOrNull(c.ret24h) ?? toNumberOrNull(c.change24h)
   }));
   altRows.forEach(r => { r.composite = composite(r); });
+  const availableMedian = key => { const values = altRows.map(r => r[key]).filter(v => v !== null); return values.length ? median(values) : null; };
   const altMedian = {
-    h1: median(altRows.map(r=>r.h1)),
-    h4: median(altRows.map(r=>r.h4)),
-    h24: median(altRows.map(r=>r.h24))
+    h1: availableMedian("h1"),
+    h4: availableMedian("h4"),
+    h24: availableMedian("h24")
   };
-  const altMomentum = composite(altMedian);
+  const altMomentum = composite(altMedian) ?? 0;
   const relativeMomentum = btcMomentum - altMomentum;
 
   const totalAlt = Math.max(1, altRows.length);
   const positiveBreadth = altRows.filter(r => r.h24 > 0).length / totalAlt * 100;
-  const outperformBTC = altRows.filter(r => r.composite > btcMomentum).length / totalAlt * 100;
+  const outperformBTC = altRows.filter(r => r.composite !== null && r.composite > btcMomentum).length / totalAlt * 100;
   const longStructureBreadth = alts.filter(c => String(c.side || "").toUpperCase() === "LONG" || num(c.structScore) >= 62).length / totalAlt * 100;
   const setupBreadth = alts.filter(c => num(c.setupScore) >= 65 || ["t1","t2"].includes(String(c.tier||"").toLowerCase())).length / totalAlt * 100;
   const altParticipation = clamp(
@@ -58,14 +76,13 @@ function calculateBTCvsAltStrength() {
     setupBreadth * .20
   );
 
-  const absoluteScore = c => clamp(
-    num(c?.structScore) * .35 +
-    num(c?.flowScore) * .30 +
-    num(c?.setupScore) * .20 +
-    num(c?.liqScore) * .15
-  );
-  const btcAbsolute = btcA ? absoluteScore(btcA) : clamp(50 + num(btcTicker?.change24h) * 350);
-  const altAbsolute = alts.length ? median(alts.map(absoluteScore)) : 50;
+  const absoluteScore = c => {
+    const score = weightedAvailable([[c?.structScore, .35], [c?.flowScore, .30], [c?.setupScore, .20], [c?.liqScore, .15]]);
+    return score === null ? null : clamp(score);
+  };
+  const btcAbsolute = (btcA ? absoluteScore(btcA) : null) ?? clamp(50 + (toNumberOrNull(btcTicker?.change24h) ?? 0) * 350);
+  const altAbsoluteScores = alts.map(absoluteScore).filter(v => v !== null);
+  const altAbsolute = altAbsoluteScores.length ? median(altAbsoluteScores) : 50;
 
   // Relative momentum: ~5 percentage points of composite outperformance is already meaningful.
   const btcMomentumScore = clamp(50 + relativeMomentum * 700);

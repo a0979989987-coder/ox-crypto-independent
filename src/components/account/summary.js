@@ -1,6 +1,6 @@
 (() => {
   "use strict";
-  const themeLabel=v=>({dark:"深色",light:"淺色",system:"自動"}[v]||"自動");
+  const themeLabel=v=>({dark:"深色",light:"白金",midnight:"午夜墨",system:"自動"}[v]||"自動");
   const marketLabel=v=>({crypto:"加密"}[v]||"加密");
   window.syncAccountSummary=function(){
     const email=typeof currentLocalAccountEmail==="function"?currentLocalAccountEmail():"";
