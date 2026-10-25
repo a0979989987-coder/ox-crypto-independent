@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-25T11:48:06.878Z",
-  "attemptedAt": "2026-10-25T11:48:06.878Z",
+  "generatedAt": "2026-10-25T16:36:12.599Z",
+  "attemptedAt": "2026-10-25T16:36:12.599Z",
   "sources": [
     {
       "id": "odaily",
@@ -10,9 +10,9 @@
         "crypto"
       ],
       "status": "ready",
-      "count": 3,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "count": 6,
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://rss.odaily.news/rss/newsflash"
@@ -25,8 +25,8 @@
       ],
       "status": "ready",
       "count": 19,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.theblock.co/rss.xml"
@@ -39,8 +39,8 @@
       ],
       "status": "ready",
       "count": 10,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://cryptoslate.com/feed/"
@@ -54,7 +54,7 @@
       "status": "error",
       "count": 0,
       "lastSuccessAt": "2026-10-06T08:49:45.788Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://abmedia.io/feed",
@@ -68,8 +68,8 @@
       ],
       "status": "ready",
       "count": 3,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.blocktempo.com/feed/"
@@ -82,8 +82,8 @@
       ],
       "status": "ready",
       "count": 25,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml"
@@ -96,8 +96,8 @@
       ],
       "status": "ready",
       "count": 30,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://cointelegraph.com/rss"
@@ -110,8 +110,8 @@
       ],
       "status": "ready",
       "count": 15,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.federalreserve.gov/feeds/press_monetary.xml"
@@ -124,8 +124,8 @@
       ],
       "status": "ready",
       "count": 12,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.bls.gov/feed/cpi.rss"
@@ -138,8 +138,8 @@
       ],
       "status": "ready",
       "count": 12,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.bls.gov/feed/empsit.rss"
@@ -152,8 +152,8 @@
       ],
       "status": "ready",
       "count": 1,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.sec.gov/news/pressreleases.rss"
@@ -166,8 +166,8 @@
       ],
       "status": "ready",
       "count": 50,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://blog.ethereum.org/en/feed.xml"
@@ -180,8 +180,8 @@
       ],
       "status": "ready",
       "count": 10,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://blog.kraken.com/feed"
@@ -194,8 +194,8 @@
       ],
       "status": "ready",
       "count": 2,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://www.cftc.gov/RSS/RSSGP/rssgp.xml"
@@ -208,8 +208,8 @@
       ],
       "status": "ready",
       "count": 10,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "access": "public-rss-headlines-links",
       "aggregator": false,
       "endpoint": "https://github.com/bitcoin/bitcoin/releases.atom"
@@ -222,8 +222,8 @@
       ],
       "status": "ready",
       "count": 10,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "endpoint": "https://api.bitget.com/api/v2/public/annoucements?language=zh_CN",
       "access": "public-announcement-headlines-links"
     },
@@ -237,67 +237,285 @@
       "id": "fed-calendar",
       "status": "ready",
       "count": 48,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     },
     {
       "id": "bea-calendar",
       "status": "ready",
       "count": 8,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     },
     {
       "id": "foresight-calendar",
       "status": "error",
       "count": 19,
       "lastSuccessAt": "2026-10-06T08:49:45.788Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "message": "HTTP 403"
     },
     {
       "id": "nyse-calendar",
       "status": "ready",
       "count": 34,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     },
     {
       "id": "ethereum-upgrades",
       "status": "ready",
       "count": 1,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     },
     {
       "id": "aptos",
       "status": "error",
       "count": 1,
       "lastSuccessAt": "2026-10-06T08:49:45.788Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z",
       "message": "HTTP 429"
     },
     {
       "id": "bls-calendar",
       "status": "ready",
       "count": 53,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     },
     {
       "id": "aave-governance",
       "status": "ready",
       "count": 200,
-      "lastSuccessAt": "2026-10-25T11:48:06.878Z",
-      "lastAttemptAt": "2026-10-25T11:48:06.878Z"
+      "lastSuccessAt": "2026-10-25T16:36:12.599Z",
+      "lastAttemptAt": "2026-10-25T16:36:12.599Z"
     }
   ],
   "news": [
     {
-      "id": "dd7a629fdd9ee0992170",
-      "title": "Netanyahu floats use of blockchain as solution to potential financial sanctions",
-      "link": "https://cointelegraph.com/news/netanyahu-floats-use-of-blockchain-as-solution-to-potential-financial-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-      "publishedAt": "2026-10-25T11:41:23.000Z",
+      "id": "462146527d35b1265a26",
+      "title": "反对在OKX与ICE代币化股票平台交易的企业增至22家",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527371",
+      "publishedAt": "2026-10-25T16:02:43.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.644Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [],
+      "titleZh": "反對在OKX與ICE代幣化股票平台交易的企業增加至22家",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "5a7d67c116e2029a6e6e",
+      "title": "2026年DeFi价格操纵攻击已达43起，超过2022年全年纪录",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527370",
+      "publishedAt": "2026-10-25T15:56:54.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.644Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [],
+      "titleZh": "2026年DeFi價格操縱攻擊已達43起，超過2022年全年紀錄",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "5d2f11312cdcae5057d6",
+      "title": "Keystone customers say breach exposed data the hardware wallet maker promised to delete",
+      "link": "https://www.theblock.co/news/business/2026-10-25-keystone-customers-say-breach-exposed-data-the-hardware-wallet-maker-promised-to-delete-431613",
+      "publishedAt": "2026-10-25T15:56:30.000Z",
+      "source": "The Block",
+      "sourceId": "theblock",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "theblock"
+      },
+      "assets": [],
+      "titleZh": "Keystone 客戶表示，資料外洩暴露了硬體錢包製造商承諾刪除的數據",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "cd45e9c3408258f076fe",
+      "title": "Pump.fun&#8217;s biggest winners may be impossible to copy as $752 million study exposes hidden trading gap",
+      "link": "https://cryptoslate.com/pump-funs-biggest-winners-may-be-impossible-to-copy-as-752-million-study-exposes-hidden-trading-gap/",
+      "publishedAt": "2026-10-25T15:50:20.000Z",
+      "source": "CryptoSlate",
+      "sourceId": "cryptoslate",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "cryptoslate"
+      },
+      "assets": [],
+      "titleZh": "Pump.fun 的最大贏家可能無法複製，因為耗資 7.52 億美元的研究揭示了隱藏的交易缺口",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "9ac63816390f9a172e1f",
+      "title": "Lightning Labs开放Wavelength，AI代理可在比特币主网上自主支付",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527369",
+      "publishedAt": "2026-10-25T15:46:31.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.644Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [
+        {
+          "id": "crypto:bitcoin",
+          "market": "crypto",
+          "symbol": "BTC",
+          "name": "比特幣",
+          "aliases": [
+            "Bitcoin",
+            "比特币",
+            "bitcoin"
+          ],
+          "projectId": "bitcoin",
+          "venueSymbol": "BTCUSDT"
+        }
+      ],
+      "titleZh": "Lightning Labs開放Wavelength，AI代理可在比特幣主網上自主支付",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "1718eeb70a98220ea3ff",
+      "title": "Bitget 关于暂停 BABY - Babylon 网络提现服务的公告",
+      "link": "https://www.bitget.com/zh-CN/support/articles/12560603898731",
+      "publishedAt": "2026-10-25T15:34:35.055Z",
+      "source": "Bitget 官方公告",
+      "sourceId": "bitget",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "official-source",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "ruleVersion": "unassessed-v1",
+        "reason": "官方公告，未評估影響力"
+      },
+      "assets": [],
+      "titleZh": "Bitget 關於暫停 BABY - Babylon 網路提現服務的公告",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "732def0175fb8e0a3144",
+      "title": "拉脱维亚拟于2027年上半年推出RWA代币化监管框架，商业地产与国债列入优先范围",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527367",
+      "publishedAt": "2026-10-25T15:21:39.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.644Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [],
+      "titleZh": "拉脫維亞擬於2027年上半年推出RWA代幣化監管框架，商業房地產與國債列入優先範圍",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "1eaf3292a92de73d9e60",
+      "title": "ECB official sees digital euro as key to protecting EU ‘sovereignty’",
+      "link": "https://cointelegraph.com/news/ecb-official-sees-digital-euro-tool-to-protect-eu-sovereignty?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "publishedAt": "2026-10-25T15:11:00.000Z",
       "source": "Cointelegraph",
       "sourceId": "cointelegraph",
       "markets": [
@@ -305,7 +523,258 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "cointelegraph"
+      },
+      "assets": [],
+      "titleZh": "歐洲央行官員認為數位歐元是保護歐盟「主權」的關鍵",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "efb06a6b6a4c20ceea41",
+      "title": "Latvia targets tokenization rules in 2027 with commercial property in focus",
+      "link": "https://www.coindesk.com/business/2026/10/25/latvia-targets-tokenization-rules-in-2027-with-commercial-property-in-focus",
+      "publishedAt": "2026-10-25T15:00:00.000Z",
+      "source": "CoinDesk",
+      "sourceId": "coindesk",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "coindesk"
+      },
+      "assets": [],
+      "titleZh": "拉脫維亞的目標是在 2027 年制定代幣化規則，並專注於商業房地產",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "e495901235ee16f92ec9",
+      "title": "民主党所提加密募资上限写入CLARITY法案后仍投反对票",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527364",
+      "publishedAt": "2026-10-25T14:41:45.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.645Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [],
+      "titleZh": "民主黨所提加密募資上限寫入CLARITY法案後仍投反對票",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "96c7673c50ce275f2c09",
+      "title": "Evernorth takes a page from Michael Saylor&#8217;s Bitcoin playbook with new $80 million XRP funding plan",
+      "link": "https://cryptoslate.com/evernorth-takes-a-page-from-michael-saylors-bitcoin-playbook-with-new-80-million-xrp-funding-plan/",
+      "publishedAt": "2026-10-25T14:30:16.000Z",
+      "source": "CryptoSlate",
+      "sourceId": "cryptoslate",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "cryptoslate"
+      },
+      "assets": [
+        {
+          "id": "crypto:bitcoin",
+          "market": "crypto",
+          "symbol": "BTC",
+          "name": "比特幣",
+          "aliases": [
+            "Bitcoin",
+            "比特币",
+            "bitcoin"
+          ],
+          "projectId": "bitcoin",
+          "venueSymbol": "BTCUSDT"
+        },
+        {
+          "id": "crypto:xrp",
+          "market": "crypto",
+          "symbol": "XRP",
+          "name": "XRP",
+          "aliases": [
+            "Ripple",
+            "瑞波",
+            "xrp"
+          ],
+          "projectId": "xrp",
+          "venueSymbol": "XRPUSDT"
+        }
+      ],
+      "titleZh": "Evernorth 效仿 Michael Saylor 的比特幣策略，推出了新的 8,000 萬美元 XRP 融資計劃",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "12fbddfef7dd13136730",
+      "title": "Strive CEO再次发图暗示或于下周披露BTC增持数据",
+      "link": "https://www.odaily.news/zh-CN/newsflash/527360",
+      "publishedAt": "2026-10-25T14:18:21.000Z",
+      "source": "Odaily 星球日報",
+      "sourceId": "odaily",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.645Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "odaily"
+      },
+      "assets": [
+        {
+          "id": "crypto:bitcoin",
+          "market": "crypto",
+          "symbol": "BTC",
+          "name": "比特幣",
+          "aliases": [
+            "Bitcoin",
+            "比特币",
+            "bitcoin"
+          ],
+          "projectId": "bitcoin",
+          "venueSymbol": "BTCUSDT"
+        }
+      ],
+      "titleZh": "Strive CEO再次發圖暗示或下週披露BTC增持數據",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "83d209dd3472ad9f6d58",
+      "title": "Hedge funds hold $2 trillion in US debt, but their next trade could require fewer bonds",
+      "link": "https://cryptoslate.com/hedge-funds-hold-2-trillion-in-us-debt-but-their-next-trade-could-require-fewer-bonds/",
+      "publishedAt": "2026-10-25T13:00:52.000Z",
+      "source": "CryptoSlate",
+      "sourceId": "cryptoslate",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "cryptoslate"
+      },
+      "assets": [],
+      "titleZh": "對沖基金持有 2 兆美元的美國國債，但他們的下一次交易可能需要更少的債券",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "d7d87800d75ebc03200a",
+      "title": "UK banks face 10,000 complaints in 3 months over crypto restrictions",
+      "link": "https://www.coindesk.com/policy/2026/10/22/uk-banks-face-10-000-complaints-in-3-months-over-crypto-restrictions",
+      "publishedAt": "2026-10-25T13:00:00.000Z",
+      "source": "CoinDesk",
+      "sourceId": "coindesk",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
+      "contentType": "news",
+      "impact": {
+        "stars": null,
+        "impactImportance": null,
+        "reason": "尚未評估；標題不足以判定影響力",
+        "ruleVersion": "unassessed-v1",
+        "evidence": null,
+        "sourceConfidence": null,
+        "analysisConfidence": null,
+        "direction": null,
+        "sourceId": "coindesk"
+      },
+      "assets": [],
+      "titleZh": "英國銀行在 3 個月內因加密貨幣限制面臨 10,000 起投訴",
+      "translationStatus": "translated",
+      "translationMethod": "machine-title-only"
+    },
+    {
+      "id": "dd7a629fdd9ee0992170",
+      "title": "Netanyahu floats use of blockchain as solution to potential financial sanctions",
+      "link": "https://cointelegraph.com/news/netanyahu-floats-use-of-blockchain-as-solution-to-potential-financial-sanctions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+      "publishedAt": "2026-10-25T11:42:00.000Z",
+      "source": "Cointelegraph",
+      "sourceId": "cointelegraph",
+      "markets": [
+        "crypto"
+      ],
+      "kind": "news",
+      "verified": "publisher-feed",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -320,8 +789,8 @@
       },
       "assets": [],
       "titleZh": "內塔尼亞胡提議使用區塊鏈作為潛在金融制裁的解決方案",
-      "translationStatus": "translated",
-      "translationMethod": "machine-title-only"
+      "translationMethod": "machine-title-only",
+      "translationStatus": "translated"
     },
     {
       "id": "2a0ea411438f91052bff",
@@ -335,7 +804,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.041Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -350,8 +819,8 @@
       },
       "assets": [],
       "titleZh": "長達 20 個月的 Polkadot 錢包洩漏事件揭示了更快的加密提款的陰暗面",
-      "translationStatus": "translated",
-      "translationMethod": "machine-title-only"
+      "translationMethod": "machine-title-only",
+      "translationStatus": "translated"
     },
     {
       "id": "302670f0cf5e5c6aea61",
@@ -484,7 +953,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.301Z",
+      "fetchedAt": "2026-10-25T16:36:13.015Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -513,7 +982,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -522,8 +991,8 @@
       },
       "assets": [],
       "titleZh": "關於 TUSDT永續合約資金費率時間週期調整的公告",
-      "translationStatus": "translated",
-      "translationMethod": "machine-title-only"
+      "translationMethod": "machine-title-only",
+      "translationStatus": "translated"
     },
     {
       "id": "b9ce167ab79e335a6c9b",
@@ -537,7 +1006,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.041Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -552,8 +1021,8 @@
       },
       "assets": [],
       "titleZh": "Kraken 想成為你的銀行，但誰來保護你的錢呢？",
-      "translationStatus": "translated",
-      "translationMethod": "machine-title-only"
+      "translationMethod": "machine-title-only",
+      "translationStatus": "translated"
     },
     {
       "id": "f178f6ba6e1980f1a8fc",
@@ -567,7 +1036,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.301Z",
+      "fetchedAt": "2026-10-25T16:36:13.015Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -656,7 +1125,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -780,7 +1249,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -858,7 +1327,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.301Z",
+      "fetchedAt": "2026-10-25T16:36:13.015Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -957,7 +1426,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1092,7 +1561,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1116,7 +1585,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1169,7 +1638,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1219,7 +1688,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1267,7 +1736,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:06.878Z",
+      "fetchedAt": "2026-10-25T16:36:12.599Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1339,7 +1808,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.042Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1382,7 +1851,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.042Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1454,7 +1923,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.042Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1484,7 +1953,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.042Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1514,7 +1983,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1645,7 +2114,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.042Z",
+      "fetchedAt": "2026-10-25T16:36:12.891Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1675,7 +2144,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1773,7 +2242,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1892,7 +2361,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -1966,7 +2435,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -2131,7 +2600,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -2280,7 +2749,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -2340,7 +2809,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -2414,7 +2883,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -2533,7 +3002,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3219,7 +3688,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3676,7 +4145,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3706,7 +4175,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3820,7 +4289,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3850,7 +4319,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3948,7 +4417,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -3991,7 +4460,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4064,7 +4533,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4130,7 +4599,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4184,7 +4653,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.463Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4282,7 +4751,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4479,7 +4948,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4523,7 +4992,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4552,7 +5021,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4582,7 +5051,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.025Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4612,7 +5081,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4698,7 +5167,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4752,7 +5221,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.084Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4796,7 +5265,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4870,7 +5339,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.349Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4900,7 +5369,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4944,7 +5413,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -4988,7 +5457,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5032,7 +5501,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5076,7 +5545,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5150,7 +5619,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5180,7 +5649,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5210,7 +5679,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5240,7 +5709,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5270,7 +5739,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5426,7 +5895,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5456,7 +5925,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5545,7 +6014,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5612,7 +6081,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5642,7 +6111,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5764,7 +6233,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5809,7 +6278,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -5839,7 +6308,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6042,7 +6511,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6115,7 +6584,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6225,7 +6694,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6494,7 +6963,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6622,7 +7091,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6713,7 +7182,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.767Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6811,7 +7280,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6900,7 +7369,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6960,7 +7429,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -6990,7 +7459,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.609Z",
+      "fetchedAt": "2026-10-25T16:36:13.613Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7077,7 +7546,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7179,7 +7648,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7299,7 +7768,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7359,7 +7828,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.768Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7389,7 +7858,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.768Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7651,7 +8120,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7826,7 +8295,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7870,7 +8339,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -7973,7 +8442,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.350Z",
+      "fetchedAt": "2026-10-25T16:36:13.085Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -8133,7 +8602,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.463Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -8187,7 +8656,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -8422,7 +8891,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.768Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -8497,7 +8966,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.768Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -8621,7 +9090,7 @@
       ],
       "kind": "news",
       "verified": "publisher-feed",
-      "fetchedAt": "2026-10-25T11:48:07.026Z",
+      "fetchedAt": "2026-10-25T16:36:12.768Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -10783,7 +11252,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -12974,7 +13443,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.870Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -17351,7 +17820,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -18516,7 +18985,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -29353,7 +29822,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -30977,7 +31446,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -38503,7 +38972,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -41160,7 +41629,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.108Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -45005,7 +45474,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "promotion",
       "impact": {
         "stars": null,
@@ -47392,7 +47861,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -57932,7 +58401,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -57962,7 +58431,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -58031,7 +58500,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.540Z",
+      "fetchedAt": "2026-10-25T16:36:13.464Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -61420,7 +61889,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -69629,7 +70098,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.565Z",
+      "fetchedAt": "2026-10-25T16:36:13.461Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -72095,7 +72564,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -74003,7 +74472,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -75786,7 +76255,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -75874,7 +76343,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.535Z",
+      "fetchedAt": "2026-10-25T16:36:13.356Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -77099,7 +77568,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -77930,7 +78399,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -77960,7 +78429,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.565Z",
+      "fetchedAt": "2026-10-25T16:36:13.461Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78018,7 +78487,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78119,7 +78588,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78148,7 +78617,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78177,7 +78646,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78220,7 +78689,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78249,7 +78718,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78278,7 +78747,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78307,7 +78776,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78336,7 +78805,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78365,7 +78834,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78394,7 +78863,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78423,7 +78892,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78452,7 +78921,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.384Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78510,7 +78979,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78539,7 +79008,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78568,7 +79037,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78597,7 +79066,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78626,7 +79095,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78655,7 +79124,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78684,7 +79153,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78728,7 +79197,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78757,7 +79226,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -78786,7 +79255,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78815,7 +79284,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78858,7 +79327,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78901,7 +79370,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78930,7 +79399,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -78974,7 +79443,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79003,7 +79472,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79046,7 +79515,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79075,7 +79544,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79119,7 +79588,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79205,7 +79674,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79248,7 +79717,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79277,7 +79746,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79306,7 +79775,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79335,7 +79804,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79364,7 +79833,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79393,7 +79862,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79422,7 +79891,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79451,7 +79920,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79480,7 +79949,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79524,7 +79993,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79553,7 +80022,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79582,7 +80051,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79611,7 +80080,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79655,7 +80124,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.385Z",
+      "fetchedAt": "2026-10-25T16:36:13.109Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79684,7 +80153,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79756,7 +80225,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79829,7 +80298,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79858,7 +80327,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79916,7 +80385,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -79945,7 +80414,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -79989,7 +80458,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80033,7 +80502,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80062,7 +80531,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80091,7 +80560,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80120,7 +80589,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80149,7 +80618,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80193,7 +80662,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80222,7 +80691,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80251,7 +80720,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80295,7 +80764,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80324,7 +80793,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80353,7 +80822,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80382,7 +80851,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.294Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80411,7 +80880,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80440,7 +80909,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80469,7 +80938,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80498,7 +80967,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80528,7 +80997,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80557,7 +81026,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.295Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80586,7 +81055,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80616,7 +81085,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80646,7 +81115,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80675,7 +81144,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80705,7 +81174,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.295Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80734,7 +81203,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80779,7 +81248,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80809,7 +81278,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80839,7 +81308,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.443Z",
+      "fetchedAt": "2026-10-25T16:36:13.295Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -80868,7 +81337,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80913,7 +81382,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80943,7 +81412,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -80973,7 +81442,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -81003,7 +81472,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.759Z",
+      "fetchedAt": "2026-10-25T16:36:13.604Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -81033,7 +81502,7 @@
       ],
       "kind": "news",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.461Z",
+      "fetchedAt": "2026-10-25T16:36:13.263Z",
       "contentType": "news",
       "impact": {
         "stars": 5,
@@ -83568,7 +84037,7 @@
       ],
       "kind": "event",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -83618,7 +84087,7 @@
       ],
       "kind": "event",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -83668,7 +84137,7 @@
       ],
       "kind": "event",
       "verified": "official-source",
-      "fetchedAt": "2026-10-25T11:48:07.871Z",
+      "fetchedAt": "2026-10-25T16:36:13.722Z",
       "contentType": "news",
       "impact": {
         "stars": null,
@@ -83780,7 +84249,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83812,7 +84281,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83844,7 +84313,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83876,7 +84345,7 @@
       "startsAt": "2026-08-20T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83908,7 +84377,7 @@
       "startsAt": "2026-07-16T13:45:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83940,7 +84409,7 @@
       "startsAt": "2026-07-14T00:15:15.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -83972,7 +84441,7 @@
       "startsAt": "2026-07-09T22:54:22.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84004,7 +84473,7 @@
       "startsAt": "2026-07-07T18:57:52.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84036,7 +84505,7 @@
       "startsAt": "2026-07-02T18:54:32.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84068,7 +84537,7 @@
       "startsAt": "2026-06-26T11:57:51.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84100,7 +84569,7 @@
       "startsAt": "2026-06-25T19:44:42.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84132,7 +84601,7 @@
       "startsAt": "2026-06-25T16:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84164,7 +84633,7 @@
       "startsAt": "2026-06-24T01:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84196,7 +84665,7 @@
       "startsAt": "2026-06-23T16:43:32.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84228,7 +84697,7 @@
       "startsAt": "2026-06-18T16:40:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84260,7 +84729,7 @@
       "startsAt": "2026-06-18T16:22:51.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84292,7 +84761,7 @@
       "startsAt": "2026-05-28T15:55:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84324,7 +84793,7 @@
       "startsAt": "2026-05-28T13:38:38.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84356,7 +84825,7 @@
       "startsAt": "2026-05-27T02:22:27.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84388,7 +84857,7 @@
       "startsAt": "2026-05-11T19:10:31.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84420,7 +84889,7 @@
       "startsAt": "2026-05-05T02:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84452,7 +84921,7 @@
       "startsAt": "2026-04-30T18:54:51.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84484,7 +84953,7 @@
       "startsAt": "2026-04-02T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84516,7 +84985,7 @@
       "startsAt": "2026-04-02T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84548,7 +85017,7 @@
       "startsAt": "2026-03-26T19:45:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84580,7 +85049,7 @@
       "startsAt": "2026-03-26T18:36:17.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84612,7 +85081,7 @@
       "startsAt": "2026-03-05T15:47:31.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84644,7 +85113,7 @@
       "startsAt": "2026-02-05T17:44:20.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84676,7 +85145,7 @@
       "startsAt": "2026-02-04T21:05:54.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84708,7 +85177,7 @@
       "startsAt": "2025-12-04T23:30:56.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -84735,7 +85204,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-01-01",
@@ -84765,7 +85234,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-01-01",
@@ -84795,7 +85264,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-01-19",
@@ -84825,7 +85294,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-01-18",
@@ -84855,7 +85324,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-01-17",
@@ -84885,7 +85354,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-02-16",
@@ -84915,7 +85384,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-02-15",
@@ -84945,7 +85414,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-02-21",
@@ -84975,7 +85444,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-04-03",
@@ -85005,7 +85474,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-03-26",
@@ -85035,7 +85504,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-04-14",
@@ -85065,7 +85534,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-05-25",
@@ -85095,7 +85564,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-05-31",
@@ -85125,7 +85594,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-05-29",
@@ -85155,7 +85624,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-06-19",
@@ -85185,7 +85654,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-06-18",
@@ -85215,7 +85684,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-06-19",
@@ -85245,7 +85714,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-07-03",
@@ -85275,7 +85744,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-07-05",
@@ -85305,7 +85774,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-07-04",
@@ -85335,7 +85804,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-09-07",
@@ -85365,7 +85834,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-09-06",
@@ -85395,7 +85864,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-09-04",
@@ -85425,7 +85894,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-11-26",
@@ -85455,7 +85924,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-11-25",
@@ -85485,7 +85954,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-11-23",
@@ -85515,7 +85984,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2026-12-25",
@@ -85545,7 +86014,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2027-12-24",
@@ -85575,7 +86044,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "holiday",
       "country": "美國",
       "date": "2028-12-25",
@@ -85605,7 +86074,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "exchange",
       "country": "美國",
       "date": "2028-07-03",
@@ -85635,7 +86104,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "exchange",
       "country": "美國",
       "date": "2026-11-27",
@@ -85665,7 +86134,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "exchange",
       "country": "美國",
       "date": "2027-11-26",
@@ -85695,7 +86164,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "exchange",
       "country": "美國",
       "date": "2028-11-24",
@@ -85725,7 +86194,7 @@
         "ruleVersion": "unassessed-v1",
         "reason": "官方未提供重要性分級"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "exchange",
       "country": "美國",
       "date": "2026-12-24",
@@ -85755,7 +86224,7 @@
         "ruleVersion": "official-upgrade-category-v1",
         "reason": "官方確認的網路升級；星級表示事件類別重要性，不代表漲跌。"
       },
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "category": "network",
       "occursAt": "2026-10-06T13:53:36.000Z",
       "projectId": "ethereum",
@@ -85799,7 +86268,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85832,7 +86301,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85865,7 +86334,7 @@
       "startsAt": "2026-09-10T21:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85898,7 +86367,7 @@
       "startsAt": "2026-08-20T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85931,7 +86400,7 @@
       "startsAt": "2026-07-16T13:45:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85964,7 +86433,7 @@
       "startsAt": "2026-07-14T00:15:15.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -85997,7 +86466,7 @@
       "startsAt": "2026-07-09T22:54:22.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86030,7 +86499,7 @@
       "startsAt": "2026-07-07T18:57:52.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86063,7 +86532,7 @@
       "startsAt": "2026-07-02T18:54:32.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86096,7 +86565,7 @@
       "startsAt": "2026-06-26T11:57:51.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86129,7 +86598,7 @@
       "startsAt": "2026-06-25T19:44:42.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86162,7 +86631,7 @@
       "startsAt": "2026-06-25T16:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86195,7 +86664,7 @@
       "startsAt": "2026-06-24T01:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86228,7 +86697,7 @@
       "startsAt": "2026-06-23T16:43:32.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86261,7 +86730,7 @@
       "startsAt": "2026-06-18T16:40:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86294,7 +86763,7 @@
       "startsAt": "2026-06-18T16:22:51.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86327,7 +86796,7 @@
       "startsAt": "2026-05-28T15:55:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86360,7 +86829,7 @@
       "startsAt": "2026-05-28T13:38:38.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86393,7 +86862,7 @@
       "startsAt": "2026-05-27T02:22:27.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86426,7 +86895,7 @@
       "startsAt": "2026-05-11T19:10:31.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86459,7 +86928,7 @@
       "startsAt": "2026-05-05T02:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86492,7 +86961,7 @@
       "startsAt": "2026-04-30T18:54:51.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86525,7 +86994,7 @@
       "startsAt": "2026-04-02T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86558,7 +87027,7 @@
       "startsAt": "2026-04-02T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86591,7 +87060,7 @@
       "startsAt": "2026-03-26T19:45:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86624,7 +87093,7 @@
       "startsAt": "2026-03-26T18:36:17.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86657,7 +87126,7 @@
       "startsAt": "2026-03-05T15:47:31.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86690,7 +87159,7 @@
       "startsAt": "2026-02-05T17:44:20.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86723,7 +87192,7 @@
       "startsAt": "2026-02-04T21:05:54.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86756,7 +87225,7 @@
       "startsAt": "2025-12-04T23:30:56.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86789,7 +87258,7 @@
       "startsAt": "2025-12-04T22:45:35.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86821,7 +87290,7 @@
       "startsAt": "2025-12-04T22:45:35.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86854,7 +87323,7 @@
       "startsAt": "2025-11-28T22:44:34.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86886,7 +87355,7 @@
       "startsAt": "2025-11-28T22:44:34.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86919,7 +87388,7 @@
       "startsAt": "2025-11-27T19:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86951,7 +87420,7 @@
       "startsAt": "2025-11-27T19:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -86984,7 +87453,7 @@
       "startsAt": "2025-11-20T11:56:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87016,7 +87485,7 @@
       "startsAt": "2025-11-20T11:56:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87049,7 +87518,7 @@
       "startsAt": "2025-11-20T11:53:45.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87081,7 +87550,7 @@
       "startsAt": "2025-11-20T11:53:45.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87114,7 +87583,7 @@
       "startsAt": "2025-11-13T16:55:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87146,7 +87615,7 @@
       "startsAt": "2025-11-13T16:55:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87179,7 +87648,7 @@
       "startsAt": "2025-11-06T11:00:13.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87211,7 +87680,7 @@
       "startsAt": "2025-11-06T11:00:13.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87244,7 +87713,7 @@
       "startsAt": "2025-11-05T17:35:41.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87276,7 +87745,7 @@
       "startsAt": "2025-11-05T17:35:41.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87309,7 +87778,7 @@
       "startsAt": "2025-11-05T16:13:08.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87341,7 +87810,7 @@
       "startsAt": "2025-11-05T16:13:08.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87374,7 +87843,7 @@
       "startsAt": "2025-11-05T15:10:31.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87406,7 +87875,7 @@
       "startsAt": "2025-11-05T15:10:31.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87439,7 +87908,7 @@
       "startsAt": "2025-10-23T16:20:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87471,7 +87940,7 @@
       "startsAt": "2025-10-23T16:20:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87504,7 +87973,7 @@
       "startsAt": "2025-10-16T22:11:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87536,7 +88005,7 @@
       "startsAt": "2025-10-16T22:11:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87569,7 +88038,7 @@
       "startsAt": "2025-10-16T12:13:05.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87601,7 +88070,7 @@
       "startsAt": "2025-10-16T12:13:05.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87634,7 +88103,7 @@
       "startsAt": "2025-10-09T15:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87666,7 +88135,7 @@
       "startsAt": "2025-10-09T15:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87699,7 +88168,7 @@
       "startsAt": "2025-09-25T19:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87731,7 +88200,7 @@
       "startsAt": "2025-09-25T19:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87764,7 +88233,7 @@
       "startsAt": "2025-09-04T22:11:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87796,7 +88265,7 @@
       "startsAt": "2025-09-04T22:11:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87829,7 +88298,7 @@
       "startsAt": "2025-09-04T22:11:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87861,7 +88330,7 @@
       "startsAt": "2025-09-04T22:11:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87894,7 +88363,7 @@
       "startsAt": "2025-08-28T17:44:19.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87926,7 +88395,7 @@
       "startsAt": "2025-08-28T17:44:19.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87959,7 +88428,7 @@
       "startsAt": "2025-07-31T22:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -87991,7 +88460,7 @@
       "startsAt": "2025-07-31T22:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88024,7 +88493,7 @@
       "startsAt": "2025-07-24T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88056,7 +88525,7 @@
       "startsAt": "2025-07-24T17:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88089,7 +88558,7 @@
       "startsAt": "2025-07-24T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88121,7 +88590,7 @@
       "startsAt": "2025-07-24T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88154,7 +88623,7 @@
       "startsAt": "2025-07-18T00:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88186,7 +88655,7 @@
       "startsAt": "2025-07-18T00:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88219,7 +88688,7 @@
       "startsAt": "2025-07-17T03:09:13.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88251,7 +88720,7 @@
       "startsAt": "2025-07-17T03:09:13.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88284,7 +88753,7 @@
       "startsAt": "2025-07-10T21:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88316,7 +88785,7 @@
       "startsAt": "2025-07-10T21:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88349,7 +88818,7 @@
       "startsAt": "2025-07-10T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88381,7 +88850,7 @@
       "startsAt": "2025-07-10T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88414,7 +88883,7 @@
       "startsAt": "2025-07-10T13:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88446,7 +88915,7 @@
       "startsAt": "2025-07-10T13:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88479,7 +88948,7 @@
       "startsAt": "2025-07-04T11:14:18.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88511,7 +88980,7 @@
       "startsAt": "2025-07-04T11:14:18.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88544,7 +89013,7 @@
       "startsAt": "2025-06-27T06:28:32.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88576,7 +89045,7 @@
       "startsAt": "2025-06-27T06:28:32.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88609,7 +89078,7 @@
       "startsAt": "2025-06-26T15:13:06.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88641,7 +89110,7 @@
       "startsAt": "2025-06-26T15:13:06.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88674,7 +89143,7 @@
       "startsAt": "2025-06-25T20:47:57.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88706,7 +89175,7 @@
       "startsAt": "2025-06-25T20:47:57.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88739,7 +89208,7 @@
       "startsAt": "2025-06-19T16:20:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88771,7 +89240,7 @@
       "startsAt": "2025-06-19T16:20:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88804,7 +89273,7 @@
       "startsAt": "2025-06-19T13:58:59.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88836,7 +89305,7 @@
       "startsAt": "2025-06-19T13:58:59.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88869,7 +89338,7 @@
       "startsAt": "2025-06-12T20:51:39.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88901,7 +89370,7 @@
       "startsAt": "2025-06-12T20:51:39.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88934,7 +89403,7 @@
       "startsAt": "2025-06-12T14:43:08.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88966,7 +89435,7 @@
       "startsAt": "2025-06-12T14:43:08.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -88999,7 +89468,7 @@
       "startsAt": "2025-06-05T18:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89031,7 +89500,7 @@
       "startsAt": "2025-06-05T18:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89064,7 +89533,7 @@
       "startsAt": "2025-05-29T23:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89096,7 +89565,7 @@
       "startsAt": "2025-05-29T23:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89129,7 +89598,7 @@
       "startsAt": "2025-05-29T21:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89161,7 +89630,7 @@
       "startsAt": "2025-05-29T21:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89194,7 +89663,7 @@
       "startsAt": "2025-05-22T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89226,7 +89695,7 @@
       "startsAt": "2025-05-22T15:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89259,7 +89728,7 @@
       "startsAt": "2025-05-16T00:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89291,7 +89760,7 @@
       "startsAt": "2025-05-16T00:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89324,7 +89793,7 @@
       "startsAt": "2025-05-07T22:53:32.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89356,7 +89825,7 @@
       "startsAt": "2025-05-07T22:53:32.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89389,7 +89858,7 @@
       "startsAt": "2025-05-01T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89421,7 +89890,7 @@
       "startsAt": "2025-05-01T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89454,7 +89923,7 @@
       "startsAt": "2025-05-01T13:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89486,7 +89955,7 @@
       "startsAt": "2025-05-01T13:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89519,7 +89988,7 @@
       "startsAt": "2025-04-16T22:09:33.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89551,7 +90020,7 @@
       "startsAt": "2025-04-16T22:09:33.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89584,7 +90053,7 @@
       "startsAt": "2025-04-16T13:02:51.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89616,7 +90085,7 @@
       "startsAt": "2025-04-16T13:02:51.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89649,7 +90118,7 @@
       "startsAt": "2025-04-13T12:31:19.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89681,7 +90150,7 @@
       "startsAt": "2025-04-13T12:31:19.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89714,7 +90183,7 @@
       "startsAt": "2025-04-13T10:30:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89746,7 +90215,7 @@
       "startsAt": "2025-04-13T10:30:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89779,7 +90248,7 @@
       "startsAt": "2025-03-27T21:21:19.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89811,7 +90280,7 @@
       "startsAt": "2025-03-27T21:21:19.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89844,7 +90313,7 @@
       "startsAt": "2025-03-27T21:11:34.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89876,7 +90345,7 @@
       "startsAt": "2025-03-27T21:11:34.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89909,7 +90378,7 @@
       "startsAt": "2025-03-27T20:26:31.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89941,7 +90410,7 @@
       "startsAt": "2025-03-27T20:26:31.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -89974,7 +90443,7 @@
       "startsAt": "2025-03-27T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90006,7 +90475,7 @@
       "startsAt": "2025-03-27T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90039,7 +90508,7 @@
       "startsAt": "2025-03-20T18:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90071,7 +90540,7 @@
       "startsAt": "2025-03-20T18:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90104,7 +90573,7 @@
       "startsAt": "2025-03-20T17:54:59.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90136,7 +90605,7 @@
       "startsAt": "2025-03-20T17:54:59.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90169,7 +90638,7 @@
       "startsAt": "2025-03-07T00:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90201,7 +90670,7 @@
       "startsAt": "2025-03-07T00:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90234,7 +90703,7 @@
       "startsAt": "2025-02-20T23:58:50.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90266,7 +90735,7 @@
       "startsAt": "2025-02-20T23:58:50.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90299,7 +90768,7 @@
       "startsAt": "2025-02-20T23:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90331,7 +90800,7 @@
       "startsAt": "2025-02-20T23:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90364,7 +90833,7 @@
       "startsAt": "2025-02-19T21:50:24.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90396,7 +90865,7 @@
       "startsAt": "2025-02-19T21:50:24.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90429,7 +90898,7 @@
       "startsAt": "2025-02-13T22:23:37.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90461,7 +90930,7 @@
       "startsAt": "2025-02-13T22:23:37.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90494,7 +90963,7 @@
       "startsAt": "2025-02-06T18:55:46.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90526,7 +90995,7 @@
       "startsAt": "2025-02-06T18:55:46.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90559,7 +91028,7 @@
       "startsAt": "2025-01-31T04:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90591,7 +91060,7 @@
       "startsAt": "2025-01-31T04:30:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90624,7 +91093,7 @@
       "startsAt": "2025-01-24T00:06:29.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90656,7 +91125,7 @@
       "startsAt": "2025-01-24T00:06:29.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90689,7 +91158,7 @@
       "startsAt": "2025-01-23T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90721,7 +91190,7 @@
       "startsAt": "2025-01-23T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90754,7 +91223,7 @@
       "startsAt": "2025-01-16T23:14:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90786,7 +91255,7 @@
       "startsAt": "2025-01-16T23:14:23.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90819,7 +91288,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90851,7 +91320,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90884,7 +91353,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90916,7 +91385,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90949,7 +91418,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -90981,7 +91450,7 @@
       "startsAt": "2025-01-16T16:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -91852,7 +92321,7 @@
       "startsAt": "2026-10-15T20:05:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -91884,7 +92353,7 @@
       "startsAt": "2026-10-15T20:05:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -91917,7 +92386,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -91949,7 +92418,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -91982,7 +92451,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92014,7 +92483,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92047,7 +92516,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92079,7 +92548,7 @@
       "startsAt": "2026-10-15T20:00:00.000Z",
       "projectId": "arbitrumfoundation",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92112,7 +92581,7 @@
       "startsAt": "2026-10-21T21:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92144,7 +92613,7 @@
       "startsAt": "2026-10-21T21:00:00.000Z",
       "projectId": "ens",
       "assets": [],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "impact": {
         "stars": null,
         "ruleVersion": "unassessed-v1",
@@ -92162,7 +92631,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92190,7 +92659,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92218,7 +92687,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92246,7 +92715,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92274,7 +92743,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92302,7 +92771,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92330,7 +92799,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92358,7 +92827,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92386,7 +92855,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92414,7 +92883,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92442,7 +92911,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92470,7 +92939,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92498,7 +92967,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92526,7 +92995,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92554,7 +93023,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92582,7 +93051,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92610,7 +93079,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92638,7 +93107,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92666,7 +93135,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92694,7 +93163,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92722,7 +93191,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -92750,7 +93219,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92778,7 +93247,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92806,7 +93275,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -92834,7 +93303,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92862,7 +93331,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92890,7 +93359,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -92918,7 +93387,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92946,7 +93415,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -92974,7 +93443,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93002,7 +93471,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93030,7 +93499,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93058,7 +93527,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93086,7 +93555,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93114,7 +93583,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93142,7 +93611,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93170,7 +93639,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93198,7 +93667,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93226,7 +93695,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93254,7 +93723,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93282,7 +93751,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93310,7 +93779,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93338,7 +93807,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93366,7 +93835,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93394,7 +93863,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93422,7 +93891,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93450,7 +93919,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93478,7 +93947,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "estimated",
       "announcementStatus": "estimated",
       "impact": {
@@ -93506,7 +93975,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93536,7 +94005,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93566,7 +94035,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93596,7 +94065,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93626,7 +94095,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93656,7 +94125,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93686,7 +94155,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93716,7 +94185,7 @@
       "markets": [
         "crypto"
       ],
-      "updatedAt": "2026-10-25T11:48:06.878Z",
+      "updatedAt": "2026-10-25T16:36:12.599Z",
       "status": "confirmed",
       "announcementStatus": "confirmed",
       "impact": {
@@ -93882,8 +94351,8 @@
   ],
   "assetCatalog": [],
   "translation": {
-    "attempted": 14,
-    "translated": 7,
+    "attempted": 21,
+    "translated": 14,
     "failed": 7,
     "deferred": 0
   },
