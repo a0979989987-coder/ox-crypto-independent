@@ -26,11 +26,12 @@ try{
   assert.equal(await page.evaluate(()=>window.pendingGateFlashes),0,'No transient loading-card flash');
   await page.screenshot({path:new URL(`../../imports/account-pending-${width}.png`,import.meta.url).pathname.replace(/^\/([A-Z]:)/,'$1'),fullPage:false});
   policyDelay=0;await page.waitForFunction(()=>OXFeatures.ready&&OXAuth.status.configured);
-  const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();await opener.click();await page.locator('#ox-control-account-open').click();
-  await page.locator('#ox-account-overlay.is-open').waitFor();assert.equal(await page.locator('#ox-account-google').isVisible(),true);assert.equal(await page.locator('#ox-account-email').isVisible(),true);
-  assert.equal(await page.locator('#ox-control-overlay').evaluate(e=>e.classList.contains('is-open')),false);
-  assert.match(await page.locator('.ox-account-provider-note').innerText(),/連線設定已載入/);
-  await page.locator('#ox-account-close').click();assert.equal(await opener.evaluate(e=>e===document.activeElement),true);
+  // The old OX ACCOUNT entry is retired; its triggers lead to the Google member card.
+  const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();await opener.click();
+  await page.locator('#ox-member-account').waitFor({state:'visible'});assert.equal(await page.locator('#ox-control-account-open').isVisible(),false);
+  await page.evaluate(()=>document.getElementById('ox-control-account-open').click());
+  assert.equal(await page.locator('#ox-account-overlay.is-open').count(),0,'the old login never opens');
+  assert.equal(await page.locator('#ox-member-account').isVisible(),true);
   for(const status of [401,503]){
    sessionStatus=status;sessionDelay=250;await page.evaluate(()=>{OXAuth.user={id:'synthetic-stale'};window.checkRefresh=OXFeatures.refresh();});
    await page.waitForTimeout(80);assert.equal(await page.locator('main').isVisible(),true,'Public policy survives slow userinfo');

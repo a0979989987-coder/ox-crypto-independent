@@ -15,9 +15,20 @@ function assert(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+// The site's own backend (usage records, announcement, sign-in) answers like a Site
+// without a database: config has nothing to show and the visitor is signed out.
+let siteWorker;
+async function siteApi(request, response) {
+  siteWorker ||= import("../worker/index.js").then(module => module.default);
+  const chunks = []; for await (const chunk of request) chunks.push(chunk);
+  const headers = new Headers(Object.entries(request.headers).filter(([name, value]) => typeof value === "string" && !/^oai-authenticated-/i.test(name)));
+  const answer = await (await siteWorker).fetch(new Request(testBase + request.url, { method: request.method, headers, ...(chunks.length ? { body: Buffer.concat(chunks) } : {}) }), {}, {});
+  response.writeHead(answer.status, Object.fromEntries(answer.headers)); response.end(Buffer.from(await answer.arrayBuffer()));
+}
 const server = createServer((request, response) => {
   const pathname = new URL(request.url, "http://127.0.0.1").pathname;
   if (pathname === "/favicon.ico") { response.writeHead(204); response.end(); return; }
+  if (/^\/api\/v1\/(?:app|auth|me)\//.test(pathname)) { siteApi(request, response).catch(() => { response.writeHead(500); response.end(); }); return; }
   const relative = pathname === "/" ? "index.html" : pathname.slice(1);
   const file = normalize(join(root, relative));
   if (!file.startsWith(root) || !existsSync(file) || !statSync(file).isFile()) {

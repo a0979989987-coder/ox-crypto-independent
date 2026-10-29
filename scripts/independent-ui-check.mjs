@@ -48,13 +48,12 @@ try{
     await page.evaluate(()=>switchAppView('media'));
     await page.locator('#view-media.active').waitFor();
     const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();
-    await opener.click();await page.locator('#view-settings.active #ox-settings-account').waitFor();
-    assert.equal(await page.locator('#ox-control-account-open').isVisible(),false,'The old OX ACCOUNT entry stays hidden');
+    // One login system: the Google member card sits in 設定's account slot; the old OX ACCOUNT entry stays hidden.
+    await opener.click();await page.locator('#view-settings.active #ox-settings-account #ox-member-account').waitFor({state:'visible'});
+    assert.equal(await page.locator('#ox-control-account-open').isVisible(),false);
     assert.equal(await page.locator('[data-setting-key="oxLive"],[data-market-choice]').count(),0);
-    await page.evaluate(()=>OXAccount.open('auth'));
-    await page.locator('#ox-account-overlay.is-open').waitFor();
-    assert.equal(await page.locator('#ox-account-google').isVisible(),true);
-    assert.equal(await page.locator('#ox-account-email').isVisible(),true);
+    assert.match(await page.locator('#ox-member-account').innerText(),/會員功能尚未開放/);
+    assert.equal(await page.locator('#ox-account-overlay.is-open').count(),0);
     assert.equal(urls.some(u=>/\/markets\/tw\/|\/api\/v1\/tw\/|\/data\/tw-/.test(u)),false);
     assert.deepEqual(audit.pageErrors,[]);
     assert.deepEqual(audit.localHttpErrors,[]);

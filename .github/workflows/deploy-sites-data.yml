@@ -1,0 +1,31 @@
+name: Publish verified data to Sites
+# Seeds or repairs the Site's data release (news, macro results, taker history, tool
+# snapshots). The scheduled collectors publish on their own after each update.
+# Nothing runs automatically until the repository variable OX_SITES_DATA is "on".
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/publish-site-data.mjs', 'worker/site.js', '.github/workflows/deploy-sites-data.yml']
+permissions:
+  contents: read
+  id-token: write
+concurrency:
+  group: sites-public-data-manual
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'workflow_dispatch' || vars.OX_SITES_DATA == 'on')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: git fetch origin main
+      - run: node scripts/publish-site-data.mjs
+        env:
+          OX_SITE_ORIGIN: ${{ vars.OX_SITE_ORIGIN }}
