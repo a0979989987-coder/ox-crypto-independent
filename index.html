@@ -12,7 +12,7 @@
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="OX Market Command Center - 市場總覽、指標、雷達篩選、K 線與提醒工作區。">
   <script src="src/app/live-visibility.js?v=20261001-tiercomb2"></script>
-  <script src="src/components/loading-state.js?v=20261028-shell1"></script>
+  <script src="src/components/loading-state.js?v=20261006-perf1"></script>
   <title>OX 加密｜Crypto Market Command Center</title>
   <!-- build: v4.0-modular-classified-rc2-2026-09-22 -->
   <!-- build-refine: v3.8-ui-glass-fluid-2026-09-22 -->
@@ -225,6 +225,7 @@
       </div>
     </nav>
     <section class="ox-radar-board" id="ox-radar-board" role="tabpanel" aria-labelledby="ox-radar-tab-board"></section>
+    <button class="ox-radar-scan" id="ox-radar-scan" type="button" aria-label="重新掃描型態" title="重新掃描型態" hidden><svg class="ox-radar-scan-ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="ox-radar-scan-track" cx="24" cy="24" r="21"/><circle class="ox-radar-scan-arc" cx="24" cy="24" r="21" pathLength="100"/></svg><svg class="ox-radar-scan-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 12 17.6 6.4"/></svg></button>
     <section class="ox-radar-watch" id="ox-radar-watch" role="tabpanel" aria-labelledby="ox-radar-tab-watch">
       <div class="ox-watch-head"><span>自選 <b id="ox-watch-count">0</b> 檔</span></div>
       <label class="ox-watch-search"><span class="ox-watch-search-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></span><input id="ox-watch-input" type="search" autocomplete="off" autocapitalize="characters" spellcheck="false" enterkeyhint="search" placeholder="搜尋幣種代號，點星星加入自選" aria-label="搜尋幣種加入自選"></label>

@@ -3,11 +3,28 @@ import { showToolLoadError } from '../../components/tool-load-error.js?v=2026100
 // The pattern board is the first tab of the 畫板 dock view (#view-radar,
 // data-radar-mode="board"). It used to be the 型態搜尋 tool under 指標; the
 // same module is mounted here once and suspended while another tab or view is
-// on screen, so drawings and results survive switching tabs.
+// on screen, so drawings and results survive switching tabs. The page owns the
+// one scan button (#ox-radar-scan): the board's own pill is hidden
+// (scanButton:false), the button calls refresh() and follows the board's
+// ox:pattern-board-scan progress.
 const slot = document.getElementById('ox-radar-board');
 if (slot) {
   const radar = document.getElementById('view-radar');
+  const scan = document.getElementById('ox-radar-scan');
   let host = null, board = null, pending = false, generation = 0, suspended = false;
+  function syncScan(detail = null) {
+    if (!scan) return;
+    scan.hidden = !(board && visible());
+    if (!detail) return;
+    const busy = !!(detail.scanning || detail.busy), percent = Math.max(0, Math.min(100, Number(detail.percent) || 0));
+    scan.classList.toggle('is-scanning', busy);
+    scan.style.setProperty('--scan-progress', String(busy ? percent : 0));
+    scan.setAttribute('aria-busy', String(busy));
+    const label = busy ? `型態掃描中 ${detail.coinsTotal ? `${detail.coinsDone}/${detail.coinsTotal}` : percent + '%'}` : '重新掃描型態';
+    scan.setAttribute('aria-label', label); scan.title = label;
+  }
+  scan?.addEventListener('click', () => { if (board && !scan.classList.contains('is-scanning')) board.refresh?.(); });
+  slot.addEventListener('ox:pattern-board-scan', event => syncScan(event.detail || {}));
   const visible = () => (document.body.dataset.market || 'crypto') === 'crypto'
     && document.body.dataset.view === 'radar'
     && radar?.dataset.radarMode === 'board'
@@ -20,6 +37,7 @@ if (slot) {
     generation++; pending = false;
     if (board) { board.destroy?.(); if (clearPrivate) board.clearPrivateState?.(); }
     board = null; suspended = false; host?.remove(); host = null;
+    syncScan({ scanning: false });
   }
   async function mount() {
     if (pending) return;
@@ -38,6 +56,7 @@ if (slot) {
       const { mountPatternSearch } = await loadToolModule(new URL('./patterns/view.js?v=20261005-stable18', import.meta.url).href, { current });
       if (!current()) return;
       board = mountPatternSearch(mountHost, {
+        scanButton: false,
         onOpenRadar(symbol) {
           window.OXRadarModes?.set('chart');
           window.switchSymbol?.(symbol);
@@ -50,6 +69,7 @@ if (slot) {
       });
       suspended = false;
       loading.remove();
+      syncScan();
     } catch (error) {
       if (error?.name === 'AbortError') return;
       console.warn('[OX pattern board]', error);
@@ -60,6 +80,7 @@ if (slot) {
     }
   }
   function sync() {
+    syncScan();
     if (!visible()) { if (pending && !board) { generation++; pending = false; } suspend(); return; }
     if (board) { if (suspended) { suspended = false; board.resume?.(); } return; }
     mount();

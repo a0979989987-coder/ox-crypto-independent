@@ -21,18 +21,11 @@
   if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'.ox-home-t1':':not(*)');
   return null;
  }
- // A task with its own target shows wherever that target is on screen: the
- // pattern board reports views:['strength'] but now lives in the 畫板 view.
- function onActiveView(target){
-  let node=target;while(node){if(node.classList?.contains('app-view'))return node.classList.contains('active');node=node.parentElement||node.getRootNode?.()?.host||null;}
-  return false;
- }
  function paint(){
   timer=null;if(!document.body)return;
   const market=document.body.dataset.market||'crypto',view=document.body.dataset.view||'radar',active=new Map();
   for(const task of [...tasks.values()].sort((a,b)=>Number(Boolean(b.total))-Number(Boolean(a.total))||b.at-a.at)){
-   if(task.market!==market)continue;
-   if(task.views&&!task.views.includes(view)&&!(task.target&&typeof task.target!=='function'&&task.target.isConnected&&onActiveView(task.target)))continue;
+   if(task.market!==market||task.views&&!task.views.includes(view))continue;
    const target=typeof task.target==='function'?task.target():task.target||defaultTarget(market,view);
    if(target&&!active.has(target))active.set(target,task);
   }
