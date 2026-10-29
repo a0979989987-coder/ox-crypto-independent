@@ -166,8 +166,8 @@
     {
       "path": "src/components/chart/drawings.js",
       "sourceSha256": "db0df31e1326e037ed56d228874accbda3aef3e20d918ec45b29b44f00340b88",
-      "sha256": "2f5ff98a1d43f24bf3e17a4bcac7b106154e4fb81072c5ea0c12be6c73343a76",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks."
+      "sha256": "4dc5736df1f9c356efbd14a73371e7f675d08f296d66f6d81980a35c230674c2",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. 畫板 shell (2026-10-29): the drawing tools also show on the 盤面 tab, whose coin list sits under a full-width chart instead of a foldable side radar; verified with the complete-app chart check at 390 and 1440."
     },
     {
       "path": "src/components/account/account.js",

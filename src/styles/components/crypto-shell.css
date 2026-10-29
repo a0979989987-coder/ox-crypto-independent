@@ -322,3 +322,6 @@ html body.ox-terminal #view-radar .ox-tier-chips{display:none}
  html body.ox-terminal .oxn-root .oxn-month-arrow{min-width:36px!important}
  html body.ox-terminal .oxn-day-events-heading .oxn-text-button{min-height:36px!important;padding:0 6px!important;display:inline-flex!important;align-items:center!important}
 }
+
+/* 盤面 has no side radar to fold, so 全螢幕 stays available on every width, as the folded layout had it. */
+html body.ox-terminal:not(.chart-focus) #view-radar[data-radar-mode="chart"] .chart-controls #btn-chart-fullscreen.ox-chart-expand-dot{display:inline-grid!important}

@@ -67,6 +67,18 @@
     return true;
   }
 
+  // The chart often loads while 盤面 is hidden; the first time it shows at full width the
+  // latest candle is re-anchored with the usual drawing room. Later visits keep the user's pan.
+  const chartEl = document.getElementById('chart');
+  if (chartEl && 'ResizeObserver' in window) {
+    const firstShow = new ResizeObserver(entries => {
+      if (!entries.some(entry => entry.contentRect.width > 0)) return;
+      firstShow.disconnect();
+      if (typeof state !== 'undefined' && state.chart) requestAnimationFrame(() => window.applyChartFutureSpace?.(true));
+    });
+    firstShow.observe(chartEl);
+  }
+
   rail?.addEventListener('click', event => {
     const tab = event.target.closest('[data-radar-tab]');
     if (!tab || tab.dataset.radarTab === current()) return;
