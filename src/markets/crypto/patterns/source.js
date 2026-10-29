@@ -54,8 +54,11 @@ export async function fetchUniverse(signal,limit=80,transport={}){
     Number(Number(b.usdtVolume)>=3000000)-Number(Number(a.usdtVolume)>=3000000)||
     Math.abs(Number(b.change24h))-Math.abs(Number(a.change24h))||Number(b.usdtVolume)-Number(a.usdtVolume));
   if(!tickers.length)throw Error('沒有符合流動性條件的加密合約');
-  const allowed=new Set(metadata.data.filter(i=>i.symbolType==='crypto'&&i.type==='perpetual'&&i.status==='online'&&i.quoteCoin==='USDT').map(i=>i.symbol));
-  return {tickers,allTickers:quotes.data.filter(t=>allowed.has(t.symbol)&&[t.lastPr,t.change24h,t.usdtVolume].every(v=>v!==''&&Number.isFinite(Number(v)))),serverTime};
+  const contracts=metadata.data.filter(i=>i.symbolType==='crypto'&&i.type==='perpetual'&&i.status==='online'&&i.quoteCoin==='USDT');
+  const allowed=new Set(contracts.map(i=>i.symbol));
+  // Only the fields the 板塊 filter needs to verify a contract's base coin.
+  const instruments=contracts.map(({symbol,baseCoin,quoteCoin,symbolType,type,status})=>({symbol,baseCoin,quoteCoin,symbolType,type,status}));
+  return {tickers,allTickers:quotes.data.filter(t=>allowed.has(t.symbol)&&[t.lastPr,t.change24h,t.usdtVolume].every(v=>v!==''&&Number.isFinite(Number(v)))),instruments,serverTime};
 }
 export async function fetchSeries(symbol,frame,signal,now=Date.now(),transport={}){
   const key=`${symbol}:${frame}`,cached=candleCache.get(key),boundary=candleBoundary(now,frame);

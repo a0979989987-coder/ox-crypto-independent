@@ -16,16 +16,18 @@
   const glyphs={account:'<circle cx="12" cy="8" r="3"/><path d="M5 21v-3a7 7 0 0 1 14 0v3"/>',settings:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3M5 5l2 2m10 10 2 2M5 19l2-2M17 7l2-2"/>',theme:'<circle cx="12" cy="12" r="8"/><path d="M12 4v16"/>',market:'<circle cx="12" cy="12" r="8"/><path d="M4 12h16M12 4c5 5 5 11 0 16-5-5-5-11 0-16"/>',chart:'<path d="M4 4v16h16M7 14l4-5 4 3 5-7"/>',calendar:'<rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4m8-4v4M4 10h16"/>',watch:'<path d="m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>',bubbles:'<circle cx="8" cy="10" r="5"/><circle cx="17" cy="15" r="4"/>'};
   const glyph=name=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+(glyphs[name]||glyphs.chart)+'</svg>';
   const registryRows=[
-    {id:"account",title:"帳號與登入",keywords:["帳號","登入","註冊","會員","account","login"],category:"OX Account",icon:glyph('account'),action:"account"},
-    {id:"theme",title:"主題外觀",keywords:["主題","白金","深色","黑色","白色","淺色","自動","dark","light","theme"],category:"深色 · 白金 · 跟隨系統",icon:glyph('theme'),target:".theme-buttons",view:"settings"},
-    {id:"patterns",title:"型態畫板",keywords:["型態","畫板","搜尋","掃描","patterns"],category:"目前市場 · 指標",icon:glyph('chart'),view:"strength",tool:"patterns"},
+    {id:"account",title:"帳號與登入",keywords:["帳號","登入","註冊","會員","google","account","login"],category:"設定 · 會員功能尚未開放",icon:glyph('account'),target:"#ox-settings-account",view:"settings"},
+    {id:"theme",title:"主題外觀",keywords:["主題","白金","深色","黑色","白色","淺色","自動","dark","light","theme"],category:"深色 · 白金 · 跟隨系統",icon:glyph('theme'),target:"#view-settings .ox-theme-segment",view:"settings"},
+    {id:"patterns",title:"型態畫板",keywords:["型態","畫板","搜尋","掃描","patterns"],category:"畫板",icon:glyph('chart'),view:"radar",radarMode:"board"},
+    {id:"compare",title:"突破對比",keywords:["對比","突破","績效","勝率","4H","compare"],category:"畫板 · 對比",icon:glyph('chart'),view:"radar",radarMode:"compare"},
+    {id:"chart",title:"盤面 K 線",keywords:["盤面","k線","K 線","圖表","雷達","T1","T2","T3","chart","radar"],category:"畫板 · 盤面",icon:glyph('chart'),view:"radar",radarMode:"chart"},
     {id:"bubbles",title:"泡泡圖",keywords:["泡泡","板塊","bubbles"],category:"目前市場 · 指標",icon:glyph('bubbles'),view:"strength",tool:"bubbles"},
     {id:"news",title:"行事曆與新聞",keywords:["新聞","資訊","行事曆","calendar","news"],category:"目前市場 · 資訊",icon:glyph('calendar'),view:"data"},
     {id:"crypto",title:"加密貨幣",keywords:["加密","crypto","幣"],category:"市場 · 雷達",icon:glyph('market'),view:"radar",market:"crypto"},
-    {id:"notifications",title:"通知設定",keywords:["通知","提醒","notification","前高前低"],category:"設定",icon:glyph('settings'),target:"#notification-permission-state",view:"settings"},
-    {id:"sound",title:"通知鈴聲",keywords:["鈴聲","聲音","sound","alert"],category:"設定",icon:glyph('settings'),target:"#btn-test-sound",view:"settings"},
+    {id:"notifications",title:"通知設定",keywords:["通知","提醒","notification","前高前低"],category:"設定",icon:glyph('settings'),target:"#notification-permission-state",view:"settings",action:"notifications"},
+    {id:"sound",title:"通知鈴聲",keywords:["鈴聲","聲音","sound","alert"],category:"設定",icon:glyph('settings'),target:"#btn-test-sound",view:"settings",action:"notifications"},
     {id:"exchange",title:"交易所與資料源",keywords:["交易所","合約","bitget","binance","bybit","provider"],category:"加密 · 雷達",icon:glyph('market'),view:"radar",market:"crypto",action:"provider"},
-    {id:"watch",title:"收藏與觀察列表",keywords:["收藏","觀察","watchlist","watch"],category:"目前市場 · 雷達",icon:glyph('watch'),view:"radar",action:"watch"}
+    {id:"watch",title:"自選清單",keywords:["自選","收藏","觀察","watchlist","watch"],category:"畫板 · 自選",icon:glyph('watch'),view:"radar",radarMode:"watch"}
   ];
   function findDeep(selector,root=document){const found=root.querySelector(selector);if(found)return found;for(const node of root.querySelectorAll('*')){if(node.shadowRoot){const found=findDeep(selector,node.shadowRoot);if(found)return found;}}return null;}
   async function waitTarget(selector){for(let i=0;i<40;i++){const node=findDeep(selector);if(node)return node;await new Promise(r=>setTimeout(r,50));}return null;}
@@ -74,18 +76,15 @@
       closeControl();
       setTimeout(async()=>{
         if(item.market)window.OXMarketController?.setMarket(item.market,{toast:false});
+        if(item.radarMode)window.OXRadarModes?.set(item.radarMode);
         if(item.view&&typeof switchAppView==="function")switchAppView(item.view);
+        if(item.action==="notifications")document.getElementById("ox-control-open-notifications")?.click();
         await new Promise(r=>setTimeout(r,110));
         if(item.action==="provider"){ProviderController.openPicker();return}
         if(item.tool){
           const market=document.body.dataset.market||'crypto';
           const attr='data-crypto-tool';
           const target=await waitTarget(`button[${attr}="${item.tool}"]`);target?.click();
-        }
-        if(item.action==='watch'){
-          const market=document.body.dataset.market||'crypto';
-          const selector='.tab-btn[data-tab="watch"]';
-          (await waitTarget(selector))?.click();
         }
         if(item.action==="feedback"){
           document.getElementById("ox-control-open")?.click();

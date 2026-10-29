@@ -1,0 +1,86 @@
+/* Crypto K-line indicators (src/components/chart/indicators.js): name tags on the
+   chart, KD/RSI/MACD panes, the 技術指標 rows in 指標與篩選 and the parameter
+   sheet. Tap targets: main buttons 44px, secondary 32px+, text 11px+. */
+
+/* Panes under the volume. They never take touches: dragging there still moves the chart. */
+#chart .ox-ind-stack{position:absolute;left:0;right:0;z-index:6;display:flex;flex-direction:column;pointer-events:none}
+#chart .ox-ind-stack[hidden]{display:none}
+#chart .ox-ind-pane{position:relative;flex:0 0 auto;border-top:1px solid rgba(255,255,255,.09)}
+#chart .ox-ind-pane-chart{position:absolute;inset:0;z-index:0}
+#chart .ox-ind-marks{position:absolute;inset:0;z-index:1;pointer-events:none}
+#chart .ox-ind-marks span{position:absolute;right:4px;transform:translateY(-50%);font:500 11px/1 system-ui,-apple-system,sans-serif;color:rgba(214,218,214,.5);font-variant-numeric:tabular-nums}
+#chart .ox-ind-legend{position:absolute;top:2px;left:2px;right:64px;z-index:6;display:flex;flex-wrap:wrap;gap:0 4px;pointer-events:none}
+
+/* Name tags: a 32px tap area around a small readable chip. */
+#chart .ox-ind-tag{position:absolute;top:0;left:2px;z-index:2;display:inline-flex;align-items:center;max-width:calc(100% - 34px);min-height:32px;margin:0;padding:0 2px;border:0;background:none;color:inherit;font:inherit;text-align:left;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#chart .ox-ind-legend .ox-ind-tag{position:relative;top:auto;left:auto;max-width:100%}
+#chart .ox-ind-chip{display:inline-flex;align-items:baseline;gap:6px;min-width:0;max-width:100%;padding:3px 7px;border-radius:7px;background:rgba(18,20,23,.74);color:#c9ccc8;font:500 11px/1.3 system-ui,-apple-system,"PingFang TC",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}
+#chart .ox-ind-chip b{font-weight:650;color:#eceae3}
+#chart .ox-ind-chip small{font-size:11px;color:#8f979b}
+#chart .ox-ind-values{display:inline-flex;gap:7px;min-width:0;overflow:hidden;font-variant-numeric:tabular-nums}
+#chart .ox-ind-values i{font-style:normal}
+#chart .ox-ind-tag:focus-visible{outline:2px solid #fff;outline-offset:-2px;border-radius:8px}
+#chart .ox-ind-tag:active .ox-ind-chip{background:rgba(42,46,52,.9)}
+
+/* 指標與篩選: a visible title, the close button at the top right, readable options. */
+#chart-tools-overlay .chart-tools-dialog>.chart-tools-close{position:absolute!important;top:6px;right:6px;bottom:auto;z-index:3}
+#chart-tools-overlay[data-active-panel="indicators"] .chart-tools-panel[data-chart-tools-panel="indicators"]::before{content:"指標與篩選";display:flex;align-items:center;min-height:32px;margin:0 48px 10px 2px;font-size:15px;font-weight:650}
+#chart-tools-overlay .chart-indicator-option{min-height:44px!important;font-size:13px!important}
+#chart-tools-overlay #key-level-toggle-text::after{font-size:13px!important}
+#chart-tools-overlay :is(.alert-btn,[data-filter-mode]){min-height:40px;font-size:13px}
+#chart-tools-overlay .chart-tools-panel h3{font-size:14px}
+#chart-tools-overlay .ox-ind-settings{margin:16px 0 6px;padding-top:14px;border-top:1px solid rgba(255,255,255,.1)}
+#chart-tools-overlay .ox-ind-options{display:grid;gap:8px}
+#chart-tools-overlay .ox-ind-option{display:grid;grid-template-columns:minmax(0,1fr) minmax(112px,auto);gap:8px}
+#chart-tools-overlay .ox-ind-option .chart-indicator-option{justify-content:flex-start;padding:0 16px!important}
+#chart-tools-overlay .ox-ind-params{display:inline-flex;align-items:center;justify-content:space-between;gap:8px;min-height:44px;padding:0 12px 0 14px;border:1px solid rgba(255,255,255,.16);border-radius:10px;background:rgba(255,255,255,.03);color:inherit;font:600 13px/1 system-ui,-apple-system,sans-serif;font-variant-numeric:tabular-nums;cursor:pointer}
+#chart-tools-overlay .ox-ind-params::after{content:"";width:7px;height:7px;border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg);opacity:.6}
+#chart-tools-overlay .ox-ind-params:is(:hover,:focus-visible){border-color:rgba(255,255,255,.5)}
+#chart-tools-overlay .ox-ind-note{margin:10px 2px 0!important;font-size:12px!important;line-height:1.5!important}
+
+/* Parameter sheet: a bottom sheet on phones, a centred card on wider screens. */
+dialog.ox-ind-sheet{width:min(400px,calc(100vw - 24px));max-width:none;max-height:min(88dvh,640px);margin:auto;padding:0;border:1px solid rgba(255,255,255,.2);border-radius:18px;background:linear-gradient(160deg,#181c22,#0f1216);color:#eceae3;box-shadow:0 18px 60px rgba(0,0,0,.6),inset 0 1px rgba(255,255,255,.12);overflow:auto;font-family:system-ui,-apple-system,"PingFang TC",sans-serif}
+dialog.ox-ind-sheet::backdrop{background:rgba(2,5,11,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.ox-ind-sheet-form{display:grid;gap:14px;padding:8px 16px 16px}
+.ox-ind-sheet-head{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px}
+.ox-ind-sheet-title{margin:0;font-size:17px;font-weight:650;line-height:1.3}
+.ox-ind-fields{display:grid;gap:10px}
+.ox-ind-field{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;min-height:48px}
+.ox-ind-field label{font-size:15px;color:#d8dad6}
+.ox-ind-stepper{display:grid;grid-template-columns:44px 84px 44px;align-items:center;border:1px solid rgba(255,255,255,.18);border-radius:12px;overflow:hidden;background:rgba(255,255,255,.03)}
+.ox-ind-stepper button{min-height:44px;border:0;background:transparent;color:inherit;font:500 20px/1 system-ui,-apple-system,sans-serif;cursor:pointer}
+.ox-ind-stepper button:active{background:rgba(255,255,255,.1)}
+.ox-ind-stepper input{width:100%;height:44px;min-width:0;padding:0 4px;border:0;border-inline:1px solid rgba(255,255,255,.14);border-radius:0;background:transparent;color:inherit;font:600 16px/1 system-ui,-apple-system,sans-serif;text-align:center;font-variant-numeric:tabular-nums;-moz-appearance:textfield}
+.ox-ind-stepper input::-webkit-inner-spin-button,.ox-ind-stepper input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.ox-ind-stepper input:focus{outline:2px solid rgba(255,255,255,.6);outline-offset:-2px}
+.ox-ind-defaults{margin:0;font-size:12px;color:#99a0a4}
+.ox-ind-sheet-foot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ox-ind-sheet-foot:has([data-ind-off][hidden]){grid-template-columns:repeat(2,minmax(0,1fr))}
+.ox-ind-sheet-foot button{min-height:44px;padding:0 8px;border:1px solid rgba(255,255,255,.2);border-radius:12px;background:transparent;color:inherit;font:600 14px/1 system-ui,-apple-system,"PingFang TC",sans-serif;cursor:pointer}
+.ox-ind-sheet-foot button.is-primary{border-color:#e9dcc0;background:#e9dcc0;color:#1b1a17}
+.ox-ind-sheet-foot button:focus-visible,.ox-ind-stepper button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(max-width:720px){
+ dialog.ox-ind-sheet{width:100%;max-width:100%;margin:auto 0 0;border-radius:20px 20px 0 0;border-bottom:0;padding-bottom:env(safe-area-inset-bottom)}
+ dialog.ox-ind-sheet[open]{animation:ox-ind-sheet-up .24s cubic-bezier(.2,.8,.2,1)}
+}
+@keyframes ox-ind-sheet-up{from{transform:translateY(24px);opacity:0}to{transform:none;opacity:1}}
+@media(prefers-reduced-motion:reduce){dialog.ox-ind-sheet[open]{animation:none}}
+
+/* 白金 */
+body.theme-light #chart .ox-ind-pane{border-top-color:rgba(15,23,42,.1)}
+body.theme-light #chart .ox-ind-marks span{color:rgba(55,65,81,.55)}
+body.theme-light #chart .ox-ind-chip{background:rgba(255,255,255,.88);color:#4b5563;box-shadow:inset 0 0 0 1px rgba(156,169,185,.45)}
+body.theme-light #chart .ox-ind-chip b{color:#1f2937}
+body.theme-light #chart .ox-ind-chip small{color:#6b7280}
+body.theme-light #chart .ox-ind-tag:focus-visible{outline-color:#8d712e}
+body.theme-light #chart-tools-overlay .ox-ind-settings{border-top-color:rgba(156,169,185,.35)}
+body.theme-light #chart-tools-overlay .ox-ind-params{border-color:rgba(156,169,185,.5);background:#fff;color:#374151}
+body.theme-light dialog.ox-ind-sheet{background:#fff;color:#1f2937;border-color:rgba(156,169,185,.5);box-shadow:0 18px 60px rgba(83,97,116,.25)}
+body.theme-light dialog.ox-ind-sheet::backdrop{background:rgba(71,85,105,.25)}
+body.theme-light .ox-ind-field label{color:#374151}
+body.theme-light .ox-ind-stepper{border-color:rgba(156,169,185,.55);background:#f7f8fa}
+body.theme-light .ox-ind-stepper input{border-inline-color:rgba(156,169,185,.45)}
+body.theme-light .ox-ind-stepper input:focus{outline-color:#8d712e}
+body.theme-light .ox-ind-defaults{color:#6b7280}
+body.theme-light .ox-ind-sheet-foot button{border-color:rgba(156,169,185,.6)}
+body.theme-light .ox-ind-sheet-foot button.is-primary{border-color:#8d712e;background:#8d712e;color:#fff}

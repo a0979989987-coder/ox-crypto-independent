@@ -33,7 +33,7 @@ async function setup(width,theme='dark',clockTime=null){
 }
 async function verifyExpandedResearch(page){
  const geometry=await active(page,'.cfx-research-panel').evaluate(panel=>{const main=panel.closest('.cfx'),content=panel.parentElement,canvas=panel.querySelector('canvas'),a=main.getBoundingClientRect(),b=canvas.getBoundingClientRect();return {outerBorder:parseFloat(getComputedStyle(main).borderLeftWidth),panelBorder:parseFloat(getComputedStyle(panel).borderLeftWidth),radius:parseFloat(getComputedStyle(panel).borderTopLeftRadius),padding:parseFloat(getComputedStyle(content).paddingLeft),mainWidth:a.width,canvasWidth:b.width};});
- assert.equal(geometry.outerBorder,0,'only the outermost research frame is removed');assert.equal(geometry.panelBorder,1,'one chart frame remains');assert.equal(geometry.radius,14);assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth-2)<1,'canvas fills the width within the single border');
+ assert.equal(geometry.outerBorder,0,'only the outermost research frame is removed');assert.equal(geometry.panelBorder,1,'one chart frame remains');assert.equal(geometry.radius,20);assert.equal(geometry.padding,0);assert.ok(Math.abs(geometry.mainWidth-geometry.canvasWidth-2)<1,'canvas fills the width within the single border');
  assert.equal(await active(page,'[data-control="period"]').count(),1);assert.equal(await active(page,'[data-control="replay-range"]').count(),0,'one header menu owns periods and replay ranges');
 }
 async function verifyDialogBounds(page,selector){

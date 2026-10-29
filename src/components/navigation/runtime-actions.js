@@ -77,6 +77,25 @@ document.addEventListener("click", e => {
   }
 });
 
+// Sets the chart period from code (對比 opens a coin at 4H), as a tap on its
+// timeframe button would; with load:false the caller loads the candles itself.
+function setChartPeriod(tf, { load = true } = {}) {
+  if (!tf || state.period === tf) return false;
+  state.period = tf;
+  document.querySelectorAll(".btn-tf").forEach(b => {
+    const on = b.dataset.tf === tf;
+    b.classList.toggle("active", on);
+    if (b.hasAttribute("aria-pressed")) b.setAttribute("aria-pressed", String(on));
+  });
+  // The strip's glass marker follows the active button on scroll.
+  document.getElementById("chart-timeframe-strip")?.dispatchEvent(new Event("scroll"));
+  state.currentLevels = { high: 0, low: 0, sourcePeriod: getKeyLevelPeriod(), highTime: 0, lowTime: 0 };
+  state.secondaryLevels = null;
+  updateAlertButtons();
+  if (load) loadSymbolCandles(true);
+  return true;
+}
+
 document.addEventListener("keydown", e => {
   if ((e.key === "Enter" || e.key === " ") && e.target?.dataset?.homeSymbol) {
     e.preventDefault();

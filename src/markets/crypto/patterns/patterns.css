@@ -126,3 +126,71 @@
 .px-scan-sweep{transform-origin:12px 12px;transform-box:view-box}
 .px-refresh-pill.is-scanning .px-scan-sweep{animation:px-refresh-spin 2.4s linear infinite}
 @media(prefers-reduced-motion:reduce){.px-refresh-pill.is-scanning .px-scan-sweep{animation:none}}
+
+/* 篩選 sheet, T1/T2/T3 count chips under the board, and phone-sized controls:
+   main buttons at least 44px tall, secondary ones 32px+, text 11px+. */
+.px-control{min-height:44px;padding:0 13px;gap:8px;border-radius:11px;font-size:13px}
+.px-control svg{width:15px;height:15px}
+.px-icon{min-width:36px;width:36px;height:36px;border-radius:10px}
+.px-icon svg{width:16px;height:16px}
+.px-mode-toggle{height:36px;min-width:36px;padding:0 10px;font-size:12px;border-radius:10px}
+.px-board-bottom{min-height:36px}
+.px-tier-filters{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;max-width:none;margin:10px 0 4px;overflow:visible;pointer-events:auto}
+.px-tier-filters button{min-width:0;min-height:38px;padding:0 6px;display:inline-flex;align-items:center;justify-content:center;gap:6px;border-radius:10px;font-size:13px;line-height:1}
+.px-tier-filters button b{font-weight:650;font-size:13px;letter-spacing:.01em}
+.px-dialog-head{min-height:52px;padding:8px 8px 8px 16px;font-size:15px;font-weight:600}
+.px-dialog-head>span{display:flex;align-items:baseline;gap:10px;min-width:0}
+.px-filter-summary{font-size:12px;font-weight:400;color:#a3aaae;white-space:nowrap}
+.px-dialog-body{padding:12px 14px 16px}
+.px-filter-title{display:flex;align-items:center;gap:8px;min-height:32px;margin:4px 2px 8px;font-size:13px;font-weight:600;color:#e4e5df}
+.px-filter-title small{font-size:11px;font-weight:400;color:#9aa1a6}
+.px-filter-clear{margin-left:auto;min-height:32px;padding:0 13px;border:1px solid #ffffff26;border-radius:999px;background:transparent;color:inherit;font-size:12px;font-weight:500}
+.px-filter-clear[aria-pressed=true]{border-color:#ffffffbd;background:linear-gradient(145deg,#ffffff31,#ffffff0c)}
+.px-frames{gap:6px;margin:0 0 16px}
+.px-frame-option{min-height:40px;padding:0 8px;font-size:13px;border-radius:10px}
+.px-lots{display:grid;grid-template-columns:1.3fr repeat(3,minmax(0,1fr));gap:6px;margin:0 0 16px}
+.px-lots-input{position:relative;display:flex;align-items:center;min-width:0}
+.px-lots-input input{width:100%;min-width:0;height:40px;padding:0 30px 0 11px;border:1px solid #ffffff26;border-radius:10px;background:#ffffff08;color:inherit;font-size:16px;-moz-appearance:textfield}
+.px-lots-input input::-webkit-inner-spin-button,.px-lots-input input::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
+.px-lots-input input:focus{outline:none;border-color:#ffffff80}
+.px-lots-input span{position:absolute;right:11px;font-size:12px;color:#9aa1a6;pointer-events:none}
+.px-groups{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.px-groups .px-frame-option{min-height:36px;padding:0 12px;display:inline-flex;align-items:center;gap:6px;font-size:13px}
+.px-groups small{font-size:11px;opacity:.62}
+.px-groups-note{font-size:12px;color:#9aa1a6;padding:8px 2px}
+.px-setting{font-size:13px;padding:12px 2px}
+.px-setting select{min-height:40px;padding:0 10px;font-size:14px;border-radius:10px}
+.px-help{font-size:12px}
+.px-help summary{min-height:32px;display:flex;align-items:center}
+.px-search{height:44px;font-size:16px;border-radius:12px}
+.px-option{min-height:44px;font-size:13px}
+.px-count{font-size:12px}
+.px-count-status,.px-group{font-size:11px}
+.px-more{min-height:44px;font-size:13px}
+.px-tier-heading{font-size:12px}
+.px-tier-heading span{font-size:11px}
+.px-detail-frames button{min-width:42px;height:36px;font-size:12px;border-radius:9px}
+.px-to-radar{min-height:36px;padding:0 12px;font-size:12px;border-radius:10px}
+.px-detail-footer{font-size:11px}
+.px-scan-error{font-size:12px}
+@media(max-width:600px){
+ .px-controls{inset:8px 8px auto}
+ .px-control{min-height:44px;padding:0 12px;font-size:13px}
+ .px-board-bottom{inset:auto 8px 8px}
+ .px-mode-toggle{width:36px;padding:0}
+ .px-tier-filters{gap:5px;margin:9px 0 2px}
+ .px-tier-filters button{min-height:38px;padding:0 4px;gap:4px;font-size:12px}
+ .px-tier-filters button b{font-size:13px}
+ .px-dialog-head{font-size:15px}
+ .px-dialog-body{padding:10px 12px 14px}
+ .px-settings{width:min(420px,calc(100vw - 20px))}
+ .px-frame-option{font-size:13px}
+ .px-option{min-height:44px}
+ .px-symbol{font-size:14px}
+ .px-frame,.px-change,.px-match,.px-energy,.px-turnover{font-size:11px}
+ .px-tier-badge{font-size:10px;padding:2px 4px}
+ .px-detail-footer{font-size:11px}
+}
+.px-match span{min-width:0}
+.px-match span:first-child{flex:1 1 0}
+.px-match span:last-child{flex:none;max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}

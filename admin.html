@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="same-origin">
+<title>OX 加密後台</title>
+<link rel="icon" type="image/png" href="/ox-logo.png">
+<style>
+*{box-sizing:border-box;margin:0}
+html{-webkit-text-size-adjust:100%}
+body{background:#0f1114;color:#e9e7e2;font:15px/1.55 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;padding-bottom:70px}
+header{position:sticky;top:0;z-index:5;background:#0f1114ee;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid #ffffff14;padding-top:env(safe-area-inset-top)}
+.bar{max-width:1100px;margin:auto;padding:12px 16px 8px;display:flex;align-items:center;gap:12px}
+.bar h1{font-size:18px;font-weight:800;flex:1;white-space:nowrap}
+.bar small{opacity:.55;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+nav{max-width:1100px;margin:auto;padding:0 12px 10px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+nav::-webkit-scrollbar{display:none}
+nav button{flex:0 0 auto;border:1px solid #ffffff1f;background:transparent;color:inherit;border-radius:999px;padding:7px 14px;font:inherit;font-size:14px;cursor:pointer}
+nav button[aria-pressed=true]{background:#e9dcc0;color:#1b1a17;border-color:#e9dcc0;font-weight:700}
+nav button i{font-style:normal;display:inline-block;min-width:18px;margin-left:5px;padding:0 5px;border-radius:999px;background:#f16a70;color:#fff;font-size:11px;line-height:18px;text-align:center}
+main{max-width:1100px;margin:auto;padding:14px 14px 0}
+section[data-tab]{display:none}section[data-tab].on{display:block}
+h2{font-size:15px;margin:20px 2px 10px;opacity:.88}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px}
+.tile{background:#171a1f;border:1px solid #ffffff12;border-radius:14px;padding:11px 14px}
+.tile b{display:block;font-size:26px;font-weight:800;margin-top:2px;font-variant-numeric:tabular-nums}
+.tile span{font-size:12px;opacity:.6}
+.card{background:#171a1f;border:1px solid #ffffff12;border-radius:14px;padding:12px 14px;margin-bottom:12px;overflow-x:auto}
+.grid2{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:0 14px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:7px 8px;border-bottom:1px solid #ffffff10;white-space:nowrap}
+th{opacity:.55;font-weight:600;font-size:12px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+.meter{height:6px;border-radius:3px;background:#8fc7ea;opacity:.8}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+input,textarea,select{background:#0f1114;color:inherit;border:1px solid #ffffff26;border-radius:10px;padding:8px 10px;font:inherit;font-size:16px;min-width:0}
+textarea{width:100%;min-height:74px;resize:vertical}
+.act{display:inline-flex;align-items:center;justify-content:center;min-height:36px;text-decoration:none;border:1px solid #ffffff26;background:#ffffff0d;color:inherit;border-radius:10px;padding:6px 14px;font:inherit;font-size:14px;cursor:pointer;white-space:nowrap}
+.act:disabled{opacity:.5;cursor:default}
+.primary{background:#e9dcc0;color:#1b1a17;border-color:#e9dcc0;font-weight:700}
+.good{background:#1f6f4f;border-color:#2f9a6f;color:#fff;font-weight:700}
+.danger{background:#7a2a30;border-color:#a8434b;color:#fff;font-weight:700}
+.range{gap:6px}.range .act{min-height:32px;padding:4px 12px}
+.range .act[aria-pressed=true]{background:#e9dcc0;color:#1b1a17;border-color:#e9dcc0}
+.muted{opacity:.58;font-size:13px}
+.ok{color:#5fd39b}.warn{color:#f5c451}.bad{color:#f16a70}
+.chip{display:inline-block;padding:1px 9px;border-radius:999px;border:1px solid currentColor;font-size:12px;font-weight:700;white-space:nowrap}
+.item{background:#171a1f;border:1px solid #ffffff12;border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.item.done{opacity:.62}
+.item .top{display:flex;gap:8px;align-items:baseline;justify-content:space-between;flex-wrap:wrap}
+.item .top b{font-size:15px;overflow-wrap:anywhere}
+.item .meta{font-size:12px;opacity:.6;margin-top:2px;overflow-wrap:anywhere}
+.item .text{white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+.item .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.uid{font:600 17px/1.3 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:.03em}
+.check{margin-top:8px;padding:8px 10px;border-radius:10px;background:#ffffff08;font-size:13px}
+details{margin-top:8px;font-size:13px}summary{cursor:pointer;opacity:.7}
+details ol{margin:6px 0 0;padding-left:18px}details li{margin:3px 0;overflow-wrap:anywhere}
+.switch{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:center;padding:12px 0;border-bottom:1px solid #ffffff10}
+.switch:last-child{border-bottom:0}
+.switch .msg{grid-column:1/-1;display:flex;gap:8px}
+.switch .msg input{flex:1}
+.toggle{position:relative;width:52px;height:30px;flex:0 0 52px}
+.toggle input{position:absolute;inset:0;opacity:0;margin:0;cursor:pointer}
+.toggle span{position:absolute;inset:0;border-radius:999px;background:#2f9a6f;transition:.2s}
+.toggle span::after{content:"";position:absolute;top:3px;left:25px;width:24px;height:24px;border-radius:50%;background:#fff;transition:.2s}
+.toggle input:checked+span{background:#a8434b}.toggle input:checked+span::after{left:3px}
+.sign{max-width:420px;margin:15vh auto;padding:0 20px;text-align:center}
+.sign a{display:inline-block;margin-top:16px;background:#e9dcc0;color:#1b1a17;padding:10px 22px;border-radius:12px;text-decoration:none;font-weight:700}
+.empty{opacity:.55;font-size:14px;padding:6px 0}
+svg text{fill:#9aa1aa;font-size:10px}
+@media(max-width:600px){.bar small{display:none}th,td{padding:7px 6px}main{padding:12px 10px 0}}
+</style>
+</head>
+<body>
+<div id="gate" class="sign" hidden></div>
+<div id="app" hidden>
+<header><div class="bar"><h1>OX 加密後台</h1><small id="who"></small></div><nav id="tabs" aria-label="後台分頁"></nav></header>
+<main>
+<section data-tab="usage">
+ <div class="tiles" id="tiles"></div>
+ <h2>每天人數（30 天）</h2><div class="card" id="daily"></div>
+ <div class="row range" data-range></div>
+ <h2>最常用的功能</h2><div class="card" id="featureTable"></div>
+ <div class="tiles" id="boardTiles"></div>
+ <div class="grid2" id="popular"></div>
+ <h2>裝置與開啟方式</h2><div class="card" id="devices"></div>
+ <h2>資料狀態</h2><div class="card" id="systemInfo"></div>
+ <div class="row"><a class="act" id="exportFeatures" href="#">匯出功能使用 CSV</a></div>
+</section>
+<section data-tab="announce">
+ <div class="card"><textarea id="annText" maxlength="200" placeholder="公告內容（200 字內），會顯示在網站最上方"></textarea>
+  <div class="row" style="margin-top:8px"><input id="annLink" placeholder="連結（可空白，https:// 開頭）" style="flex:1 1 220px" inputmode="url" autocomplete="off"></div>
+  <div class="row"><label class="muted">自動下架 <input id="annEnd" type="datetime-local"></label><button class="act primary" id="annSave" type="button">發布</button></div>
+  <p class="muted">一次顯示一則，發布新公告會取代舊的；訪客按 × 關掉後，同一則不會再出現。</p></div>
+ <div class="row"><button class="act" id="annClearAll" type="button">全部下架</button></div>
+ <div id="annList"></div>
+</section>
+<section data-tab="switches">
+ <div class="card" id="flagList"></div>
+ <p class="muted">暫停的工具，訪客點下去會看到你寫的訊息，不會載入那個工具。其他工具照常使用。</p>
+</section>
+<section data-tab="feedback">
+ <div class="row range" id="fbFilter"></div>
+ <div id="feedbackList"></div>
+</section>
+<section data-tab="members">
+ <div class="row"><input id="memberSearch" type="search" placeholder="搜尋名字或 Email" style="flex:1 1 220px"><a class="act" href="/api/v1/admin/export?kind=members">匯出 CSV</a></div>
+ <p class="muted" id="memberNote" style="margin-bottom:10px"></p>
+ <div id="memberList"></div>
+</section>
+<section data-tab="bitget">
+ <div class="row range" id="bgFilter"></div>
+ <p class="muted" id="bgCheckNote" style="margin-bottom:10px"></p>
+ <div id="bitgetList"></div>
+</section>
+</main>
+</div>
+<script>
+// Refuse to work inside someone else's frame (a hidden admin page could be clicked by trickery).
+if(window.top!==window.self){document.body.textContent='';throw Error('framed');}
+const TABS=[['usage','使用紀錄'],['announce','公告'],['switches','功能開關'],['feedback','意見回饋'],['members','會員名單'],['bitget','Bitget UID 審核']];
+// Usage record names → readable labels.
+const LABEL={'app.open':'打開網站','view.home':'首頁','view.strength':'指標頁','view.radar':'雷達頁','view.data':'資訊頁','view.news':'新聞頁','view.media':'媒體頁','view.settings':'設定頁',
+ 'tool.patterns':'指標・型態搜尋（畫板）','tool.bubbles':'指標・泡泡圖','tool.strength':'指標・強弱對比','tool.heatmap':'指標・熱力圖','tool.rotation':'指標・板塊輪動','tool.flow':'指標・主動買賣',
+ 'radar.tab':'雷達・切分頁','radar.compare':'畫板・開對比','compare.point':'對比・展開紀錄','compare.pick':'對比・點幣種','radar.direction':'雷達・多空切換','coin.view':'看幣種','watch.add':'加自選','watch.remove':'移除自選',
+ 'chart.frame':'盤面・切週期','chart.indicator':'盤面・開指標','chart.alert':'盤面・前高前低提醒','chart.fullscreen':'盤面・全螢幕','chart.tools':'盤面・指標設定',
+ 'board.draw':'畫板・手畫','board.preset':'畫板・選型態','board.frame':'畫板・時間級別','board.tier':'畫板・分級篩選','board.card':'畫板・點卡片','board.scan':'畫板・重新掃描','board.to-radar':'畫板・看雷達','board.mode':'畫板・切模式','board.undo':'畫板・復原',
+ 'bubbles.metric':'泡泡圖・切指標','analytics.chart':'分析・開 K 線','news.tab':'資訊・切分頁','search.feature':'搜尋功能',
+ 'settings.theme':'切主題','settings.notify':'通知開關','settings.sound':'鈴聲開關','settings.frequency':'提醒頻率','settings.timeframes':'存時間級別',
+ 'feedback.send':'送出回饋','account.signin':'按 Google 登入','account.signout':'登出','bitget.submit':'送出 Bitget UID','announcement.open':'點公告連結','app.error':'網站錯誤'};
+const KIND={ios:'iPhone',android:'Android',desktop:'電腦',browser:'瀏覽器',line:'LINE',threads:'Threads',instagram:'Instagram',facebook:'Facebook',wechat:'微信'};
+// Same list as src/app/site-features.js.
+const SWITCHES=[['patterns','型態搜尋（畫板）'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣'],['news','新聞與行事曆'],['media','媒體']];
+const STATUS={pending:['待審核','warn'],approved:['已通過','ok'],rejected:['未通過','bad']};
+const PAGE={home:'首頁',strength:'指標頁',radar:'雷達頁',data:'資訊頁',news:'新聞頁',media:'媒體頁',settings:'設定頁'};
+const ACTION={submit:'送出',approve:'通過',reject:'未通過',reopen:'改回待審核',check:'自動查詢'};
+const $=s=>document.querySelector(s),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let days=7,me=null,fbStatus='new',bgStatus='pending',current='usage';
+async function api(path,body){
+ const r=await fetch('/api/v1/admin/'+path,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)}:{cache:'no-store'});
+ const j=await r.json().catch(()=>({}));
+ if(!r.ok)throw Object.assign(Error(j.error?.message||j.error?.code||r.status),{status:r.status,code:j.error?.code});
+ return j.data;
+}
+const fmtTime=ms=>ms?new Date(ms).toLocaleString('zh-TW',{hour12:false,month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'}):'—';
+const fmtDate=ms=>ms?new Date(ms).toLocaleDateString('zh-TW'):'—';
+const table=(cols,list)=>list.length?`<table><tr>${cols.map(c=>`<th class="${c.n?'n':''}">${c.t}</th>`).join('')}</tr>${list.map(r=>`<tr>${cols.map(c=>`<td class="${c.n?'n':''}">${c.f?c.f(r):esc(r[c.k])}</td>`).join('')}</tr>`).join('')}</table>`:'<p class="empty">還沒有資料</p>';
+const pills=(host,list,value,attr)=>{host.innerHTML=list.map(([k,t])=>`<button class="act" type="button" ${attr}="${k}" aria-pressed="${k===value}">${t}</button>`).join('');};
+function rangeBar(){document.querySelectorAll('[data-range]').forEach(h=>pills(h,[[1,'今天'],[7,'7 天'],[30,'30 天'],[90,'90 天']].map(([d,t])=>[String(d),t]),String(days),'data-days'));}
+function dailyChart(list){
+ if(!list.length)return '<p class="empty">還沒有資料</p>';
+ // Thirty bars, one per Taipei day; days without visitors stay empty.
+ const byDay=new Map(list.map(r=>[r.day,r.visitors])),today=Date.now()+8*3600000,days=[...Array(30)].map((_,i)=>new Date(today-(29-i)*86400000).toISOString().slice(0,10));
+ const W=640,H=170,max=Math.max(...days.map(d=>byDay.get(d)||0),1),bw=(W-48)/30;
+ return `<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="每天人數">${days.map((d,i)=>{const v=byDay.get(d)||0,h=v/max*(H-50);return `<rect x="${(24+i*bw+1.5).toFixed(1)}" y="${(H-24-h).toFixed(1)}" width="${(bw-3).toFixed(1)}" height="${Math.max(h,v?2:0).toFixed(1)}" rx="2" fill="#8fc7ea"${i===29?'':' opacity=".75"'}><title>${esc(d)}：${v} 人</title></rect>`;}).join('')}<line x1="24" x2="${W-24}" y1="${H-24}" y2="${H-24}" stroke="#ffffff22"/><text x="24" y="${H-8}">${esc(days[0].slice(5))}</text><text x="${W-58}" y="${H-8}">${esc(days[29].slice(5))}</text><text x="24" y="14">最高 ${max} 人</text><text x="${W-110}" y="14">今天 ${byDay.get(days[29])||0} 人</text></svg>`;
+}
+const block=(title,list,name)=>`<div><h2>${title}</h2><div class="card">${table([{t:name,k:'detail'},{t:'人數',k:'people',n:1},{t:'次數',k:'uses',n:1}],list)}</div></div>`;
+const load={
+ async usage(){
+  rangeBar();
+  const [d,list,dev,pop,sys]=await Promise.all([api('overview'),api('features?days='+days),api('devices?days='+days),api('popular?days='+days),api('system')]);
+  $('#tiles').innerHTML=[['現在線上',d.online,'最近 5 分鐘'],['今天訪客',d.visitors[1],'不重複裝置'],['7 天訪客',d.visitors[7],''],['30 天訪客',d.visitors[30],''],['會員',d.members,`7 天新增 ${d.newMembers}`],['今天登入的會員',d.signedIn[1],''],['未處理回饋',d.feedbackNew,''],['待審 UID',d.bitgetPending,'']].map(([t,n,s])=>`<div class="tile"><span>${t}</span><b>${n}</b><span>${s}</span></div>`).join('');
+  badge('feedback',d.feedbackNew);badge('bitget',d.bitgetPending);
+  $('#daily').innerHTML=dailyChart(d.daily);
+  const max=Math.max(...list.map(r=>r.uses),1);
+  $('#featureTable').innerHTML=table([{t:'功能',f:r=>esc(LABEL[r.name]||r.name)},{t:'次數',k:'uses',n:1},{t:'人數',k:'people',n:1},{t:'',f:r=>`<div class="meter" style="width:${Math.round(r.uses/max*120)}px"></div>`}],list);
+  $('#boardTiles').innerHTML=[['畫板手畫',pop.draws],['畫板選型態',pop.presets],['畫板重新掃描',pop.rescans]].map(([t,n])=>`<div class="tile"><span>${t}</span><b>${n}</b></div>`).join('');
+  $('#popular').innerHTML=block('最多人看的幣',pop.coins,'幣種')+block('最多人加自選',pop.watch,'幣種')+block('畫板最多人選的型態',pop.patterns,'型態')+block('畫板時間級別',pop.boardFrames,'級別')+block('畫板最多人點的卡片',pop.cards,'幣種')+block('盤面時間級別',pop.chartFrames,'級別')+block('盤面最多人開的指標',pop.indicators,'指標')+block('分析工具開的 K 線',pop.charts,'幣種');
+  $('#devices').innerHTML=table([{t:'裝置・開啟方式',f:r=>esc(r.kind.split(':').map(k=>KIND[k]||k).join('・'))},{t:'人數',k:'people',n:1}],dev);
+  const age=(iso,hours)=>{if(!iso)return '<span class="warn">—</span>';const h=(Date.now()-Date.parse(iso))/3600000;return `<span class="${!hours?'':h<hours?'ok':'warn'}">${esc(fmtTime(Date.parse(iso)))}</span>`;};
+  $('#systemInfo').innerHTML=`<table><tr><th>資料</th><th>最後更新</th></tr><tr><td>新聞與行事曆（每 6 小時）</td><td>${age(sys.news,13)}</td></tr><tr><td>主動買賣日線（每天）</td><td>${age(sys.flow,30)}</td></tr><tr><td>經濟數據結果（有新數據才更新）</td><td>${age(sys.macro)}</td></tr><tr><td>4 小時突破對比（每 4 小時）</td><td>${age(sys.breakouts,5)}</td></tr></table><h2>網站錯誤（7 天）</h2>${table([{t:'日期',k:'day'},{t:'次數',k:'n',n:1}],sys.errors)}${sys.recentErrors.length?table([{t:'錯誤訊息',k:'detail'},{t:'次數',k:'n',n:1}],sys.recentErrors):''}`;
+  $('#exportFeatures').href='/api/v1/admin/export?kind=features&days='+days;
+ },
+ async announce(){const list=await api('announcements'),now=Date.now();
+  $('#annList').innerHTML=list.length?list.map(r=>{const live=r.starts_at<=now&&(!r.ends_at||r.ends_at>now);return `<div class="item${live?'':' done'}"><div class="top"><b>${esc(r.text)}</b>${live?'<span class="chip ok">顯示中</span>':'<span class="chip">已下架</span>'}</div>${r.link?`<div class="meta">${esc(r.link)}</div>`:''}<div class="meta">發布 ${esc(fmtTime(r.created_at))}${r.ends_at?' · 下架 '+esc(fmtTime(r.ends_at)):''}</div><div class="acts">${live?`<button class="act" type="button" data-ann-clear="${r.id}">下架</button>`:''}<button class="act" type="button" data-ann-del="${r.id}">刪除</button></div></div>`;}).join(''):'<p class="empty">還沒有公告</p>';},
+ async switches(){const rows=await api('flags'),by=Object.fromEntries(rows.map(r=>[r.key,r]));
+  const line=(key,title,desc,on,message,placeholder)=>`<div class="switch" data-key="${key}"><div><b>${title}</b><div class="muted">${desc}</div></div><label class="toggle" title="${on?'已暫停':'開放中'}"><input type="checkbox" data-flag="${key}" ${on?'checked':''} aria-label="${title}：${on?'已暫停':'開放中'}"><span></span></label><div class="msg"><input data-msg="${key}" maxlength="120" value="${esc(message||'')}" placeholder="${placeholder}"><button class="act" type="button" data-save="${key}">儲存</button></div></div>`;
+  const m=by.maintenance,on=m?.value==='on';
+  $('#flagList').innerHTML=line('maintenance','整個網站',on?'<span class="bad">維護中</span>：訪客只看到維護畫面；你在網址後加 ?preview 仍可使用':'<span class="ok">開放中</span> · 關掉就進入維護模式',on,m?.message,'維護時給訪客的訊息')+
+   SWITCHES.map(([id,label])=>{const f=by['tool.'+id],paused=f?.value==='off';return line('tool.'+id,label,paused?`<span class="bad">已暫停</span>${f.updated_at?' · '+esc(fmtTime(f.updated_at)):''}`:'<span class="ok">開放中</span>',paused,f?.message,'暫停時給訪客看的訊息');}).join('');},
+ async feedback(){pills($('#fbFilter'),[['new','未處理'],['all','全部']],fbStatus,'data-fb-filter');
+  const list=await api('feedback'+(fbStatus==='new'?'?status=new':''));
+  $('#feedbackList').innerHTML=list.length?list.map(r=>`<div class="item${r.status==='done'?' done':''}"><div class="top"><b>${esc(r.topic||'意見回饋')}</b><span class="muted">${esc(fmtTime(r.ts))}</span></div><div class="meta">${r.page?'頁面：'+esc(PAGE[r.page]||r.page)+' · ':''}${r.member_email?'會員 '+esc(r.member_name||'')+' '+esc(r.member_email):'匿名'}${r.contact?' · 回覆 Email：'+esc(r.contact):''}</div><div class="text">${esc(r.text)}</div><div class="acts">${r.status==='done'?`<span class="muted">已處理 ${esc(fmtTime(r.handled_at))}</span><button class="act" type="button" data-fb="${r.id}" data-to="new">標為未處理</button>`:`<button class="act primary" type="button" data-fb="${r.id}" data-to="done">已處理</button>`}${r.contact?`<a class="act" href="mailto:${esc(r.contact)}">回信</a>`:''}</div></div>`).join(''):`<p class="empty">${fbStatus==='new'?'沒有未處理的回饋':'還沒有回饋'}</p>`;},
+ async members(){const term=$('#memberSearch').value;const list=await api('members?q='+encodeURIComponent(term));
+  $('#memberNote').textContent=me?.googleSignIn?`共 ${list.length} 位${term?'符合':''}會員`:'Google 登入還沒設定（GOOGLE_CLIENT_ID／GOOGLE_CLIENT_SECRET），設定後會員會出現在這裡。';
+  $('#memberList').innerHTML=list.length?list.map(r=>{const st=STATUS[r.bitget_status];return `<div class="item${r.status==='blocked'?' done':''}"><div class="top"><b>${esc(r.name||'（沒有名字）')}</b>${r.status==='blocked'?'<span class="chip bad">已停權</span>':''}</div><div class="meta">${esc(r.email)}</div><div class="meta">加入 ${esc(fmtDate(r.created_at))} · 最後上線 ${esc(fmtTime(r.last_seen))} · ${r.visits} 次</div><div class="meta">同步：${r.synced.length?esc(r.synced.join('、')):'—'}</div><div class="meta">Bitget：${st?`<span class="${st[1]}">${st[0]}</span> <span class="uid" style="font-size:13px">${esc(r.bitget_uid)}</span>`:'未填寫'}</div><div class="acts"><button class="act${r.status==='blocked'?'':' danger'}" type="button" data-block="${esc(r.id)}" data-to="${r.status==='blocked'?'active':'blocked'}">${r.status==='blocked'?'解除停權':'停權'}</button></div></div>`;}).join(''):'<p class="empty">還沒有會員</p>';},
+ async bitget(){const d=await api('bitget'+(bgStatus==='all'?'':'?status='+bgStatus)),c=d.counts||{};
+  pills($('#bgFilter'),[['pending',`待審核 ${c.pending||0}`],['approved',`已通過 ${c.approved||0}`],['rejected',`未通過 ${c.rejected||0}`],['all','全部']],bgStatus,'data-bg-filter');
+  badge('bitget',c.pending||0);
+  $('#bgCheckNote').textContent=d.checkConfigured?'可以按「自動查詢」確認 UID 是不是你的 Bitget 推薦客戶（唯讀查詢）。通過只會顯示「Bitget 已驗證」標章，不影響任何功能。':'自動查詢未設定：審核需人工確認（設定 BITGET_AFFILIATE_API_KEY／SECRET_KEY／PASSPHRASE 後可自動查詢）。通過只會顯示「Bitget 已驗證」標章，不影響任何功能。';
+  $('#bitgetList').innerHTML=d.list.length?d.list.map(r=>{const st=STATUS[r.status]||STATUS.pending,cr=r.check_result;
+   const check=cr?`<div class="check">自動查詢（${esc(fmtTime(r.checked_at))}）：${cr.referral==='matched'?'<span class="ok">是你的推薦客戶</span>':'<span class="bad">查不到推薦關係</span>'}${cr.referral==='matched'?' · KYC：'+({passed:'<span class="ok">已認證</span>',not_passed:'<span class="bad">未認證</span>'}[cr.kyc]||'未知'):''}${cr.registeredAt?' · 註冊 '+esc(fmtDate(Date.parse(cr.registeredAt))):''}</div>`:'';
+   return `<div class="item" data-member="${esc(r.member)}" data-uid="${esc(r.uid)}"><div class="top"><span class="uid">${esc(r.uid)}</span><span class="chip ${st[1]}">${st[0]}</span></div><div class="meta">${esc(r.name||'')} ${esc(r.email||r.member)}</div><div class="meta">送出 ${esc(fmtTime(r.submitted_at))}${r.reviewed_at?` · ${esc(STATUS[r.status]?.[0]||'')} ${esc(fmtTime(r.reviewed_at))}（${esc(r.reviewed_by||'')}）`:''}</div>${r.shared?`<div class="meta bad">另有 ${r.shared} 位會員填了同一個 UID</div>`:''}${r.note?`<div class="meta">備註：${esc(r.note)}</div>`:''}${check}
+    <div class="row" style="margin:10px 0 0"><input data-note maxlength="200" placeholder="備註（會員看得到，可空白）" value="${esc(r.note||'')}" style="flex:1 1 200px"></div>
+    <div class="acts"><button class="act good" type="button" data-review="approve">通過</button><button class="act danger" type="button" data-review="reject">未通過</button>${r.status!=='pending'?'<button class="act" type="button" data-review="reopen">改回待審核</button>':''}${d.checkConfigured?'<button class="act" type="button" data-check>自動查詢</button>':'<span class="muted">自動查詢未設定</span>'}<button class="act" type="button" data-copy="${esc(r.uid)}">複製 UID</button></div>
+    ${r.history.length?`<details><summary>紀錄（${r.history.length}）</summary><ol>${r.history.map(h=>`<li>${esc(fmtTime(h.ts))} ${esc(h.actor==='member'?'會員':h.actor)} ${esc(ACTION[h.action]||h.action)} ${esc(h.uid||'')}${h.note?'（'+esc(h.note)+'）':''}</li>`).join('')}</ol></details>`:''}</div>`;}).join(''):'<p class="empty">這裡沒有 UID</p>';}
+};
+function badge(tab,n){const b=document.querySelector(`#tabs [data-go="${tab}"]`);if(!b)return;b.querySelector('i')?.remove();if(n>0){const i=document.createElement('i');i.textContent=n>99?'99+':n;b.append(i);}}
+async function show(tab,{push=true}={}){
+ if(!load[tab])tab='usage';current=tab;
+ document.querySelectorAll('section[data-tab]').forEach(s=>s.classList.toggle('on',s.dataset.tab===tab));
+ document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-pressed',b.dataset.go===tab));
+ if(push&&location.hash!=='#'+tab)history.replaceState(null,'','#'+tab);
+ try{await load[tab]();}catch(e){alert('載入失敗：'+e.message);}
+}
+async function run(button,task){if(button)button.disabled=true;try{await task();}catch(e){alert('沒有完成：'+e.message);}finally{if(button?.isConnected)button.disabled=false;}}
+document.addEventListener('click',async e=>{
+ const t=e.target.closest('button,a');if(!t)return;
+ if(t.dataset.go)return show(t.dataset.go);
+ if(t.dataset.days){days=Number(t.dataset.days);return show(current);}
+ if(t.dataset.fbFilter){fbStatus=t.dataset.fbFilter;return show('feedback');}
+ if(t.dataset.bgFilter){bgStatus=t.dataset.bgFilter;return show('bitget');}
+ if(t.dataset.block){if(t.dataset.to==='blocked'&&!confirm('停權後這位會員會被登出，也不能再登入。確定？'))return;return run(t,async()=>{await api('members',{id:t.dataset.block,status:t.dataset.to});await show('members');});}
+ if(t.dataset.annDel){if(confirm('刪除這則公告？'))run(t,async()=>{await api('announcements',{delete:t.dataset.annDel});await show('announce');});return;}
+ if(t.dataset.annClear)return run(t,async()=>{await api('announcements',{clear:t.dataset.annClear});await show('announce');});
+ if(t.id==='annClearAll'){if(confirm('把顯示中的公告全部下架？'))run(t,async()=>{await api('announcements',{clear:'all'});await show('announce');});return;}
+ if(t.dataset.fb)return run(t,async()=>{await api('feedback',{id:t.dataset.fb,status:t.dataset.to});await show('feedback');});
+ if(t.id==='annSave'){const text=$('#annText').value.trim();if(!text)return alert('請輸入公告內容');const end=$('#annEnd').value;
+  return run(t,async()=>{await api('announcements',{text,link:$('#annLink').value.trim(),ends_at:end?new Date(end).getTime():null});$('#annText').value='';$('#annLink').value='';$('#annEnd').value='';await show('announce');});}
+ if(t.dataset.save){const key=t.dataset.save,box=t.closest('.switch'),on=box.querySelector('[data-flag]').checked,message=box.querySelector('[data-msg]').value.trim();
+  return run(t,async()=>{await api('flags',key==='maintenance'?{key,on,message}:{key,off:on,message});await show('switches');});}
+ if(t.dataset.review){const card=t.closest('.item'),action=t.dataset.review,note=card.querySelector('[data-note]').value.trim();
+  if(action==='reject'&&!note&&!confirm('沒有寫備註，會員只會看到「未通過」。確定？'))return;
+  return run(t,async()=>{try{await api('bitget',{member:card.dataset.member,uid:card.dataset.uid,action,note});}catch(err){if(err.code==='UID_CHANGED')alert('會員剛換了 UID，請重新確認。');else throw err;}await show('bitget');});}
+ if(t.dataset.check!==undefined){const card=t.closest('.item');t.textContent='查詢中…';
+  return run(t,async()=>{const d=await api('bitget-check',{member:card.dataset.member});if(d&&d.configured===false)alert('自動查詢未設定');await show('bitget');});}
+ if(t.dataset.copy){try{await navigator.clipboard.writeText(t.dataset.copy);t.textContent='已複製';}catch{prompt('UID',t.dataset.copy);}}
+});
+document.addEventListener('change',e=>{const t=e.target;
+ if(t.dataset.flag){const box=t.closest('.switch'),key=t.dataset.flag,message=box.querySelector('[data-msg]').value.trim();
+  if(key==='maintenance'&&t.checked&&!confirm('進入維護模式後，訪客只會看到「維護中」。確定？')){t.checked=false;return;}
+  run(null,async()=>{await api('flags',key==='maintenance'?{key,on:t.checked,message}:{key,off:t.checked,message});await show('switches');});}
+});
+let searchTimer;$('#memberSearch').addEventListener('input',()=>{clearTimeout(searchTimer);searchTimer=setTimeout(()=>show('members'),300);});
+addEventListener('hashchange',()=>{const tab=location.hash.slice(1);if(load[tab]&&tab!==current)show(tab,{push:false});});
+(async()=>{
+ try{me=await api('me');$('#who').textContent=me.email+(me.storage?'':'（資料庫尚未啟用）');
+  $('#tabs').innerHTML=TABS.map(([k,t])=>`<button type="button" data-go="${k}">${t}</button>`).join('');$('#app').hidden=false;
+  if(!me.storage){document.querySelector('main').innerHTML='<div class="card"><b>資料庫尚未啟用</b><p class="muted" style="margin-top:6px">網站需要 D1 資料庫（綁定名稱 DB）才能記錄使用紀錄、公告和會員。</p></div>';return;}
+  show(location.hash.slice(1)||'usage',{push:false});
+  api('overview').then(d=>{badge('feedback',d.feedbackNew);badge('bitget',d.bitgetPending);}).catch(()=>{});}
+ catch(e){const g=$('#gate');g.hidden=false;g.innerHTML=e.status===403?'<h1>沒有權限</h1><p class="muted">這個帳號不是管理員。</p><a href="/signout-with-chatgpt?return_to=%2Fadmin">換一個帳號</a>':'<h1>OX 加密後台</h1><p class="muted">請用管理員的 ChatGPT 帳號登入。</p><a href="/signin-with-chatgpt?return_to=%2Fadmin">用 ChatGPT 登入</a>';}
+})();
+</script>
+</body>
+</html>

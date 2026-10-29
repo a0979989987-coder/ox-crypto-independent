@@ -54,7 +54,7 @@ try{
   }
   try{
    await page.goto(`http://127.0.0.1:4296${basePath}/`,{waitUntil:'domcontentloaded'});
-   if(market==='crypto'){await page.waitForFunction(()=>typeof switchAppView==='function'&&OXFeatures.ready);await page.evaluate(()=>switchAppView('radar'));}
+   if(market==='crypto'){await page.waitForFunction(()=>typeof switchAppView==='function'&&OXFeatures.ready);await page.evaluate(()=>{switchAppView('radar');window.OXRadarModes?.set('chart');});}
    else{await page.locator('[data-twr-mode="chart"]').click();}
    const chart=market==='tw'?'#tw-radar-chart':'#chart',box=market==='tw'?'.twcr-chart-box':'#view-radar .chart-box';
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
@@ -76,9 +76,12 @@ try{
     assert.deepEqual(await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart),manualRange,'returning to radar must preserve the user pan and zoom');
     await page.evaluate(({chart,range})=>document.querySelector(chart).__chartQA.chart.timeScale().setVisibleLogicalRange(range),{chart,range:openingFutureSpace.range});
    }
-   assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'tool strip stays hidden while the radar is open');
-   // The existing compact layout exposes expand after folding its scanner panel.
-   await page.locator(market==='tw'?'.twcr-chart-box .chart-controls [data-action="fold"]':'#radar-scanner-toggle').click();
+   if(market==='tw'){
+    assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'tool strip stays hidden while the radar is open');
+    // The existing compact layout exposes expand after folding its scanner panel.
+    await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();
+   }
+   // Crypto 盤面 keeps its coin list under a full-width chart, so the tool strip is out without folding.
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
    await page.waitForFunction(m=>!!document.fullscreenElement||document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
@@ -128,7 +131,8 @@ try{
    await inspector.locator('[data-action="close"]').click();await toolbar.locator('[data-action="cursor"]').click();
    // The existing close control exits both CSS focus and native desktop fullscreen.
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="exit"]':'#btn-chart-exit-overlay').click();await page.waitForFunction(m=>!document.fullscreenElement&&!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
-   await page.locator(market==='tw'?'.twcr-chart-box .chart-controls [data-action="fold"]':'#radar-scanner-toggle').click();
+   // Leaving the chart (Taiwan: unfolding its radar; crypto: the 畫板 tab) puts the tool strip away.
+   if(market==='tw')await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();else await page.evaluate(()=>window.OXRadarModes.set('board'));
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'hidden'});
    assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    results.push({market,width,theme,touch,actualApp:true,realChart:true,creation:true,selection:true,drag:true,settings:true,focusExit:true,openingFutureSpace,retainedViewport:market==='crypto',errors});console.log(JSON.stringify(results.at(-1)));

@@ -4,8 +4,10 @@ import { createToolsRail } from "../../../components/strength/tools-rail.js?v=20
 // Crypto-only inline tools. Preserve the existing strength calculations and DOM.
 const section = document.querySelector('#view-strength .strength-page');
 if (section) {
-  const tabs = [['patterns','型態搜尋'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
-  let selected = globalThis.OXFeatures?.selectedTool?.('crypto')||'patterns';
+  // 型態搜尋 moved to the 畫板 dock view (src/markets/crypto/radar-board.js).
+  const tabs = [['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
+  let selected = globalThis.OXFeatures?.selectedTool?.('crypto');
+  if (!tabs.some(([id]) => id === selected)) selected = 'bubbles';
   const rail = createToolsRail({ tabs, selected, label:'Crypto 指標分類', attribute:'data-crypto-tool', equal:true, mobileCompact:true, onSelect(id){if(id===selected)return;unmount();selected=id;sync();} });
   const nav = rail.element; nav.id='ox-crypto-tools-nav'; nav.hidden=true;
   const ns = rail.shadow;
@@ -76,12 +78,9 @@ if (section) {
         const { mountCryptoBubbles } = await loadToolModule(new URL('../bubbles/view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
         if(token!==generation||!active())return;
         instance=mountCryptoBubbles(mountHost,{restore});
-        return;
-      }
-      if(selected==='patterns'){
-        const { mountPatternSearch } = await loadToolModule(new URL('../patterns/view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
-        if(token!==generation||!active())return;
-        instance=mountPatternSearch(mountHost,{restore});
+        // Phones: the zoom and count controls are at least 34px for a thumb.
+        const touch=document.createElement('style');touch.textContent='@media(max-width:720px){.oxb-zoom{gap:5px}.oxb-zoom button,.oxb-zoom select{width:34px;height:34px}.oxb-zoom select{width:auto;min-width:64px;font-size:12px}.oxb-zoom svg{width:17px;height:17px}.oxb-asset-grid button{font-size:13px}.oxb-asset-grid b{font-size:12px}}';
+        mountHost.shadowRoot?.append(touch);
         return;
       }
       const { mountCryptoFlow } = await loadToolModule(new URL('./flow-view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});

@@ -96,3 +96,9 @@
 :host([data-ox-theme="light"]) .chart>path[stroke="#e5e9e8"]{stroke:#8d712e}
 
 :host([data-ox-theme="light"]) :is(.ox-loading-label,.ox-loading-count,.ox-loading-detail){color:#616d7c!important}
+:host([data-ox-theme="light"]) .px-filter-title{color:#374151!important}
+:host([data-ox-theme="light"]) :is(.px-filter-title small,.px-filter-summary,.px-groups-note,.px-lots-input span){color:#616d7c!important}
+:host([data-ox-theme="light"]) .px-lots-input input{border:1px solid rgba(156,169,185,0.435)!important;background:#f7f8fa!important;color:#374151!important}
+:host([data-ox-theme="light"]) .px-filter-clear{border:1px solid rgba(156,169,185,0.376)!important;color:#374151!important}
+:host([data-ox-theme="light"]) .px-filter-clear[aria-pressed=true]{color:#374151!important;border-color:rgba(156,169,185,0.741)!important;background:rgba(148,163,184,0.08)!important}
+:host([data-ox-theme="light"]) .px-tier-filters button b{color:#374151}
