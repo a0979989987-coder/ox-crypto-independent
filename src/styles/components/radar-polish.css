@@ -11,12 +11,12 @@ body.ox-terminal.theme-light.theme-light.theme-light.theme-light.theme-light #vi
 }
 body.ox-terminal.theme-light #view-radar[data-price-direction="up"]{--ox-selected-color:#267bc9;--ox-selected-fill:#eff6fd}
 body.ox-terminal.theme-light #view-radar[data-price-direction="down"]{--ox-selected-color:#d64d69;--ox-selected-fill:#fff2f5}
-::view-transition-old(root),::view-transition-new(root){animation-duration:480ms;animation-timing-function:ease-in-out;mix-blend-mode:normal}
+::view-transition-old(root),::view-transition-new(root){animation-duration:240ms;animation-timing-function:ease-out;mix-blend-mode:normal}
 ::view-transition-old(root){animation-name:ox-theme-out}
 ::view-transition-new(root){animation-name:ox-theme-in}
 @keyframes ox-theme-out{to {opacity:0}}
 @keyframes ox-theme-in{from {opacity:0}}
-body.ox-theme-changing,body.ox-theme-changing *{transition:background-color 480ms ease,color 480ms ease,border-color 480ms ease,box-shadow 480ms ease!important}
+body.ox-theme-changing,body.ox-theme-changing *{transition:background-color 240ms ease,color 240ms ease,border-color 240ms ease,box-shadow 240ms ease!important}
 @media(prefers-reduced-motion:reduce){
 ::view-transition-old(root),::view-transition-new(root){animation:none}
 body.ox-theme-changing,body.ox-theme-changing *{transition:none!important}

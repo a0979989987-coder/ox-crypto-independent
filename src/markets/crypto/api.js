@@ -94,6 +94,10 @@ function isCryptoSymbolAllowed(symbol) {
   return isCryptoInstrument({ symbol, baseCoin: String(symbol || "").replace(/USDT$|USDC$/i, "") });
 }
 
+// Daily and larger bars use Bitget's UTC sessions (00:00 UTC), like the
+// heatmap and pattern tools. Plain 1D/1W/1M would be UTC+8 sessions.
+const BITGET_UTC_GRANULARITY=Object.freeze({'1D':'1Dutc','1W':'1Wutc','1M':'1Mutc'});
+const bitgetGranularity=frame=>BITGET_UTC_GRANULARITY[frame]||frame;
 const cryptoCandleObservations=new Map();
 // Include body decoding in the deadline, including Safari versions without
 // AbortSignal.timeout. A stalled request must not hold the scanner forever.
@@ -101,9 +105,9 @@ async function fetchBitgetJSON(url, timeoutMs=30000,options={}) {
   return globalThis.OXPublicFeed.json(url,{timeoutMs,...options});
 }
 const BitgetAPI = {
-  peekCandles(symbol,frame,now=Date.now()) {
+  peekCandles(symbol,frame,now=Date.now(),maxAgeMs=300000) {
     const observation=cryptoCandleObservations.get(symbol+':'+frame);
-    return observation&&now-observation.serverTime<=300000?observation:null;
+    return observation&&now-observation.serverTime<=maxAgeMs?observation:null;
   },
   async fetchTickers() {
     const json = await fetchBitgetJSON(`${CONFIG.apiBase}/tickers?productType=${CONFIG.productType}`);
@@ -131,7 +135,7 @@ const BitgetAPI = {
   async fetchCandles(symbol, granularity, limit = 100, endTime = null, options = {}) {
     // Older pages use Bitget's history endpoint; recent candles only cover a short window.
     const endpoint = endTime ? "history-candles" : "candles";
-    let url = `${CONFIG.apiBase}/${endpoint}?symbol=${encodeURIComponent(symbol)}&productType=${CONFIG.productType}&granularity=${granularity}&limit=${Math.min(200, limit)}`;
+    let url = `${CONFIG.apiBase}/${endpoint}?symbol=${encodeURIComponent(symbol)}&productType=${CONFIG.productType}&granularity=${bitgetGranularity(granularity)}&limit=${Math.min(200, limit)}`;
     if (endTime) url += `&endTime=${endTime}`;
     const json = await fetchBitgetJSON(url,30000,{owner:"chart",priority:100,...options});
     if (json.code !== "00000" || !Array.isArray(json.data)) throw Error("K 線資料格式錯誤");

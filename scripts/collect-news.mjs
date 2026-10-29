@@ -2,124 +2,19 @@ import { projectCryptoSnapshot } from './crypto-news-scope.mjs';
 import { readFile, writeFile, mkdir, rename } from 'node:fs/promises';
 import { readFileSync } from 'node:fs';
 const REVIEWED_V2 = JSON.parse(readFileSync(new URL('../data/news-translations-v2.json', import.meta.url), 'utf8'));
-import { createHash } from 'node:crypto';
 import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { XMLParser } from 'fast-xml-parser';
 import { CRYPTO_ASSETS, identifyAssets, governanceEvents, spansFor } from './news-providers.mjs';
 import { nyseCalendar, ethereumUpgradeCalendar } from './news-official-calendar.mjs';
 import { translateHeadlines } from './news-translation.mjs';
-import { bitgetAnnouncements, fedMeetingCalendar, beaReleaseCalendar, foresightCalendar } from './news-live-providers.mjs';
+import { fedMeetingCalendar, beaReleaseCalendar, foresightCalendar } from './news-live-providers.mjs';
+import { FEEDS, TRADITIONAL_SOURCES, BITGET_ANNOUNCEMENTS_URL, hash, impact, normalizeFeed, migrateAggregateHeadline, cryptoRelevant, fetchText, bitgetAnnouncements } from '../server/news/feeds.js';
 
-// Public publisher and explicitly identified aggregation feeds. Only dated
-// headlines and source links are retained; article bodies are never republished.
-export const FEEDS = [
-  { id: 'odaily', name: 'Odaily 星球日報', url: 'https://rss.odaily.news/rss/newsflash', hosts:['www.odaily.news','odaily.news'], markets:['crypto'], verified:'publisher-feed' },
-
-  { id: 'theblock', name: 'The Block', url: 'https://www.theblock.co/rss.xml', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'cryptoslate', name: 'CryptoSlate', url: 'https://cryptoslate.com/feed/', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'abmedia', name: '鏈新聞 ABMedia', url: 'https://abmedia.io/feed', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'blocktempo', name: '動區動趨 BlockTempo', url: 'https://www.blocktempo.com/feed/', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'coindesk', name: 'CoinDesk', url: 'https://www.coindesk.com/arc/outboundfeeds/rss/?outputType=xml', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'cointelegraph', name: 'Cointelegraph', url: 'https://cointelegraph.com/rss', markets: ['crypto'], verified: 'publisher-feed' },
-  { id: 'fed', name: 'Federal Reserve', url: 'https://www.federalreserve.gov/feeds/press_monetary.xml', markets: ['crypto'] },
-  { id: 'bls-cpi', name: 'U.S. BLS · CPI', url: 'https://www.bls.gov/feed/cpi.rss', markets: ['crypto'] },
-  { id: 'bls-jobs', name: 'U.S. BLS · Employment', url: 'https://www.bls.gov/feed/empsit.rss', markets: ['crypto'] },
-  { id: 'sec', name: 'U.S. SEC', url: 'https://www.sec.gov/news/pressreleases.rss', markets: ['crypto'] },
-  { id: 'ethereum', name: 'Ethereum Foundation', url: 'https://blog.ethereum.org/en/feed.xml', markets: ['crypto'] },
-  { id: 'kraken', name: 'Kraken', url: 'https://blog.kraken.com/feed', markets: ['crypto'] },
-  { id: 'cftc', name: 'U.S. CFTC', url: 'https://www.cftc.gov/RSS/RSSGP/rssgp.xml', markets: ['crypto'] },
-  { id: 'bitcoin-core', name: 'Bitcoin Core', url: 'https://github.com/bitcoin/bitcoin/releases.atom', markets: ['crypto'] }
-];
-const OFFICIAL_HOSTS = new Set(['abmedia.io', 'www.blocktempo.com', 'www.coindesk.com', 'cointelegraph.com', 'decrypt.co', 'www.federalreserve.gov', 'www.bls.gov', 'www.ecb.europa.eu', 'www.theblock.co', 'cryptoslate.com', 'www.sec.gov', 'blog.ethereum.org', 'blog.kraken.com', 'www.cftc.gov']);
-for (const host of ['news.google.com','www.odaily.news','odaily.news','www.bitget.com','www.bea.gov']) OFFICIAL_HOSTS.add(host);
-
-const parser = new XMLParser({ ignoreAttributes: false, processEntities: true, trimValues: true });
-const array = value => value == null ? [] : Array.isArray(value) ? value : [value];
+// Feed definitions and normalization live in server/news/feeds.js so the live
+// endpoint (/api/v1/news/latest) applies exactly the same source rules.
+export { FEEDS, impact, normalizeFeed, migrateAggregateHeadline, cryptoRelevant, fetchText };
 const plain = value => String(typeof value === 'object' ? value?.['#text'] ?? '' : value ?? '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim();
-const hash = value => createHash('sha256').update(value).digest('hex').slice(0, 20);
 const iso = value => { const ms = Date.parse(String(value ?? '')); return Number.isFinite(ms) ? new Date(ms).toISOString() : null; };
-const safeUrl = value => { try { const u = new URL(plain(value)); return u.protocol === 'https:' && (OFFICIAL_HOSTS.has(u.hostname) || (u.hostname === 'github.com' && /^\/bitcoin\/bitcoin\/releases(?:\/tag\/[^/]+)?\/?$/.test(u.pathname))) ? u.href : null; } catch { return null; } };
-const verifiedForFeed = (url, feed) => { try {
-  const parsed = new URL(url);
-  if(feed.aggregator)return parsed.hostname==='news.google.com'&&/^\/rss\/articles\//.test(parsed.pathname);
-  if(feed.hosts)return feed.hosts.includes(parsed.hostname);
-  return feed.id === 'bitcoin-core' ? parsed.hostname === 'github.com' && /^\/bitcoin\/bitcoin\/releases\/tag\/[^/]+\/?$/.test(parsed.pathname)
-    : parsed.hostname === new URL(feed.url).hostname;
-} catch { return false; } };
-
-export function impact(title, sourceId, sourceUrl = null) {
-  // Stars rank a verified *release category*, not price direction or its actual value.
-  const official = !FEEDS.find(f => f.id === sourceId)?.verified && sourceUrl && safeUrl(sourceUrl);
-  const sourceHost = { 'bls-cpi': 'www.bls.gov', 'bls-jobs': 'www.bls.gov', 'bls-calendar': 'www.bls.gov', fed: 'www.federalreserve.gov' }[sourceId];
-  const evidence = official && sourceHost && new URL(official).hostname === sourceHost ? official : null;
-  const patterns = {
-    'bls-cpi': [/^CPI for all items\b/i, 5, '美國官方消費者物價指數發布'],
-    'bls-jobs': [/^(?:Both )?payroll employment\b/i, 5, '美國官方就業報告發布'],
-    'fed': [/^Federal Reserve issues FOMC statement$/i, 5, '美國聯準會政策決議聲明'],
-    'bls-calendar': [/^(?:Consumer Price Index|Employment Situation|Producer Price Index|Job Openings and Labor Turnover Survey) for /i, null, '美國官方經濟數據預定公布']
-  };
-  const rule = patterns[sourceId];
-  const type = sourceId === 'bls-calendar' ? (/^Consumer Price Index|^Employment Situation/.test(title) ? 5 : /^Producer Price Index/.test(title) ? 4 : 3) : rule?.[1];
-  const stars = evidence && rule?.[0].test(title) ? type : null;
-  return { stars, impactImportance: stars, reason: stars ? `${rule[2]}；星級只表示事件類別的重要性，不表示多空或結果` : '尚未評估；標題不足以判定影響力', ruleVersion: stars ? 'official-release-category-v1' : 'unassessed-v1', evidence: stars ? evidence : null, sourceConfidence: official ? 'official-source' : null, analysisConfidence: null, direction: null, sourceId };
-}
-
-export function normalizeFeed(xml, feed) {
-  if (/<!DOCTYPE|<!ENTITY/i.test(xml)) throw Error('XML declarations are not accepted');
-  const parsed = parser.parse(xml);
-  const portalNews = feed.format === 'pchome-xml' ? parsed?.news : null;
-  if (!parsed?.rss?.channel && !parsed?.feed && !portalNews) throw Error('來源沒有返回 RSS 或 Atom');
-  const raw = array(parsed?.rss?.channel?.item ?? parsed?.feed?.entry ?? portalNews?.item);
-  return raw.map(entry => {
-    let title = plain(entry.title);
-    const categories = array(entry.category).map(plain);
-    if(feed.allowedCategories&&!categories.some(category=>feed.allowedCategories.includes(category)))return null;
-    if(feed.excludedCategories&&categories.some(category=>feed.excludedCategories.includes(category)))return null;
-    const publisherUrl=plain(entry.source?.['@_url']);
-    const publisher=plain(entry.source);
-    if(feed.aggregator&&(!publisherUrl||feed.domain&&new URL(publisherUrl).hostname!==feed.domain))return null;
-    if(feed.aggregator&&publisher&&title.endsWith(` - ${publisher}`))title=title.slice(0,-publisher.length-3);
-    const links = array(entry.link);
-    const preferred = links.find(value => typeof value === 'object' && (!value['@_rel'] || value['@_rel'] === 'alternate')) ?? links[0];
-    const rawLink = plain(typeof preferred === 'object' ? preferred?.['@_href'] ?? preferred?.['#text'] : preferred);
-    const link = safeUrl(rawLink);
-    let rawDate=entry.pubDate ?? entry.published ?? entry.updated ?? (feed.format === 'pchome-xml' ? entry.pubdate : null);
-    if(feed.timezone&&/^\d{4}-\d\d-\d\d[ T]\d\d:\d\d:\d\d$/.test(rawDate))rawDate=rawDate.replace(' ','T')+(feed.timezone==='Asia/Taipei'?'+08:00':'Z');
-    const publishedAt = iso(rawDate);
-    if (!title || !link || !verifiedForFeed(link, feed) || !publishedAt) return null;
-    if (feed.id === 'kraken' && /VIP château|APY on AUSD|Pre-IPO Challenge/i.test(title)) return null;
-    if (['abmedia','blocktempo','decrypt','odaily'].includes(feed.id) && !cryptoRelevant(title)) return null;
-    if (['sec','cftc'].includes(feed.id) && !/bitcoin|crypto|digital asset|spot etf|exchange.traded fund/i.test(title)) return null;
-    const relevantMarkets = feed.markets;
-    return { id: hash(feed.aggregator ? `${feed.id}:${link}` : link), title, link, publishedAt, source: feed.name, sourceId: feed.id,
-      ...(feed.aggregator?{aggregation:'Google News RSS',publisher,publisherUrl}:{}),
-      ...(feed.portal?{aggregation:`${feed.name} RSS`,feedUrl:feed.url}:{}),
-      markets: relevantMarkets, kind: 'news', verified: feed.verified || 'official-source', fetchedAt: new Date().toISOString(), contentType: /sponsored|sponsor|APY|challenge|giveaway|獎池|限時優惠|抽獎|贊助|業配/i.test(title) ? 'promotion' : 'news', impact: impact(title, feed.id, link) };
-  }).filter(Boolean).slice(0, 50);
-}
-
-// One aggregator URL can appear in the general feed and a publisher feed.
-// Keep both source attributions; the UI de-duplicates after source filtering.
-// Re-key retained snapshots too, so a refresh does not keep both old/new IDs.
-export function migrateAggregateHeadline(item) {
-  if (item.aggregation !== 'Google News RSS' || !item.sourceId || !item.link) return item;
-  return { ...item, id: hash(`${item.sourceId}:${item.link}`) };
-}
-
-export function cryptoRelevant(title) {
-  return /bitcoin|ethereum|crypto|blockchain|token|stablecoin|defi|nft|web3|solana|coinbase|binance|bitget|kraken|bitcoin|比特幣|比特币|以太|加密|區塊鏈|区块链|代幣|代币|穩定幣|稳定币|空投|主網|主网|鏈上|链上|交易所|幣安|币安|幣圈|币圈|Bithumb|Zcash|Strategy|Strive|日本央行|\b(?:BTC|ETH|SOL|XRP|USDT|USDC|ETF)\b/i.test(title);
-}
-
-export async function fetchText(url) {
-  // Some native RSS servers negotiate text/xml (e.g. DIGITIMES), not
-  // application/xml. Advertise that actual format to avoid a valid HTTP 406.
-  const response = await fetch(url, { signal: AbortSignal.timeout(35000), headers: { 'User-Agent': 'Mozilla/5.0 (compatible; OXNews/1.0)', Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, application/json, text/html, */*;q=0.1' } });
-  if (!response.ok) throw new Error(`HTTP ${response.status}`);
-  const text = await response.text();
-  if (text.length > 2_000_000) throw new Error('Feed exceeds size limit');
-  return text;
-}
 
 export function parseBlsCalendar(html, now = Date.now()) {
   const events = [];
@@ -150,7 +45,10 @@ const retainEvent = item => ({ ...item, sourceUrl: item.sourceUrl ?? item.link ?
 export function localize(item, previous = []) {
   const reviewed = REVIEWED_V2.find(entry => entry.id === item.id && entry.sourceId === item.sourceId && entry.title === item.title);
   const old = previous.find(entry => entry.id === item.id && entry.sourceId === item.sourceId && entry.title === item.title);
-  let titleZh = reviewed?.titleZh || old?.titleZh || (['abmedia','blocktempo'].includes(item.sourceId) && /[\u4e00-\u9fff]/.test(item.title) ? item.title : null) || VERIFIED_TRANSLATIONS[item.title] || null;
+  let titleZh = reviewed?.titleZh || old?.titleZh || (TRADITIONAL_SOURCES.includes(item.sourceId) && /[\u4e00-\u9fff]/.test(item.title) ? item.title : null) || VERIFIED_TRANSLATIONS[item.title] || null;
+  // The publisher's short summary keeps its translation while the summary text is unchanged.
+  const summaryZh = !item.summary ? null : item.summaryZh || (old?.summary === item.summary ? old.summaryZh : null) || (TRADITIONAL_SOURCES.includes(item.sourceId) && /[\u4e00-\u9fff]/.test(item.summary) ? item.summary : null) || null;
+  const summaryMethod = summaryZh && summaryZh !== item.summary ? (item.summaryMethod || old?.summaryMethod || 'machine') : null;
   if (item.kind === 'event') {
     const match = item.title.match(/^(Consumer Price Index|Employment Situation|Producer Price Index|Job Openings and Labor Turnover Survey|State Job Openings and Labor Turnover|Employment Situation of Veterans) for (\w+) (\d{4})$/);
     const names = { 'Consumer Price Index': '消費者物價指數', 'Employment Situation': '就業情勢報告', 'Producer Price Index': '生產者物價指數', 'Job Openings and Labor Turnover Survey': '職缺與勞動流動調查', 'State Job Openings and Labor Turnover': '州別職缺與勞動流動調查', 'Employment Situation of Veterans': '退伍軍人就業情勢報告' };
@@ -159,7 +57,7 @@ export function localize(item, previous = []) {
     if (match && match[2] === 'Annual') titleZh = `美國 ${match[3]} 年${names[match[1]]}（年度）`;
     if (match && month) titleZh = `美國 ${match[3]} 年 ${month} 月${names[match[1]]}`;
   }
-  return { ...item, titleZh, ...(old?.translationMethod?{translationMethod:old.translationMethod}:{}), translationStatus: titleZh ? 'translated' : 'pending' };
+  return { ...item, titleZh, ...(old?.translationMethod?{translationMethod:old.translationMethod}:{}), ...(item.summary ? { summaryZh, summaryType: 'source', ...(summaryMethod ? { summaryMethod } : {}) } : {}), translationStatus: titleZh ? 'translated' : 'pending' };
 }
 
 // Reviewed headline translations are keyed by the exact original text; changed
@@ -207,8 +105,8 @@ export async function collect() {
     ? { id: FEEDS[i].id, name: FEEDS[i].name, markets: FEEDS[i].markets, status: 'ready', count: result.value.items.length, lastSuccessAt: stamp, lastAttemptAt: stamp, access: FEEDS[i].aggregator?'public-aggregated-rss':FEEDS[i].portal?'public-portal-rss':'public-rss-headlines-links', aggregator:Boolean(FEEDS[i].aggregator||FEEDS[i].portal), usage:FEEDS[i].usage, termsUrl:FEEDS[i].termsUrl, scopeLabel:FEEDS[i].scopeLabel, endpoint: FEEDS[i].url }
     : { ...old?.sources?.find(s => s.id === FEEDS[i].id), id: FEEDS[i].id, name: FEEDS[i].name, markets: FEEDS[i].markets, endpoint: FEEDS[i].url, scopeLabel:FEEDS[i].scopeLabel, status: 'error', lastAttemptAt: stamp, message: String(result.reason?.message || '來源請求失敗').slice(0, 100) });
   try {
-    const items=bitgetAnnouncements(JSON.parse(await fetchText('https://api.bitget.com/api/v2/public/annoucements?language=zh_CN')),stamp);
-    results.push({status:'fulfilled',value:{items}});sources.push({id:'bitget',name:'Bitget 官方公告',markets:['crypto'],status:'ready',count:items.length,lastSuccessAt:stamp,lastAttemptAt:stamp,endpoint:'https://api.bitget.com/api/v2/public/annoucements?language=zh_CN',access:'public-announcement-headlines-links'});
+    const items=bitgetAnnouncements(JSON.parse(await fetchText(BITGET_ANNOUNCEMENTS_URL)),stamp);
+    results.push({status:'fulfilled',value:{items}});sources.push({id:'bitget',name:'Bitget 官方公告',markets:['crypto'],status:'ready',count:items.length,lastSuccessAt:stamp,lastAttemptAt:stamp,endpoint:BITGET_ANNOUNCEMENTS_URL,access:'public-announcement-headlines-links'});
   } catch(error) { sources.push({...old?.sources?.find(s=>s.id==='bitget'),id:'bitget',status:'error',lastAttemptAt:stamp,message:String(error.message).slice(0,100)}); }
   const allOldNews = [...(old?.news || []), ...(old?.pendingNews || [])].filter(item => item.sourceId !== 'decrypt').map(migrateAggregateHeadline).map(item => ['fed','bls-cpi','bls-jobs'].includes(item.sourceId) ? {...item,markets:['crypto']} : item);
   // Append to history rather than replacing yesterday with today's RSS window.
@@ -270,7 +168,7 @@ export async function collect() {
   if (!news.length && !events.size) throw Error('No verified source data; snapshot not replaced');
   const snapshot = { schemaVersion: 1, generatedAt: sources.some(s => s.status === 'ready') ? stamp : old?.generatedAt || null, attemptedAt: stamp, sources,
     news: translations, pendingNews, events: [...events.values()], eventCoverage, assetCatalog: catalog, translation,
-    methodology: { news: '公開 RSS 標題與原文連結；不轉載全文。', ranking: '目前快照去重文章的標題資產提及；同篇同資產只計一次。', history: '逐次收集累積，RSS 數量有限，非完整 30 日資料庫。', importance: '保留 1–5 星與來源規則；重要性開＝有星、關＝無星。星級不代表多空。', frequencyHours: 6 } };
+    methodology: { news: '公開 RSS 標題、來源自己提供的短摘要（描述第一段，約 100 字內）與原文連結；不轉載全文。', live: '新聞頁每 3 分鐘向 /api/v1/news/latest 取得最近 36 小時的新聞，合併到此快照；Foresight 行事曆由瀏覽器直接讀取公開 ICS。', ranking: '目前快照去重文章的標題資產提及；同篇同資產只計一次。', history: '逐次收集累積，RSS 數量有限，非完整 30 日資料庫。', importance: '保留 1–5 星與來源規則；重要性開＝有星、關＝無星。星級不代表多空。', frequencyHours: 6 } };
   await mkdir(new URL('../data/', import.meta.url), { recursive: true });
   const temp = new URL('../data/news.next.json', import.meta.url);
   await writeFile(temp, JSON.stringify(projectCryptoSnapshot(snapshot), null, 2) + '\n');

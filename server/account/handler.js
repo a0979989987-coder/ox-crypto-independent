@@ -38,7 +38,13 @@ export function createAccountHandler({ env = process.env, clientFactory = create
       if (!/^https:\/\/[^/]+\.supabase\.co$/.test(url || '') || !key) return json(503, { ok: false, code: 'FEATURE_POLICY_NOT_CONFIGURED' });
       try {
         const reader = clientFactory(url, key, { auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
-        return json(200, await featureCatalog(reader));
+        const catalog = await featureCatalog(reader);
+        // The catalog is the same public/login list for every visitor: it is read
+        // with the publishable key only, never with cookies or a user JWT. Only a
+        // verified 200 may be shared from the edge; failures above stay no-store.
+        res.setHeader('Cache-Control', 'public, s-maxage=60, stale-while-revalidate=600');
+        res.setHeader('Vercel-CDN-Cache-Control', 'max-age=60, stale-while-revalidate=600');
+        return json(200, catalog);
       } catch { return json(503, { ok: false, code: 'FEATURE_POLICY_UNAVAILABLE' }); }
     }
     if (!configured) return json(503, { ok: false, code: 'AUTH_PROVIDER_NOT_CONFIGURED', message: '正式登入服務尚未設定。' });

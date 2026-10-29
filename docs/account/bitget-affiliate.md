@@ -39,6 +39,7 @@
 | `BITGET_AFFILIATE_PASSPHRASE` | 建立該 API 時自行設定的口令，不是交易所登入密碼 |
 | `BITGET_AFFILIATE_REFERRAL_CODE` | 選填；限定特定推薦碼。不設定代表此 API 帳號的直客關係 |
 | `OX_ACCOUNT_LOOKUP_TOKEN` | OX 管理端查詢專用的隨機長字串，至少 32 字元；不是 Bitget 金鑰 |
+| `OX_ENABLE_OPERATOR_LOOKUP` | 預設不設定（關閉）。只有值為 `1` 時 `bitget-status` 維運 API 與 `?view=test` 頁才啟用；否則一律回 404。日常查詢請用需要管理員登入的 `bitget-admin-lookup` |
 
 金鑰、Secret、Passphrase 與查詢 Token 均僅放伺服器環境變數；不要貼聊天、前端、GitHub 或瀏覽器儲存。
 可在你自己的終端機執行 `openssl rand -hex 32` 產生真正的管理端查詢 Token，再填入 Vercel。
@@ -62,6 +63,9 @@ node --env-file=.env.local scripts/check-bitget-customer.mjs YOUR_CUSTOMER_UID
 ### Vercel 後端 API
 
 `POST /api/v1/account/bitget-status`
+
+> 2026-10-15 起預設關閉：需 `OX_ENABLE_OPERATOR_LOOKUP=1` 才可使用。每個執行個體每 IP 每分鐘最多 10 次（在驗證 Token 前就計數），
+> 稽核 log（`ox.bitget_operator_lookup`）只記結果、狀態碼與以 `OX_ACCOUNT_LOOKUP_TOKEN` 為金鑰的 UID／IP HMAC 前 16 碼，不記 UID、IP 或 Token 明文。
 
 - `Authorization: Bearer <OX_ACCOUNT_LOOKUP_TOKEN>`
 - `Content-Type: application/json`

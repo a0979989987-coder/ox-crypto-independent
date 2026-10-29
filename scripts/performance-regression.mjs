@@ -9,7 +9,7 @@ const {server,preparePage,testBase}=createRequire(import.meta.url)('./e2e-check.
 await new Promise(r=>server.listen(4305,'127.0.0.1',r));
 const browser=await chromium.launch({executablePath:process.env.OX_TEST_BROWSER,headless:true,args:['--no-sandbox']});
 const reports=[];await mkdir('docs/performance/screenshots',{recursive:true});
-async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,limited=false,slow=false,stayRadar=false}={}){
+async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,limited=false,slow=false,stayRadar=false,connection=null}={}){
  const context=await browser.newContext({viewport:{width,height:900},locale:'zh-TW',hasTouch:width<600});const {page,audit}=await preparePage(context,{width,height:900});let requests=[],timeline=[],blocked=cssFail,failModule=moduleFail,limitedCalls=0;
  page.on('request',r=>{requests.push(r.url());timeline.push({url:r.url(),at:Date.now()});});
  await page.route('**/api/v1/account/**',route=>{const endpoint=new URL(route.request().url()).pathname.split('/').at(-1);return route.fulfill({json:endpoint==='feature-access'?{ok:true,features:FEATURE_CATALOG.map(f=>({...f,mode:'public',version:'fixture'}))}:endpoint==='session'?{ok:true,user:null}:{configured:false}});});
@@ -18,27 +18,61 @@ async function pageFor(width,{workerFail=false,cssFail=false,moduleFail=false,li
  if(workerFail)await page.route('**/src/generated/pattern-worker.js*',r=>r.abort('failed'));
  if(cssFail)await page.route('**/patterns-light.css*',r=>blocked?r.fulfill({status:503,body:'unavailable'}):r.continue());
  if(moduleFail)await page.route('**/src/generated/tool-bubbles.js*',r=>failModule?r.abort('failed'):r.continue());
+ if(connection)await page.addInitScript(value=>Object.defineProperty(navigator,'connection',{configurable:true,value:{...value,addEventListener(){},removeEventListener(){}}}),connection);
  await page.goto(testBase,{waitUntil:'domcontentloaded'});await page.locator('#view-radar .coin-card').first().waitFor({timeout:30000});
  if(!stayRadar)await page.evaluate(()=>switchAppView('strength'));
  return {page,context,audit,requests,timeline,unblock(){blocked=failModule=false;},calls:()=>limitedCalls};
 }
 const tool=(p,id)=>p.locator('#ox-crypto-tools-nav [data-crypto-tool="'+id+'"]').click();
+// Tool data is never fetched by the idle radar: snapshots, news, the 15m sector pool or flow candles.
+// Tool data: snapshots, news, the heatmap's 15m pool (limit=200) and taker flow.
+// A chart's own one-tap timeframes (the selected coin only) are not tool data.
+const toolData=u=>/crypto-tools-snapshot\.json|crypto-flow-snapshot\.json|\/data\/news\.json|granularity=15m&limit=200|taker-buy-sell/.test(u);
+const chartPrefetch=u=>/\/candles\?symbol=[A-Z0-9]+&productType=USDT-FUTURES&granularity=(?:15m|1H|4H|1Dutc)&limit=(?:100|160)$/.test(u);
+const poolRequests=list=>list.filter(u=>u.includes('granularity=15m')&&u.includes('limit=200'));
+async function settledPool(page,requests,from){
+ let last=-1,stableSince=Date.now();const deadline=Date.now()+30000;
+ while(Date.now()<deadline){const n=poolRequests(requests.slice(from)).length,idle=await page.evaluate(()=>{const s=OXPublicFeed.stats();return !s.active&&!s.queued;});
+  if(n!==last){last=n;stableSince=Date.now();}else if(n>0&&idle&&Date.now()-stableSince>=1500)return n;
+  await page.waitForTimeout(250);}
+ throw Error('15m pool refresh did not settle');
+}
 const active=(p,s)=>p.locator('#ox-crypto-tools-inline '+s).filter({visible:true});
 try{
  for(const width of [390,1440]){
+  // Chromium reports a 4G connection: idle radar time prepares tool code/CSS only, one job at a time.
   const {page,context,audit,requests,timeline}=await pageFor(width,{stayRadar:true});
   await page.waitForFunction(()=>OXToolWarmup.stats().every(job=>job.status==='ready'),null,{timeout:35000});
   const starts=timeline.filter(r=>/tool-(?:bubbles|analytics|patterns)\.js/.test(r.url));
   assert.deepEqual(starts.map(r=>/tool-(\w+)/.exec(r.url)[1]),['bubbles','analytics','patterns']);
   assert.ok(starts.slice(1).every((r,i)=>r.at-starts[i].at>=650),'each tool leaves an idle gap');
   assert.equal(await page.locator('#ox-crypto-tools-inline').evaluate(el=>[...el.children].filter(h=>h.shadowRoot).length),0,'preparation never builds hidden charts');
+  assert.ok((await page.evaluate(()=>OXToolWarmup.stats().map(j=>j.id))).every(id=>id.endsWith('-assets')),'warm-up has no data jobs');
+  await page.waitForTimeout(2000);
+  assert.deepEqual(requests.filter(toolData),[],'the idle radar never downloads tool data');
+  // The visible chart may prefetch its one-tap timeframes, for the selected coin only.
+  const prefetched=requests.filter(chartPrefetch).map(u=>new URL(u).searchParams.get('symbol'));
+  assert.ok(prefetched.every(symbol=>symbol===prefetched[0])&&prefetched.length<=8,'chart prefetch stays on the selected coin');
+  // Tool data loads when a tool opens. Heatmap refreshes the stale recorded pool once; rotation reuses that fresh complete pool.
   const before=requests.length;await page.evaluate(()=>switchAppView('strength'));
   await tool(page,'heatmap');await active(page,'.cfx[data-scan-state="complete"]').waitFor();
-  await tool(page,'rotation');await active(page,'.cfx[data-scan-state="complete"]').waitFor();
-  assert.equal(requests.slice(before).filter(u=>u.includes('granularity=15m')&&u.includes('limit=200')).length,0,'both tools reuse the same fresh complete pool');
+  const heatmapPool=await settledPool(page,requests,before),symbols=poolRequests(requests.slice(before)).map(u=>new URL(u).searchParams.get('symbol'));
+  assert.equal(new Set(symbols).size,heatmapPool,'one refresh: each pool symbol is requested once');
+  await active(page,'.cfx[data-scan-state="complete"]').waitFor();
+  const reuse=requests.length;
+  await tool(page,'rotation');await active(page,'.cfx[data-scan-state="complete"]').waitFor();await page.waitForTimeout(1500);
+  assert.equal(poolRequests(requests.slice(reuse)).length,0,'both tools reuse the same fresh complete pool');
   for(const id of ['bubbles','patterns','rotation','bubbles'])await tool(page,id);
   await active(page,'.oxb-asset-grid button').first().waitFor();assert.equal(await active(page,'.cfx:not(.oxb),.px').count(),0,'old async work cannot replace latest tool');
-  assert.deepEqual(audit.pageErrors,[]);reports.push({width,stagedWarmup:true,order:starts.map(r=>/tool-(\w+)/.exec(r.url)[1]),noOffscreenCharts:true,sharedFreshPool:true});await context.close();
+  assert.deepEqual(audit.pageErrors,[]);reports.push({width,stagedWarmup:true,order:starts.map(r=>/tool-(\w+)/.exec(r.url)[1]),noOffscreenCharts:true,idleRadarToolData:0,heatmapPoolRequests:heatmapPool,sharedFreshPool:true});await context.close();
+ }
+ for(const connection of [{effectiveType:'3g',saveData:false},{effectiveType:'4g',saveData:true}]){
+  // Slow or data-saving connections never warm tools in the background.
+  const {page,context,audit,requests}=await pageFor(390,{stayRadar:true,connection});await page.waitForTimeout(6000);
+  assert.deepEqual(requests.filter(u=>/src\/generated\/tool-(?:bubbles|analytics|patterns|news)\.js/.test(u)||toolData(u)),[],'no idle warm-up on '+JSON.stringify(connection));
+  assert.ok((await page.evaluate(()=>OXToolWarmup.stats())).every(j=>j.status==='waiting'));
+  await page.evaluate(()=>switchAppView('strength'));await tool(page,'heatmap');await active(page,'.cfx-heat-list button').first().waitFor({timeout:30000});
+  assert.deepEqual(audit.pageErrors,[]);reports.push({connection,idleWarmup:false,toolLoadsOnOpen:true});await context.close();
  }
  for(const width of [390,1440]){
   const {page,context,audit,requests}=await pageFor(width);const root=active(page,'.px');await root.waitFor();await page.waitForFunction(()=>{const h=[...document.querySelector('#ox-crypto-tools-inline').children].find(h=>!h.hidden&&h.shadowRoot);return h?.shadowRoot.querySelector('.px')?.dataset.indexState==='ready';},{},{timeout:35000});

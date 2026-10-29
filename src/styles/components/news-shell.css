@@ -1,0 +1,48 @@
+/* Global rules formerly in news-center.css. They apply outside the news page,
+   so they stay render-blocking at the same cascade position. News page rules
+   (.oxn-*, [data-news-surface]) live in news-center.css, loaded when news opens. */
+.ox-news-open,.ox-news-filter,.ox-news-tabs button,.ox-news-options button,.ox-news-options select{min-height:44px;padding:0 15px;border:1px solid var(--line,rgba(150,174,205,.22));border-radius:var(--ox-radius-md);background:var(--panel,#172231);color:var(--ink,#ecf3fb);font:inherit;cursor:pointer}
+.ox-news-open{white-space:nowrap;font-weight:700}
+
+html{scroll-behavior:auto!important}
+.app-view.active{animation:none!important;transform:none!important}
+.scanner-body{scroll-snap-type:none!important;scroll-behavior:auto!important}
+.ox-data-caption{display:none}
+#view-home .v33-home-hero-top > div:first-child,#view-strength .page-hero,#view-settings .page-hero,#view-media .media-intro .page-kicker,#view-media .media-intro h1,#view-media .media-intro p{display:none!important}
+#view-home .v33-home-hero-top{min-height:0;padding-bottom:0}
+#view-media .media-intro{padding:12px 16px;gap:12px}
+#view-data .media-card{padding:12px!important}
+#view-data .media-page{padding-top:0}
+
+.ox-news-heading .ox-news-open{width:auto;min-height:44px}
+#ox-news-return{display:grid;place-items:center;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border-radius:var(--ox-radius-md);font-size:22px;line-height:1}
+.ox-mini-calendar{width:min(100%,370px);margin:7px 0 14px;padding:9px;border:1px solid var(--line,rgba(150,174,205,.22));border-radius:var(--ox-radius-md);background:var(--panel,#172231)}
+.ox-mini-calendar-toolbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ox-mini-calendar-toolbar strong{font-size:13px}
+.ox-mini-calendar-toolbar button,.ox-mini-calendar-clear{min-width:44px;min-height:44px;border:0;border-radius:var(--ox-radius-sm);background:transparent;color:var(--ink,#ecf3fb);font:inherit;cursor:pointer}
+.ox-mini-calendar-grid{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:2px}
+.ox-mini-weekday,.ox-mini-spacer,.ox-mini-day{display:grid;place-items:center;min-width:0;min-height:44px;font-size:12px}
+.ox-mini-weekday{min-height:26px;color:var(--muted,#a7b8cb)}
+.ox-mini-day{position:relative;border:1px solid transparent;border-radius:var(--ox-radius-sm);background:transparent;color:var(--ink,#ecf3fb);font:inherit;font-size:12px;cursor:pointer}
+.ox-mini-day.is-today{border-color:rgba(234,190,101,.55)}
+.ox-mini-day.is-selected{background:rgba(234,190,101,.22);color:#eabe65}
+.ox-mini-day.has-event::after{position:absolute;bottom:4px;width:4px;height:4px;border-radius:50%;background:#eabe65;content:""}
+.ox-mini-calendar-clear{width:100%;font-size:12px}
+@media(pointer:coarse){
+#view-radar #chart,#view-radar #chart canvas,#view-home .btc-premium-chart-wrap,#view-home .btc-premium-chart-wrap canvas{touch-action:pan-y pinch-zoom!important}
+:where(.glass,.glass-strong,.panel,.metric-card,.benchmark-card,.v33-card,.strength-card,.settings-card,.media-card,.detail-panel,.v33-radar-cell,.v33-action,.ox-auth-card,.ox-control-panel),#view-radar .chart-box,#view-radar aside.panel,#view-radar .detail-panel,#view-radar .metric-card,#view-radar .benchmark-card,.app-dock{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.ox-motion-shine{display:none!important}
+
+}
+
+.ox-unlock-countdown{display:inline-block;margin:9px 0 4px;padding:7px 10px;border:1px solid rgba(234,190,101,.3);border-radius:var(--ox-radius-sm);color:#eabe65;font-size:13px;font-weight:800;font-variant-numeric:tabular-nums}
+body[data-news-mode="1"] #market-unavailable-card,body[data-news-mode="1"] #ox-us-module{display:none!important}
+body:not([data-us-workspace="1"]):is([data-view="news"],[data-view="data"],[data-view="media"],[data-view="settings"]) #market-unavailable-card{display:none!important}
+@media(max-width:720px){
+
+.ox-news-open{width:100%}
+
+}
+
+.app-dock [data-ox-news-entry="1"]{touch-action:manipulation;-webkit-touch-callout:none}
+body[data-news-mode="1"] #market-unavailable-card{display:none!important}

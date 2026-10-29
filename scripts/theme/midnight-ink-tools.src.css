@@ -1,0 +1,21 @@
+/* Midnight Ink (午夜墨) — shadow-root layer for the Crypto tools and the shared
+ * tools rail. Inert unless the host carries data-ox-palette="midnight"; the
+ * --mi-* tokens inherit from the document. */
+/* @midnight-map */
+
+/* ---- hand-tuned layer ---- */
+/* Sliding rail indicator (tools / news tabs): champagne hairline, no white glow. */
+:host([data-ox-palette="midnight"]) .ox-tool-root .ox-mode-indicator{
+  border:1px solid var(--mi-select-line,rgba(217,199,154,.6))!important;
+  background:var(--mi-accent-soft,rgba(217,199,154,.14))!important;box-shadow:none!important;
+}
+:host([data-ox-palette="midnight"]) .ox-tool-root .ox-mode-rail button.active{color:var(--mi-ink,#ECE7DE)!important;text-shadow:none!important}
+/* Selected toggles inside tools */
+:host([data-ox-palette="midnight"]) :is(.cfx-segment button[aria-pressed="true"],.px-option[aria-pressed="true"],.px-control[aria-expanded="true"],.filters button.active,.tabs .active,.cfx-icon.active){
+  background:var(--mi-accent-soft,rgba(217,199,154,.14))!important;color:var(--mi-ink,#ECE7DE)!important;
+  border-color:var(--mi-select-line,rgba(217,199,154,.6))!important;box-shadow:inset 0 0 0 1px rgba(217,199,154,.35)!important;text-shadow:none!important;
+}
+:host([data-ox-palette="midnight"]) :is(button,a,input,select,canvas,[tabindex]):focus-visible{outline-color:var(--mi-accent,#D9C79A)!important}
+:host([data-ox-palette="midnight"]) .ox-loading{color:var(--mi-ink-2,#A9B0BC)!important}
+:host([data-ox-palette="midnight"]) .ox-loading-ring{border-color:rgb(226 232 240 / .14)!important;border-top-color:var(--mi-accent,#D9C79A)!important}
+:host([data-ox-palette="midnight"]) .ox-loading-count{color:var(--mi-ink-2,#A9B0BC)!important}

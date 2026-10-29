@@ -146,20 +146,47 @@ const periods = {
   "12H": 43200, "1D": 86400, "3D": 259200, "1W": 604800, "1M": 2592000
 };
 
+// Legacy calculation coercion: existing scoring code relies on missing → 0.
+// Display code and new calculations must use toNumberOrNull instead.
 const num = v => Number(v) || 0;
-const fmtUsd = v => new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 }).format(num(v));
+// Missing, blank, boolean or non-finite input is null, never a silent 0.
+const toNumberOrNull = v => {
+  if (v == null || typeof v === "boolean" || (typeof v === "string" && !v.trim())) return null;
+  const x = typeof v === "number" ? v : Number(v);
+  return Number.isFinite(x) ? x : null;
+};
+const MISSING_VALUE_TEXT = "—";
+// Shared HTML escaping for classic scripts that build markup from market data.
+const escapeHtml = v => String(v ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmtUsd = v => {
+  const x = toNumberOrNull(v);
+  return x === null ? MISSING_VALUE_TEXT : new Intl.NumberFormat("en-US", { notation: "compact", maximumFractionDigits: 2 }).format(x);
+};
 const fmtCryptoVolume = v => {
-  const value = num(v);
+  const value = toNumberOrNull(v);
+  if (value === null) return MISSING_VALUE_TEXT;
   const format = (amount, digits = 2) => new Intl.NumberFormat("zh-TW", { maximumFractionDigits: digits }).format(amount);
   return value >= 1e8 ? `${format(value / 1e8)}億` : value >= 1e6 ? `${format(value / 1e4, 0)}萬` : value >= 1e4 ? `${format(value / 1e4, 1)}萬` : format(value);
 };
+// Turnover with its unit; a missing value is only "—", never "— USDT".
+const fmtCryptoVolumeUSDT = v => {
+  const text = fmtCryptoVolume(v);
+  return text === MISSING_VALUE_TEXT ? text : `${text} USDT`;
+};
 const fmtPrice = v => {
-  const x = num(v);
-  if (!Number.isFinite(x) || x === 0) return "—";
+  const x = toNumberOrNull(v);
+  if (x === null || x === 0) return MISSING_VALUE_TEXT;
   const d = x >= 1000 ? 2 : x >= 1 ? 4 : x >= 0.01 ? 6 : 8;
   return new Intl.NumberFormat("en-US", { maximumFractionDigits: d }).format(x);
 };
-const fmtPct = v => `${num(v) >= 0 ? "+" : ""}${(num(v) * 100).toFixed(2)}%`;
+// Engine reasons carry raw reference prices (calculations are untouched);
+// show them with the same magnitude-based precision as quotes.
+const fmtSignalReason = text => String(text ?? "").replace(/(歷史價格參考|近期轉折(?:，等待收 K)?) · (-?\d+(?:\.\d+)?(?:e[-+]?\d+)?)(?![\d.])/g,
+  (match, label, value) => `${label} · ${fmtPrice(value)}`);
+const fmtPct = v => {
+  const x = toNumberOrNull(v);
+  return x === null ? MISSING_VALUE_TEXT : `${x >= 0 ? "+" : ""}${(x * 100).toFixed(2)}%`;
+};
 
 
 const clamp = (v, min = 0, max = 100) => Math.max(min, Math.min(max, v));

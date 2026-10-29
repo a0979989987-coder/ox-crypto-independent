@@ -145,6 +145,33 @@ body.ox-terminal #view-radar .radar-combined-chevron::before {
   bottom:-3px;
   right:-3px;
 }
+/* Long-press feedback: a ring fills around the radar mark while it is held.
+   The delay keeps ordinary taps and double taps visually quiet. */
+@property --radar-hold-turn {syntax:"<angle>";inherits:false;initial-value:0deg}
+body.ox-terminal #view-radar .radar-combined-mark::after {
+  content:"";
+  position:absolute;
+  inset:-3px -1px;
+  border-radius:50%;
+  background:conic-gradient(currentColor var(--radar-hold-turn),transparent 0);
+  -webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));
+  mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1.5px));
+  opacity:0;
+  pointer-events:none;
+}
+body.ox-terminal #view-radar .radar-combined-tab.is-holding .radar-combined-mark::after {
+  animation:radar-hold-fill 1.8s linear .2s forwards,radar-hold-show .2s ease .2s forwards;
+}
+body.ox-terminal #view-radar .radar-combined-tab.is-holding .radar-combined-mark {
+  transition:transform 1.8s ease .2s;
+  transform:scale(.92);
+}
+@keyframes radar-hold-fill {from {--radar-hold-turn:0deg} to {--radar-hold-turn:360deg}}
+@keyframes radar-hold-show {to {opacity:.85}}
+@media(prefers-reduced-motion:reduce) {
+  body.ox-terminal #view-radar .radar-combined-tab.is-holding .radar-combined-mark {transition:none;transform:none}
+  body.ox-terminal #view-radar .radar-combined-tab.is-holding .radar-combined-mark::after {animation:radar-hold-show .2s ease .4s forwards;background:none;box-shadow:inset 0 0 0 1.5px currentColor}
+}
 body.ox-terminal #view-radar .radar-tier-current {
   position:absolute;
   right:-2px;

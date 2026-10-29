@@ -11,7 +11,10 @@ export const FEATURE_CATALOG = Object.freeze([
   ['tw.rotation','台股資金輪動','api_and_public_snapshot'],['tw.etf','ETF 工具','api_and_public_snapshot'],
   ['tw.savings','存股計畫','public_snapshot'],['news.feed','市場新聞','public_snapshot'],
   ['news.calendar','經濟／市場行事曆','public_snapshot'],['media','交易媒體','public_source']
-].map(([id,label,boundary])=>Object.freeze({id,label,boundary})));
+].map(([id,label,boundary])=>Object.freeze({id,label,boundary,defaultMode:'login'})));
+// defaultMode is only the provisional mode the frontend uses while the
+// authoritative policy (database) is still unknown: it never infers "public".
+// scripts/build-toolkit.mjs publishes it as src/generated/feature-defaults.js.
 export const FEATURE_IDS = new Set(FEATURE_CATALOG.map(f=>f.id));
 export function validCatalog(rows) {
   return Array.isArray(rows)&&rows.length===FEATURE_CATALOG.length&&new Set(rows.map(f=>f?.id)).size===rows.length&&rows.every(f=>FEATURE_IDS.has(f.id)&&['public','login'].includes(f.mode)&&typeof f.version==='string');

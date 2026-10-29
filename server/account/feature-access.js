@@ -2,7 +2,7 @@ import { FEATURE_CATALOG,validCatalog } from './feature-catalog.js';
 export async function featureCatalog(reader) {
   const result=await reader.rpc('ox_feature_access_rpc',{p_action:'catalog',p_payload:{}});
   if(result.error||!result.data?.ok||!validCatalog(result.data.features))throw Error('FEATURE_POLICY_UNAVAILABLE');
-  return {ok:true,features:result.data.features.map(f=>({...FEATURE_CATALOG.find(item=>item.id===f.id),mode:f.mode,version:f.version}))};
+  return {ok:true,features:result.data.features.map(f=>{const {defaultMode,...item}=FEATURE_CATALOG.find(entry=>entry.id===f.id);return {...item,mode:f.mode,version:f.version};})};
 }
 export async function handleFeatureAdmin({req,res,reader}) {
   const action=req.method==='GET'?'records':req.body?.action,payload=req.method==='GET'?{}:req.body?.payload;

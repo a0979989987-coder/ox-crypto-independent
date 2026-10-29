@@ -91,3 +91,12 @@ test('disabled configuration and exhausted burst limits stop before adapter use'
   assert.equal(res.statusCode, 429);
   assert.equal(res.headers['Retry-After'], '60');
 });
+
+test('operator page lookups are reported to the audit hook with outcome', async () => {
+  const events = [];
+  const handler = createTestHandler({ env: { OX_ACCOUNT_LOOKUP_TOKEN: token }, now: () => 1800000000000, limit: () => true, audit: event => events.push(event), createClient: () => ({ lookupCustomer: async ({ uid }) => ({ uid, referral: { status: 'matched' }, registration: {}, certification: { status: 'unknown' } }) }) });
+  const { cookie, csrf } = await login(handler);
+  const res = await invoke(handler, { action: 'lookup', uid: '123456', csrf }, cookie);
+  assert.equal(res.statusCode, 200);
+  assert.deepEqual(events, [{ channel: 'operator-page', outcome: 'ok', status: 200, uid: '123456' }]);
+});

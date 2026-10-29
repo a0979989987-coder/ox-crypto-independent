@@ -1,0 +1,20 @@
+{
+  "name": "OX 篩選器",
+  "short_name": "OX",
+  "description": "OX 篩選器（加密）－市場總覽、指標、T1/T2/T3 雷達篩選、即時 K 線與提醒工作區。",
+  "lang": "zh-TW",
+  "dir": "ltr",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#121417",
+  "theme_color": "#121417",
+  "categories": ["finance"],
+  "icons": [
+    { "src": "assets/ox-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/ox-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "assets/ox-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

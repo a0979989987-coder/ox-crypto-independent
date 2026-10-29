@@ -406,6 +406,7 @@ function startChartLiveCandles(symbol, period, options = {}) {
       state.candleData=incoming;
       state.oldestCandleTime=incoming[0]?.time || 0;
       state.hasMoreHistory=true;
+      if (document.getElementById('chart-load-error')?.dataset.mode === 'empty') clearChartLoadError();
       renderChartData(incoming,true);
       return;
     }
@@ -429,15 +430,137 @@ function startChartLiveCandles(symbol, period, options = {}) {
   return feed;
 }
 
+// A failed K-line request must stay visible in the chart region. Without
+// candles the chart shows a retry state; with the same chart's earlier candles
+// the old chart stays but is explicitly marked as possibly stale.
+function chartErrorClock(date = new Date()) {
+  return `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+}
+function clearChartLoadError() {
+  const host = document.getElementById('chart-load-error');
+  if (!host) return;
+  host.hidden = true;
+  host.replaceChildren();
+  delete host.dataset.mode;
+  delete host.dataset.scope;
+}
+function showChartLoadError(error, { symbol = state.symbol, period = state.period, stale = false, retry, at = new Date() } = {}) {
+  const chart = document.getElementById('chart');
+  if (!chart) return null;
+  let host = document.getElementById('chart-load-error');
+  if (!host) {
+    host = document.createElement('div');
+    host.id = 'chart-load-error';
+    host.className = 'chart-load-error';
+    chart.append(host);
+  }
+  const base = String(symbol || '').replace(/USDT$/, '');
+  host.dataset.mode = stale ? 'stale' : 'empty';
+  host.dataset.scope = `${symbol}:${period}`;
+  host.setAttribute('role', 'alert');
+  const box = document.createElement('div');
+  box.className = 'chart-load-error-box';
+  const title = document.createElement('strong');
+  title.className = 'chart-load-error-title';
+  title.textContent = stale ? `資料可能過期・更新失敗 ${chartErrorClock(at)}` : `${base} ${period} K 線載入失敗`;
+  const detail = document.createElement('span');
+  detail.className = 'chart-load-error-detail';
+  const reason = String(error?.message || '').slice(0, 120);
+  detail.textContent = stale ? `${base} ${period} 顯示的是上次取得的 K 線${reason ? `（${reason}）` : ''}` : (reason || '暫時無法取得交易所 K 線資料');
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.className = 'chart-load-error-retry';
+  button.textContent = '重試';
+  button.addEventListener('click', () => {
+    button.disabled = true;
+    button.textContent = '重試中…';
+    (retry || (() => loadSymbolCandles(true)))();
+  });
+  box.append(title, detail, button);
+  host.replaceChildren(box);
+  host.hidden = false;
+  return host;
+}
+
+// Candles already seen (this session's charts, or the radar scan's own 1H/4H/1D
+// requests) paint a symbol or timeframe at once; the live feed then refreshes
+// them in place. Only genuinely unseen charts show the skeleton.
+const chartCandleCache=new Map();
+const chartCacheAge=period=>Math.min(7200000,Math.max(300000,2*((typeof periods!=='undefined'&&periods[period])||3600)*1000));
+function rememberChartCandles(scope,candles){
+  if(!scope||!candles?.length)return;
+  chartCandleCache.delete(scope);chartCandleCache.set(scope,{candles,at:Date.now()});
+  if(chartCandleCache.size>40)chartCandleCache.delete(chartCandleCache.keys().next().value);
+}
+function cachedChartCandles(symbol,period,now=Date.now()){
+  const own=chartCandleCache.get(`${symbol}:${period}`),maxAge=chartCacheAge(period);
+  const shared=typeof BitgetAPI!=='undefined'?BitgetAPI.peekCandles?.(symbol,period,now,maxAge):null;
+  const fresh=own&&now-own.at<=maxAge?own:null;
+  const pick=fresh&&(!shared||own.at>=shared.serverTime)?fresh.candles:shared?.candles;
+  return pick?.length?pick:null;
+}
+// Timeframes one tap away are fetched quietly after the visible chart lands,
+// never ahead of it and never with Data Saver on.
+const CHART_PREFETCH_FRAMES=['15m','1H','4H','1D'];
+let chartPrefetchTimer=0;
+function prefetchChartNeighbours(symbol,period){
+  if(typeof BitgetAPI==='undefined'||typeof setTimeout!=='function'||globalThis.navigator?.connection?.saveData)return;
+  clearTimeout(chartPrefetchTimer);
+  chartPrefetchTimer=setTimeout(async()=>{
+    for(const frame of CHART_PREFETCH_FRAMES){
+      if(frame===period||state.symbol!==symbol||document.hidden)continue;
+      if(cachedChartCandles(symbol,frame))continue;
+      try{await BitgetAPI.fetchCandles(symbol,frame,chartLoadLimit(),null,{owner:'chart-prefetch',priority:40});}catch{}
+    }
+  },600);
+}
+// A quiet candle silhouette for the skeleton: fixed shape, so it never flickers.
+const CHART_SKELETON=Array.from({length:24},(_,i)=>{
+  const base=18+i*1.9+Math.sin(i*1.3)*7,height=7+((i*37)%11);
+  return `<i style="left:${(i*4.15).toFixed(2)}%;bottom:${base.toFixed(1)}%;height:${height}%"></i>`;
+}).join('');
+// A press on a coin or timeframe starts that chart's request before the tap
+// completes; the chart's own load then joins the same in-flight request.
+const chartLoadLimit=()=>window.matchMedia?.("(max-width:720px)").matches?160:100;
+const chartLoadingText=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function warmChartOnPress(event){
+  if(typeof BitgetAPI==='undefined'||state.activeMarket&&state.activeMarket!=='crypto')return;
+  const target=event.target?.closest?.('.coin-card[data-symbol],.trad-row[data-symbol],[data-home-symbol],[data-benchmark-symbol],.btn-tf[data-tf]');
+  if(!target)return;
+  const symbol=target.dataset.tf?state.symbol:(target.dataset.symbol||target.dataset.homeSymbol||target.dataset.benchmarkSymbol);
+  const period=target.dataset.tf||state.period;
+  if(!symbol||!period||symbol===state.symbol&&period===state.period||cachedChartCandles(symbol,period))return;
+  BitgetAPI.fetchCandles(symbol,period,chartLoadLimit()).catch(()=>{});
+}
+if(typeof document!=='undefined'&&typeof document.addEventListener==='function')document.addEventListener('pointerdown',warmChartOnPress,{passive:true,capture:true});
+function setChartLoading(mode,label=''){
+  const overlay=document.getElementById("chart-loading");
+  if(!overlay)return;
+  if(!mode){overlay.classList.remove("show");return;}
+  overlay.dataset.mode=mode;
+  if(mode==='empty')overlay.innerHTML=`<span class="chart-skeleton" aria-hidden="true">${CHART_SKELETON}</span><span class="chart-loading-label" role="status">${chartLoadingText(label)}</span>`;
+  else overlay.innerHTML=`<span class="chart-loading-label sr-only" role="status">${chartLoadingText(label||'更新中')}</span>`;
+  overlay.classList.add("show");
+}
+
 async function loadSymbolCandles(isInitial = true) {
   if (state.activeMarket && state.activeMarket !== "crypto") return;
   state.abortCtrl?.abort();
   state.abortCtrl = new AbortController();
-  const symbol = state.symbol, period = state.period;
+  // Keep what the previous chart showed (including live updates) for a quick return.
+  if (state.chartPriceScope && state.candleData?.length) rememberChartCandles(state.chartPriceScope, state.candleData);
+  const symbol = state.symbol, period = state.period, scope = `${symbol}:${period}`;
   const feed=startChartLiveCandles(symbol,period);
-  const overlay = document.getElementById("chart-loading");
-  if (isInitial) { overlay.innerHTML=window.OXLoading?.markup(`${symbol} K 線載入中`,0,1)||"K 線載入中…";overlay.classList.add("show"); }
-  if (state.chartPriceScope !== `${symbol}:${period}`) {
+  const cached = isInitial && state.chartPriceScope !== scope ? cachedChartCandles(symbol, period) : null;
+  const label = `${String(symbol).replace(/USDT$/, '')} · ${period}`;
+  if (isInitial) setChartLoading(cached ? 'refresh' : 'empty', cached ? `${label} 更新中` : `${label} K 線載入中`);
+  if (document.getElementById('chart-load-error')?.dataset.scope !== scope) clearChartLoadError();
+  if (cached) {
+    state.candleData = cached;
+    state.oldestCandleTime = cached[0].time;
+    state.hasMoreHistory = true;
+    renderChartData(cached, true);
+  } else if (state.chartPriceScope !== scope) {
     state.chartPriceViewport = null;
     state.chartAutoPriceRange = null;
     state.candleData = [];
@@ -454,18 +577,37 @@ async function loadSymbolCandles(isInitial = true) {
   }
 
   try {
-    const raw = await feed.load(window.matchMedia("(max-width:720px)").matches ? 160 : 100);
+    const raw = await feed.load(chartLoadLimit());
     if (state.symbol !== symbol || state.period !== period || state.chartLiveFeed!==feed) return;
     if (!raw.length) throw new Error("無可用 K 線");
 
-    state.candleData = raw;
-    state.oldestCandleTime = raw[0].time;
-    state.hasMoreHistory = true;
-    renderChartData(raw, isInitial);
+    clearChartLoadError();
+    if (cached && state.chartPriceScope === scope && state.candleData.length) {
+      // Refresh the instantly painted chart in place: newer bars are appended
+      // and revised bars replaced, without refitting a chart the user moved.
+      const previous = state.candleData, lastTime = previous.at(-1)?.time;
+      const visible = state.chart.timeScale().getVisibleLogicalRange();
+      state.candleData = updateCryptoLiveSeries(state.candleSeries, state.volumeSeries, previous, raw);
+      state.oldestCandleTime = state.candleData[0].time;
+      if (state.candleData.at(-1)?.time !== lastTime || state.candleData.length !== previous.length) renderChartData(state.candleData, false, visible);
+      else { updatePriceTimer(); updateQuickStats(); }
+    } else {
+      state.candleData = raw;
+      state.oldestCandleTime = raw[0].time;
+      state.hasMoreHistory = true;
+      renderChartData(raw, isInitial);
+    }
+    rememberChartCandles(scope, state.candleData);
+    // Optional extras must never turn a successful load into an error state.
+    try { prefetchChartNeighbours(symbol, period); } catch {}
   } catch (err) {
-    if (err.name === "AbortError") return;
+    if (err?.name === "AbortError") return;
+    // A response for a chart the user already left must not paint an error.
+    if (state.symbol !== symbol || state.period !== period || state.chartLiveFeed !== feed) return;
+    const stale = state.chartPriceScope === `${symbol}:${period}` && state.candleData.length > 0;
+    showChartLoadError(err, { symbol, period, stale });
   } finally {
-    if (state.symbol === symbol && state.period === period) overlay.classList.remove("show");
+    if (state.symbol === symbol && state.period === period) setChartLoading(null);
   }
 }
 
@@ -473,8 +615,7 @@ async function loadMoreHistoricalCandles() {
   if (state.isLoadingOlder || !state.hasMoreHistory) return;
   state.isLoadingOlder = true;
   const symbol = state.symbol, period = state.period, oldest = state.oldestCandleTime;
-  const overlay = document.getElementById("chart-loading");
-  overlay.classList.add("show");
+  setChartLoading('refresh', '載入更早的 K 線');
 
   try {
     const older = await BitgetAPI.fetchCandles(symbol, period, 200, (oldest - (periods[period] || 60)) * 1000);
@@ -496,7 +637,7 @@ async function loadMoreHistoricalCandles() {
   } catch (e) {
   } finally {
     state.isLoadingOlder = false;
-    overlay.classList.remove("show");
+    setChartLoading(null);
   }
 }
 
@@ -544,6 +685,8 @@ function renderChartData(candles, fitContent = false, preservedLogicalRange = nu
   } else {
     state.candleSeries.setMarkers([]);
   }
+  // 雙極結構指標：同一批 K 線，切換商品／級別或補入更早 K 線時立即重算。
+  try { globalThis.OXStructureLayer?.refresh(candles); } catch {}
 
   if (fitContent) {
     refreshChartPriceViewport();
