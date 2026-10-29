@@ -15,9 +15,12 @@ window.OXChartGestures = function({container,state,getRange,setRange,refreshRang
   const mid = touches => ({ x: [...touches].reduce((n,t)=>n+t.clientX,0)/touches.length,
     y: [...touches].reduce((n,t)=>n+t.clientY,0)/touches.length });
   const distance = touches => Math.hypot(touches[0].clientX-touches[1].clientX,touches[0].clientY-touches[1].clientY);
+  // Programmatic crosshairs emit no LWC event; indicator panes follow this one.
+  const announce=time=>{if(typeof CustomEvent==='function')container.dispatchEvent?.(new CustomEvent('ox:chart-inspect',{detail:time===null?null:{time}}));};
   const clearInspection=()=>{
     state.chart.clearCrosshairPosition();
     const label=container.querySelector('.chart-cursor-price');if(label)label.hidden=true;
+    announce(null);
   };
   const inspect=point=>{
     const rect=container.getBoundingClientRect(),x=point.x-rect.left,y=point.y-rect.top;
@@ -27,6 +30,7 @@ window.OXChartGestures = function({container,state,getRange,setRange,refreshRang
       // Programmatic LWC crosshairs do not emit subscribeCrosshairMove.
       const label=container.querySelector('.chart-cursor-price');
       if(label){label.hidden=false;label.textContent=formatPrice(price);label.style.top=`${y}px`;}
+      announce(time);
     }
   };
   const start = event => {

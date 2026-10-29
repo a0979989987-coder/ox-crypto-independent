@@ -7,7 +7,13 @@ function getChartRightOffset() {
   return futureSpace / spacing;
 }
 
-function getChartScaleMargins() { return window.matchMedia('(max-width:720px)').matches ? {top:.08,bottom:.14} : {top:.18,bottom:.22}; }
+function getChartBaseScaleMargins() { return window.matchMedia('(max-width:720px)').matches ? {top:.08,bottom:.14} : {top:.18,bottom:.22}; }
+function getChartBaseVolumeMargins() { return {top:window.matchMedia('(max-width:720px)').matches ? .88 : .8,bottom:0}; }
+// KD, RSI and MACD panes (indicators.js) take the bottom of the chart; candles and volume sit above them.
+function getChartScaleMargins() { return state.chartIndicators?.margins().candles || getChartBaseScaleMargins(); }
+function getChartVolumeMargins() { return state.chartIndicators?.margins().volume || getChartBaseVolumeMargins(); }
+// Height reserved by indicator panes above the time axis; price labels stay out of it.
+function getChartIndicatorReserve() { return state.chartIndicators?.reservedHeight() || 0; }
 
 let chartPriceOverlayFrame = 0;
 function scheduleChartPriceOverlayUpdate() {
@@ -23,7 +29,7 @@ function scheduleChartPriceOverlayUpdate() {
 function renderCompactChartPriceAxis() {
   const axis=document.querySelector('#chart .chart-price-axis');
   if (!axis || !state.candleSeries || !state.candleData.length) return;
-  const height=document.getElementById('chart').clientHeight-(state.chart.timeScale().height()||0);
+  const height=document.getElementById('chart').clientHeight-(state.chart.timeScale().height()||0)-getChartIndicatorReserve();
   if (height<20) return;
   const high=state.candleSeries.coordinateToPrice(0),low=state.candleSeries.coordinateToPrice(height);
   if (!Number.isFinite(high)||!Number.isFinite(low)||high<=low) return;
@@ -224,7 +230,8 @@ function updateKeyLevelVisualLabels() {
     add(state.secondaryLevels.low, "low", state.secondaryLevels.sourcePeriod, true);
   }
 
-  const h = chartEl.clientHeight || 0;
+  const reserve = getChartIndicatorReserve();
+  const h = (chartEl.clientHeight || 0) - (reserve ? reserve + (state.chart?.timeScale().height() || 0) : 0);
   const last = state.candleData?.at(-1);
   const reservedY = last ? state.candleSeries.priceToCoordinate(last.close) : null;
   const isMobile = window.matchMedia("(max-width:720px)").matches;
@@ -321,9 +328,7 @@ function initChart() {
     priceScaleId: "vol",
     lastValueVisible: false
   });
-  state.chart.priceScale("vol").applyOptions({
-    scaleMargins: { top: window.matchMedia('(max-width:720px)').matches ? .88 : .8, bottom: 0 }
-  });
+  state.chart.priceScale("vol").applyOptions({ scaleMargins: getChartVolumeMargins() });
 
   const mobilePriceLabel = document.createElement('span');
   mobilePriceLabel.className = 'chart-mobile-last-price';
@@ -389,13 +394,21 @@ function initChart() {
       mobileScale = mobileNow;
       state.chart.applyOptions({ layout: { fontSize: mobileNow ? 10 : 11 } });
       state.chart.priceScale('right').applyOptions({scaleMargins:getChartScaleMargins()});
-      state.chart.priceScale('vol').applyOptions({scaleMargins:{top:mobileNow ? .88 : .8,bottom:0}});
+      state.chart.priceScale('vol').applyOptions({scaleMargins:getChartVolumeMargins()});
       applyChartFutureSpace();
     }
     resizeChartToContainer();
     scheduleChartPriceOverlayUpdate();
   }).observe(container);
   enableMobileChartPriceGestures(container);
+  // 均線, 布林, KD, RSI and MACD; settings persist under OXChartIndicators.STORAGE_KEY.
+  state.chartIndicators = window.OXChartIndicators?.attach({
+    chart: state.chart, container,
+    getCandles: () => state.candleData || [],
+    volumeVisible: () => state.volumeSeries?.options().visible !== false,
+    baseMargins: () => ({ candles: getChartBaseScaleMargins(), volume: getChartBaseVolumeMargins() }),
+    onLayout: () => { scheduleChartPriceOverlayUpdate(); requestAnimationFrame(updateKeyLevelVisualLabels); }
+  }) || null;
 }
 
 function startChartLiveCandles(symbol, period, options = {}) {
@@ -642,7 +655,7 @@ function updatePriceTimer() {
   const badge = document.querySelector('#chart .chart-mobile-last-price');
   const currentPrice=badge?.parentElement;
   const lastY = state.candleSeries.priceToCoordinate(last.close);
-  const plotHeight=document.getElementById('chart').clientHeight-state.chart.timeScale().height();
+  const plotHeight=document.getElementById('chart').clientHeight-state.chart.timeScale().height()-getChartIndicatorReserve();
   // Never pin only the badge to an edge: both represent the actual price coordinate.
   if(currentPrice)currentPrice.hidden=!Number.isFinite(lastY)||lastY<0||lastY>plotHeight;
   if (badge && currentPrice && Number.isFinite(lastY)) {

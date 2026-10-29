@@ -4,6 +4,11 @@ import { queryFromStrokes, normalize, sortMatches, patternCounts, prepareCandles
 import * as cryptoSource from './source.js?v=20261002-rank8';
 import * as cryptoCache from './index-cache.js?v=20261002-rank8';
 import { candleChart } from './charts.js?v=20261005-graytop5';
+import { BOARD_FILTER_KEY, BOARD_FILTER_EVENT, TURNOVER_PRESETS, turnoverText, normalizeBoardFilter, readBoardFilter, writeBoardFilter, activeFilterCount, boardSectors, passesBoardFilter } from './filters.js?v=20261028-board1';
+// 篩選 (frames, 24H 成交額, 板塊) is remembered on this device; see filters.js.
+export { BOARD_FILTER_KEY, BOARD_FILTER_EVENT };
+export const getBoardFilter=()=>readBoardFilter(CRYPTO_TIMEFRAMES);
+export const setBoardFilter=next=>writeBoardFilter({...readBoardFilter(CRYPTO_TIMEFRAMES),...next},CRYPTO_TIMEFRAMES);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const icons={down:'<path d="m6 9 6 6 6-6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',undo:'<path d="m9 5-5 5 5 5M4 10h10a5 5 0 1 1 0 10"/>',refresh:'<path d="M4 4v6h6M4 10a8 8 0 1 1 1 8"/>',scan:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><g class="px-scan-sweep"><path d="M12 12 18 6"/></g><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>'};
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]||''}</svg>`;
@@ -12,6 +17,17 @@ const signed=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
 const stamp=ms=>new Date(ms).toLocaleTimeString('zh-TW',{hour:'2-digit',minute:'2-digit',hour12:false});
 const preferencesByMarket=new Map();
 const sessionsByMarket=new Map();
+// Nothing drawn or chosen: take turns between patterns inside each tier (rows
+// already sorted by tier), so the default board mixes shapes instead of a run of one.
+export function mixPatterns(list){
+  const out=[];let i=0;
+  while(i<list.length){
+    const tier=list[i].displayTier,groups=new Map();
+    while(i<list.length&&list[i].displayTier===tier){const row=list[i++],key=row.match?.id||row.match?.label||'';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
+    const queues=[...groups.values()];while(queues.some(queue=>queue.length))for(const queue of queues)if(queue.length)out.push(queue.shift());
+  }
+  return out;
+}
 export function storePatternSession(cache,market,sessionKey,value){
   if(sessionKey===market){cache.set(market,value);return;}
   // A personal-file replacement or new snapshot has a distinct access scope.
@@ -24,7 +40,7 @@ export function storePatternSession(cache,market,sessionKey,value){
 }
 // Warm real observations without mounting a hidden UI or competing with live charts.
 let warmController=null,warmTask=null,warmAt=0;
-export const preloadPatternStyles=()=>preloadToolStyles(new URL('./patterns.css?v=20261006-news4',import.meta.url).href);
+export const preloadPatternStyles=()=>preloadToolStyles(new URL('./patterns.css?v=20261028-board1',import.meta.url).href);
 export function stopPatternPreload(){warmController?.abort();}
 export function preloadPatternSearch({signal:externalSignal}={}){
   if(warmTask)return warmTask;
@@ -55,7 +71,11 @@ export function mountPatternSearch(host,options={}){
   const {readIndex,saveIndex,pruneIndex,entryCurrent,INDEX_VERSION}=cache;
   const TIMEFRAMES=source.TIMEFRAMES||CRYPTO_TIMEFRAMES,market=source.id||'crypto',sessionKey=source.sessionKey||market;
   const preferenceKey=market+':'+(window.OXAuth?.user?.id||'guest');
-  let saved=preferencesByMarket.get(preferenceKey)||{frames:source.defaultFrames||['4H','1H'],limit:source.defaultLimit??0,query:null,strokes:[]};
+  // The Crypto board remembers 篩選 on the device; other sources keep session defaults.
+  const remembers=!options.source&&market==='crypto',stored=remembers?readBoardFilter(TIMEFRAMES):null;
+  let saved=preferencesByMarket.get(preferenceKey)||{frames:stored?.frames||source.defaultFrames||['4H','1H'],limit:stored?.limit??source.defaultLimit??0,query:null,strokes:[]};
+  if(stored)saved={...saved,frames:stored.frames,limit:stored.limit};
+  let filter=stored?{turnover:stored.turnover,sectors:[...stored.sectors]}:{turnover:0,sectors:[]},sectorInfo=null,sectorUniverse=null;
   const sourceLabel=source.label||'Bitget',asset=source.asset||'幣種',currency=source.currency||'U',period=source.period||'24H';
   const displayName=source.displayName||((row)=>row.symbol.replace(/USDT$/,''));
   const turnoverLabel=source.turnoverLabel||`${period} 成交額`;
@@ -68,17 +88,49 @@ export function mountPatternSearch(host,options={}){
   const hydrated=new Set();
   const session=sessionsByMarket.get(sessionKey);
   if(session){entries=new Map(session.entries);rows=new Map(session.rows);universe=session.universe;lastScan=session.lastScan;progress={...session.progress};shown=session.shown;tierFilter=session.tierFilter;}
-  let searchSignature=session?JSON.stringify([query,frames,limit]):'';
-  shadow.innerHTML=`<link rel="stylesheet" data-ox-href="${new URL('./patterns.css?v=20261006-news4',import.meta.url)}"><main class="px" data-style-pending="true" inert style="visibility:hidden!important"><section class="px-board" aria-label="型態畫板"><canvas tabindex="0" aria-label="在整個畫板由左向右畫走勢，完成後自動比對；亦可使用型態選單"></canvas><div class="px-controls"><button class="px-control" data-action="timeframes" aria-haspopup="dialog" aria-expanded="false"><span data-frame-label></span>${icon('down')}</button><button class="px-control" data-action="patterns" aria-haspopup="dialog" aria-expanded="false"><span data-pattern-label>型態</span>${icon('down')}</button></div><span class="px-hint">畫出走勢，或選擇型態</span><div class="px-board-bottom"><button class="px-mode-toggle" data-action="toggle-mode" hidden aria-label="切換搜尋模式" title="切換搜尋模式"><span class="px-mode-glyph" aria-hidden="true">⌁</span><span data-mode-label></span></button><button class="px-icon" data-action="undo" aria-label="清除上一筆" title="清除上一筆">${icon('undo')}</button><div class="px-tier-filters" role="group" aria-label="OX 品質分級"><button data-tier-filter="all" aria-pressed="true">全部</button><button data-tier-filter="1" aria-pressed="false">T1</button><button data-tier-filter="2" aria-pressed="false">T2</button><button data-tier-filter="3" aria-pressed="false">T3</button></div></div></section><button class="px-refresh-pill" data-action="refresh" aria-label="重新掃描" title="重新掃描"><svg class="px-pill-progress" viewBox="0 0 40 40" aria-hidden="true"><circle class="px-pill-track" cx="20" cy="20" r="17"/><circle class="px-pill-arc" cx="20" cy="20" r="17"/></svg><span class="px-refresh-glyph">${icon('scan')}</span></button><div class="px-results"><div class="px-scan-error" role="alert" hidden></div><div class="px-status-row" hidden><span class="px-local-loading" hidden></span><span class="px-status" role="status" aria-live="polite">${esc(source.label||'Bitget · USDT 永續')}</span></div><section class="px-grid" aria-label="依 T1 T2 T3 排列的${asset}"><div class="px-empty">等待畫入型態</div></section></div><button class="px-more" data-action="more" hidden>顯示更多</button><dialog class="px-dialog px-presets" aria-label="選擇型態"><div class="px-dialog-head"><span>型態</span><button class="px-icon" data-action="close" aria-label="關閉型態選單">${icon('close')}</button></div><div class="px-dialog-body"><input class="px-search" aria-label="搜尋型態" placeholder="搜尋型態"><div class="px-count-status" aria-live="polite"></div><div class="px-options"></div></div></dialog><dialog class="px-dialog px-settings" aria-label="時間級別"><div class="px-dialog-head"><span>時間級別</span><button class="px-icon" data-action="close" aria-label="關閉時間級別">${icon('close')}</button></div><div class="px-dialog-body"><div class="px-frames">${Object.keys(TIMEFRAMES).map(f=>`<button class="px-frame-option" data-frame="${f}">${f}</button>`).join('')}</div><label class="px-setting"><span>成交額觀察池</span><select data-limit aria-label="掃描${asset}數"><option value="80">前 80 ${asset}</option><option value="160">前 160 ${asset}</option><option value="0">全部合資格${asset}</option></select></label><details class="px-help"></details></div></dialog><dialog class="px-dialog px-detail" aria-label="型態 K 線詳情"><div class="px-dialog-head"><span class="px-detail-title"></span><div class="px-detail-tools"><button class="px-to-radar" data-action="open-radar" aria-label="在雷達查看這個${asset}">前往雷達</button><button class="px-icon" data-action="reset-chart" aria-label="重設圖表範圍">${icon('refresh')}</button><button class="px-icon" data-action="close" aria-label="關閉圖表">${icon('close')}</button></div></div><div class="px-detail-frames" role="group" aria-label="K 線時間級別">${Object.keys(TIMEFRAMES).map(f=>`<button data-detail-frame="${f}" aria-pressed="false">${f}</button>`).join('')}</div><div class="px-detail-stage"><canvas aria-label="可拖曳及雙指縮放的 K 線圖"></canvas><div class="px-detail-loading" role="status" hidden></div></div><div class="px-detail-footer"></div></dialog></main>`;
+  let searchSignature=session?JSON.stringify([query,frames,limit,filter]):'';
+  // Count chips sit in their own row under the board: readable on a phone and
+  // still visible while the market is being scanned.
+  shadow.innerHTML=`<link rel="stylesheet" data-ox-href="${new URL('./patterns.css?v=20261028-board1',import.meta.url)}"><main class="px" data-style-pending="true" inert style="visibility:hidden!important"><section class="px-board" aria-label="型態畫板"><canvas tabindex="0" aria-label="在整個畫板由左向右畫走勢，完成後自動比對；亦可使用型態選單"></canvas><div class="px-controls"><button class="px-control" data-action="timeframes" aria-haspopup="dialog" aria-expanded="false"><span data-frame-label></span>${icon('down')}</button><button class="px-control" data-action="patterns" aria-haspopup="dialog" aria-expanded="false"><span data-pattern-label>型態</span>${icon('down')}</button></div><span class="px-hint">畫出走勢，或選擇型態</span><div class="px-board-bottom"><button class="px-mode-toggle" data-action="toggle-mode" hidden aria-label="切換搜尋模式" title="切換搜尋模式"><span class="px-mode-glyph" aria-hidden="true">⌁</span><span data-mode-label></span></button><button class="px-icon" data-action="undo" aria-label="清除上一筆" title="清除上一筆">${icon('undo')}</button></div></section><div class="px-tier-filters" role="group" aria-label="OX 品質分級，點選只看該級" hidden><button data-tier-filter="all" aria-pressed="true">全部</button><button data-tier-filter="1" aria-pressed="false">T1</button><button data-tier-filter="2" aria-pressed="false">T2</button><button data-tier-filter="3" aria-pressed="false">T3</button></div><button class="px-refresh-pill" data-action="refresh" aria-label="重新掃描" title="重新掃描"${options.scanButton===false?' hidden':''}><svg class="px-pill-progress" viewBox="0 0 40 40" aria-hidden="true"><circle class="px-pill-track" cx="20" cy="20" r="17"/><circle class="px-pill-arc" cx="20" cy="20" r="17"/></svg><span class="px-refresh-glyph">${icon('scan')}</span></button><div class="px-results"><div class="px-scan-error" role="alert" hidden></div><div class="px-status-row" hidden><span class="px-local-loading" hidden></span><span class="px-status" role="status" aria-live="polite">${esc(source.label||'Bitget · USDT 永續')}</span></div><section class="px-grid" aria-label="依 T1 T2 T3 排列的${asset}"><div class="px-empty">等待畫入型態</div></section></div><button class="px-more" data-action="more" hidden>顯示更多</button><dialog class="px-dialog px-presets" aria-label="選擇型態"><div class="px-dialog-head"><span>型態</span><button class="px-icon" data-action="close" aria-label="關閉型態選單">${icon('close')}</button></div><div class="px-dialog-body"><input class="px-search" aria-label="搜尋型態" placeholder="搜尋型態"><div class="px-count-status" aria-live="polite"></div><div class="px-options"></div></div></dialog><dialog class="px-dialog px-settings" aria-label="篩選"><div class="px-dialog-head"><span>篩選<small class="px-filter-summary" aria-live="polite"></small></span><button class="px-icon" data-action="close" aria-label="關閉篩選">${icon('close')}</button></div><div class="px-dialog-body"><div class="px-filter-title">時間級別</div><div class="px-frames">${Object.keys(TIMEFRAMES).map(f=>`<button class="px-frame-option" data-frame="${f}">${f}</button>`).join('')}</div>${remembers?`<div class="px-filter-title">24H 成交額<small>USDT 以上</small></div><div class="px-lots"><label class="px-lots-input"><input type="number" inputmode="decimal" min="0" step="any" data-turnover placeholder="自訂" aria-label="24H 成交額下限，單位萬 USDT"><span aria-hidden="true">萬</span></label>${TURNOVER_PRESETS.map(n=>`<button class="px-frame-option" data-turnover-preset="${n}" aria-label="24H 成交額 ${turnoverText(n)} USDT 以上">${turnoverText(n)}</button>`).join('')}</div><div class="px-filter-title">板塊<small>可複選</small><button class="px-filter-clear" data-sectors-clear>全部板塊</button></div><div class="px-groups" aria-label="板塊"></div>`:''}<label class="px-setting"><span>成交額觀察池</span><select data-limit aria-label="掃描${asset}數"><option value="80">前 80 ${asset}</option><option value="160">前 160 ${asset}</option><option value="0">全部合資格${asset}</option></select></label><details class="px-help"></details></div></dialog><dialog class="px-dialog px-detail" aria-label="型態 K 線詳情"><div class="px-dialog-head"><span class="px-detail-title"></span><div class="px-detail-tools"><button class="px-to-radar" data-action="open-radar" aria-label="在雷達查看這個${asset}">前往雷達</button><button class="px-icon" data-action="reset-chart" aria-label="重設圖表範圍">${icon('refresh')}</button><button class="px-icon" data-action="close" aria-label="關閉圖表">${icon('close')}</button></div></div><div class="px-detail-frames" role="group" aria-label="K 線時間級別">${Object.keys(TIMEFRAMES).map(f=>`<button data-detail-frame="${f}" aria-pressed="false">${f}</button>`).join('')}</div><div class="px-detail-stage"><canvas aria-label="可拖曳及雙指縮放的 K 線圖"></canvas><div class="px-detail-loading" role="status" hidden></div></div><div class="px-detail-footer"></div></dialog></main>`;
  revealStyledShadow(shadow,life.signal);
  document.addEventListener('ox:themechange',()=>requestAnimationFrame(drawBoard),{signal:life.signal});
   const q=s=>shadow.querySelector(s),qa=s=>[...shadow.querySelectorAll(s)],board=q('.px-board canvas');
   if(source.help)q('.px-help').innerHTML='<summary>比對與資料</summary>'+source.help;
   else q('.px-help').innerHTML='<summary>比對與資料</summary><p>畫板可瀏覽整個正常交易的加密觀察池，選擇型態或手繪後以實際 K 線結構、轉折比例及路徑比對。有效水平／斜線須有分開的測試；已明顯上下貫穿的線失效。</p><p>型態形成中的候選仍會保留，標示「尚待量價確認」。T1 要求完整量價條件，T2／T3 表示型態的確認程度，搜尋結果沒有雷達 15＋15 的名額限制。型態相似度不是勝率，也不等於已入選雷達。</p><p>已取得的真實行情及分類會直接重用。切換型態或手繪不重新下載行情，資料缺漏不補造 K 線。</p>';
   if(source.palette&&[source.palette.up,source.palette.down].every(color=>/^#[\da-f]{6}$/i.test(color))){const style=document.createElement('style');style.textContent=`.px-up{color:${source.palette.up}}.px-down{color:${source.palette.down}}`;shadow.append(style);}
-  function preferences(){saved={frames:[...frames],limit,query,strokes:structuredClone(strokes)};preferencesByMarket.set(preferenceKey,saved);}
+  function preferences(){saved={frames:[...frames],limit,query,strokes:structuredClone(strokes)};preferencesByMarket.set(preferenceKey,saved);if(remembers){ignoreFilterEvent=true;try{writeBoardFilter({frames,limit,...filter},TIMEFRAMES);}finally{ignoreFilterEvent=false;}}}
+  let ignoreFilterEvent=false;
+  // 篩選: the latest 24H 成交額 and the verified 板塊 of each contract.
+  function refreshSectors(){if(sectorUniverse===universe&&sectorInfo)return sectorInfo;sectorUniverse=universe;sectorInfo=boardSectors(universe);return sectorInfo;}
+  function coinFacts(symbol,turnover){
+    const ticker=universe?tickerIndex(universe).get(symbol):null;
+    return {turnover:ticker?Number(ticker.usdtVolume):turnover,sectors:refreshSectors()?.bySymbol.get(symbol)||[]};
+  }
+  const tickerMaps=new WeakMap();
+  function tickerIndex(pool){let map=tickerMaps.get(pool);if(!map){map=new Map((pool.allTickers||pool.tickers||[]).map(t=>[t.symbol,t]));tickerMaps.set(pool,map);}return map;}
+  const filtering=()=>remembers&&activeFilterCount(filter)>0;
+  function passesFilter(symbol,turnover){return !filtering()||passesBoardFilter(filter,coinFacts(symbol,turnover));}
+  // The scan covers only contracts that pass 篩選, so a narrow filter finishes quickly.
+  function scanPool(pool){if(!filtering())return pool;const tickers=pool.tickers.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume)));return {...pool,tickers};}
+  function renderSectors(){
+    const host=q('.px-groups');if(!host)return;
+    const info=refreshSectors();
+    if(!info){host.innerHTML=`<span class="px-groups-note">${busy?'板塊資料載入中…':'板塊資料暫時無法取得，可重新掃描'}</span>`;return;}
+    host.innerHTML=info.groups.map(g=>`<button class="px-frame-option" data-sector="${esc(g.id)}" aria-pressed="${filter.sectors.includes(g.id)}" title="${esc(g.title)}">${esc(g.name)}<small>${g.count}</small></button>`).join('');
+  }
+  function filterSummary(){
+    const summary=q('.px-filter-summary');if(!summary)return;
+    const pool=universe?.tickers;
+    summary.textContent=!pool?'':filtering()?`${pool.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume))).length}／${pool.length} ${asset}`:`${pool.length} ${asset}`;
+  }
   function labels(){
-    q('[data-frame-label]').textContent=frames.join(' + ');q('[data-pattern-label]').textContent=patternById(query?.id)?.name||'型態';
+    const active=remembers?activeFilterCount(filter):0;
+    q('[data-frame-label]').textContent=remembers?`篩選 · ${frames.join(' + ')}${active?` · ${active}`:''}`:frames.join(' + ');q('[data-pattern-label]').textContent=patternById(query?.id)?.name||'型態';
+    q('[data-action="timeframes"]').setAttribute('aria-label',`篩選：${frames.join('、')}${filter.turnover?`，24H 成交額 ${turnoverText(filter.turnover)} USDT 以上`:''}${filter.sectors.length?`，${filter.sectors.length} 個板塊`:''}`);
+    qa('[data-turnover-preset]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.turnoverPreset)===filter.turnover)));
+    const turnoverInput=q('[data-turnover]');if(turnoverInput&&shadow.activeElement!==turnoverInput)turnoverInput.value=filter.turnover?String(Number((filter.turnover/1e4).toFixed(2))):'';
+    qa('[data-sector]').forEach(b=>b.setAttribute('aria-pressed',String(filter.sectors.includes(b.dataset.sector))));q('[data-sectors-clear]')?.setAttribute('aria-pressed',String(!filter.sectors.length));
+    filterSummary();
     const toggle=q('.px-mode-toggle'),hasModes=!!strokes.length&&!!query?.points&&!!query?.id;
     toggle.hidden=!hasModes;
     if(hasModes){const sketch=query.mode==='sketch';q('[data-mode-label]').textContent=sketch?'相似路徑':'型態條件';q('.px-mode-glyph').textContent=sketch?'⌁':'◇';toggle.setAttribute('aria-label',`${sketch?'相似路徑':'型態條件'}，點擊切換為${sketch?'型態條件':'相似路徑'}`);toggle.title=toggle.getAttribute('aria-label');}
@@ -126,27 +178,39 @@ export function mountPatternSearch(host,options={}){
       try{worker.postMessage({...message,id});}catch{failWorker();}
     }).catch(error=>{if(error.name==='AbortError'||disposed)throw error;return computeFallback(message);});
   }
-  function activeEntries(){
+  // Every current series of the observed pool; 篩選 narrows it in activeEntries.
+  function poolEntries(){
     let list=[...entries.values()].filter(e=>frames.includes(e.data.frame)&&entryCurrent(e));
     const symbols=new Set(universe?universe.tickers.map(t=>t.symbol):[...new Map(list.sort((a,b)=>b.data.turnover-a.data.turnover).map(e=>[e.data.symbol,e])).keys()].slice(0,limit||Infinity));
     return list.filter(e=>symbols.has(e.data.symbol));
   }
+  function activeEntries(){return filtering()?poolEntries().filter(e=>passesFilter(e.data.symbol,e.data.turnover)):poolEntries();}
   function counts(){return patternCounts(activeEntries(),frames);}
   function updateCounts(){
     const totals=counts();qa('[data-count]').forEach(e=>{e.textContent=totals[e.dataset.count]?String(totals[e.dataset.count]):busy&&!backgroundScan?'…':'0';});
-    q('.px-count-status').textContent=busy&&!backgroundScan?`預先分類 ${progress.done}/${progress.total||'…'} 組`:`${frames.join(' + ')} · 不重複${asset}${progress.failed?' · 部分資料缺漏':''}`;
+    const active=remembers?activeFilterCount(filter):0;
+    q('.px-count-status').textContent=busy&&!backgroundScan?`預先分類 ${progress.done}/${progress.total||'…'} 組`:`${frames.join(' + ')}${active?` · 篩選 ${active} 項`:''} · 不重複${asset}${progress.failed?' · 部分資料缺漏':''}`;
   }
   function hasBaseline(list=[...entries.values()]){return frames.every(frame=>list.some(entry=>entry.data.frame===frame&&classificationCurrent(entry,INDEX_VERSION)));}
   function updateStatus(){
     q('.px-status-row').hidden=true;
     q('.px-refresh-pill').setAttribute('aria-label',busy?`正在掃描 ${progress.coinsDone}/${progress.coinsTotal||'…'} 個幣種；點一下重新掃描`:'重新掃描');
     q('.px').dataset.indexState=busy?'loading':lastError||progress.failed?'partial':'ready';
-    const error=q('.px-scan-error');error.hidden=!lastError;error.textContent=lastError?`${lastError}；可點右下角重新掃描。`:'';
+    const error=q('.px-scan-error');error.hidden=!lastError;error.textContent=lastError?`${lastError}；${options.scanButton===false?'可重新掃描':'可點右下角重新掃描'}。`:'';
     const amount=activeEntries().length,matched=new Set([...rows.values()].map(r=>r.symbol)).size;
     status(busy?`${progress.coinsTotal?`${progress.coinsDone}/${progress.coinsTotal}`:'取得清單'} · ${progress.total?Math.round(progress.done/progress.total*100):0}% · ${sourceLabel} 掃描`:`${lastError?lastError+' · ':''}${sourceLabel}${source.dataDate?.()?' · '+source.dataDate():''} · ${amount} 組${query?' · '+matched+' 符合':''}${progress.failed?' · '+progress.failed+' 缺漏':''}`);
     const percent=progress.total?Math.min(100,Math.max(0,progress.done/progress.total*100)):0;
     q('.px-pill-arc').style.strokeDashoffset=String(107*(1-percent/100));
-    updateCounts();
+    updateCounts();filterSummary();notifyScan();
+  }
+  // A page that hides the board's own scan button (scanButton:false) drives
+  // refresh() itself and follows this event to show scan progress.
+  let lastScanState='';
+  function notifyScan(){
+    const percent=progress.total?Math.min(100,Math.round(progress.done/progress.total*100)):0;
+    const detail={scanning:q('.px-board').classList.contains('is-scanning'),busy,percent,coinsDone:progress.coinsDone,coinsTotal:progress.coinsTotal},key=`${detail.scanning}|${busy}|${percent}`;
+    if(key===lastScanState||disposed)return;lastScanState=key;
+    host.dispatchEvent(new CustomEvent('ox:pattern-board-scan',{detail,bubbles:true,composed:true}));
   }
   function setRows(matches){
     const qualified=rankPatternMatches(matches);
@@ -155,7 +219,7 @@ export function mountPatternSearch(host,options={}){
 
   async function search(){
     if(disposed||suspended||document.hidden||activePointer!==null)return;
-    const signature=JSON.stringify([query,frames,limit]);if(signature!==searchSignature){searchSignature=signature;queryVersion++;rows.clear();}
+    const signature=JSON.stringify([query,frames,limit,filter]);if(signature!==searchSignature){searchSignature=signature;queryVersion++;rows.clear();}
     const run=queryVersion,target=query&&structuredClone(query),list=activeEntries();
     if(!target){
       setRows(browsePatternEntries(list));return;
@@ -198,14 +262,15 @@ export function mountPatternSearch(host,options={}){
   }
   function clearCharts(){visibleQuoteCards.clear();chartObserver?.disconnect();chartObserver=null;chartInstances.forEach(c=>c.destroy());chartInstances.clear();}
   function renderResults(force=false){
-    q('.px-tier-filters').hidden=!rows.size;
+    const pool=poolEntries().length;
+    q('.px-tier-filters').hidden=!rows.size&&!pool;
     const displayTier=r=>r.match.tier;
     const totals=[1,2,3].map(t=>[...rows.values()].filter(r=>displayTier(r)===t).length);
-    qa('[data-tier-filter]').forEach(b=>{const filter=b.dataset.tierFilter;b.setAttribute('aria-pressed',filter===tierFilter);b.textContent=filter==='all'?`全部 ${rows.size}`:`T${filter} ${totals[Number(filter)-1]}`;});
-    const sorted=sortMatches([...rows.values()].filter(r=>tierFilter==='all'||String(displayTier(r))===tierFilter).map(r=>({...r,displayTier:displayTier(r),rankPriority:null}))),visible=sorted.slice(0,shown),signature=sorted.length+'|'+visible.map(r=>`${r.symbol}:${r.frame}:${r.similarity}:${r.match.tier}:${r.match.radarTier}:${r.match.stage}:${r.oxScore}:${r.serverTime}`).join('|');
+    qa('[data-tier-filter]').forEach(b=>{const choice=b.dataset.tierFilter,count=choice==='all'?rows.size:totals[Number(choice)-1];b.setAttribute('aria-pressed',choice===tierFilter);b.innerHTML=`${choice==='all'?'全部':'T'+choice}<b>${count}</b>`;b.setAttribute('aria-label',`${choice==='all'?'全部':'T'+choice} ${count} 個`);});
+    const ranked=sortMatches([...rows.values()].filter(r=>tierFilter==='all'||String(displayTier(r))===tierFilter).map(r=>({...r,displayTier:displayTier(r),rankPriority:null}))),sorted=strokes.length||query?ranked:mixPatterns(ranked),visible=sorted.slice(0,shown),signature=sorted.length+'|'+visible.map(r=>`${r.symbol}:${r.frame}:${r.similarity}:${r.match.tier}:${r.match.radarTier}:${r.match.stage}:${r.oxScore}:${r.serverTime}`).join('|');
     q('.px-more').hidden=sorted.length<=shown;
     if(!force&&signature===lastSignature)return;lastSignature=signature;clearCharts();
-    if(!visible.length){syncQuotes();q('.px-grid').innerHTML=`<div class="px-empty">${tierFilter!=='all'&&rows.size?`此階段暫無符合的${asset}`:!query?(busy&&!backgroundScan?'載入走勢與型態…':'行情資料暫無可用資料，可重新掃描'):busy&&!backgroundScan?'正在加入已分類結果…':progress.failed===progress.total&&progress.total?'行情未取得，請重新掃描':'目前沒有符合的型態，可切換級別或重畫'}</div>`;return;}
+    if(!visible.length){syncQuotes();q('.px-grid').innerHTML=`<div class="px-empty">${tierFilter!=='all'&&rows.size?`此階段暫無符合的${asset}`:filtering()&&pool&&!activeEntries().length&&!(busy&&!backgroundScan)?`篩選後沒有${asset}，可放寬 24H 成交額或板塊`:!query?(busy&&!backgroundScan?'載入走勢與型態…':'行情資料暫無可用資料，可重新掃描'):busy&&!backgroundScan?'正在加入已分類結果…':progress.failed===progress.total&&progress.total?'行情未取得，請重新掃描':'目前沒有符合的型態，可切換級別或重畫'}</div>`;return;}
     let lastTier=null;
     q('.px-grid').innerHTML=visible.map(r=>{const tier=displayTier(r),group=tierFilter==='all'&&lastTier!==tier?`<div class="px-tier-heading" data-tier-heading="${tier}">${query?'型態 ':'觀察 '}T${tier}<span>${tier===1?'結構與量能完整':tier===2?'部分確認':'型態／走勢觀察'}</span></div>`:'';lastTier=tier;return `${group}<button class="px-card" data-tier="${tier}" data-result="${esc(r.symbol+':'+r.frame)}" aria-label="${esc(r.symbol)} ${r.frame} ${query?'型態':'走勢'} T${tier} ${esc(r.match.stage)}，開啟 K 線"><div class="px-card-top"><span class="px-symbol">${esc(displayName(r))}<span class="px-frame">${r.frame}${r.candles.at(-1).provisional?' · 未收':''}</span></span><span class="px-card-right"><b class="px-tier-badge">T${tier}</b><span class="px-change ${r.change>=0?'px-up':'px-down'}">${signed(r.change)}</span></span></div><div class="px-match"><span>${esc(query?r.match.stage:r.match.stage)}</span><span>${query?'相似 '+r.similarity.toFixed(1):esc(r.match.label.replace(/・.*$/,''))}</span></div><canvas aria-label="${esc(r.symbol)} 實際型態 K 線"></canvas><div class="px-energy"><span>OX</span><strong>${r.oxScore??'—'}</strong><span class="px-track" role="meter" aria-label="OX 強度" aria-valuemin="0" aria-valuemax="100" ${r.oxScore===null?'':`aria-valuenow="${Math.min(100,r.oxScore)}"`}><i style="width:${Math.max(0,Math.min(100,r.oxScore??0))}%"></i></span></div><div class="px-turnover"><span>${esc(turnoverLabel)}</span><b>${volume(r.turnover)} ${currency}</b></div></button>`;}).join('');
     const mountCard=card=>{if(card.dataset.chartMounted)return;const row=rows.get(card.dataset.result);if(row){card.dataset.chartMounted='true';chartInstances.set(card,candleChart(card.querySelector('canvas'),row,{palette:source.palette}));while(chartInstances.size>32){const [old,chart]=chartInstances.entries().next().value;chart.destroy();chartInstances.delete(old);delete old.dataset.chartMounted;}}};
@@ -222,7 +287,7 @@ export function mountPatternSearch(host,options={}){
     if(!paintTimer)paintTimer=setTimeout(()=>{paintTimer=0;void search();},100);
   }
   function status(text){q('.px-status').textContent=text;}
-  function stop(){version++;controller?.abort();controller=null;busy=false;clearTimeout(paintTimer);paintTimer=0;clearTimeout(scanFinishTimer);q('.px-board').classList.remove('is-scanning');q('.px-refresh-pill').classList.remove('is-scanning','is-complete');}
+  function stop(){version++;controller?.abort();controller=null;busy=false;clearTimeout(paintTimer);paintTimer=0;clearTimeout(scanFinishTimer);q('.px-board').classList.remove('is-scanning');q('.px-refresh-pill').classList.remove('is-scanning','is-complete');notifyScan();}
   async function hydrate(entry){
     if(!classificationCurrent(entry,INDEX_VERSION)){
       const indexed=await compute({type:'index',key:entry.key,candles:entry.data.candles});
@@ -242,7 +307,8 @@ export function mountPatternSearch(host,options={}){
       for(let i=0;i<cached.length;i++){if(run!==version)return;await hydrate(cached[i]);queueRender();if(i%10===9)await new Promise(resolve=>setTimeout(resolve,0));}
       search();
       if(!universe||(Date.now()-universe.serverTime>60000||frames.some(f=>Math.floor(Date.now()/1000/TIMEFRAMES[f])!==Math.floor(universe.serverTime/1000/TIMEFRAMES[f]))))universe=await fetchUniverse(signal,limit);
-      if(run!==version)return;const pool=universe;progress.total=pool.tickers.length*frames.length;progress.coinsTotal=pool.tickers.length;loading?.update(0,progress.coinsTotal);updateStatus();
+      if(run!==version)return;if(q('.px-settings').open)renderSectors();labels();
+      const pool=scanPool(universe);progress.total=pool.tickers.length*frames.length;progress.coinsTotal=pool.tickers.length;loading?.update(0,progress.coinsTotal);updateStatus();
       await scanUniverse(pool,frames,{signal,classify:false,onSeries:async data=>{
         if(run!==version)return;const key=data.symbol+':'+data.frame,existing=entries.get(key),same=existing&&entryCurrent(existing,data.serverTime)&&existing.data.candles.at(-1).time===data.candles.at(-1).time&&(!data.candles.at(-1).provisional||existing.data.serverTime===data.serverTime);
         const reuse=same&&classificationCurrent(existing,INDEX_VERSION);
@@ -255,10 +321,11 @@ export function mountPatternSearch(host,options={}){
         if(data.preclassified)hydrated.delete(key);entries.set(key,entry);saveIndex(fresh,indexed.matches);queueRender();
       },onProgress:p=>{if(run!==version)return;progress=p;loading?.update(p.coinsDone,p.coinsTotal);updateStatus();}});
       if(run!==version)return;lastScan=Date.now();
-      const keys=activeEntries().map(e=>e.key);for(const key of entries.keys())if(!keys.includes(key))entries.delete(key);worker?.postMessage({type:'retain',keys});for(const key of hydrated)if(!keys.includes(key))hydrated.delete(key);
+      // Keep the whole observed pool: loosening 篩選 again reuses those series.
+      const keys=new Set(poolEntries().map(e=>e.key));for(const key of entries.keys())if(!keys.has(key))entries.delete(key);worker?.postMessage({type:'retain',keys:[...keys]});for(const key of hydrated)if(!keys.has(key))hydrated.delete(key);
       pruneIndex();
     }catch(e){if(run===version&&e.name!=='AbortError')lastError=e.message||'行情取得失敗';}
-    finally{loading?.finish();if(run===version){busy=false;controller=null;q('.px-refresh-pill').classList.remove('is-scanning');q('.px-board').classList.remove('is-scanning');if(!lastError&&!backgroundScan){q('.px-pill-arc').style.strokeDashoffset='0';q('.px-refresh-pill').classList.add('is-complete');}scanFinishTimer=setTimeout(()=>q('.px-refresh-pill').classList.remove('is-complete'),900);search();}}
+    finally{loading?.finish();if(run===version){busy=false;controller=null;q('.px-refresh-pill').classList.remove('is-scanning');q('.px-board').classList.remove('is-scanning');if(!lastError&&!backgroundScan){q('.px-pill-arc').style.strokeDashoffset='0';q('.px-refresh-pill').classList.add('is-complete');}scanFinishTimer=setTimeout(()=>q('.px-refresh-pill').classList.remove('is-complete'),900);notifyScan();search();}}
   }
   function openDialog(selector,button){const d=q(selector);d.classList.remove('px-closing');qa('.px-control').forEach(b=>b.setAttribute('aria-expanded',b===button));d.showModal();}
   function closeDialogs(immediate=false){qa('dialog[open]').forEach(d=>{if(immediate||matchMedia('(prefers-reduced-motion:reduce)').matches)d.close();else{d.classList.add('px-closing');setTimeout(()=>{if(d.classList.contains('px-closing')){d.close();d.classList.remove('px-closing');}},180);}});qa('.px-control').forEach(b=>b.setAttribute('aria-expanded','false'));detailController?.abort();detailController=null;detailVersion++;detailChart?.destroy();detailChart=null;detailFrame=null;selectedRow=null;}
@@ -294,13 +361,20 @@ export function mountPatternSearch(host,options={}){
     if(e.type==='click'&&suppressControlClick){suppressControlClick=false;e.preventDefault();e.stopPropagation();return;}
     if(tierChoice){tierFilter=tierChoice.dataset.tierFilter;shown=24;renderResults(true);return;}
     if(preset){clearTimeout(drawTimer);query={id:preset.dataset.preset};strokes=[];shown=24;labels();scheduleBoard();closeDialogs();preferences();search();return;}
+    const turnoverPreset=e.target.closest('[data-turnover-preset]'),sector=e.target.closest('[data-sector]'),sectorsClear=e.target.closest('[data-sectors-clear]');
+    if(turnoverPreset||sector||sectorsClear){
+      if(turnoverPreset){const n=Number(turnoverPreset.dataset.turnoverPreset);filter={...filter,turnover:filter.turnover===n?0:n};}
+      if(sector){const id=sector.dataset.sector;filter={...filter,sectors:filter.sectors.includes(id)?filter.sectors.filter(x=>x!==id):[...filter.sectors,id]};}
+      if(sectorsClear)filter={...filter,sectors:[]};
+      applyFilter();return;
+    }
     if(frame){const f=frame.dataset.frame;if(frames.includes(f)){if(frames.length===1)return;frames=frames.filter(x=>x!==f);}else frames.push(f);frames.sort((a,b)=>TIMEFRAMES[b]-TIMEFRAMES[a]);labels();preferences();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,300);return;}
     if(detailChoice){selectDetailFrame(detailChoice.dataset.detailFrame);return;}
     if(result){openResult(result.dataset.result);return;}
     if(!button)return;
     switch(button.dataset.action){
       case 'patterns':presetOptions();q('.px-search').value='';openDialog('.px-presets',button);break;
-      case 'timeframes':labels();openDialog('.px-settings',button);break;
+      case 'timeframes':renderSectors();labels();openDialog('.px-settings',button);break;
       case 'close':closeDialogs();break;
       case 'undo':clearTimeout(drawTimer);glowEnded=0;strokes=[];query=strokes.length?queryFromStrokes(strokes):null;labels();scheduleBoard();preferences();search();break;
       case 'toggle-mode':if(query?.points&&query?.id){query={...query,mode:query.mode==='sketch'?'pattern':'sketch'};shown=24;labels();preferences();search();}break;
@@ -311,6 +385,18 @@ export function mountPatternSearch(host,options={}){
     }
   },{signal:life.signal});
   q('.px-search').addEventListener('input',e=>presetOptions(e.target.value),{signal:life.signal});
+  // 篩選 narrows the shown cards at once; a short-delayed scan then covers any
+  // contract that newly passes and was not observed yet.
+  function applyFilter(){shown=24;labels();preferences();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,350);}
+  q('[data-turnover]')?.addEventListener('change',e=>{const value=Number(e.target.value);filter={...filter,turnover:Number.isFinite(value)&&value>0?Math.round(value*1e4):0};applyFilter();},{signal:life.signal});
+  q('[data-turnover]')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}},{signal:life.signal});
+  // Another tab or a later account sync may replace the remembered 篩選.
+  if(remembers)document.addEventListener(BOARD_FILTER_EVENT,event=>{
+    if(ignoreFilterEvent||disposed)return;const next=normalizeBoardFilter(event.detail,TIMEFRAMES);
+    if(JSON.stringify([next.frames,next.limit,next.turnover,next.sectors])===JSON.stringify([frames,limit,filter.turnover,filter.sectors]))return;
+    const scope=next.limit!==limit;frames=next.frames;limit=next.limit;filter={turnover:next.turnover,sectors:next.sectors};if(scope)universe=null;
+    saved={...saved,frames:[...frames],limit};preferencesByMarket.set(preferenceKey,saved);shown=24;labels();renderSectors();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,350);
+  },{signal:life.signal});
   q('[data-limit]').addEventListener('change',e=>{limit=Number(e.target.value);universe=null;preferences();scan();},{signal:life.signal});
   qa('dialog').forEach(d=>{d.addEventListener('cancel',e=>{e.preventDefault();closeDialogs();},{signal:life.signal});d.addEventListener('click',e=>{if(e.target===d){const r=d.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeDialogs();}},{signal:life.signal});});
   let activePointer=null,currentStroke=null,pendingControl=null,suppressControlClick=false;

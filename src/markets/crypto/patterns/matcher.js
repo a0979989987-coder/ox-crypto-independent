@@ -337,7 +337,13 @@ export function rankPatternMatches(matches){
 export function browsePatternEntries(entries){
  const bestBySymbol=new Map();
  for(const entry of entries){
-  const best=sortMatches(Object.values(entry.matches||{}).map(match=>({match,similarity:match.similarity}))).at(0)?.match;
+  // Matches for patterns no longer in the catalog (an index built by an older
+  // version) are ignored. Within a tier, a named shape (W 底, 旗形, 諧波…) is
+  // shown before a plain level or trend line, which nearly every coin has.
+  const rule=id=>patternById(id)?.rule||'';
+  const line=id=>/^(level|trend)/.test(rule(id));
+  const ranked=sortMatches(Object.entries(entry.matches||{}).filter(([id])=>patternById(id)).map(([id,match])=>({match:{...match,id:match.id||id},similarity:match.similarity})));
+  const top=ranked[0]?.match,best=top&&(ranked.find(r=>(r.match.tier??3)===(top.tier??3)&&!line(r.match.id))?.match||top);
   const signal=best?.classicSignal||Object.values(entry.data.classic||{}).sort((a,b)=>
    Number(b.eligible)-Number(a.eligible)||Number(b.observationEligible)-Number(a.observationEligible)||compareClassic(a,b))[0];
   if(!signal)continue;
