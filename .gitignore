@@ -6,3 +6,6 @@ node_modules/
 .vercel/
 
 .tw-pattern-report-cache/
+# ChatGPT Sites build output and the local D1 database
+dist/
+.local/

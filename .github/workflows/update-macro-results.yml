@@ -8,6 +8,7 @@ on:
     - cron: '7,22,37,52 12-21 * * 1-5'
 permissions:
   contents: write
+  id-token: write
 concurrency:
   group: update-official-macro
   cancel-in-progress: false
@@ -31,3 +32,12 @@ jobs:
           git commit -m "data(news): refresh official macro results"
           git pull --rebase origin main
           git push origin HEAD:main
+
+      - name: Publish verified data to Sites
+        # Off until the Site exists: set the repository variable OX_SITES_DATA to "on".
+        if: ${{ always() && !cancelled() && github.ref == 'refs/heads/main' && vars.OX_SITES_DATA == 'on' }}
+        env:
+          OX_SITE_ORIGIN: ${{ vars.OX_SITE_ORIGIN }}
+        run: |
+          git fetch origin main
+          node scripts/publish-site-data.mjs

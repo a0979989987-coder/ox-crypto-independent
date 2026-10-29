@@ -1,0 +1,8 @@
+{
+  "redirects": [
+    { "source": "/", "destination": "https://crypto.oxpattern.com/", "permanent": false },
+    { "source": "/:path*", "destination": "https://crypto.oxpattern.com/:path*", "permanent": false }
+  ],
+  "buildCommand": "npm run build:tools && npm run check",
+  "outputDirectory": "."
+}

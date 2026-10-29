@@ -1,0 +1,64 @@
+/* Member sign-in (Google), Bitget UID, site announcement, maintenance cover,
+   switched-off tools and in-site feedback (src/app/account.js, src/app/usage.js). */
+
+/* One login system: the old OX ACCOUNT entry points stay in the code but out of sight. */
+.ox-control-group:has(> #ox-control-account-open),#ox-control-account-open,
+.ox-control-view[data-control-view="account"],#ox-account-trigger,#ox-account-summary{display:none!important}
+
+/* Account card: reuses the control panel's group/row look where it sits in 選單. */
+.ox-member{display:block;margin:0 0 10px}
+.ox-member .ox-control-row{cursor:default}
+.ox-member .ox-control-copy small+small{margin-top:1px}
+.ox-member button.ox-control-row:not([disabled]){cursor:pointer}
+.ox-member button.ox-control-row[disabled]{opacity:1}
+.ox-member-avatar{width:100%;height:100%;border-radius:inherit;object-fit:cover;display:block}
+.ox-member-google svg{width:18px!important;height:18px!important;stroke:none!important}
+.ox-member-badge{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;border:1px solid #3aa57f;color:#5fd39b;font-size:9px;font-weight:800;vertical-align:1px;white-space:nowrap}
+.ox-member-side-button{min-height:30px;padding:0 12px;border:1px solid #354860;border-radius:999px;background:transparent;color:inherit;font:inherit;font-size:11px;font-weight:700;cursor:pointer}
+.ox-member-panel{padding:12px;border-top:1px solid #1d2b3e;display:grid;grid-template-columns:minmax(0,1fr);gap:8px}
+.ox-member-panel-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.ox-member-panel-head b{font-size:12px}
+.ox-member-chip{padding:2px 9px;border-radius:999px;font-size:11px;font-weight:800;white-space:nowrap;border:1px solid currentColor}
+.ox-member-chip.pending{color:#f5c451}.ox-member-chip.approved{color:#5fd39b}.ox-member-chip.rejected{color:#f16a70}.ox-member-chip.none{color:#8294ab}
+.ox-member-form{display:flex;gap:8px;min-width:0}
+.ox-member-form input,.ox-member-feedback textarea,.ox-member-feedback select{flex:1;min-width:0;box-sizing:border-box;min-height:40px;padding:8px 11px;border:1px solid #2c4059;border-radius:10px;background:#0a121d;color:inherit;font:inherit;font-size:16px}
+.ox-member-form input{width:0;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.ox-member-form button,.ox-member-feedback button[type=submit]{flex:0 0 auto;min-height:40px;padding:0 16px;border:0;border-radius:10px;background:#e9dcc0;color:#1b1a17;font:inherit;font-size:14px;font-weight:800;cursor:pointer}
+.ox-member-form button[disabled],.ox-member-feedback button[disabled]{opacity:.55;cursor:default}
+.ox-member-hint,.ox-member-status{margin:0;font-size:12px;line-height:1.5;color:var(--muted,#8b97a8)}
+.ox-member-status:empty{display:none}
+.ox-member-status.error{color:#f16a70}
+.ox-member-note{margin:0;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:9px;background:#ffffff08}
+.ox-member-legal{display:flex;gap:16px;justify-content:center;padding:8px 0 2px;font-size:12px}
+.ox-member-legal a{color:inherit;opacity:.6;text-decoration:none}
+.ox-member-feedback{display:grid;gap:8px}
+.ox-member-feedback textarea{min-height:92px;resize:vertical}
+.ox-member-feedback div{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ox-member-flash{animation:ox-member-flash 1.2s ease}
+@keyframes ox-member-flash{0%,100%{box-shadow:none}30%{box-shadow:0 0 0 2px #e9dcc0}}
+body.theme-light .ox-member-panel{border-color:#dce4ec}
+body.theme-light .ox-member-form input,body.theme-light .ox-member-feedback textarea,body.theme-light .ox-member-feedback select{background:#f7f9fb;border-color:#c7d4e1}
+body.theme-light .ox-member-note{background:#0000000a}
+body.theme-light .ox-member-side-button{border-color:#c7d4e1}
+body.theme-light .ox-member-chip.pending{color:#a87417}body.theme-light .ox-member-chip.approved,body.theme-light .ox-member-badge{color:#178a5c;border-color:#5fbf98}
+body.theme-light .ox-member-chip.rejected{color:#c8313a}
+
+/* Short messages (sign-in result, a switched-off tool). */
+.ox-member-toast,.ox-switch-note{position:fixed;left:50%;transform:translateX(-50%);z-index:10050;box-sizing:border-box;max-width:min(440px,calc(100vw - 24px));background:#1b1e23;color:#f3efe6;box-shadow:0 10px 30px #0008;font-size:14px;line-height:1.5}
+.ox-member-toast{bottom:calc(104px + env(safe-area-inset-bottom));padding:10px 18px;border-radius:999px;pointer-events:none;white-space:nowrap}
+.ox-switch-note{bottom:calc(100px + env(safe-area-inset-bottom));width:calc(100vw - 24px);display:flex;align-items:flex-start;gap:10px;padding:12px 10px 12px 16px;border-radius:16px;border:1px solid #ffffff1c}
+.ox-switch-note>div{flex:1;min-width:0}
+.ox-switch-note b{display:block;font-size:15px}
+.ox-switch-note p{margin:3px 0 0;opacity:.82}
+.ox-switch-note>button{flex:0 0 30px;width:30px!important;height:30px!important;min-height:0!important;margin:0!important;padding:0!important;border:0;border-radius:50%;background:#ffffff14;color:inherit;font-size:18px;line-height:1;cursor:pointer}
+
+/* Announcement from the admin page: a bar at the top of the page that scrolls away with it. */
+.ox-announcement{position:relative;z-index:30;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:10px;padding:9px 12px 9px 16px;padding-top:calc(9px + env(safe-area-inset-top));background:#e9dcc0;color:#1b1a17;font-size:14px;line-height:1.45}
+.ox-announcement a,.ox-announcement span{flex:1;min-width:0;color:inherit;text-decoration:none;overflow-wrap:anywhere}
+.ox-announcement a{text-decoration:underline}
+.ox-announcement button{flex:0 0 auto;width:30px;height:30px;border:0;border-radius:50%;background:#0000000f;color:inherit;font-size:18px;line-height:1;cursor:pointer}
+
+/* Maintenance mode covers the app. */
+.ox-maintenance{position:fixed;inset:0;z-index:10060;display:grid;place-items:center;background:#0f1114;color:#e9e7e2;text-align:center;padding:24px}
+.ox-maintenance b{font-size:22px}
+.ox-maintenance p{opacity:.72;margin-top:8px}

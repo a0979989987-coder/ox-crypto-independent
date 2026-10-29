@@ -31,3 +31,14 @@ npm run dev
 ## 驗證範圍
 
 見 `docs/independent-release.md`。瀏覽器測試使用明確合成資料，不代表即時市場行情與真實帳號的正式驗收。
+
+## ChatGPT Sites（crypto.oxpattern.com，準備中）
+
+Vercel 照常運作，直到擁有者切換。Sites 版由 `npm run build:sites` 產生 `dist/`：`dist/client` 是公開網站（資料檔只放在 `_seed/`），`dist/server/index.js` 是 Worker（API、`/admin`、`/privacy`、`/terms`、`/data/*.json`），`dist/.openai/hosting.json` 需要換成新 Site 的 project_id，綁定 D1 `DB` 與 R2 `BUCKET`。
+
+- 後台 `/admin`：只有用 ChatGPT 登入的擁有者（`OX_ADMIN_EMAILS`，預設 a0979989987@gmail.com）。使用紀錄、公告、功能開關、意見回饋、會員名單、Bitget UID 審核。
+- 會員：Google 登入（`GOOGLE_CLIENT_ID`、密鑰 `GOOGLE_CLIENT_SECRET`，回呼 `https://crypto.oxpattern.com/api/v1/auth/google/callback`）。同步的設定清單在 `src/app/sync-keys.js`；可暫停的工具在 `src/app/site-features.js`。
+- Bitget UID 自動查詢（唯讀，選用）：密鑰 `BITGET_AFFILIATE_API_KEY`、`BITGET_AFFILIATE_SECRET_KEY`、`BITGET_AFFILIATE_PASSPHRASE`。通過只顯示「Bitget 已驗證」，不影響任何功能。
+- 資料更新：排程把資料提交到 main 後，若儲存庫變數 `OX_SITES_DATA` 是 `on`，同一個工作會用 GitHub OIDC 把 `data/`、`previews/data/` 發布到 Site 的 R2（`scripts/publish-site-data.mjs`）；`OX_SITE_ORIGIN` 可在網域生效前指向 chatgpt.site 網址。首次請手動執行 `Publish verified data to Sites`。
+- 本機：`OX_DEV_ADMIN=你的Email OX_DEV_FAKE_GOOGLE=1 node scripts/dev-server.mjs --port 4313`（本機 D1 在 `.local/`，假的 Google 登入只在本機）。
+- 切換網域後，把 `vercel.redirect.json` 的內容換進 `vercel.json`，舊網址就會轉到 crypto.oxpattern.com。

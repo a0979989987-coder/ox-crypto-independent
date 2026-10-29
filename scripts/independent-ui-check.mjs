@@ -44,10 +44,11 @@ try{
     await page.evaluate(()=>switchAppView('media'));
     await page.locator('#view-media.active').waitFor();
     const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();
-    await opener.click();await page.locator('#ox-control-account-open').click();
-    await page.locator('#ox-account-overlay.is-open').waitFor();
-    assert.equal(await page.locator('#ox-account-google').isVisible(),true);
-    assert.equal(await page.locator('#ox-account-email').isVisible(),true);
+    // One login system: the Google member card replaces the old OX ACCOUNT entry.
+    await opener.click();await page.locator('#ox-member-account').waitFor({state:'visible'});
+    assert.equal(await page.locator('#ox-control-account-open').isVisible(),false);
+    assert.match(await page.locator('#ox-member-account').innerText(),/會員功能尚未開放/);
+    assert.equal(await page.locator('#ox-account-overlay.is-open').count(),0);
     assert.equal(urls.some(u=>/\/markets\/tw\/|\/api\/v1\/tw\/|\/data\/tw-/.test(u)),false);
     assert.deepEqual(audit.pageErrors,[]);
     assert.deepEqual(audit.localHttpErrors,[]);
