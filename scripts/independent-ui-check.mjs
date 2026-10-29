@@ -18,6 +18,10 @@ try{
     });
     await page.goto(testBase,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>OXFeatures.ready&&globalThis.OXToolModules);
+    // 畫板 opens on the pattern board; 盤面 holds the chart and the T1/T2/T3 list.
+    assert.equal(await page.evaluate(()=>document.getElementById('view-radar').dataset.radarMode),'board');
+    await page.locator('#ox-radar-board .px-board').waitFor({timeout:15000});
+    await page.evaluate(()=>OXRadarModes.set('chart'));
     await page.locator('#view-radar .coin-card').first().waitFor({timeout:15000});
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');
     assert.deepEqual(await page.evaluate(()=>OXModules.router.list().map(m=>m.id)),['crypto']);
@@ -26,12 +30,12 @@ try{
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');
     await page.evaluate(()=>switchAppView('strength'));
     await page.locator('#ox-crypto-tools-nav').waitFor();
-    for(const tool of ['patterns','bubbles','strength','heatmap','rotation','flow']){
+    assert.equal(await page.locator('#ox-crypto-tools-nav [data-crypto-tool="patterns"]').count(),0);
+    for(const tool of ['bubbles','strength','heatmap','rotation','flow']){
       try { await page.locator(`#ox-crypto-tools-nav [data-crypto-tool="${tool}"]`).click({timeout:5000}); }
       catch(error){console.log(await page.evaluate(()=>({view:document.body.dataset.view,market:document.body.dataset.market,classes:document.body.className,gate:document.getElementById('ox-feature-gate')?.textContent,navHidden:document.getElementById('ox-crypto-tools-nav')?.hidden,active:[...document.querySelectorAll('.app-view.active')].map(e=>e.id)})));await page.screenshot({path:'/workspace/scratch/ac5c466affa8/smoke-failure.png'});throw error;}
       await page.waitForFunction(t=>document.querySelector('#view-strength .strength-page').dataset.cryptoTool===t,tool);
-      if(tool==='patterns')await page.locator('#ox-crypto-tools-inline .px-board').waitFor();
-      else if(tool==='bubbles')await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
+      if(tool==='bubbles')await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
       else if(tool!=='strength')await page.locator('#ox-crypto-tools-inline .cfx-content').filter({visible:true}).waitFor();
       assert.equal(await page.locator('#ox-crypto-tools-loading .ox-tool-load-error').count(),0);
     }
@@ -44,7 +48,10 @@ try{
     await page.evaluate(()=>switchAppView('media'));
     await page.locator('#view-media.active').waitFor();
     const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();
-    await opener.click();await page.locator('#ox-control-account-open').click();
+    await opener.click();await page.locator('#view-settings.active #ox-settings-account').waitFor();
+    assert.equal(await page.locator('#ox-control-account-open').isVisible(),false,'The old OX ACCOUNT entry stays hidden');
+    assert.equal(await page.locator('[data-setting-key="oxLive"],[data-market-choice]').count(),0);
+    await page.evaluate(()=>OXAccount.open('auth'));
     await page.locator('#ox-account-overlay.is-open').waitFor();
     assert.equal(await page.locator('#ox-account-google').isVisible(),true);
     assert.equal(await page.locator('#ox-account-email').isVisible(),true);
@@ -53,7 +60,7 @@ try{
     assert.deepEqual(audit.localHttpErrors,[]);
     assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('theme-light')),theme==='light');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow');
-    console.log(JSON.stringify({theme,width,cryptoTools:6,radar:true,calendar:true,news:true,media:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
+    console.log(JSON.stringify({theme,width,cryptoTools:5,patternBoard:true,radar:true,calendar:true,news:true,media:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
     await context.close();
   }
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}

@@ -34,8 +34,8 @@
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "6d0a6a8d9a77520f818b783cc685f3a62e5c778938dc02eef9f7848ba1da0d03",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "a4f55276cd91f1cae2a8a7f5bb1aa6cf65a81356366a9024983fb47d2cd10770",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; bubble controls get phone-sized touch targets."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
@@ -124,8 +124,8 @@
     {
       "path": "src/markets/crypto/presentation.js",
       "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
-      "sha256": "8d4d8bb070a4fc2c9c23b284abccd784f6a3440f23b95617ad159401238d2851",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression."
+      "sha256": "f4cb23184785a82e14396d43fdd9c6f6c8cb6c7ac0722b412081e0b8c7450160",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. Opening a coin selects the 盤面 tab of the 畫板 dock view before switching to it."
     },
     {
       "path": "src/markets/crypto/scanner.js",

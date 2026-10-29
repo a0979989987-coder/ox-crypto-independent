@@ -1,0 +1,65 @@
+/* Liquid glass in five layers on the surfaces that float over content (ported
+   from the Taiwan site): 1 blur 28px, 2 saturate 170% (colour behind does not
+   turn grey), 3 a white layer (10% on dark; denser on the white platinum page,
+   where a thin layer would leave only a frame), 4 a 1px bright top-left edge
+   for thickness, 5 an edge refraction ring and a soft caustic along the lower
+   edge. Safari cannot use SVG displacement inside backdrop-filter, so
+   refraction is drawn with gradients and works on iPhone. Text-heavy sheets
+   keep a denser tint so their text stays readable. Loaded after every theme. */
+:root{--lg-blur:blur(28px) saturate(170%)}
+
+/* Dock */
+html:root body.ox-terminal .app-dock.glass-nav{
+ -webkit-backdrop-filter:var(--lg-blur)!important;backdrop-filter:var(--lg-blur)!important;
+ background:linear-gradient(rgba(255,255,255,.10),rgba(255,255,255,.10)),rgba(22,24,28,.42)!important;
+ border-color:transparent!important;
+ box-shadow:inset 1px 1px 0 rgba(255,255,255,.5),inset -1px -1px 0 rgba(255,255,255,.07),0 12px 32px rgba(0,0,0,.45)!important
+}
+html:root body.ox-terminal .app-dock.glass-nav::before{
+ content:""!important;display:block!important;position:absolute!important;inset:0!important;border-radius:inherit!important;
+ padding:1.5px!important;opacity:1!important;transform:none!important;filter:none!important;animation:none!important;pointer-events:none!important;
+ background:linear-gradient(135deg,rgba(255,255,255,.72),rgba(255,255,255,.14) 28%,rgba(255,255,255,0) 50%,rgba(255,255,255,.08) 72%,rgba(255,255,255,.46))!important;
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0)!important;-webkit-mask-composite:xor!important;mask-composite:exclude!important
+}
+html:root body.ox-terminal .app-dock.glass-nav::after{
+ content:""!important;display:block!important;position:absolute!important;inset:0!important;border-radius:inherit!important;
+ opacity:1!important;transform:none!important;filter:none!important;animation:none!important;pointer-events:none!important;border:0!important;box-shadow:none!important;
+ background:radial-gradient(120% 70% at 50% 135%,rgba(255,255,255,.16),rgba(255,255,255,0) 62%),radial-gradient(60% 90% at 12% -20%,rgba(255,255,255,.14),rgba(255,255,255,0) 60%)!important
+}
+html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light .app-dock.glass-nav{
+ background:linear-gradient(rgba(255,255,255,.62),rgba(255,255,255,.62))!important;border-color:transparent!important;
+ box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 rgba(120,132,150,.10),0 10px 28px rgba(48,52,59,.14)!important
+}
+html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light .app-dock.glass-nav::before{
+ background:linear-gradient(135deg,#fff,rgba(255,255,255,.5) 28%,rgba(255,255,255,0) 50%,rgba(150,162,180,.22) 74%,rgba(255,255,255,.9))!important
+}
+html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light .app-dock.glass-nav::after{
+ background:radial-gradient(120% 70% at 50% 135%,rgba(255,255,255,.55),rgba(255,255,255,0) 62%)!important
+}
+/* The sliding tile inside the dock gets the same bright edge. */
+html:root body.ox-terminal .app-dock .ox-dock-indicator{box-shadow:inset 1px 1px 0 rgba(255,255,255,.6),inset -1px -1px 0 rgba(255,255,255,.08),0 4px 12px rgba(0,0,0,.22)!important}
+html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light .app-dock .ox-dock-indicator{box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 rgba(120,132,150,.12),0 2px 8px rgba(48,52,59,.10)!important}
+
+/* Sheets and dialogs: same glass, denser tint for their text. */
+html:root body.ox-terminal :is(.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){
+ -webkit-backdrop-filter:var(--lg-blur)!important;backdrop-filter:var(--lg-blur)!important;
+ background:linear-gradient(rgba(255,255,255,.07),rgba(255,255,255,.07)),rgba(20,22,26,.78)!important;
+ border:1px solid rgba(255,255,255,.16)!important;
+ box-shadow:inset 1px 1px 0 rgba(255,255,255,.42),inset -1px -1px 0 rgba(255,255,255,.06),0 20px 60px rgba(0,0,0,.5)!important
+}
+/* The indicator dialog kept an animated gradient border; on glass it would tint the panel. */
+html:root body.ox-terminal .chart-tools-dialog{animation:none!important}
+html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light :is(.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){
+ background:rgba(255,255,255,.82)!important;border-color:rgba(120,132,150,.22)!important;
+ box-shadow:inset 1px 1px 0 #fff,inset -1px -1px 0 rgba(120,132,150,.10),0 18px 50px rgba(48,52,59,.16)!important
+}
+/* Without backdrop blur the translucent sheets would show the page's text through them. */
+@supports not ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+ html:root body.ox-terminal :is(.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){background:#1b1e23!important}
+ html:root body.ox-terminal .app-dock.glass-nav{background:rgba(30,33,38,.96)!important}
+ html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light :is(.app-dock.glass-nav,.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){background:#fff!important}
+}
+@media(prefers-reduced-transparency:reduce){
+ html:root body.ox-terminal :is(.app-dock.glass-nav,.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){-webkit-backdrop-filter:none!important;backdrop-filter:none!important;background:#17191d!important}
+ html:root body.ox-terminal.theme-light.theme-light.theme-light.theme-light :is(.app-dock.glass-nav,.oxn-popover,.oxn-modal,.chart-tools-dialog,#radar-tier-menu){background:#fff!important}
+}

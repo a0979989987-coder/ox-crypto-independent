@@ -3,7 +3,9 @@
   if(window.OXCanonicalRedirecting)return;
   const ids=['crypto.home','crypto.radar','crypto.patterns','crypto.bubbles','crypto.strength','crypto.heatmap','crypto.rotation','crypto.flow','news.feed','news.calendar','media'];
   let policies=null,pending=null,loading=null,epoch=0,requestEpoch=0,currentFeature=null,newsSelected='calendar',sessionUsable=false,policyState='pending';
-  const selected={crypto:'patterns'};
+  // 指標 tools; 型態搜尋 (crypto.patterns) is the 畫板 tab of the radar view.
+  const selected={crypto:'bubbles'};
+  const radarFeature=()=>document.getElementById('view-radar')?.dataset.radarMode==='board'?'patterns':'radar';
   const landing=new URL(location.href),returnId=landing.searchParams.get('ox_feature');
   let returning=ids.includes(returnId), started=false, lastRefresh=0;
   let panel,progress;
@@ -33,7 +35,8 @@
   function reveal(){if(progress)progress.hidden=true;document.body?.classList.remove('ox-feature-blocked');if(panel){panel.hidden=true;panel.style.display='none';}}
   function viewFeature(view,market=document.body?.dataset.market||'crypto'){
     if(view==='strength')return market+'.'+selected[market];
-    if(['home','radar'].includes(view))return market+'.'+view;
+    if(view==='radar')return market+'.'+radarFeature();
+    if(view==='home')return market+'.'+view;
     if(['data','news'].includes(view))return newsSelected==='calendar'?'news.calendar':'news.feed';
     if(view==='media')return 'media';
     return null; // Login/settings/private Account are never part of this switch.
@@ -55,7 +58,7 @@
     const market=attribute==='data-crypto-tool'?'crypto':null;
     const id=market?market+'.'+tool:attribute==='data-news-tab'?(tool==='calendar'?'news.calendar':'news.feed'):null;
     if(!id||!ids.includes(id))return true;
-    if(!enter(id,resume))return false;if(market)selected[market]=tool;else if(attribute==='data-news-tab')newsSelected=tool;return true;
+    if(!enter(id,resume))return false;if(market&&tool!=='patterns')selected[market]=tool;else if(attribute==='data-news-tab')newsSelected=tool;return true;
   }
   function replay(){
     if(!document.body)return;
@@ -91,6 +94,7 @@
     if(['crypto'].includes(market))window.OXMarketController?.setMarket?.(market);
     if(id.startsWith('news.')){newsSelected=id==='news.calendar'?'calendar':'key';window.OXNews?.openMarket();document.dispatchEvent(new CustomEvent('ox:feature-news-return',{detail:{tab:newsSelected}}));}
     else if(id==='media')window.switchAppView?.('media');
+    else if(id==='crypto.patterns'||id==='crypto.radar'){window.OXRadarModes?.set(id==='crypto.patterns'?'board':window.OXRadarModes.get()==='board'?'chart':window.OXRadarModes.get());window.switchAppView?.('radar');}
     else {const tool=id.split('.')[1];const view=['home','radar'].includes(tool)?tool:'strength';if(view==='strength')selected[market]=tool;window.switchAppView?.(view);if(view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market,tool}}));}
   }
   function restore(){if(!returning||!started)return;returning=false;const apply=()=>navigate(returnId);if(enter(returnId,apply))apply();}
@@ -98,7 +102,7 @@
   document.addEventListener('ox:accountchange',()=>{sessionUsable=!!window.OXAuth?.user;replay();if(returning)restore();});
   document.addEventListener('ox:marketchange',()=>{const id=viewFeature(document.body.dataset.view||'radar');if(id)enter(id,()=>window.switchAppView?.(document.body.dataset.view||'radar'));});
   document.addEventListener('ox:viewchange',()=>replay());
-  document.addEventListener('ox:runtime-ready',()=>{const parts=currentFeature?.split('.');if(parts&&['crypto'].includes(parts[0])&&document.body.dataset.view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market:parts[0],tool:parts[1]}}));});
+  document.addEventListener('ox:runtime-ready',()=>{const parts=currentFeature?.split('.');if(parts&&['crypto'].includes(parts[0])&&parts[1]!=='patterns'&&document.body.dataset.view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market:parts[0],tool:parts[1]}}));});
   // Start the shared policy request before blocking styles or the runtime graph.
   const initial=refresh();
   // Queue the requested entry even while policy is pending, so a later replay

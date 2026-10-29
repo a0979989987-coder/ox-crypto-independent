@@ -156,6 +156,8 @@ function updateHeaderHUD() {
 }
 
 function switchSymbol(symbol) {
+  // Opening a coin always means its chart: the 畫板 page shows the 盤面 tab.
+  window.OXRadarModes?.set("chart");
   if (state.activeView !== "radar") switchAppView("radar");
   document.getElementById("view-radar")?.setAttribute("data-selected-symbol", symbol);
   if (symbol === state.symbol) { updateHeaderHUD(); return; }

@@ -27,8 +27,11 @@ const OXControlPanel = (() => {
   const q = sel => document.querySelector(sel);
   let overlay, panel, openBtn, closeBtn, scanObserver,initialized=false;
 
-  const setView = name => {
+  // 設定 is a dock view: the control views live in #view-settings. Opening a
+  // sub view (進階設定, 通知設定, 意見回饋) starts at the top of the page.
+  const setView = (name, { scroll = true } = {}) => {
     document.querySelectorAll("[data-control-view]").forEach(view => view.classList.toggle("active", view.dataset.controlView === name));
+    if (scroll && state.activeView === "settings") window.scrollTo({ top: 0, behavior: "auto" });
   };
 
   const syncTheme = () => {
@@ -80,9 +83,16 @@ const OXControlPanel = (() => {
     if (!overlay || !panel || !openBtn || !closeBtn) return;
 
     initialized=true;
-    openBtn.addEventListener("click", open);
-    q("#ox-dock-menu")?.addEventListener("click", open);
+    // The header button and the dock 設定 button are view targets for the 設定 page.
     q("#ox-control-media")?.addEventListener("click", () => { close(); switchAppView("media"); });
+    document.addEventListener("ox:viewchange", event => {
+      if (event.detail?.to !== "settings") return;
+      setView("main", { scroll: false });
+      syncTheme();
+      syncDataStatus();
+      updateAccountUI();
+      syncNotificationPermissionUI();
+    });
     closeBtn.addEventListener("click", close);
     overlay.addEventListener("click", e => { if (e.target === overlay) close(); });
     panel.addEventListener("click", e => e.stopPropagation());
@@ -121,13 +131,12 @@ const OXControlPanel = (() => {
     }
 
     q("#ox-control-open-notifications")?.addEventListener("click", () => {
-      close();
-      switchAppView("settings");
-      setTimeout(() => document.querySelector("#view-settings .settings-grid")?.scrollIntoView({ behavior: "smooth", block: "start" }), 120);
+      setView("notifications");
+      q("#ox-control-notifications-back")?.focus({ preventScroll: true });
     });
-    q("#ox-control-open-settings")?.addEventListener("click", () => {
-      close();
-      switchAppView("settings");
+    q("#ox-control-notifications-back")?.addEventListener("click", () => {
+      setView("advanced");
+      q("#ox-control-open-notifications")?.focus({ preventScroll: true });
     });
 
     q("#ox-control-refresh")?.addEventListener("click", () => {
