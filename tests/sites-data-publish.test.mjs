@@ -23,7 +23,7 @@ test('publisher identity checks the signature and binds audience, repository IDs
   const request = token => new Request(origin + '/api/v1/crypto/data-upload/release', { headers: { Authorization: 'Bearer ' + token } });
   const options = { now, fetcher: async url => { assert.equal(url, 'https://token.actions.githubusercontent.com/.well-known/jwks'); return Response.json({ keys: [jwk] }); } };
   assert.deepEqual(await verifyPublisher(request(await token(claims)), options), claims);
-  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml'])
+  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml'])
     assert.ok(await verifyPublisher(request(await token({ ...claims, workflow_ref: claims.workflow_ref.replace('update-news.yml', workflow) })), options), workflow);
   for (const mutation of [{ aud: 'https://ox-tw-independent.btcfly.chatgpt.site' }, { repository: 'a0979989987-coder/ox-tw-independent' }, { repository_id: '1405941562' }, { repository_owner_id: '1' }, { ref: 'refs/heads/feature' },
     { workflow_ref: claims.workflow_ref.replace('update-news.yml', 'verify-independent.yml') }, { exp: seconds - 1 }, { exp: seconds + 3600 }, { event_name: 'pull_request' }])
@@ -122,7 +122,7 @@ test('the Sites build serves data only through the Worker, keeps source and secr
 
 test('data workflows publish to Sites only once switched on, and keep their schedules', async () => {
   const read = name => readFile(new URL('../.github/workflows/' + name, import.meta.url), 'utf8').then(text => text.replace(/\r\n/g, '\n'));
-  for (const [name, cron] of [['update-news.yml', ['23 */6 * * *']], ['update-macro-results.yml', ['7,22,37,52 12-21 * * 1-5']], ['flow-history.yml', ['17 1 * * *']]]) {
+  for (const [name, cron] of [['update-news.yml', ['23 */6 * * *']], ['update-macro-results.yml', ['7,22,37,52 12-21 * * 1-5']], ['flow-history.yml', ['17 1 * * *']], ['record-crypto-breakouts.yml', ['7 * * * *']]]) {
     const text = await read(name);
     assert.deepEqual([...text.matchAll(/cron: '([^']+)'/g)].map(m => m[1]), cron, name);
     assert.match(text, /id-token: write/);

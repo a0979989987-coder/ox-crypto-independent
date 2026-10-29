@@ -5,7 +5,8 @@
   let policies=null,pending=null,loading=null,epoch=0,requestEpoch=0,currentFeature=null,newsSelected='calendar',sessionUsable=false,policyState='pending';
   // 指標 tools; 型態搜尋 (crypto.patterns) is the 畫板 tab of the radar view.
   const selected={crypto:'bubbles'};
-  const radarFeature=()=>document.getElementById('view-radar')?.dataset.radarMode==='board'?'patterns':'radar';
+  // 對比 lists the board's own breakouts, so it follows the board's switch.
+  const radarFeature=()=>['board','compare'].includes(document.getElementById('view-radar')?.dataset.radarMode)?'patterns':'radar';
   const landing=new URL(location.href),returnId=landing.searchParams.get('ox_feature');
   let returning=ids.includes(returnId), started=false, lastRefresh=0;
   let panel,progress;
@@ -94,7 +95,7 @@
     if(['crypto'].includes(market))window.OXMarketController?.setMarket?.(market);
     if(id.startsWith('news.')){newsSelected=id==='news.calendar'?'calendar':'key';window.OXNews?.openMarket();document.dispatchEvent(new CustomEvent('ox:feature-news-return',{detail:{tab:newsSelected}}));}
     else if(id==='media')window.switchAppView?.('media');
-    else if(id==='crypto.patterns'||id==='crypto.radar'){window.OXRadarModes?.set(id==='crypto.patterns'?'board':window.OXRadarModes.get()==='board'?'chart':window.OXRadarModes.get());window.switchAppView?.('radar');}
+    else if(id==='crypto.patterns'||id==='crypto.radar'){const mode=window.OXRadarModes?.get();window.OXRadarModes?.set(id==='crypto.patterns'?(mode==='compare'?'compare':'board'):['board','compare'].includes(mode)?'chart':mode);window.switchAppView?.('radar');}
     else {const tool=id.split('.')[1];const view=['home','radar'].includes(tool)?tool:'strength';if(view==='strength')selected[market]=tool;window.switchAppView?.(view);if(view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market,tool}}));}
   }
   function restore(){if(!returning||!started)return;returning=false;const apply=()=>navigate(returnId);if(enter(returnId,apply))apply();}

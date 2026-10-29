@@ -11,6 +11,7 @@ on:
     - cron: '7 * * * *'
 permissions:
   contents: write
+  id-token: write
 concurrency:
   group: record-crypto-breakouts
   cancel-in-progress: false
@@ -47,3 +48,12 @@ jobs:
             sleep "$((attempt * 5))"
           done
           exit 1
+
+      - name: Publish verified data to Sites
+        # Off until the Site exists: set the repository variable OX_SITES_DATA to "on".
+        if: ${{ always() && !cancelled() && github.ref == 'refs/heads/main' && vars.OX_SITES_DATA == 'on' }}
+        env:
+          OX_SITE_ORIGIN: ${{ vars.OX_SITE_ORIGIN }}
+        run: |
+          git fetch origin main
+          node scripts/publish-site-data.mjs

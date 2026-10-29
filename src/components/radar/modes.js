@@ -1,5 +1,7 @@
-/* 畫板 dock view: one page with three top tabs, like the Taiwan site.
+/* 畫板 dock view: one page with four top tabs, like the Taiwan site.
  *   畫板 board — the pattern board (mounted by src/markets/crypto/radar-board.js)
+ *   對比 compare — earlier 4H closes' confirmed breakouts and how they moved
+ *                  (mounted by src/markets/crypto/radar-compare.js)
  *   盤面 chart — the K-line chart, quote card, T1/T2/T3 list and coin details
  *   自選 watch — the watchlist with a search box to star any USDT perpetual
  * #view-radar[data-radar-mode] is the single source of truth; CSS shows the
@@ -9,7 +11,7 @@
   'use strict';
   const root = document.getElementById('view-radar');
   if (!root) return;
-  const MODES = ['board', 'chart', 'watch'];
+  const MODES = ['board', 'compare', 'chart', 'watch'];
   const KEY = 'ox-radar-mode';
   const rail = root.querySelector('.ox-radar-mode-rail');
   const tabs = rail ? [...rail.querySelectorAll('[data-radar-tab]')] : [];

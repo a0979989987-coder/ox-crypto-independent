@@ -1,5 +1,5 @@
 /* OX 加密 shell, loaded after the theme files: the 畫板 dock view and its
-   畫板／盤面／自選 tabs, the dock, swipe motion, phone calendar, phone polish
+   畫板／對比／盤面／自選 tabs, the dock, swipe motion, phone calendar, phone polish
    and touch targets (primary controls ≥ 44px tall, secondary ≥ 32px, text ≥ 11px).
    Ported from the Taiwan site (tw-polish.css) and adapted to this layout. */
 
@@ -84,7 +84,7 @@ html body.ox-terminal .oxn-modal-content{max-width:100%;overflow-x:hidden}
  html body.ox-terminal .oxn-root .oxn-calendar-caption .oxn-text-button{min-height:32px!important;display:inline-flex!important;align-items:center!important}
 }
 
-/* ---------- 畫板 view: 畫板／盤面／自選 tabs ---------- */
+/* ---------- 畫板 view: 畫板／對比／盤面／自選 tabs ---------- */
 html body.ox-terminal #view-radar .ox-radar-modes{margin:6px 0 10px;min-width:0}
 html body.ox-terminal #view-radar .ox-radar-mode-rail{
  position:relative;display:flex;align-items:stretch;gap:3px;width:100%;box-sizing:border-box;padding:3px;
@@ -116,12 +116,13 @@ html body.ox-terminal.theme-light.theme-light.theme-light #view-radar .ox-radar-
    content (quote card, chart and list, coin details). */
 html body.ox-terminal #view-radar:not([data-radar-mode="board"]) > .ox-radar-board,
 html body.ox-terminal #view-radar:not([data-radar-mode="watch"]) > .ox-radar-watch,
-html body.ox-terminal #view-radar:is([data-radar-mode="board"],[data-radar-mode="watch"]) > :is(.top-summary,.workspace,.detail-panel,.benchmark-bar,.extra-section){display:none!important}
+html body.ox-terminal #view-radar:not([data-radar-mode="compare"]) > .ox-radar-compare,
+html body.ox-terminal #view-radar:is([data-radar-mode="board"],[data-radar-mode="compare"],[data-radar-mode="watch"]) > :is(.top-summary,.workspace,.detail-panel,.benchmark-bar,.extra-section){display:none!important}
 html body.ox-terminal #view-radar > .ox-radar-board{display:block;min-width:0;min-height:320px;margin:0 0 18px}
 html body.ox-terminal #view-radar > .ox-radar-board > .ox-radar-board-host{min-width:0}
 html body.ox-terminal #view-radar > .ox-radar-board > .ox-tool-loading{min-height:320px}
 /* Coin details and alerts belong to the chart, not the board. */
-html body.ox-terminal.chart-focus #view-radar > :is(.ox-radar-modes,.ox-radar-board,.ox-radar-watch){display:none!important}
+html body.ox-terminal.chart-focus #view-radar > :is(.ox-radar-modes,.ox-radar-board,.ox-radar-compare,.ox-radar-watch){display:none!important}
 
 /* The page's one scan button for the board (radar-board.js); the board's own
    pill is hidden. The ring fills with the scan progress. */
@@ -150,6 +151,100 @@ html body.ox-terminal:has(.app-dock.ox-dock-compact) #view-radar > .ox-radar-sca
 html body.ox-terminal.theme-light #view-radar > .ox-radar-scan{color:#8d712e;border-color:#c7d0dc;background:linear-gradient(135deg,#ffffff,#f5f7fa);box-shadow:inset 0 1px #fff,0 3px 12px #8d712e24,0 6px 18px #30343b1f}
 html body.ox-terminal.theme-light .ox-radar-scan-arc{stroke:#a28649}
 html body.ox-terminal.theme-light .ox-radar-scan.is-scanning .ox-radar-scan-track{stroke:#a2864933}
+
+/* ---------- 對比: earlier 4H closes' breakouts (radar-compare.js, compare/view.js) ----------
+   One record per 4H close, newest first; tap a time to open it, tap a coin for its 4H chart. */
+html body.ox-terminal #view-radar > .ox-radar-compare{display:block;min-width:0;min-height:320px;margin:0 0 18px}
+html body.ox-terminal #view-radar > .ox-radar-compare > .ox-tool-loading{min-height:320px}
+#view-radar .ox-cmp{--cmp-card:linear-gradient(145deg,#22252a,#181b20 70%);--cmp-border:#747b8340;--cmp-soft:#ffffff08;--cmp-line:#e8dcc0;--cmp-mark:#ffffff;
+ display:flex;flex-direction:column;gap:8px;min-width:0;color:var(--ink);font-variant-numeric:tabular-nums}
+html body.ox-terminal.theme-light #view-radar .ox-cmp{--cmp-card:#fff;--cmp-border:var(--line,#dde1e6);--cmp-soft:#f5f6f8;--cmp-line:#8d712e;--cmp-mark:#30343b}
+#view-radar .ox-cmp .up{color:var(--green)}#view-radar .ox-cmp .down{color:var(--red)}#view-radar .ox-cmp .mu,#view-radar .ox-cmp .flat{color:var(--muted)}
+#view-radar .ox-cmp-intro{margin:0 2px 2px;color:var(--muted);font-size:12px;line-height:1.5}
+#view-radar .ox-cmp-list{display:flex;flex-direction:column;gap:8px;min-width:0}
+#view-radar .ox-cmp-point{min-width:0;border:1px solid var(--cmp-border);border-radius:14px;background:var(--cmp-card);overflow:hidden}
+#view-radar .ox-cmp-point.is-open{border-color:#c9cdd06b}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-point.is-open{border-color:#c7cdd5}
+html body.ox-terminal #view-radar .ox-cmp-head{
+ display:grid;grid-template-columns:minmax(0,1fr) 22px;grid-template-areas:"when chev" "preview chev";align-items:center;gap:2px 10px;width:100%;min-height:52px;margin:0;padding:8px 10px 8px 14px;
+ border:0;border-radius:0;background:transparent;box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent
+}
+html body.ox-terminal #view-radar .ox-cmp-point.is-none{border-style:dashed;background:transparent}
+html body.ox-terminal #view-radar .ox-cmp-point.is-none .ox-cmp-head{min-height:40px;cursor:default;opacity:.62}
+html body.ox-terminal #view-radar .ox-cmp-head:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+html body.ox-terminal #view-radar button.ox-cmp-head:active{background:var(--cmp-soft)}
+#view-radar .ox-cmp-when{grid-area:when;min-width:0;display:flex;align-items:baseline;gap:8px;white-space:nowrap}
+#view-radar .ox-cmp-when b{font-size:15px;font-weight:700;letter-spacing:.01em}
+#view-radar .ox-cmp-when span{color:var(--muted);font-size:13px}
+#view-radar .ox-cmp-point.is-open .ox-cmp-when span{color:var(--ink)}
+#view-radar .ox-cmp-preview{grid-area:preview;min-width:0;overflow:hidden;color:var(--muted);font-size:12px;line-height:1.5;text-overflow:ellipsis;white-space:nowrap}
+#view-radar .ox-cmp-preview em{margin-right:6px;font-style:normal}
+#view-radar .ox-cmp-preview > span + span::before{content:"・";margin:0 2px}
+#view-radar .ox-cmp-preview b{font-weight:650}
+#view-radar .ox-cmp-chev{grid-area:chev;width:22px;height:22px;fill:none;stroke:var(--muted);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s ease}
+#view-radar .ox-cmp-point.is-open .ox-cmp-chev{transform:rotate(180deg)}
+#view-radar .ox-cmp-picks{display:grid;grid-template-columns:minmax(0,1fr);border-top:1px solid var(--cmp-border)}
+#view-radar .ox-cmp-pick + .ox-cmp-pick{border-top:1px solid var(--cmp-border)!important}
+html body.ox-terminal #view-radar .ox-cmp-pick{
+ display:grid;grid-template-columns:136px minmax(0,1fr);align-items:center;gap:12px;min-width:0;min-height:96px;margin:0;padding:9px 12px 9px 10px;
+ border:0;border-radius:0;background:var(--cmp-card);box-shadow:none;color:inherit;font:inherit;text-align:left;cursor:pointer;-webkit-tap-highlight-color:transparent
+}
+html body.ox-terminal #view-radar .ox-cmp-pick:active{background:var(--cmp-soft)}
+html body.ox-terminal #view-radar .ox-cmp-pick:focus-visible{outline:2px solid var(--gold);outline-offset:-3px}
+#view-radar .ox-cmp-mini{display:block;width:136px;aspect-ratio:150/96;border-radius:8px;background:var(--cmp-soft);overflow:hidden}
+#view-radar .ox-cmp-mini[data-pending]{background:linear-gradient(100deg,#ffffff06 30%,#ffffff14 50%,#ffffff06 70%) 0 0/200% 100%;animation:oxCmpPending 1.4s linear infinite}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-mini[data-pending]{background-image:linear-gradient(100deg,#f3f4f6 30%,#e8eaee 50%,#f3f4f6 70%)}
+@keyframes oxCmpPending{to{background-position:-200% 0}}
+@media(prefers-reduced-motion:reduce){#view-radar .ox-cmp-mini[data-pending]{animation:none}#view-radar .ox-cmp-chev{transition:none}}
+#view-radar .ox-cmp-mini svg{display:block;width:100%;height:100%}
+#view-radar .ox-cmp-mini .u{fill:var(--green);stroke:var(--green)}#view-radar .ox-cmp-mini .d{fill:var(--red);stroke:var(--red)}
+#view-radar .ox-cmp-mini line.u,#view-radar .ox-cmp-mini line.d{stroke-width:.8}
+#view-radar .ox-cmp-mini .zup{fill:var(--green);opacity:.14}#view-radar .ox-cmp-mini .zdown{fill:var(--red);opacity:.14}#view-radar .ox-cmp-mini .zflat{fill:var(--muted);opacity:.12}
+#view-radar .ox-cmp-mini .bk{fill:var(--cmp-mark);opacity:.13}
+#view-radar .ox-cmp-mini .ln{fill:none;stroke:var(--cmp-line);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
+#view-radar .ox-cmp-mini .cl{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-linejoin:round}
+#view-radar .ox-cmp-mini .cl.up{stroke:var(--green)}#view-radar .ox-cmp-mini .cl.down{stroke:var(--red)}
+#view-radar .ox-cmp-mini .dot{fill:var(--cmp-mark)}
+#view-radar .ox-cmp-mini .mk{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 2}
+#view-radar .ox-cmp-mini text{fill:var(--ink);font-size:12.5px;font-weight:650;paint-order:stroke;stroke:var(--bg,#121417);stroke-width:3px;stroke-linejoin:round}
+#view-radar .ox-cmp-main{display:flex;flex-direction:column;gap:3px;min-width:0}
+#view-radar .ox-cmp-name{display:flex;align-items:center;gap:7px;min-width:0}
+#view-radar .ox-cmp-name b{overflow:hidden;font-size:16px;font-weight:700;line-height:1.25;text-overflow:ellipsis;white-space:nowrap}
+#view-radar .ox-cmp-tier{flex:none;padding:1px 5px;border:1px solid #ffffff6e;border-radius:5px;font-size:11px;font-weight:650;line-height:1.3;color:var(--ink)}
+#view-radar .ox-cmp-tier[data-tier="1"]{border-color:#ffffffc4;box-shadow:0 0 6px #ffffff45}
+#view-radar .ox-cmp-tier[data-tier="3"]{border-color:#ffffff38;color:var(--muted)}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-tier{border-color:#b7a579;color:var(--ink)}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-tier[data-tier="1"]{border-color:#8d712e;box-shadow:none;background:#8d712e14}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-tier[data-tier="3"]{border-color:var(--line);color:var(--muted)}
+#view-radar .ox-cmp-go{margin-left:auto;color:var(--muted);font-size:18px;line-height:1}
+#view-radar .ox-cmp-pattern{overflow:hidden;color:var(--muted);font-size:12px;line-height:1.35;text-overflow:ellipsis;white-space:nowrap}
+#view-radar .ox-cmp-rets{display:grid;grid-template-columns:auto minmax(4.9em,auto) minmax(0,1fr);align-items:baseline;gap:2px 10px;margin-top:3px;font-size:14px;line-height:1.3}
+#view-radar .ox-cmp-k{color:var(--muted);font-size:11px;white-space:nowrap}
+#view-radar .ox-cmp-rets b{font-size:14px;font-weight:700;white-space:nowrap;text-align:right}
+#view-radar .ox-cmp-rets b.mu{font-size:12px;font-weight:500}
+#view-radar .ox-cmp-btc{overflow:hidden;color:var(--muted);font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+#view-radar .ox-cmp-state{display:flex;flex-direction:column;align-items:center;gap:8px;padding:34px 18px;border:1px dashed var(--cmp-border);border-radius:14px;color:var(--muted);text-align:center}
+#view-radar .ox-cmp-state b{color:var(--ink);font-size:16px;font-weight:700}
+#view-radar .ox-cmp-state p{max-width:30em;margin:0;font-size:13px;line-height:1.7}
+#view-radar .ox-cmp-nowrap{white-space:nowrap}
+html body.ox-terminal #view-radar .ox-cmp-retry{min-width:120px;min-height:44px;margin-top:6px;padding:0 20px;border:1px solid #ffffff4d;border-radius:12px;background:var(--cmp-soft);box-shadow:none;color:var(--ink);font:inherit;font-size:14px;font-weight:650;cursor:pointer}
+html body.ox-terminal #view-radar .ox-cmp-retry.is-quiet{min-height:36px;font-size:13px;font-weight:600}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-retry{border-color:var(--line);background:#fff}
+#view-radar .ox-cmp-foot{display:flex;flex-direction:column;gap:4px;margin:6px 2px 0;color:var(--muted);font-size:11.5px;line-height:1.65}
+#view-radar .ox-cmp-foot p{margin:0}
+@media(max-width:380px){
+ html body.ox-terminal #view-radar .ox-cmp-pick{grid-template-columns:118px minmax(0,1fr);gap:10px;padding-left:8px}
+ #view-radar .ox-cmp-mini{width:118px}
+ #view-radar .ox-cmp-rets{column-gap:7px}
+}
+@media(min-width:721px){
+ #view-radar .ox-cmp-intro{font-size:13px}
+ html body.ox-terminal #view-radar .ox-cmp-head{grid-template-columns:auto minmax(0,1fr) 22px;grid-template-areas:"when preview chev";column-gap:18px}
+ /* Wide screens: the coins of a record as separate cards. */
+ #view-radar .ox-cmp-picks{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));gap:8px;padding:8px}
+ html body.ox-terminal #view-radar .ox-cmp-pick{grid-template-columns:150px minmax(0,1fr);padding:10px 14px 10px 10px;border:1px solid var(--cmp-border)!important;border-radius:12px}
+ #view-radar .ox-cmp-mini{width:150px}
+}
 
 /* ---------- 自選: watchlist and search ---------- */
 html body.ox-terminal #view-radar > .ox-radar-watch{display:block;min-width:0;margin:0 0 18px}

@@ -127,6 +127,7 @@ export async function adminRoute(request, env, url, readData = async () => null,
     const read = async (file, pick) => { try { return pick(await readData(file)) || null; } catch { return null; } };
     return json({ ok: true, data: {
       news: await read('data/news.json', j => j?.generatedAt), macro: await read('data/macro-results.json', j => j?.generatedAt), flow: await read('previews/data/crypto-flow-history.json', j => j?.collectedAt),
+      breakouts: await read('data/crypto-breakouts.json', j => j?.updatedAt),
       errors: await rows(database, "SELECT day, COUNT(*) n FROM events WHERE name = 'app.error' AND day >= ? GROUP BY day ORDER BY day", since(7)),
       recentErrors: await rows(database, "SELECT detail, COUNT(*) n FROM events WHERE name = 'app.error' AND day >= ? GROUP BY detail ORDER BY n DESC LIMIT 10", since(7))
     } });

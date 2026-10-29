@@ -5,7 +5,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <script src="src/components/navigation/page-touch.js?v=20261005-nozoom1"></script>
-  <script src="src/components/account/feature-access.js?v=20261028-shell1"></script>
+  <script src="src/components/account/feature-access.js?v=20261029-compare1"></script>
   <script src="src/core/public-feed.js?v=20261006-news-rotation4"></script>
   <script src="src/components/control-panel/resource-guard.js?v=20261005-first24"></script>
   <link rel="icon" type="image/png" href="ox-logo.png">
@@ -96,7 +96,7 @@
   <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261005-weeklist4">
   <link rel="stylesheet" href="src/styles/layout/mobile-content-width.css?v=20261005-gutters1">
   <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261006-perf1">
-  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261028-shell1">
+  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261029-compare1">
   <link rel="stylesheet" href="src/styles/components/settings-page.css?v=20261028-shell1">
   <link rel="stylesheet" href="src/styles/components/glass-layers.css?v=20261028-shell1">
   <link rel="stylesheet" href="src/styles/components/member-account.css?v=20261028-sites1">
@@ -221,11 +221,13 @@
       <div class="ox-radar-mode-rail" role="tablist">
         <span class="ox-radar-mode-indicator" aria-hidden="true"></span>
         <button type="button" role="tab" id="ox-radar-tab-board" data-radar-tab="board" aria-selected="true" aria-controls="ox-radar-board">畫板</button>
+        <button type="button" role="tab" id="ox-radar-tab-compare" data-radar-tab="compare" aria-selected="false" tabindex="-1" aria-controls="ox-radar-compare" data-track="radar.compare">對比</button>
         <button type="button" role="tab" id="ox-radar-tab-chart" data-radar-tab="chart" aria-selected="false" tabindex="-1">盤面</button>
         <button type="button" role="tab" id="ox-radar-tab-watch" data-radar-tab="watch" aria-selected="false" tabindex="-1" aria-controls="ox-radar-watch">自選</button>
       </div>
     </nav>
     <section class="ox-radar-board" id="ox-radar-board" role="tabpanel" aria-labelledby="ox-radar-tab-board"></section>
+    <section class="ox-radar-compare" id="ox-radar-compare" role="tabpanel" aria-labelledby="ox-radar-tab-compare"></section>
     <button class="ox-radar-scan" id="ox-radar-scan" type="button" aria-label="重新掃描型態" title="重新掃描型態" hidden><svg class="ox-radar-scan-ring" viewBox="0 0 48 48" aria-hidden="true"><circle class="ox-radar-scan-track" cx="24" cy="24" r="21"/><circle class="ox-radar-scan-arc" cx="24" cy="24" r="21" pathLength="100"/></svg><svg class="ox-radar-scan-glyph" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/><path d="M12 12 17.6 6.4"/></svg></button>
     <section class="ox-radar-watch" id="ox-radar-watch" role="tabpanel" aria-labelledby="ox-radar-tab-watch">
       <div class="ox-watch-head"><span>自選 <b id="ox-watch-count">0</b> 檔</span></div>
@@ -761,10 +763,10 @@
 <script src="src/components/account/store.js?v=20261007-stable-dialog8"></script>
 <script src="src/components/control-panel/feature-pack.js?v=20261028-shell1"></script>
 <script src="src/components/control-panel/guide.js?v=20261028-shell1"></script>
-<script src="src/components/navigation/runtime-actions.js?v=20261001-tiercomb2"></script>
+<script src="src/components/navigation/runtime-actions.js?v=20261029-compare1"></script>
 <script src="src/components/radar/timeframe-filters.js?v=20261001-tiercomb2"></script>
 <script src="src/components/chart/toolbar.js?v=20261001-tiercomb2"></script>
-<script src="src/components/radar/modes.js?v=20261028-shell1"></script>
+<script src="src/components/radar/modes.js?v=20261029-compare1"></script>
 <script src="src/app/runtime-boot.js?v=20261005-first24"></script>
 
 <script src="src/components/motion/controller.js?v=20261001-tiercomb2"></script>
@@ -814,8 +816,8 @@
 <!-- OX v3.8.4 — OX CONTROL 功能搜尋 + 真實交易所 Data Provider 切換 -->
 <!-- CSS moved: ox-v384-feature-search-provider-switch-styles -->
 
-<script src="src/components/search/provider-switch.js?v=20261028-shell1"></script>
-<script src="src/app/module-boot.js?v=20261028-shell1"></script>
+<script src="src/components/search/provider-switch.js?v=20261029-compare1"></script>
+<script src="src/app/module-boot.js?v=20261029-compare1"></script>
 
 <script src="src/app/editorial-workspace.js?v=20261028-shell1"></script>
 <script src="src/components/radar/controls.js?v=20261001-tiercomb2"></script>
