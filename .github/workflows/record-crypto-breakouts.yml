@@ -1,0 +1,49 @@
+name: Record 4H breakouts
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths: ['scripts/crypto-breakouts.mjs', 'scripts/collect-crypto-breakouts.mjs', '.github/workflows/record-crypto-breakouts.yml']
+  schedule:
+    # 對比: each 4H close (UTC 00/04/08/12/16/20 = Taipei 08/12/16/20/00/04) is recorded
+    # by the first run after it. GitHub starts scheduled runs late or drops them, so every
+    # run also catches up missed closes (at most the last 6); runs with nothing new stop early.
+    - cron: '7 * * * *'
+permissions:
+  contents: write
+concurrency:
+  group: record-crypto-breakouts
+  cancel-in-progress: false
+jobs:
+  record:
+    # Preview/manual runs on feature branches must never write production main.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # A queued run must read the log committed by the preceding run.
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/crypto-breakouts.test.mjs
+      - run: node scripts/collect-crypto-breakouts.mjs
+      - name: Publish changed log
+        run: |
+          git add data/crypto-breakouts.json
+          if git diff --cached --quiet; then exit 0; fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "data: record 4H breakouts"
+          for attempt in 1 2 3 4 5; do
+            if ! git pull --rebase origin main; then
+              # The log itself changed on main: never overwrite it; the next run starts from it.
+              git rebase --abort
+              exit 1
+            fi
+            if git push origin HEAD:main; then exit 0; fi
+            sleep "$((attempt * 5))"
+          done
+          exit 1
