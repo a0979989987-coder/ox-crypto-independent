@@ -124,22 +124,25 @@ test('both directions are independently ranked even when the cached primary dire
   assert.equal(shortRank.t1.length,1);assert.equal(shortRank.t1[0].side,'SHORT');
 });
 
-test('radar snapshot uses current tickers and excludes expired or unavailable coins', () => {
-  function restore(savedAt){
-    const state={tickers:[{symbol:'SOLUSDT',change24h:.02}]};
-    runInNewContext(`${policy}\n${engine}\n${scanner}\nrestoreRadarSnapshot();`,{
-      state:Object.assign(state,{analyzedCache:new Map()}),OXClassic:OXClassicForTests,num:Number,Date,
-      isCryptoSymbolAllowed:()=>true,
-      localStorage:{getItem:()=>JSON.stringify({savedAt,rows:[{symbol:'SOLUSDT',side:'LONG',tier:'t1',classic:{long:rankingSignal()},change24h:.5},{symbol:'REMOVEDUSDT'}]})}
+test('saved radar rows use current tickers and exclude expired, unavailable or older coins', () => {
+  // The hourly snapshot and this device's cache come back through restoreRadarRows.
+  function restore(at,existing){
+    const state={tickers:[{symbol:'SOLUSDT',change24h:.02,usdtVolume:15000000}],analyzedCache:new Map(existing?[['SOLUSDT',existing]]:[])};
+    const restored=runInNewContext(`${policy}\n${engine}\n${scanner}\nrestoreRadarRows(rows);`,{
+      state,OXClassic:OXClassicForTests,num:Number,Date,isCryptoSymbolAllowed:()=>true,
+      rows:[{symbol:'SOLUSDT',side:'LONG',tier:'t1',at,classic:{long:rankingSignal()},classicSignal:rankingSignal(),change24h:.5},{symbol:'REMOVEDUSDT',at}]
     });
-    return state;
+    return {state,restored};
   }
   const current=restore(Date.now());
-  assert.equal(current.analyzedCache.size,1);
-  assert.equal(current.analyzedCache.get('SOLUSDT').change24h,.02);
-  assert.equal(current.radarSnapshotReady,true);
-  assert.equal(restore(Date.now()-360000).analyzedCache.size,1);
-  assert.equal(restore(Date.now()-2*60*60*1000-1000).analyzedCache.size,0);
+  assert.equal(current.restored,1);
+  assert.equal(current.state.analyzedCache.size,1);
+  assert.equal(current.state.analyzedCache.get('SOLUSDT').change24h,.02);
+  assert.equal(current.state.analyzedCache.get('SOLUSDT').quoteVol,15000000);
+  assert.equal(restore(Date.now()-360000).state.analyzedCache.size,1);
+  assert.equal(restore(Date.now()-2*60*60*1000-1000).state.analyzedCache.size,0);
+  const newer={symbol:'SOLUSDT',at:Date.now()+1000};
+  assert.equal(restore(Date.now(),newer).state.analyzedCache.get('SOLUSDT'),newer,'a newer analysis is kept');
 });
 
  test('returning radar retains a paused scan but never an invalidated price or unbounded result',()=>{

@@ -1,0 +1,57 @@
+name: Update crypto radar snapshot
+# Right after each 1H close: the page's own radar scan over every Bitget USDT-M
+# perpetual (scripts/collect-crypto-radar.mjs), so 首頁 and 盤面 paint their T1/T2/T3
+# lists at once. The home PC starts this right after the close
+# (scripts/trigger-crypto-radar.mjs); the hourly schedule is only the fallback, since
+# GitHub often starts scheduled runs late or drops them.
+# The snapshot never enters main's history: it is the only file of the orphan branch
+# live-data (raw.githubusercontent.com, while the site is on Vercel) and, once the
+# repository variable OX_SITES_DATA is "on", part of the Sites data release.
+on:
+  workflow_dispatch:
+    inputs:
+      force:
+        description: Collect even when this close is already published
+        type: boolean
+        default: false
+  schedule:
+    - cron: '5 * * * *'
+permissions:
+  contents: write
+  id-token: write
+concurrency:
+  # One run at a time; a newer queued run replaces an older queued one, and the
+  # publisher never lets an older snapshot replace a newer one.
+  group: update-crypto-radar
+  cancel-in-progress: false
+jobs:
+  radar:
+    # Preview/manual runs on feature branches must never publish.
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/crypto-radar-snapshot.test.mjs
+      - name: Collect
+        env:
+          FORCE: ${{ inputs.force && '--force' || '' }}
+        run: node scripts/collect-crypto-radar.mjs --out "$RUNNER_TEMP/crypto-radar.json" --current "https://raw.githubusercontent.com/${{ github.repository }}/live-data/crypto-radar.json" $FORCE
+      - name: Publish to the live-data branch
+        run: |
+          if [ ! -f "$RUNNER_TEMP/crypto-radar.json" ]; then exit 0; fi
+          node scripts/publish-crypto-radar.mjs --file "$RUNNER_TEMP/crypto-radar.json" --to branch
+      - name: Publish verified data to Sites
+        # Off until the Site exists: set the repository variable OX_SITES_DATA to "on".
+        if: ${{ always() && !cancelled() && github.ref == 'refs/heads/main' && vars.OX_SITES_DATA == 'on' }}
+        env:
+          OX_SITE_ORIGIN: ${{ vars.OX_SITE_ORIGIN }}
+        run: |
+          if [ ! -f "$RUNNER_TEMP/crypto-radar.json" ]; then exit 0; fi
+          git fetch origin main
+          node scripts/publish-crypto-radar.mjs --file "$RUNNER_TEMP/crypto-radar.json" --to sites

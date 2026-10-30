@@ -6,7 +6,10 @@ export const REPOSITORY_OWNER_ID = '327283790';
 // GitHub signs the publisher's token for this audience; the Worker only compares it.
 export const PUBLISH_AUDIENCE = PUBLIC_ORIGIN;
 // Workflows on main that may publish data files to the Site.
-export const DATA_WORKFLOWS = ['deploy-sites-data.yml', 'update-news.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml'];
+export const DATA_WORKFLOWS = ['deploy-sites-data.yml', 'update-news.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml', 'update-crypto-radar.yml'];
 // Public data files: data/*.json and previews/data/*.json (news, macro results, 4H breakouts, taker history, tool snapshots).
 export const DATA_FILE = /^(?:data|previews\/data)\/(?:[A-Za-z0-9_-]+\/)*[A-Za-z0-9_.-]+\.(?:json|json\.gz)$/;
 export const REQUIRED_DATA = ['data/news.json', 'data/macro-results.json', 'previews/data/crypto-flow-history.json'];
+// Hourly files that are never committed to main (main keeps an empty placeholder):
+// every release carries the newest published copy forward until a newer one replaces it.
+export const LIVE_DATA = ['data/crypto-radar.json'];
