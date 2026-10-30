@@ -1,26 +1,35 @@
 /* Technical indicators on the Crypto K-line chart (ported from OX 台股's 盤面).
-   均線 and 布林 are drawn on the candles; KD, RSI and MACD each get a small pane
-   under the volume, on the same bars, with its own scale. Every indicator has a
-   name tag; tapping it opens a parameter sheet sized for phones. The settings
-   sheet (指標與篩選) lists them with their parameters.
+   均線 and 布林 are drawn on the candles; KD, RSI, MACD and CCI each get a small
+   pane under the volume, on the same bars, with its own scale. Every indicator has
+   a name tag; tapping it opens a parameter sheet sized for phones. The settings
+   sheet (指標與篩選) starts with the K 線／線圖 switch and lists the indicators
+   with their parameters.
 
    Choices persist on this device under STORAGE_KEY as
-   {v:1,on:{ma,bb,kd,rsi,macd:boolean},params:{<id>:[numbers]}} (params only for
+   {v:1,on:{ma,bb,kd,rsi,macd,cci:boolean},params:{<id>:[numbers]}} (params only for
    indicators the user changed). window.OXChartIndicators.get()/set(next) read and
-   replace them for a later account sync; set() announces CHANGE_EVENT. */
+   replace them for a later account sync; set() announces CHANGE_EVENT.
+   K 線 or 線圖 is kept under STYLE_KEY ('candle' | 'line'). In 線圖 the candles stay
+   on the chart (levels, scaling and markers hang on them) but are drawn invisible
+   under a close-price line; setStyle() announces STYLE_EVENT. */
 (function (root) {
   'use strict';
   const STORAGE_KEY = 'ox-crypto:chart-indicators-v1';
   const CHANGE_EVENT = 'ox:chart-indicators-change';
+  const STYLE_KEY = 'ox-crypto:chart-style-v1', STYLE_EVENT = 'ox:chart-style-change';
   const INDICATORS = Object.freeze({
     ma: Object.freeze({ name: '均線', overlay: true, params: [['短', 5], ['中', 20], ['長', 60]] }),
     bb: Object.freeze({ name: '布林', overlay: true, params: [['週期', 20], ['倍數', 2]] }),
     kd: Object.freeze({ name: 'KD', params: [['週期', 9], ['K', 3], ['D', 3]] }),
     rsi: Object.freeze({ name: 'RSI', params: [['短', 6], ['長', 14]] }),
-    macd: Object.freeze({ name: 'MACD', params: [['快', 12], ['慢', 26], ['訊號', 9]] })
+    macd: Object.freeze({ name: 'MACD', params: [['快', 12], ['慢', 26], ['訊號', 9]] }),
+    cci: Object.freeze({ name: 'CCI', params: [['週期', 14]] })
   });
-  const IDS = Object.keys(INDICATORS), PANES = ['kd', 'rsi', 'macd'];
-  const LEVELS = { kd: [80, 20], rsi: [70, 30], macd: [0] };
+  const IDS = Object.keys(INDICATORS), PANES = ['kd', 'rsi', 'macd', 'cci'];
+  // Dashed reference lines in each pane; LABELS are the ones named on the right edge
+  // (CCI's 0 line stays unnamed so its short pane is not crowded).
+  const LEVELS = { kd: [80, 20], rsi: [70, 30], macd: [0], cci: [100, 0, -100] };
+  const LABELS = { kd: [80, 20], rsi: [70, 30], macd: [0], cci: [100, -100] };
 
   // ---- calculations (null until enough bars) ----
   function sma(values, n) {
@@ -65,6 +74,20 @@
       if (i <= n) { gain += g; loss += l; if (i < n) return null; gain /= n; loss /= n; }
       else { gain = (gain * (n - 1) + g) / n; loss = (loss * (n - 1) + l) / n; }
       return loss === 0 ? 100 : 100 - 100 / (1 + gain / loss);
+    });
+  }
+  // CCI = (typical price − its n-bar average) ÷ (0.015 × mean absolute deviation).
+  function cci(candles, n) {
+    const tp = candles.map(c => (c.high + c.low + c.close) / 3);
+    return tp.map((v, i) => {
+      if (i < n - 1) return null;
+      let sum = 0;
+      for (let j = i - n + 1; j <= i; j++) sum += tp[j];
+      const avg = sum / n;
+      let dev = 0;
+      for (let j = i - n + 1; j <= i; j++) dev += Math.abs(tp[j] - avg);
+      dev /= n;
+      return dev === 0 ? 0 : (v - avg) / (0.015 * dev);
     });
   }
   // DIF = EMA(fast) − EMA(slow); MACD = EMA(DIF, signal); OSC = DIF − MACD.
@@ -116,6 +139,19 @@
     return get();
   }
 
+  // ---- K 線／線圖 ----
+  const readStyle = () => { try { return storage()?.getItem(STYLE_KEY) === 'line' ? 'line' : 'candle'; } catch { return 'candle'; } };
+  let chartStyle = readStyle();
+  function getStyle() { return chartStyle; }
+  function setStyle(next) {
+    chartStyle = next === 'line' ? 'line' : 'candle';
+    try { storage()?.setItem(STYLE_KEY, chartStyle); } catch {}
+    controller?.applyStyle();
+    syncSettings();
+    try { root.document?.dispatchEvent(new CustomEvent(STYLE_EVENT, { detail: chartStyle })); } catch {}
+    return chartStyle;
+  }
+
   // ---- helpers ----
   const light = () => !!root.document?.body?.classList.contains('theme-light');
   function palette() {
@@ -142,9 +178,10 @@
   let controller = null;
   function attach(options) { controller?.destroy(); controller = createController(options); return controller; }
 
-  function createController({ chart, container, getCandles, volumeVisible = () => true, baseMargins, onLayout = () => {}, isMobile = () => root.matchMedia?.('(max-width:720px)').matches }) {
+  function createController({ chart, container, getCandles, candleSeries = null, volumeVisible = () => true, baseMargins, onLayout = () => {}, isMobile = () => root.matchMedia?.('(max-width:720px)').matches }) {
     const lib = root.LightweightCharts, doc = root.document;
     const overlays = new Map(), panes = new Map();
+    let lineSeries = null, candleColors = null;
     let candles = [], values = new Map(), dataKey = '', hoverIndex = null, reserved = 0, frame = 0, destroyed = false;
     const legend = doc.createElement('div'); legend.className = 'ox-ind-legend';
     const stack = doc.createElement('div'); stack.className = 'ox-ind-stack'; stack.hidden = true;
@@ -173,7 +210,8 @@
       const series = id === 'macd'
         ? [sub.addHistogramSeries({ priceScaleId: 'right', lastValueVisible: false, priceLineVisible: false }), line(p.lines[0]), line(p.lines[1])]
         : id === 'kd' ? [line(p.lines[0], { autoscaleInfoProvider: fixed }), line(p.lines[1], { autoscaleInfoProvider: fixed })]
-          : [line(p.lines[0], { autoscaleInfoProvider: fixed }), line(p.lines[2], { autoscaleInfoProvider: fixed })];
+          : id === 'cci' ? [line(p.lines[0])]
+            : [line(p.lines[0], { autoscaleInfoProvider: fixed }), line(p.lines[2], { autoscaleInfoProvider: fixed })];
       const anchor = series[id === 'macd' ? 1 : 0];
       const levels = LEVELS[id].map(price => anchor.createPriceLine({ price, color: p.level, lineWidth: 1, lineStyle: 2, axisLabelVisible: false }));
       return { box, host, marks, tag, chart: sub, series, anchor, levels };
@@ -192,6 +230,7 @@
       else if (id === 'kd') readout = point ? `<i style="color:${p.lines[0]}">${fmtOsc(point.k)}</i><i style="color:${p.lines[1]}">${fmtOsc(point.d)}</i>` : '';
       else if (id === 'rsi') readout = point ? `<i style="color:${p.lines[0]}">${fmtOsc(point[0])}</i><i style="color:${p.lines[2]}">${fmtOsc(point[1])}</i>` : '';
       else if (id === 'macd') readout = point ? `<i style="color:${p.lines[0]}">${fmt(point.dif)}</i><i style="color:${p.lines[1]}">${fmt(point.macd)}</i><i style="color:${point.osc >= 0 ? p.up : p.down}">${fmt(point.osc)}</i>` : '';
+      else if (id === 'cci') readout = Number.isFinite(point) ? `<i style="color:${p.lines[0]}">${fmtOsc(point)}</i>` : '';
       const params = def.overlay ? '' : `<small>${esc(paramShort(id))}</small>`;
       tag.innerHTML = `<span class="ox-ind-chip"><b>${def.name}</b>${params}${readout ? `<span class="ox-ind-values">${readout}</span>` : ''}</span>`;
       tag.setAttribute('aria-label', `${def.name} ${paramText(id)}，調整參數`);
@@ -211,6 +250,7 @@
       if (id === 'bb') return bollinger(closes, p[0], p[1]);
       if (id === 'kd') return kd(candles, p[0], p[1], p[2]);
       if (id === 'rsi') { const a = rsi(closes, p[0]), b = rsi(closes, p[1]); return a.map((v, i) => v === null && b[i] === null ? null : [v, b[i]]); }
+      if (id === 'cci') return cci(candles, p[0]);
       return macd(closes, p[0], p[1], p[2]);
     }
     function seriesData(id, list) {
@@ -219,6 +259,7 @@
       if (id === 'bb') return [points(list, v => v.up), points(list, v => v.mid), points(list, v => v.low)];
       if (id === 'kd') return [points(list, v => v.k), points(list, v => v.d)];
       if (id === 'rsi') return [points(list, v => v[0]), points(list, v => v[1])];
+      if (id === 'cci') return [points(list, v => v)];
       return [list.map((v, i) => v ? { time: candles[i].time, value: v.osc, color: (v.osc >= 0 ? pal.up : pal.down) + '99' } : { time: candles[i].time }), points(list, v => v.dif), points(list, v => v.macd)];
     }
     function fill(id, lastOnly = false) {
@@ -237,10 +278,11 @@
       if (destroyed) return;
       const next = getCandles?.() || [];
       // The same bars with only the newest one moving: update that point in place.
-      const key = `${next.length}:${next[0]?.time}:${next.at(-2)?.time}:${paramText('ma')}${paramText('bb')}${paramText('kd')}${paramText('rsi')}${paramText('macd')}`;
+      const key = `${next.length}:${next[0]?.time}:${next.at(-2)?.time}:${IDS.map(id => paramText(id)).join('|')}`;
       const lastOnly = !force && key === dataKey && next.length > 1 && next.at(-1)?.time === candles.at(-1)?.time;
       candles = next; dataKey = key;
       for (const id of [...overlays.keys(), ...panes.keys()]) fill(id, lastOnly);
+      fillLine(lastOnly);
       if (!lastOnly) sync();
       renderTags(); placeLevels();
     }
@@ -280,18 +322,51 @@
         volume: { top: Math.max(0, 1 - panesFrac - volFrac), bottom: panesFrac }
       };
     }
-    // Reference levels (80/20, 70/30, 0) as small labels on the right edge.
+    // Reference levels (80/20, 70/30, 0, ±100) as small labels on the right edge;
+    // a label closer than 12px to the one above it is left out.
     function placeLevels() {
       cancelAnimationFrame(placeLevels.frame);
       placeLevels.frame = root.requestAnimationFrame(() => {
         for (const [id, pane] of panes) {
           const height = pane.host.clientHeight;
-          pane.marks.innerHTML = LEVELS[id].map(level => {
+          let above = -Infinity;
+          pane.marks.innerHTML = LABELS[id].map(level => {
             const y = pane.anchor.priceToCoordinate(level);
-            return Number.isFinite(y) && y > 8 && y < height - 4 ? `<span style="top:${Math.round(y)}px">${level}</span>` : '';
+            if (!(Number.isFinite(y) && y > 8 && y < height - 4) || y - above < 12) return '';
+            above = y;
+            return `<span style="top:${Math.round(y)}px">${level}</span>`;
           }).join('');
         }
       });
+    }
+    // 線圖: a close-price line on the candles' scale; the candles turn invisible.
+    const HIDE = 'rgba(0,0,0,0)', COLOR_KEYS = ['upColor', 'downColor', 'wickUpColor', 'wickDownColor', 'borderUpColor', 'borderDownColor'];
+    function linePalette() {
+      return light() ? { color: '#8d712e', top: 'rgba(141,113,46,.2)', bottom: 'rgba(141,113,46,0)' } : { color: '#ece6d8', top: 'rgba(236,230,216,.16)', bottom: 'rgba(236,230,216,0)' };
+    }
+    function fillLine(lastOnly = false) {
+      if (!lineSeries) return;
+      const data = candles.map(c => ({ time: c.time, value: c.close }));
+      if (lastOnly && data.length) lineSeries.update(data.at(-1)); else lineSeries.setData(data);
+    }
+    function applyStyle() {
+      if (destroyed) return;
+      const line = chartStyle === 'line', p = linePalette();
+      if (line && !lineSeries) {
+        const options = { priceScaleId: 'right', lineWidth: 2, lastValueVisible: false, priceLineVisible: false, crosshairMarkerRadius: 3, autoscaleInfoProvider: () => null };
+        lineSeries = chart.addAreaSeries ? chart.addAreaSeries({ ...options, lineColor: p.color, topColor: p.top, bottomColor: p.bottom }) : chart.addLineSeries({ ...options, color: p.color });
+        fillLine();
+      }
+      lineSeries?.applyOptions({ visible: line, lineColor: p.color, color: p.color, topColor: p.top, bottomColor: p.bottom });
+      if (candleSeries) {
+        const current = candleSeries.options?.() || {};
+        if (line) {
+          // Keep the theme's candle colours to bring them back for K 線.
+          if (current.upColor && current.upColor !== HIDE) candleColors = Object.fromEntries(COLOR_KEYS.filter(k => current[k]).map(k => [k, current[k]]));
+          candleSeries.applyOptions(Object.fromEntries(COLOR_KEYS.map(k => [k, HIDE])));
+        } else if (candleColors && current.upColor === HIDE) candleSeries.applyOptions(candleColors);
+      }
+      container.classList.toggle('is-line-chart', line);
     }
     function applyTheme() {
       const p = palette(), text = light() ? '#616d7c' : '#929995';
@@ -299,9 +374,12 @@
       for (const [id, pane] of panes) {
         pane.chart.applyOptions({ layout: { background: { type: 'solid', color: p.bg }, textColor: text }, crosshair: { vertLine: { color: light() ? 'rgba(55,65,81,.35)' : 'rgba(255,255,255,.3)' } } });
         if (id === 'macd') { pane.series[1].applyOptions({ color: p.lines[0] }); pane.series[2].applyOptions({ color: p.lines[1] }); }
+        else if (id === 'cci') pane.series[0].applyOptions({ color: p.lines[0] });
         else { pane.series[0].applyOptions({ color: p.lines[0] }); pane.series[1].applyOptions({ color: id === 'kd' ? p.lines[1] : p.lines[2] }); }
         pane.levels.forEach(line => line.applyOptions({ color: p.level }));
       }
+      // The theme has just recoloured the candles; 線圖 hides them again.
+      applyStyle();
       refresh(true);
     }
     // Turn panes and overlays on or off to match the saved choices.
@@ -324,7 +402,7 @@
       hoverIndex = index !== null && index >= 0 && index < candles.length ? index : null;
       for (const [id, pane] of panes) {
         if (hoverIndex === null || time === null) { pane.chart.clearCrosshairPosition(); continue; }
-        const v = values.get(id)?.[hoverIndex], price = id === 'kd' ? v?.k : id === 'rsi' ? v?.[0] ?? v?.[1] : v?.dif;
+        const v = values.get(id)?.[hoverIndex], price = id === 'kd' ? v?.k : id === 'rsi' ? v?.[0] ?? v?.[1] : id === 'cci' ? v : v?.dif;
         if (Number.isFinite(price)) pane.chart.setCrosshairPosition(price, time, pane.series[id === 'macd' ? 1 : 0]); else pane.chart.clearCrosshairPosition();
       }
       renderTags();
@@ -347,8 +425,9 @@
     chart.subscribeCrosshairMove(crosshair);
     resize.observe(container);
     apply();
+    applyStyle();
     return {
-      apply, layout, margins, refresh: () => schedule(true),
+      apply, applyStyle, layout, margins, refresh: () => schedule(true),
       reservedHeight: () => reserved,
       active: id => !!saved.on[id],
       destroy() {
@@ -359,6 +438,9 @@
         chart.timeScale().unsubscribeVisibleLogicalRangeChange(sync); chart.unsubscribeCrosshairMove(crosshair);
         for (const list of overlays.values()) for (const s of list) chart.removeSeries(s);
         for (const pane of panes.values()) pane.chart.remove();
+        if (lineSeries) { try { chart.removeSeries(lineSeries); } catch {} lineSeries = null; }
+        if (candleSeries && candleColors && candleSeries.options?.().upColor === HIDE) candleSeries.applyOptions(candleColors);
+        container.classList.remove('is-line-chart');
         stack.remove(); legend.remove(); if (controller === this) controller = null;
       }
     };
@@ -421,6 +503,12 @@
     if (!panel || panel.querySelector('.ox-ind-settings')) return;
     const section = doc.createElement('section');
     section.className = 'ox-ind-settings'; section.setAttribute('aria-label', '技術指標');
+    // K 線／線圖 sits at the top of the panel.
+    const style = doc.createElement('div');
+    style.className = 'ox-chart-style'; style.setAttribute('role', 'group'); style.setAttribute('aria-label', '圖表樣式');
+    style.innerHTML = [['candle', 'K 線'], ['line', '線圖']].map(([id, name]) => `<button type="button" data-chart-style="${id}" aria-pressed="${chartStyle === id}" data-track="chart.style" data-track-detail="${id}">${name}</button>`).join('');
+    style.addEventListener('click', event => { const button = event.target.closest('[data-chart-style]'); if (button) setStyle(button.dataset.chartStyle); });
+    panel.prepend(style);
     section.innerHTML = `<h3>技術指標</h3><div class="ox-ind-options">${IDS.map(id => `<div class="ox-ind-option"><label class="chart-indicator-option"><input type="checkbox" data-indicator="${id}"><span class="chart-indicator-check" aria-hidden="true"></span><span>${INDICATORS[id].name}</span></label><button type="button" class="ox-ind-params" data-indicator-params="${id}"></button></div>`).join('')}</div><p class="ox-ind-note">點參數或圖上的指標名稱即可調整</p>`;
     const anchor = panel.querySelector('.chart-level-alert-options') || panel.querySelector('.chart-indicator-options');
     if (anchor) anchor.after(section); else panel.prepend(section);
@@ -431,6 +519,7 @@
   function syncSettings() {
     const doc = root.document;
     if (!doc) return;
+    doc.querySelectorAll?.('.ox-chart-style [data-chart-style]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.chartStyle === chartStyle)));
     for (const id of IDS) {
       const input = doc.querySelector(`.ox-ind-settings [data-indicator="${id}"]`), button = doc.querySelector(`.ox-ind-settings [data-indicator-params="${id}"]`);
       if (input) input.checked = !!saved.on[id];
@@ -443,14 +532,17 @@
     const doc = root.document;
     if (!doc?.head || doc.querySelector('link[data-ox-chart-indicators]')) return;
     const link = doc.createElement('link');
-    link.rel = 'stylesheet'; link.href = 'src/styles/components/chart-indicators.css?v=20261028-ind1'; link.dataset.oxChartIndicators = '';
+    link.rel = 'stylesheet'; link.href = 'src/styles/components/chart-indicators.css?v=20261030-board2'; link.dataset.oxChartIndicators = '';
     doc.head.append(link);
   }
-  root.addEventListener?.('storage', event => { if (event.key === STORAGE_KEY) { saved = read(); controller?.apply(); syncSettings(); } });
+  root.addEventListener?.('storage', event => {
+    if (event.key === STORAGE_KEY) { saved = read(); controller?.apply(); syncSettings(); }
+    if (event.key === STYLE_KEY) { chartStyle = readStyle(); controller?.applyStyle(); syncSettings(); }
+  });
 
   root.OXChartIndicators = Object.freeze({
-    STORAGE_KEY, CHANGE_EVENT, INDICATORS, sma, ema, bollinger, kd, rsi, macd, normalize, defaults, paramsOf: id => paramsOf(id),
-    get, set, attach, openSheet, mountSettings,
+    STORAGE_KEY, CHANGE_EVENT, STYLE_KEY, STYLE_EVENT, INDICATORS, sma, ema, bollinger, kd, rsi, macd, cci, normalize, defaults, paramsOf: id => paramsOf(id),
+    get, set, getStyle, setStyle, attach, openSheet, mountSettings,
     controller: () => controller
   });
   if (root.document) { addStyles(); if (root.document.readyState === 'loading') root.document.addEventListener('DOMContentLoaded', mountSettings, { once: true }); else mountSettings(); }

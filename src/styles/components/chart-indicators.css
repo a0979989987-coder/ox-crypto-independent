@@ -84,3 +84,17 @@ body.theme-light .ox-ind-stepper input:focus{outline-color:#8d712e}
 body.theme-light .ox-ind-defaults{color:#6b7280}
 body.theme-light .ox-ind-sheet-foot button{border-color:rgba(156,169,185,.6)}
 body.theme-light .ox-ind-sheet-foot button.is-primary{border-color:#8d712e;background:#8d712e;color:#fff}
+/* 指標 button: a chart icon and the word on one line, at the toolbar's own height. */
+html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open,html body.ox-terminal #view-radar[data-radar-mode] .chart-controls #chart-indicator-open.ox-ind-open{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:auto!important;min-width:0!important;flex:0 0 auto!important;padding:0 6px 0 5px!important;line-height:1!important;white-space:nowrap}
+html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open svg,html body.ox-terminal #view-radar[data-radar-mode] .chart-controls #chart-indicator-open.ox-ind-open svg{width:14px!important;height:14px!important;flex:none!important}
+#chart-indicator-open.ox-ind-open span{font:600 11px/1 system-ui,-apple-system,"PingFang TC",sans-serif;letter-spacing:.02em;white-space:nowrap}
+
+/* K 線／線圖 at the top of 指標與篩選. */
+#chart-tools-overlay .ox-chart-style{display:flex;gap:4px;margin:0 0 12px;padding:3px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.03)}
+#chart-tools-overlay .ox-chart-style button{flex:1 1 0;min-height:34px;margin:0;padding:0 10px;border:0;border-radius:8px;background:none;box-shadow:none;color:#a9abb1;font:650 13px/1 system-ui,-apple-system,"PingFang TC",sans-serif;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:background .2s ease,color .2s ease}
+#chart-tools-overlay .ox-chart-style button[aria-pressed="true"]{background:#eeece7!important;color:#121417!important}
+#chart-tools-overlay .ox-chart-style button:focus-visible{outline:2px solid #fff;outline-offset:1px}
+body.theme-light #chart-tools-overlay .ox-chart-style{border-color:rgba(156,169,185,.5);background:#f6f7f9}
+body.theme-light #chart-tools-overlay .ox-chart-style button{color:#616d7c!important;background:none!important;border:0!important;box-shadow:none!important}
+body.theme-light #chart-tools-overlay .ox-chart-style button[aria-pressed="true"]{background:#30343b!important;color:#ffffff!important}
+body.theme-light #chart-tools-overlay .ox-chart-style button:focus-visible{outline-color:#8d712e}

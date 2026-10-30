@@ -133,3 +133,71 @@ test('the log is a public data file the Site publishes, and the recorder may pub
   assert.match(workflow, /id-token: write/);
   assert.match(workflow, /if: \$\{\{ always\(\) && !cancelled\(\) && github\.ref == 'refs\/heads\/main' && vars\.OX_SITES_DATA == 'on' \}\}/);
 });
+
+// ---- 型態: the pattern row, 長期勝率 and 型態詳情 ----
+import { patternKinds, filterModel, longRunStats, LONG_RUN_MIN } from '../src/markets/crypto/compare/model.js';
+import { candleLabel, candlesAt as detailCandlesAt, indexPoints, chartSVG, FRAMES } from '../src/markets/crypto/compare/detail.js';
+
+test('the pattern row lists the recorded patterns, most frequent first, and keeps one at a time', () => {
+  const model = compareModel(log(L, [
+    point(L, [pick('AAAUSDT', 1, [1], { p: 'w' }), pick('BBBUSDT', 2, [1])]),
+    point(L - STEP, [pick('CCCUSDT', 2, [1])]),
+    point(L - 2 * STEP, [pick('DDDUSDT', 3, [1], { p: 'bat-bull' })]),
+    point(L - 3 * STEP)
+  ]));
+  assert.deepEqual(patternKinds(model).map(k => [k.name, k.n]), [['水平阻力', 2], ['W 底・雙底', 1], ['蝙蝠 Bat・多', 1]]);
+  const only = filterModel(model, 'horizontal-resistance');
+  assert.deepEqual(only.points.map(p => [p.at, p.picks.map(x => x.s), p.count]), [[L, ['BBBUSDT'], 1], [L - STEP, ['CCCUSDT'], 1]]);
+  assert.equal(filterModel(model, 'all'), model);
+  assert.equal(filterModel(model, 'no-such').empty, true);
+  assert.equal(model.points.length, 4, 'the model itself is unchanged');
+  assert.deepEqual(patternKinds(null), []);
+});
+
+test('長期勝率 adds every record\'s totals by tier and by pattern; thin patterns are only counted', () => {
+  const h = (at, byTier, byPattern, btc) => ({ at, n: 1, k1: btc == null ? null : { n: 1, avg: 0, win: 0, btc }, k6: null, k18: null, tiers: {}, byTier, byPattern });
+  const t = (n, s, w) => ({ n1: n, s1: s, w1: w });
+  const history = [
+    { at: L - 50 * STEP, n: 3, k1: { n: 3, avg: 1, win: 100, btc: 1 }, tiers: {} },   // written before 長期勝率: not counted
+    h(L - 40 * STEP, { 1: t(2, 4, 2), 3: t(1, -1, 0) }, { w: t(10, 20, 6), cup: t(2, 1, 1) }, 1),
+    h(L - 39 * STEP, { 1: t(2, -2, 0) }, { w: t(3, 3, 3) }, -2),
+    h(L - 38 * STEP, { 2: { n6: 1, s6: 5, w6: 1 } }, {}, null)                           // only a 1 天 total so far
+  ];
+  const stats = longRunStats({ history }, 1);
+  assert.equal(stats.records, 2);
+  assert.equal(stats.from, L - 40 * STEP);
+  assert.deepEqual(stats.tiers.map(x => [x.id, x.n, x.win, x.avg]), [[1, 4, 50, .5], [3, 1, 0, -1]]);
+  close(stats.tiers[0].btc, (1 * 2 + -2 * 2) / 4);
+  assert.deepEqual(stats.patterns.map(x => [x.id, x.name, x.n, Math.round(x.win)]), [['w', 'W 底・雙底', 13, 69]]);
+  assert.equal(stats.few, 1);
+  assert.equal(LONG_RUN_MIN, 10);
+  const day = longRunStats({ history }, 6);
+  assert.deepEqual(day.tiers.map(x => [x.id, x.n, x.win, x.btc]), [[2, 1, 100, null]]);
+  assert.equal(longRunStats({ history }, 18), null);
+  assert.equal(longRunStats({ history: [history[0]] }, 1), null, 'old summaries alone show nothing');
+  assert.equal(longRunStats(null, 1), null);
+});
+
+test('型態詳情: labels, the board\'s candles at a record, pattern points and the chart', () => {
+  assert.deepEqual(FRAMES.map(f => f[1]), ['1 小時', '4 小時', '日', '週']);
+  assert.equal(candleLabel({ time: L - STEP }, '4H'), '10/29 08:00', 'a 4H candle is named by its close, as the 型態 list');
+  assert.equal(candleLabel({ time: L - 3600 }, '1H'), '10/29 08:00');
+  assert.equal(candleLabel({ time: L }, '1D'), '10/29');
+  const row = (t, c) => [String(t * 1000), String(c), String(c * 1.01), String(c * .99), String(c), '100', String(c * 100)];
+  const rows = Array.from({ length: 260 }, (_, i) => row(L - (240 - i) * STEP, 10 + (i % 5)));
+  const at = candlesAtList();
+  function candlesAtList() { return detailCandlesAt(rows, L); }
+  assert.equal(at.length, 199);
+  assert.equal(at.at(-1).time, L - STEP);
+  assert.ok(at.every(c => c.time < L));
+  const candles = Array.from({ length: 60 }, (_, i) => candle(L - (60 - i) * STEP, 10 + (i % 6) / 10));
+  // Points before the series stay on the line as fractional indexes; later ones drop out.
+  assert.deepEqual(indexPoints([[L - 62 * STEP, 9], [L - 30 * STEP, 11], [L + 5 * STEP, 12], [null, 1]], candles, STEP), [[-2, 9], [30, 11]]);
+  const svg = chartSVG({ candles, pts: indexPoints([[L - 40 * STEP, 10], [L - 12 * STEP, 10.5]], candles, STEP), breakIdx: 50, frame: '4H', width: 340 });
+  assert.match(svg, /<rect class="zy"/, 'the pattern before the breakout in yellow');
+  assert.match(svg, /<rect class="z[ud]"/, 'the candles after it in the result colour');
+  assert.match(svg, /<polyline class="ln"/);
+  assert.match(svg, /\d+\/\d+ \d\d:00 突破<\/text>/);
+  assert.match(chartSVG({ candles, pts: [], breakIdx: 50, frame: '4H', mark: '跌破' }), /跌破<\/text>/);
+  assert.doesNotMatch(chartSVG({ candles, pts: [], breakIdx: null, frame: '4H' }), /class="(zy|zu|zd|mk)"/);
+});

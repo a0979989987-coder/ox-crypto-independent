@@ -34,8 +34,9 @@ try{
     await page.locator('#ox-radar-board .px-board').waitFor({timeout:15000});
     await page.evaluate(()=>OXRadarModes.set('chart'));
     await page.locator('#view-radar .coin-card').first().waitFor({timeout:15000});
-    // 對比 sits between 畫板 and 盤面: the recorded 4H breakouts, newest first; a coin opens on 盤面 at 4H.
-    assert.deepEqual(await page.locator('.ox-radar-mode-rail [data-radar-tab]').evaluateAll(tabs=>tabs.map(t=>t.textContent.trim())),['畫板','對比','盤面','自選']);
+    // 型態 (was 對比) sits between 畫板 and 盤面: the recorded 4H breakouts, newest first; a coin opens
+    // 型態詳情, and its button opens the coin on 盤面 at 4H.
+    assert.deepEqual(await page.locator('.ox-radar-mode-rail [data-radar-tab]').evaluateAll(tabs=>tabs.map(t=>t.textContent.trim())),['畫板','型態','盤面','自選']);
     await page.route('**/data/crypto-breakouts.json*',route=>route.fulfill({json:compareLog()}));
     await page.locator('#ox-radar-tab-compare').click();
     await page.locator('#ox-radar-compare .ox-cmp-point.is-open .ox-cmp-mini svg').first().waitFor({timeout:15000});
@@ -44,6 +45,10 @@ try{
     await page.locator('#ox-radar-compare .ox-cmp-point:not(.is-open):not(.is-none) .ox-cmp-head').first().click();
     assert.match(await page.locator('#ox-radar-compare .ox-cmp-point.is-open').nth(1).innerText(),/XRP[\s\S]*\+10\.00%[\s\S]*BTC \+1\.00%[\s\S]*3 天[\s\S]*還沒到/);
     await page.locator('#ox-radar-compare .ox-cmp-pick[data-cmp-symbol="SOLUSDT"]').click();
+    await page.locator('dialog.ox-pd[open] .ox-pd-chart svg').waitFor({timeout:15000});
+    assert.match(await page.locator('dialog.ox-pd[open]').innerText(),/SOL[\s\S]*W 底・雙底[\s\S]*突破價[\s\S]*之後 4 小時[\s\S]*還沒到[\s\S]*開啟盤面看完整 K 線/);
+    await page.locator('dialog.ox-pd[open] [data-pd-open]').click();
+    assert.equal(await page.locator('dialog.ox-pd').count(),0);
     await page.waitForFunction(()=>document.getElementById('view-radar').dataset.radarMode==='chart'&&state.symbol==='SOLUSDT'&&state.period==='4H');
     assert.equal(await page.locator('#chart-timeframe-strip .btn-tf.active').getAttribute('data-tf'),'4H');
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');

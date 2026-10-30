@@ -1,7 +1,8 @@
-// 對比 data → view: the records of data/crypto-breakouts.json (written by
+// 型態 data → view: the records of data/crypto-breakouts.json (written by
 // scripts/collect-crypto-breakouts.mjs at every 4H close), newest first, with each
-// pick's return after 4 小時／1 天／3 天 against BTC over the same span, and the
-// mini 4H charts as SVG strings. Pure functions: no DOM, no network.
+// pick's return after 4 小時／1 天／3 天 against BTC over the same span, the patterns
+// in them for the filter row, 長期勝率 added up from the history, and the mini 4H
+// charts as SVG strings. Pure functions: no DOM, no network.
 import { patternById } from '../patterns/catalog.js?v=patterns5d-20260929';
 
 export const STEP = 14400;
@@ -65,6 +66,56 @@ export function compareModel(log, { names = patternName } = {}) {
 }
 // The point opened when the tab first shows: the newest one with picks.
 export const defaultOpen = model => model.points.find(p => p.count)?.at ?? null;
+
+// The 型態 filter row: every pattern in the shown records, the most frequent first
+// (ties: the one seen in the newer record first).
+export function patternKinds(model) {
+  const counts = new Map();
+  for (const point of model?.points || []) for (const pick of point.picks) counts.set(pick.p, (counts.get(pick.p) || 0) + 1);
+  return [...counts].map(([id, n]) => ({ id, name: patternName(id), n })).sort((a, b) => b.n - a.n);
+}
+// The records with only the picks of one pattern ('all' keeps everything); records
+// left without a pick drop out.
+export function filterModel(model, pattern = 'all') {
+  if (!model || pattern === 'all') return model;
+  const points = model.points.map(point => ({ ...point, picks: point.picks.filter(p => p.p === pattern) }))
+    .map(point => ({ ...point, count: point.picks.length })).filter(point => point.count);
+  return { ...model, points, empty: !points.length };
+}
+
+// 長期勝率 for one period k (4 小時／1 天／3 天): the totals every history entry keeps
+// (byTier, byPattern: n picks with a close, s summed return %, w risen), added up over
+// every recorded 4H close. 勝率 = share of picks that closed higher than the breakout
+// candle; BTC 同期 = BTC over the same spans, weighted by the picks. Patterns with
+// fewer than min picks are only counted in few. null before any total is recorded.
+export const LONG_RUN_MIN = 10;
+export function longRunStats(log, k, { min = LONG_RUN_MIN } = {}) {
+  const rows = (Array.isArray(log?.history) ? log.history : []).filter(h => h && num(h.at) != null && h.byTier && typeof h.byTier === 'object'
+    && Object.values(h.byTier).some(v => num(v?.['n' + k]) > 0));
+  if (!rows.length) return null;
+  const add = (out, id, v, btc) => {
+    const n = num(v?.['n' + k]);
+    if (!(n > 0)) return;
+    const o = out.get(id) || { id, n: 0, s: 0, w: 0, bn: 0, bs: 0 };
+    o.n += n; o.s += num(v['s' + k]) ?? 0; o.w += num(v['w' + k]) ?? 0;
+    if (btc != null) { o.bn += n; o.bs += btc * n; }
+    out.set(id, o);
+  };
+  const tiers = new Map(), kinds = new Map();
+  for (const h of rows) {
+    const btc = num(h['k' + k]?.btc);
+    for (const [t, v] of Object.entries(h.byTier)) add(tiers, Number(t), v, btc);
+    for (const [id, v] of Object.entries(h.byPattern && typeof h.byPattern === 'object' ? h.byPattern : {})) add(kinds, id, v, btc);
+  }
+  const finish = o => ({ id: o.id, n: o.n, win: o.w / o.n * 100, avg: o.s / o.n, btc: o.bn ? o.bs / o.bn : null });
+  const all = [...kinds.values()];
+  return {
+    k, from: Math.min(...rows.map(h => h.at)), records: rows.length,
+    tiers: [1, 2, 3].filter(t => tiers.get(t)?.n).map(t => finish(tiers.get(t))),
+    patterns: all.filter(o => o.n >= min).map(o => ({ ...finish(o), name: patternName(o.id) })).sort((a, b) => b.win - a.win || b.n - a.n || a.name.localeCompare(b.name)),
+    few: all.filter(o => o.n < min).length
+  };
+}
 
 // ---------- mini 4H charts ----------
 export const MINI = Object.freeze({ width: 150, height: 96, pad: 4, bars: 48 });
