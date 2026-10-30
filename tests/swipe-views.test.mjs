@@ -18,12 +18,12 @@ test('the top 35% of the screen moves page tabs and the rest moves the dock', ()
   assert.equal(zoneFor(700, 844), 'dock');
 });
 
-test('dock swipes follow 首頁 → 指標 → 畫板 → 資訊 → 設定 and stop at the ends', () => {
-  assert.deepEqual(ORDER, ['home', 'strength', 'radar', 'data', 'settings']);
-  assert.equal(neighbor('radar', 1), 'data');
+test('dock swipes follow 首頁 → 行情 → 畫板 → 型態 → 資訊 and stop at the ends', () => {
+  assert.deepEqual(ORDER, ['home', 'strength', 'radar', 'pattern', 'data']);
+  assert.equal(neighbor('radar', 1), 'pattern');
   assert.equal(neighbor('radar', -1), 'strength');
-  assert.equal(neighbor('data', 1), 'settings');
-  assert.equal(neighbor('settings', 1), null);
+  assert.equal(neighbor('pattern', 1), 'data');
+  assert.equal(neighbor('data', 1), null);
   assert.equal(neighbor('home', -1), null);
   assert.equal(neighbor('media', 1), null, 'pages outside the dock do not swipe');
 });

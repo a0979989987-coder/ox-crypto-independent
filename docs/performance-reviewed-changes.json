@@ -4,8 +4,8 @@
     {
       "path": "src/markets/crypto/bubbles/view.js",
       "sourceSha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894",
-      "sha256": "fa25191541bd68d8b72558acc8126bd1b528c93a81c36d57f5f8ff83152a6fce",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
+      "sha256": "06cc59ae4a75545c32c22b6c6ce4a1abb2e6bb9e70beeba77ea23b5f89d68327",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: the coin button opens the 個股 page (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
@@ -34,8 +34,8 @@
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "2c89abd66fd0ac480adc4eff2d47f69544c35f3ca68531c0019b4a488538575b",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore)."
+      "sha256": "eaa2fbeffe281573c91c2ad6239aeb2718e0d1551a03f2668e9deb14a7f60727",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore). User-requested app redesign like the Taiwan site: 行情 page with small text tabs: 雷達, 自選, 排行 join the tools (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
@@ -52,8 +52,8 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "71cf27933de715077aa409bcb96a8e3e8b5d3e15941e89948ef06434751e22de",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
+      "sha256": "7ed2f34124182b019234c83bd4408d80888f3037d33c7af26dc9662eb0c2cabc",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: 畫相似型態 from the 個股 page (drawShape); the detail button opens the 個股 page (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
@@ -124,14 +124,14 @@
     {
       "path": "src/markets/crypto/presentation.js",
       "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
-      "sha256": "f4cb23184785a82e14396d43fdd9c6f6c8cb6c7ac0722b412081e0b8c7450160",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. Opening a coin selects the 盤面 tab of the 畫板 dock view before switching to it."
+      "sha256": "619f567fa3d0c5fe5eb82a30cfde9a9714d8992b7e9a36b9b53b41ae82d7345e",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. Opening a coin selects the 盤面 tab of the 畫板 dock view before switching to it. User-requested app redesign like the Taiwan site: a coin opens the 個股 page; live quotes follow 行情 and 個股 (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "1baf2da336136712e5378e6f8fbe65299853377fbba161d2e1b8544c6d1c3322",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged."
+      "sha256": "b51997bb6e13b482558deeb0f089313070917bbcc38d04d592269f5f23906227",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged. User-requested app redesign like the Taiwan site: the radar list moves to 行情 → 雷達 as full-width rows; the scan runs on 首頁, 行情 and 個股 (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",

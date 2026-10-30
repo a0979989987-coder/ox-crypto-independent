@@ -2,7 +2,7 @@
 // before the breakout in fluorescent yellow (its line and a pale zone) and the
 // candles after it shaded in the colour of the result; 1H／4H／1D／1W and the coin's
 // other patterns on that timeframe; the signal's numbers and the system's reasons;
-// a button to 盤面 for the full K-line chart.
+// a button to the 個股 page for the full K-line chart.
 // The recorded 4H breakout is classified again by the board's own code on the 4H
 // candles that had closed at that record (as scripts/crypto-breakouts.mjs did), so
 // 失效價, 型態品質 and the reasons are the ones of that moment. Other timeframes and
@@ -288,7 +288,7 @@ export function openPatternDetail({ point, pick, onOpenChart }) {
       ${reasons.length && data?.state === 'ready' ? `<ul class="ox-pd-reasons">${reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ul>` : ''}
       ${isLog && view.logged.state === 'loading' && data?.state === 'ready' ? '<p class="ox-pd-note">正在讀取那根 K 收盤時的型態條件…</p>' : ''}
       ${isLog ? '<p class="ox-pd-note">之後的漲跌：突破那根收盤 → 之後第 1／6／18 根 4 小時 K 收盤，未含手續費、資金費率與滑價。只是紀錄，不是投資建議。</p>' : ''}
-      <button type="button" class="ox-pd-open" data-pd-open>開啟盤面看完整 K 線</button>`;
+      <button type="button" class="ox-pd-open" data-pd-open>看個股完整 K 線</button>`;
   }
 
   dialog.addEventListener('click', event => {

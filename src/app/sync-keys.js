@@ -10,7 +10,7 @@
 export const SYNC_KEYS = Object.freeze([
   { storage: 'ox-watchlist', key: 'watchlist', type: 'json', merge: 'records', label: '自選' },
   // The chart toolbar's 成交量／OX 指標／前高前低 switches still live under the old key.
-  { storage: 'ox-chart-indicators', key: 'chart-indicators', type: 'json', merge: 'value', label: '盤面指標' },
+  { storage: 'ox-chart-indicators', key: 'chart-indicators', type: 'json', merge: 'value', label: '個股指標' },
   { storage: 'ox-crypto:chart-indicators-v1', key: 'chart-indicator-settings', type: 'json', merge: 'value', label: '指標參數' },
   { storage: 'ox-chart-timeframes', key: 'chart-timeframes', type: 'json', merge: 'value', label: '時間級別' },
   { storage: 'ox-crypto:chart-style-v1', key: 'chart-style', type: 'text', merge: 'value', label: 'K 線／線圖' },

@@ -45,10 +45,11 @@ async function visit(name, { serve = null, github = null, holdCandles = false, w
     });
     if (serve) await page.route('**/data/crypto-radar.json*', route => route.fulfill({ json: serve }));
     if (github) await page.route('https://raw.githubusercontent.com/**/live-data/crypto-radar.json', route => route.fulfill({ json: github, headers: { 'access-control-allow-origin': '*' } }));
-    await page.addInitScript(mode => { try { localStorage.setItem('ox-radar-mode', mode); } catch {} }, view === 'chart' ? 'chart' : 'board');
     const started = Date.now();
     await page.goto(testBase + '/', { waitUntil: 'domcontentloaded' });
     if (view === 'home') await page.locator('.app-dock [data-view-target="home"]').click();
+    // The radar list is 行情's first tab (雷達).
+    else { await page.waitForFunction(() => !!window.OXMarketTabs, null, { timeout: 20000 }); await page.locator('.app-dock [data-view-target="strength"]').click(); }
     const list = view === 'home' ? '#home-t1-long-list [data-home-symbol], #home-t1-short-list [data-home-symbol]' : '#screener-list .coin-card[data-tier]';
     await page.locator(list).first().waitFor({ timeout: 20000 });
     const firstPaintMs = Date.now() - started;
@@ -68,9 +69,9 @@ try {
   assert.deepEqual(v.info.long, expected('long')); assert.deepEqual(v.info.short, expected('short'));
   assert.ok(v.info.ready);
   assert.ok(v.info.queue < v.info.total || v.info.total <= 62, 'only candidates and the most traded coins');
-  await v.page.locator('.app-dock [data-view-target="radar"]').click();
-  await v.page.evaluate(() => OXRadarModes.set('chart'));
-  await v.page.locator('#screener-list .coin-card[data-tier]').first().waitFor();
+  await v.page.locator('.app-dock [data-view-target="strength"]').click();
+  assert.equal(await v.page.evaluate(() => OXMarketTabs.current()), 'radar');
+  await v.page.locator('#ox-market-radar #screener-list .coin-card[data-tier]').first().waitFor();
   const longCards = await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol));
   assert.deepEqual(longCards, expected('long'));
   await v.page.locator('#direction-toggle').click();
@@ -93,14 +94,14 @@ try {
   await done(v);
 
   // On Vercel: the same-origin file is the empty placeholder, the live-data branch has it.
-  v = await visit('github', { github: snapshot, holdCandles: true, view: 'chart' });
+  v = await visit('github', { github: snapshot, holdCandles: true, view: 'list' });
   assert.deepEqual(v.info.long, expected('long'));
   assert.match(v.info.label, /收盤・更新中/);
   results.push({ case: 'github', firstPaintMs: v.firstPaintMs, label: v.info.label });
   await done(v);
 
   // Missing: the empty placeholder, GitHub 404, then the page's own scan as before.
-  v = await visit('missing', { view: 'chart' });
+  v = await visit('missing', { view: 'list' });
   assert.equal(v.info.label, '');
   results.push({ case: 'missing', firstPaintMs: v.firstPaintMs, queue: v.info.queue });
   await done(v);
@@ -109,7 +110,7 @@ try {
   v = await visit('first', { serve: snapshot, persistent: profile });
   await v.page.waitForTimeout(2000);
   await done(v);
-  v = await visit('repeat', { persistent: profile, holdCandles: true, view: 'chart' });
+  v = await visit('repeat', { persistent: profile, holdCandles: true, view: 'list' });
   assert.match(v.info.label, /收盤/);
   assert.deepEqual(v.info.long, expected('long'));
   results.push({ case: 'repeat', firstPaintMs: v.firstPaintMs, label: v.info.label });

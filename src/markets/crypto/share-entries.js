@@ -1,4 +1,4 @@
-// Where 分享圖片 starts outside the tools: 盤面 (a picture button in the price card),
+// Where 分享圖片 starts outside the tools: the 個股 page (its bar's 分享, and a picture button in the price card),
 // 首頁 (beside the BTC chart's timeframes), and the handlers the 畫板 tab passes to the
 // board (card long press / picture button, 分享 after drawing). The images themselves
 // are drawn by ./share-image.js; the 型態 tab, 型態詳情 and 資訊 call it directly.
@@ -41,7 +41,7 @@ export function shareBoardDrawing({ strokes, rows }) {
   return shareDrawing({ strokes, matches: rows.map(r => ({ name: r.title || coin(r.symbol), frame: r.frame, label: Number.isFinite(r.similarity) ? '相似 ' + r.similarity.toFixed(1) : '', candles: r.candles, points: points(r) })) });
 }
 
-// 盤面: the chart being viewed.
+// 個股: the chart being viewed.
 export function shareChart() {
   const rt = runtime(), candles = rt?.candleData;
   if (!rt?.symbol || !candles?.length) return null;

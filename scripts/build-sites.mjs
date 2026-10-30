@@ -11,7 +11,7 @@ import { cp, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const root = resolve(import.meta.dirname, '..');
-const PAGES = ['index.html', 'admin.html', 'privacy.html', 'terms.html', 'ox-logo.png'];
+const PAGES = ['index.html', 'admin.html', 'privacy.html', 'terms.html', 'ox-logo.png', 'favicon.svg', 'manifest.webmanifest'];
 const DATA_DIRS = ['data', 'previews/data'];
 
 async function files(dir) {

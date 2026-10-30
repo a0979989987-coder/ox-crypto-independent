@@ -364,7 +364,8 @@
       const s = cryptoState(); if (!s || s.activeMarket !== 'crypto') return;
       // rebuildTierLists also renders 首頁 and OX LIVE when they are showing.
       try { if (typeof rebuildTierLists === 'function') rebuildTierLists(); } catch (error) { console.error('Radar snapshot ranking failed', error); }
-      try { if (s.activeView === 'radar') { renderCurrentTab(); updateHeaderHUD(); renderBenchmarkBar(); } } catch {}
+      // The list is 行情 → 雷達; the quote card belongs to the 個股 page.
+      try { if (s.activeView === 'strength') renderCurrentTab(); if (s.activeView === 'stock') { updateHeaderHUD(); renderBenchmarkBar(); } } catch {}
       label();
     }
     // A fresh complete evaluation re-checks its candidates; otherwise the full scan.
@@ -467,7 +468,7 @@
       const waiting = tierModeWithoutFrames();
       if (s.radarSnapshotReady === !waiting) return;
       s.radarSnapshotReady = !waiting;
-      try { if (s.activeView === 'radar') renderCurrentTab(); } catch {}
+      try { if (s.activeView === 'strength') renderCurrentTab(); } catch {}
     });
     document.addEventListener('visibilitychange', () => { if (document.hidden) { if (run.loaded) saveNow(); } else label(); });
     boot();

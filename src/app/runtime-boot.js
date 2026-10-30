@@ -41,7 +41,7 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 window.addEventListener("resize", () => {
-  if (state.activeView === "radar" || document.body.classList.contains("chart-focus")) {
+  if (state.activeView === "stock" || document.body.classList.contains("chart-focus")) {
     setTimeout(resizeChartToContainer, 60);
   }
 });

@@ -1,22 +1,38 @@
 import { loadToolModule } from '../../../components/load-tool-module.js?v=20261005-recovery20';
 import { showToolLoadError } from '../../../components/tool-load-error.js?v=20261005-recovery20';
-import { createToolsRail } from "../../../components/strength/tools-rail.js?v=20261005-stable18";
-// Crypto-only inline tools. Preserve the existing strength calculations and DOM.
+import { createTextTabs } from "../../../app/text-tabs.js";
+import { mountMarketList } from "../market-list.js";
+// 行情: one page with small text tabs on top, like the Taiwan site. 雷達 is the OX
+// radar list (T1／T2／T3, 熱門, 自選, 多空; its markup is #ox-market-radar in
+// index.html and scanner.js draws the rows), 自選 and 排行 are coin lists
+// (../market-list.js), 強弱對比 keeps the page's own strength cards, and the other
+// tools mount inline. Preserve the existing strength calculations and DOM.
 const section = document.querySelector('#view-strength .strength-page');
 if (section) {
   // 型態搜尋 moved to the 畫板 dock view (src/markets/crypto/radar-board.js).
-  const tabs = [['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
+  const tabs = [['radar','雷達'],['watch','自選'],['rank','排行'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
+  const LISTS = new Set(['watch','rank']);
   let selected = globalThis.OXFeatures?.selectedTool?.('crypto');
-  if (!tabs.some(([id]) => id === selected)) selected = 'bubbles';
-  const rail = createToolsRail({ tabs, selected, label:'Crypto 指標分類', attribute:'data-crypto-tool', equal:true, mobileCompact:true, onSelect(id){if(id===selected)return;unmount();selected=id;sync();} });
+  if (!tabs.some(([id]) => id === selected)) selected = 'radar';
+  const rail = createTextTabs({ tabs, selected, label:'行情分類', attribute:'data-crypto-tool', sticky:true, onSelect(id){if(id===selected)return;unmount();selected=id;sync();if(scrollY>0)scrollTo({top:0});} });
   const nav = rail.element; nav.id='ox-crypto-tools-nav'; nav.hidden=true;
   const ns = rail.shadow;
   section.prepend(nav);
+  const radarPane = document.getElementById('ox-market-radar');
+  if (radarPane) nav.after(radarPane);
+  const listPane = document.createElement('section'); listPane.id = 'ox-market-list'; listPane.hidden = true; listPane.setAttribute('aria-label', '幣種清單');
+  (radarPane || nav).after(listPane);
+  let list = null;
   const boundaryStyle=document.createElement('style');
-  boundaryStyle.textContent='body[data-view="strength"] .ox-live-shell{margin-bottom:14px!important}#view-strength .strength-page{padding-top:8px!important}#view-strength .strength-page[data-crypto-tool]:not([data-crypto-tool="strength"]) > :not(#ox-crypto-tools-nav):not(#ox-crypto-tools-inline){display:none!important}#view-strength .strength-page > [hidden]{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top .page-kicker,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top h2,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-side span,#view-strength .strength-page[data-crypto-tool="strength"] .strength-head p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-explain{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top{justify-content:flex-end;margin-bottom:8px}';
+  boundaryStyle.textContent='body[data-view="strength"] .ox-live-shell{margin-bottom:14px!important}#view-strength .strength-page[data-crypto-tool]:not([data-crypto-tool="strength"]) > :not(#ox-crypto-tools-nav):not(#ox-crypto-tools-inline):not(#ox-market-radar):not(#ox-market-list){display:none!important}#view-strength .strength-page > [hidden]{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top .page-kicker,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top h2,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-side span,#view-strength .strength-page[data-crypto-tool="strength"] .strength-head p,#view-strength .strength-page[data-crypto-tool="strength"] .strength-explain{display:none!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-top{justify-content:flex-end;margin-bottom:8px}';
   section.append(boundaryStyle);
-  boundaryStyle.textContent+='#view-strength .strength-page[data-crypto-tool]{display:grid!important;row-gap:4px!important}#view-strength #ox-crypto-tools-inline{margin-top:0!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-panel{padding-top:12px!important}';
-  const positionIndicator = rail.position;
+  boundaryStyle.textContent+='#view-strength .strength-page[data-crypto-tool]{display:block!important}#view-strength .strength-page[data-crypto-tool="strength"] > :not(#ox-crypto-tools-nav):not([hidden]) ~ :not([hidden]):not(style){margin-top:10px}#view-strength #ox-crypto-tools-inline{margin-top:0!important}#view-strength .strength-page[data-crypto-tool="strength"] .strength-compare-panel{padding-top:12px!important}';
+  const positionIndicator = () => rail.position();
+  // Other pages pick a tab before opening 行情 (search, the drawer, OXRadarModes.set('watch')).
+  window.OXMarketTabs = Object.freeze({
+    current: () => selected,
+    select(id) { if (!tabs.some(([t]) => t === id)) return false; if (active()) { rail.select(id); return true; } if (id !== selected) { unmount(); selected = id; rail.mark(id); } return true; }
+  });
   const slot = document.createElement('section');
   slot.id = 'ox-crypto-tools-inline';
   slot.setAttribute('aria-label', '加密市場工具');
@@ -58,13 +74,23 @@ if (section) {
   document.addEventListener('scroll',()=>{if(mountedTool&&instance&&active())scrolls.set(mountedTool,window.scrollY);},{passive:true});
   function restoreScroll(id){const token=generation,root=host.shadowRoot?.querySelector('main,.oxb-shell');const restore=()=>{if(token===generation&&mountedTool===id&&active())window.scrollTo(0,scrolls.get(id)||0);};requestAnimationFrame(restore);if(root?.hasAttribute('aria-busy')){scrollObserver=new MutationObserver(()=>{if(!root.hasAttribute('aria-busy')){scrollObserver?.disconnect();scrollObserver=null;requestAnimationFrame(restore);}});scrollObserver.observe(root,{attributes:true,attributeFilter:['aria-busy']});}}
 
+  // 雷達 and the lists stay mounted; they only stop drawing while hidden.
+  function syncPanes() {
+    const on = active() && section.dataset.cryptoTool === selected;
+    if (radarPane) radarPane.hidden = !(on && selected === 'radar');
+    listPane.hidden = !(on && LISTS.has(selected));
+    if (on && selected === 'radar') { try { renderCurrentTab(); } catch {} }
+    if (on && LISTS.has(selected)) { if (!list) list = mountMarketList(listPane, { mode: selected }); else { list.setMode(selected); list.resume(); } }
+    else list?.suspend();
+  }
   async function sync() {
     nav.hidden = !active();
-    if (!active()) { delete section.dataset.cryptoTool; unmount(); return; }
-    if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync)){unmount();return;}
+    if (!active()) { delete section.dataset.cryptoTool; syncPanes(); unmount(); return; }
+    if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync)){delete section.dataset.cryptoTool;syncPanes();unmount();return;}
     if(section.dataset.cryptoTool!==selected)document.dispatchEvent(new CustomEvent('ox:crypto-toolchange',{detail:{tool:selected}}));
-    section.dataset.cryptoTool=selected; positionIndicator();requestAnimationFrame(positionIndicator);
-    if(selected==='strength'){unmount();return;}
+    section.dataset.cryptoTool=selected; rail.mark(selected); positionIndicator();requestAnimationFrame(positionIndicator);
+    syncPanes();
+    if(selected==='strength'||selected==='radar'||LISTS.has(selected)){unmount();return;}
     slot.hidden = false;
     if (instance || pending) return;
     const retainedEntry=retained.get(selected);

@@ -1,5 +1,5 @@
 import {localizeNewsText} from './localization.js';
-import { createToolsRail } from '../strength/tools-rail.js?v=20261005-stable18';
+import { createTextTabs } from '../../app/text-tabs.js';
 import { MARKET_NAMES, CATEGORY_NAMES, MARKET_CATEGORIES, TIME_CHOICES, sourceName } from './config.js?v=20261005-calendar11';
 import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, eventCategory, importance, matchesImportance, newsBase, filterNews, hotWords, ranking, sourcesFor, coverage, safeLink, plain, agendaDays, inMarket, upcomingEventDays } from './model.js?v=20261005-load16';
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
@@ -35,8 +35,9 @@ export function mountNewsWorkspace(host, api) {
     const tags = node('div', 'oxn-tags'); for (const [id, text] of [['all', '全部閱讀狀態'], ['unread', '僅未讀'], ['following', '追蹤來源']]) { const b = button(text, '', () => { state.reader = id; persist(); renderContent(); [...tags.children].forEach(n => n.setAttribute('aria-pressed', String(n === b))); }); b.setAttribute('aria-pressed', String((state.reader || 'all') === id)); tags.append(b); }
     body.append(tags, button('恢復隱藏新聞／來源', '', () => { api.save({ hidden: [], mutedSources: [] }); renderContent(); }, 'oxn-action'), button('更新來源快照', '', api.refresh, 'oxn-action'), node('p', 'oxn-caption', '資料依來源快照更新，並非即時串流；重新讀取會保留最後成功資料。'));
   }), 'oxn-close oxn-more'); header.append(more);
-  const rail = createToolsRail({ tabs: [['calendar', '行事曆'], ['key', '關鍵新聞']], selected: state.tab, label: '新聞內容', attribute: 'data-news-tab', equal: true,
-    onSelect(tab) { state.tab = tab; persist(); panel?.destroy({ focus: false }); renderControls(); renderContent(); } }); rail.element.classList.add('oxn-tabs');
+  // 行事曆／關鍵新聞: the small text tabs of 行情 and 型態, pinned at the top while the list scrolls.
+  const rail = createTextTabs({ tabs: [['calendar', '行事曆'], ['key', '關鍵新聞']], selected: state.tab, label: '新聞內容', attribute: 'data-news-tab', sticky: true,
+    onSelect(tab) { state.tab = tab; persist(); panel?.destroy({ focus: false }); renderControls(); renderContent(); if (scrollY > 0) scrollTo({ top: 0 }); } }); rail.element.classList.add('oxn-tabs');
   const controls = node('div', 'oxn-controls'), notification = node('div', 'oxn-notification'), content = node('div', 'oxn-content');
   root.append(header, rail.element, controls, notification, content); host.replaceChildren(root);
   const scope = () => api.scope === 'all' ? state.market : api.scope;
@@ -295,7 +296,7 @@ export function mountNewsWorkspace(host, api) {
     actions.append(read, follow, button('隱藏', '', () => { api.save({ hidden: [...new Set([...(api.preferences().hidden || []), item.id])] }); row.remove(); })); body.append(actions);
     for (const asset of item.assets || []) {
       const assetActions = node('div', 'oxn-asset-actions'); assetActions.append(button(`${asset.name}相關新聞`, '', () => { state.asset = asset.id; persist(); renderControls(); renderContent(); }));
-      if (asset.market === 'crypto' && asset.venueSymbol && typeof window.switchSymbol === 'function') assetActions.append(button('前往幣種雷達', '', () => { window.OXMarketController?.setMarket('crypto'); window.switchSymbol(asset.venueSymbol); })); body.append(assetActions);
+      if (asset.market === 'crypto' && asset.venueSymbol && typeof window.switchSymbol === 'function') assetActions.append(button('看個股 K 線', '', () => { window.OXMarketController?.setMarket('crypto'); window.switchSymbol(asset.venueSymbol); })); body.append(assetActions);
     }
     if (item.reports?.length > 1) { const related = node('div', 'oxn-related'); related.append(node('small', '', '同篇轉載／連結（不算獨立查證）')); for (const report of item.reports.slice(1)) { const a = link(sourceName(report), report.link); if (a) related.append(a); } body.append(related); }
     const health = data.snapshot.sources?.find(s => s.id === item.sourceId); if (health?.status === 'error') body.append(node('p', 'oxn-caption', '來源更新失敗・保留前次快照'));

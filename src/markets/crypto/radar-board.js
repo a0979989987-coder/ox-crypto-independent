@@ -1,18 +1,18 @@
 import { loadToolModule } from '../../components/load-tool-module.js?v=20261005-recovery20';
 import { showToolLoadError } from '../../components/tool-load-error.js?v=20261005-recovery20';
 import { shareBoardRow, shareBoardDrawing } from './share-entries.js?v=20261031-share1';
-// The pattern board is the first tab of the 畫板 dock view (#view-radar,
+// The pattern board is the 畫板 dock page (view radar: #view-radar,
 // data-radar-mode="board"). It used to be the 型態搜尋 tool under 指標; the
-// same module is mounted here once and suspended while another tab or view is
-// on screen, so drawings and results survive switching tabs. The page owns the
+// same module is mounted here once and suspended while another page is on
+// screen, so drawings and results survive switching pages. 畫相似型態 on the
+// 個股 page sends a shape here (ox:draw-shape) and opens this page. The page owns the
 // one scan button (#ox-radar-scan): the board's own pill is hidden
 // (scanButton:false), the button calls refresh() and follows the board's
 // ox:pattern-board-scan progress.
 const slot = document.getElementById('ox-radar-board');
 if (slot) {
-  const radar = document.getElementById('view-radar');
   const scan = document.getElementById('ox-radar-scan');
-  let host = null, board = null, pending = false, generation = 0, suspended = false;
+  let host = null, board = null, pending = false, generation = 0, suspended = false, pendingShape = null;
   function syncScan(detail = null) {
     if (!scan) return;
     scan.hidden = !(board && visible());
@@ -28,7 +28,6 @@ if (slot) {
   slot.addEventListener('ox:pattern-board-scan', event => syncScan(event.detail || {}));
   const visible = () => (document.body.dataset.market || 'crypto') === 'crypto'
     && document.body.dataset.view === 'radar'
-    && radar?.dataset.radarMode === 'board'
     && !document.body.classList.contains('ox-feature-blocked');
 
   function suspend() {
@@ -61,19 +60,12 @@ if (slot) {
         // 分享圖片: a card's picture button or a long press; 分享 beside undo after drawing.
         onShare: shareBoardRow,
         onShareDrawing: shareBoardDrawing,
-        onOpenRadar(symbol) {
-          window.OXRadarModes?.set('chart');
-          window.switchSymbol?.(symbol);
-          // Desktop keeps the original behaviour: the chart opens wide.
-          requestAnimationFrame(() => {
-            const toggle = document.getElementById('radar-scanner-toggle');
-            if (!matchMedia('(max-width:720px)').matches && toggle?.getAttribute('aria-expanded') === 'true') toggle.click();
-          });
-        }
+        onOpenRadar(symbol) { window.switchSymbol?.(symbol); }
       });
       suspended = false;
       loading.remove();
       syncScan();
+      if (pendingShape && board.drawShape) { board.drawShape(pendingShape); pendingShape = null; }
     } catch (error) {
       if (error?.name === 'AbortError') return;
       console.warn('[OX pattern board]', error);
@@ -89,6 +81,14 @@ if (slot) {
     if (board) { if (suspended) { suspended = false; board.resume?.(); } return; }
     mount();
   }
+  document.addEventListener('ox:draw-shape', event => {
+    const points = event.detail?.points;
+    if (!Array.isArray(points) || points.length < 2) return;
+    if (board?.drawShape && visible()) { board.drawShape(points); return; }
+    pendingShape = points;
+    window.switchAppView?.('radar');
+    requestAnimationFrame(() => { if (board?.drawShape && visible() && pendingShape) { board.drawShape(pendingShape); pendingShape = null; } });
+  });
   let accountId = window.OXAuth?.user?.id || null;
   document.addEventListener('ox:accountchange', () => {
     const next = window.OXAuth?.user?.id || null;

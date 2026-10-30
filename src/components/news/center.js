@@ -23,7 +23,7 @@
   let workspaceModule=null, workspaceAttempt=0;
   function loadWorkspace() {
     if(state.workspaceError)return Promise.reject(state.workspaceError);
-    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261031-v3&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
+    if(!workspaceModule){let timeout;workspaceModule=Promise.race([import(`../../generated/tool-news.js?v=20261031-v3shell&attempt=${workspaceAttempt}`),new Promise((_,reject)=>{timeout=setTimeout(()=>reject(Error('資訊介面下載逾時')),12000);})]).catch(error=>{workspaceModule=null;state.workspaceError=error;throw error;}).finally(()=>clearTimeout(timeout));}
     return workspaceModule;
   }
   function refresh(force = false, {priority='high'}={}) {
@@ -78,7 +78,7 @@
     }
     state.workspace.update({ snapshot: state.snapshot, error: state.lastError, pending: Boolean(state.pending), candidate: Boolean(state.candidate), route: state.route });
   }
-  function currentView() { return document.querySelector('.app-view.active')?.dataset.appView || 'radar'; }
+  function currentView() { return document.body.dataset.view || document.querySelector('.app-view.active')?.dataset.appView || 'radar'; }
   const baseURL = () => (location.pathname || '/') + (location.search || '');
   function capturePrevious() { return { view: currentView(), market: currentMarket(), scroll: window.scrollY || 0 }; }
   function switchTo(view, market = currentMarket()) {

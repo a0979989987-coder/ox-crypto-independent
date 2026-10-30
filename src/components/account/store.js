@@ -3,7 +3,7 @@ function watchStorageKey() { const id=window.OXAuth?.user?.id;return id?"ox-watc
 function getWatchlistRecords() { try { const v = JSON.parse(localStorage.getItem(watchStorageKey()) || "[]"); return Array.isArray(v) ? v.filter(x => x && x.symbol) : []; } catch { return []; } }
 function isWatchlisted(symbol) { return getWatchlistRecords().some(x => x.symbol === symbol); }
 function syncWatchBadge() { const el = document.getElementById("badge-watch"); if (el) el.textContent = getWatchlistRecords().length; }
-function saveWatchlistRecords(list) { localStorage.setItem(watchStorageKey(), JSON.stringify(list)); syncWatchBadge(); AccountStore.capturePrefs(); }
+function saveWatchlistRecords(list) { localStorage.setItem(watchStorageKey(), JSON.stringify(list)); syncWatchBadge(); AccountStore.capturePrefs(); document.dispatchEvent(new CustomEvent("ox:watchlist")); }
 function watchSnapshot(symbol) {
   const c = state.analyzedCache.get(symbol) || {};
   const t = state.tickers.find(x => x.symbol === symbol) || {};
@@ -12,8 +12,8 @@ function watchSnapshot(symbol) {
 function toggleWatchSymbol(symbol) {
   const list = getWatchlistRecords();
   const i = list.findIndex(x => x.symbol === symbol);
-  if (i >= 0) { list.splice(i,1); showToast(`☆ 已從觀察移除 ${symbol.replace(/USDT$/,'')}`); }
-  else { list.unshift(watchSnapshot(symbol)); showToast(`★ 已加入觀察 ${symbol.replace(/USDT$/,'')}`); }
+  if (i >= 0) { list.splice(i,1); showToast(`☆ 已移出自選 ${symbol.replace(/USDT$/,'')}`); }
+  else { list.unshift(watchSnapshot(symbol)); showToast(`★ 已加入自選 ${symbol.replace(/USDT$/,'')}`); }
   saveWatchlistRecords(list.slice(0,100));
   renderCurrentTab();
 }
@@ -47,12 +47,12 @@ const MarketController = (() => {
     const st=document.getElementById("ox-market-status-text"); if(st) st.textContent = "加密市場行情已連線";
     syncPlaceholder();
     renderOxLive();
-    if (market === "crypto" && kick) { refreshMarketTickers(); if(state.activeView==="radar") loadSymbolCandles(true); if(state.activeView==="home") HomeMiniChart.ensureAndLoad(true); }
+    if (market === "crypto" && kick) { refreshMarketTickers(); if(state.activeView==="stock") loadSymbolCandles(true); if(state.activeView==="home") HomeMiniChart.ensureAndLoad(true); }
     if(toast) showMarketToast(`已切換至${labels[market]}`);
     try { AccountStore.capturePrefs(); } catch (e) {}
   };
   const syncPlaceholder = () => {
-    const marketView = ["home","strength","radar"].includes(state.activeView);
+    const marketView = ["home","strength","radar","pattern","stock"].includes(state.activeView);
     const nonCrypto = state.activeMarket !== "crypto" && marketView;
     const unsupported = false;
     document.body.classList.toggle("market-data-unavailable", unsupported);

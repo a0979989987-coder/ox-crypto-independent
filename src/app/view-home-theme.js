@@ -72,20 +72,31 @@ function setChartFocus(enabled) {
   [100, 300].forEach(ms => setTimeout(() => { resizeChartToContainer(true); updatePriceTimer(); }, ms));
 }
 
+// Pages: the dock's 首頁／行情／畫板／型態／資訊, the 個股 page, and 設定／媒體 from the
+// drawer. 畫板 (board), 型態 (compare) and 個股 (chart) share #view-radar; the page
+// picks its mode. 個股 is a page you step into: it gets a history entry, so the
+// phone's back gesture (and the page's ‹) returns to wherever it was opened from.
+const APP_VIEWS = ['home','strength','radar','pattern','stock','data','media','settings','news'];
+const VIEW_SECTION = { pattern: 'radar', stock: 'radar' };
+const RADAR_MODE = { radar: 'board', pattern: 'compare', stock: 'chart' };
+let stockReturn = 'strength', ignoreStockPop = false, poppingStock = false;
 function switchAppView(view) {
+  if (!APP_VIEWS.includes(view)) return;
   if (window.OXFeatures && !window.OXFeatures.enterView(view)) return;
-  if (!['home','strength','radar','data','media','settings','news'].includes(view)) return;
   if (document.body.classList.contains('chart-focus')) setChartFocus(false);
 
   const previous = state.activeView;
-  if (view === 'radar' && previous !== 'radar' && state.activeMarket === 'crypto') {
-    state.directionFilter = 'long';
-    state.currentTab = 'all';
-    const radar = document.getElementById('view-radar');
-    if (radar) { delete radar.dataset.selectedSymbol; delete radar.dataset.priceDirection; delete radar.dataset.glowLevel; }
-    syncScannerFilterUI();
+  const radar = document.getElementById('view-radar');
+  if (view === 'stock' && previous !== 'stock') {
+    stockReturn = previous && previous !== 'stock' ? previous : 'strength';
+    // Before ox:viewchange, so the news page sees this entry and adds none of its own.
+    try { history.pushState({ oxStock: 1 }, ''); } catch {}
+  } else if (previous === 'stock' && view !== 'stock' && !poppingStock && history.state?.oxStock) {
+    ignoreStockPop = true; history.back();
   }
-  const order = ['home','strength','radar','data','media','settings'];
+  if (radar && RADAR_MODE[view] && radar.dataset.radarMode !== RADAR_MODE[view]) radar.dataset.radarMode = RADAR_MODE[view];
+  const section = VIEW_SECTION[view] || view;
+  const order = ['home','strength','radar','pattern','data','media','settings'];
   const direction = Math.sign(order.indexOf(view) - order.indexOf(previous));
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   // Switch immediately: holding the old page for its exit animation blocks taps and scrolling.
@@ -94,10 +105,10 @@ function switchAppView(view) {
   {
     state.activeView = view;
     document.body.dataset.view = view;
-    document.querySelectorAll('[data-app-view]').forEach(el => el.classList.toggle('active', el.dataset.appView === view));
+    document.querySelectorAll('[data-app-view]').forEach(el => el.classList.toggle('active', el.dataset.appView === section));
     document.querySelectorAll('[data-view-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.viewTarget === view));
 
-    const incoming = document.querySelector(`[data-app-view="${view}"]`);
+    const incoming = document.querySelector(`[data-app-view="${section}"]`);
     // A brief opacity entrance leaves touch and scrolling available immediately.
     if (incoming && previous !== view && !reduced) incoming.classList.add('ox-mobile-view-in');
 
@@ -109,15 +120,26 @@ function switchAppView(view) {
       if (state.activeView !== view) return;
       if (view === 'strength' && state.activeMarket === 'crypto') { renderMarketStrength(); }
       if (view === 'home' && state.activeMarket === 'crypto') { renderHomeOverview(); HomeMiniChart.ensureAndLoad(false); }
-      if (view === 'radar' && state.activeMarket === 'crypto') {
+      if (view === 'stock' && state.activeMarket === 'crypto') {
         resizeChartToContainer();
-        renderCurrentTab();
+        updateHeaderHUD();
         renderBenchmarkBar();
       }
     }));
   }
 }
 
+
+// The phone's back gesture on the 個股 page returns to the page it was opened from.
+// Registered before the news page's own listener, which it keeps out of this step.
+window.addEventListener('popstate', event => {
+  if (ignoreStockPop) { ignoreStockPop = false; event.stopImmediatePropagation(); return; }
+  if (state.activeView !== 'stock') return;
+  event.stopImmediatePropagation();
+  poppingStock = true;
+  try { switchAppView(stockReturn === 'stock' ? 'strength' : stockReturn); } finally { poppingStock = false; }
+});
+window.OXBack = () => { if (history.state?.oxStock) history.back(); else switchAppView(stockReturn === 'stock' ? 'strength' : stockReturn); };
 
 function homeStrengthLabel(v) {
   const n = clamp(Math.round(num(v)));

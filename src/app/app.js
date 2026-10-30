@@ -7,6 +7,10 @@ import "../markets/crypto/radar-board.js";
 import "../markets/crypto/radar-compare.js";
 import "../markets/crypto/share-entries.js";
 import "./swipe-views.js";
+import "./recent.js";
+import { initTopbar } from "./topbar.js";
+import { initDrawer } from "./drawer.js";
+import { initStockPage } from "./stock-page.js";
 
 export function bootOXModules(modules = []) {
   modules.forEach(module => marketRouter.register(module));
@@ -16,7 +20,7 @@ export function bootOXModules(modules = []) {
 const router = bootOXModules([cryptoModule]);
 let currentView = document.body.dataset.view || "home";
 let renderToken = 0;
-const isMarketView = () => ["home", "strength", "radar"].includes(currentView);
+const isMarketView = () => ["home", "strength", "radar", "pattern", "stock"].includes(currentView);
 
 function scheduleMarketView() {
   const token = ++renderToken;
@@ -64,6 +68,10 @@ document.addEventListener("ox:marketchange", event => {
 });
 
 window.OXModules = Object.freeze({ router });
+
+// The app chrome from the Taiwan site's redesign: the 首頁 top bar, the left drawer
+// with its pages, and the 個股 page's bar.
+initTopbar(); initDrawer(); initStockPage();
 
 // A slow module graph may finish after the user already selected a market.
 // Restore the actual DOM context instead of requiring another market gesture.
