@@ -13,6 +13,7 @@ import { patternById } from '../patterns/catalog.js?v=patterns5d-20260929';
 import { fetchSeries, parseCandles } from '../patterns/source.js?v=20261002-rank8';
 import { prepareCandles, classifyPrepared, rankPatternMatches } from '../patterns/matcher.js?v=20261002-rank8';
 import { STEP, taipeiTime, pct, tone } from './model.js?v=20261030-board2';
+import { shareCoin, sharePrice, SHARE_UP, SHARE_DOWN, PERFORMANCE_NOTE, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
 
 export const FRAMES = Object.freeze([['1H', '1 小時'], ['4H', '4 小時'], ['1D', '日'], ['1W', '週']]);
 const SECONDS = { '1H': 3600, '4H': 14400, '1D': 86400, '1W': 604800 };
@@ -131,7 +132,10 @@ body.theme-light dialog.ox-pd::backdrop{background:#47556940}
 .ox-pd-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .ox-pd-top h2{margin:6px 0 0;font-size:21px;font-weight:750;line-height:1.2;letter-spacing:.01em}.ox-pd-top h2 small{margin-left:7px;color:var(--pd-muted);font-size:13px;font-weight:550}
 .ox-pd-top p{margin:3px 0 0;color:var(--pd-muted);font-size:13px}
-.ox-pd-top button{margin:-4px -10px 0 0}
+.ox-pd-actions{display:flex;align-items:center;gap:0;margin:-4px -10px 0 0}.ox-pd-actions button{margin:0}
+dialog.ox-pd .ox-pd-share{display:grid;place-items:center;width:40px;height:44px;padding:0;border:0;border-radius:12px;background:none;box-shadow:none;color:var(--pd-muted)}
+dialog.ox-pd .ox-pd-share svg{width:19px;height:19px}dialog.ox-pd .ox-pd-share:hover{color:var(--pd-ink)}
+.ox-pd-share:focus-visible{outline:2px solid var(--pd-ink);outline-offset:-4px}
 .ox-pd-seg{display:flex;margin:12px 0 8px;border-bottom:1px solid var(--pd-line)}
 .ox-pd-seg button{flex:1;height:36px;margin:0 0 -1px;padding:0;border:0;border-bottom:2px solid transparent;border-radius:0;background:none;box-shadow:none;color:var(--pd-muted);font-size:13px;font-weight:650}
 .ox-pd-seg button[aria-pressed="true"]{color:var(--pd-ink);border-bottom-color:var(--pd-ink)}
@@ -267,6 +271,8 @@ export function openPatternDetail({ point, pick, onOpenChart }) {
     const stage = isLog ? pick.st || '已收 K 確認突破' : current?.stage || (data?.state === 'ready' ? '這個週期沒有找到型態' : '');
     const title = isLog ? pick.name : current ? name(view.pattern) : '';
     const chips = `${view.frame === '4H' ? `<button type="button" data-pd-pattern="${LOGGED}" aria-pressed="${isLog}">${esc(pick.name)}<small>${esc(point.time)} 突破</small></button>` : ''}${matches.map(([id, m]) => `<button type="button" data-pd-pattern="${esc(id)}" aria-pressed="${!isLog && id === view.pattern}">${esc(name(id))}<small>T${tierOf(m)}</small></button>`).join('')}`;
+    // What 分享 draws: this frame's chart and numbers, as on screen.
+    view.shown = { candles, pts, breakIdx, isLog, match, current, level, last, down, gap, title, stage, ready: data?.state === 'ready' && candles.length > 0 };
     const width = Math.max(260, (body.clientWidth || 360) - 24);
     const chart = data?.state === 'ready' && candles.length
       ? `<div class="ox-pd-chart">${chartSVG({ candles, pts, breakIdx, frame: view.frame, width, mark: down ? '跌破' : '突破' })}</div>
@@ -274,7 +280,7 @@ export function openPatternDetail({ point, pick, onOpenChart }) {
       : `<div class="ox-pd-empty" role="status">${data?.state === 'error' ? esc(data.error) : window.OXLoading?.markup?.(`載入 ${view.frame} K 線`) || `載入 ${view.frame} K 線…`}</div>`;
     body.innerHTML = `<div class="ox-pd-grip" aria-hidden="true"></div>
       <div class="ox-pd-top"><div><h2>${esc(pick.coin)}<small>${esc(pick.s)}</small></h2><p>${esc([title, stage].filter(Boolean).join('・'))}</p></div>
-        <button type="button" data-pd-close aria-label="關閉"></button></div>
+        <div class="ox-pd-actions"><button type="button" class="ox-pd-share" data-pd-share data-track="share.detail" data-track-detail="${esc(pick.s)}" aria-label="把這張圖做成圖片分享"${data?.state === 'ready' && candles.length ? '' : ' disabled'}>${PICTURE_ICON}</button><button type="button" data-pd-close aria-label="關閉"></button></div></div>
       <div class="ox-pd-seg" role="group" aria-label="時間級別">${FRAMES.map(([id, label]) => `<button type="button" data-pd-frame="${id}" aria-pressed="${id === view.frame}">${label}</button>`).join('')}</div>
       ${chips ? `<div class="ox-pd-kinds" role="group" aria-label="型態">${chips}</div>` : ''}
       ${chart}
@@ -290,6 +296,7 @@ export function openPatternDetail({ point, pick, onOpenChart }) {
     const button = event.target.closest('button');
     if (!button || !dialog.contains(button)) return;
     if ('pdClose' in button.dataset) { close(); return; }
+    if ('pdShare' in button.dataset) { share(); return; }
     if ('pdOpen' in button.dataset) { const frame = view.frame; close(); onOpenChart?.(pick.s, frame); return; }
     if (button.dataset.pdPattern) { view.pattern = button.dataset.pdPattern; render(); return; }
     if (button.dataset.pdFrame && button.dataset.pdFrame !== view.frame) {
@@ -299,6 +306,17 @@ export function openPatternDetail({ point, pick, onOpenChart }) {
       render(); load(view.frame);
     }
   });
+  // 分享圖片 of what the sheet shows; the preview opens above the sheet.
+  function share() {
+    const s = view.shown; if (!s?.ready) return;
+    const frameName = FRAMES.find(([id]) => id === view.frame)?.[1] || view.frame, tier = s.isLog ? pick.t : s.current ? tierOf(s.current) : null;
+    const last = s.isLog ? pick.last : null, color = v => v > 0 ? SHARE_UP : v < 0 ? SHARE_DOWN : null;
+    return shareCoin({ name: pick.coin, symbol: 'USDT 永續', chips: [[s.title, 'gold'], [tier ? 'T' + tier : '', 'tier'], [frameName + ' K', 'plain']],
+      candles: s.candles, points: s.pts, breakIdx: s.breakIdx, label: s.breakIdx != null && s.candles[s.breakIdx] ? candleLabel(s.candles[s.breakIdx], view.frame) + (s.down ? ' 跌破' : ' 突破') : '',
+      big: last ? { label: `突破後 ${last.label}`, value: pct(last.ret), color: color(last.ret) || '#eef1f4' } : null,
+      facts: [[s.down ? '跌破價' : '突破價', sharePrice(s.level)], ['最新收盤', sharePrice(s.last?.close)], ...(s.gap == null ? [] : [[s.down ? '距跌破價' : '距突破價', pct(s.gap), color(s.gap)]])],
+      dateLabel: s.isLog ? point.time + ' 突破' : frameName + ' K・' + candleLabel(s.candles.at(-1), view.frame), note: s.isLog ? PERFORMANCE_NOTE : undefined, kind: 'detail' });
+  }
   render();
   loadLogged();
   globalThis.OXTrack?.('pattern.detail', pick.s);

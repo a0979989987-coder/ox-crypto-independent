@@ -5,7 +5,8 @@
 // src/markets/crypto/radar-compare.js; styles live in src/styles/components/crypto-shell.css (.ox-cmp).
 import { withDeadline } from '../../../components/resource-deadline.js';
 import { STEP, compareModel, defaultOpen, isLog, miniChart, closesChart, parseRows, pct, tone, nextCloseText, patternKinds, filterModel, longRunStats, periodLabel, taipeiTime, LONG_RUN_MIN } from './model.js?v=20261030-board2';
-import { openPatternDetail } from './detail.js?v=20261030-board2';
+import { openPatternDetail, indexPoints } from './detail.js?v=20261031-share1';
+import { shareCoin, sharePrice, SHARE_UP, SHARE_DOWN, PERFORMANCE_NOTE, longPress, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
 
 const LOG_URL = new URL('../../../../data/crypto-breakouts.json', import.meta.url).href;
 const FRESH_MS = 3 * 60000, LOADS = 3;
@@ -88,7 +89,7 @@ export function mountCompare(host, { onOpen } = {}) {
     return `<button type="button" class="ox-cmp-pick" data-cmp-symbol="${esc(pick.s)}" data-cmp-at="${point.at}" data-track="compare.pick" data-track-detail="${esc(pick.s)}" aria-label="${esc(pick.coin)} ${esc(pick.name)}，看型態詳情" aria-haspopup="dialog">
       <span class="ox-cmp-mini"${svg ? '' : ' data-pending'} data-key="${esc(key)}">${svg || ''}</span>
       <span class="ox-cmp-main">
-        <span class="ox-cmp-name"><b>${esc(pick.coin)}</b>${pick.t ? `<span class="ox-cmp-tier" data-tier="${pick.t}">T${pick.t}</span>` : ''}<span class="ox-cmp-go" aria-hidden="true">›</span></span>
+        <span class="ox-cmp-name"><b>${esc(pick.coin)}</b>${pick.t ? `<span class="ox-cmp-tier" data-tier="${pick.t}">T${pick.t}</span>` : ''}<span class="ox-cmp-pic" role="button" data-cmp-share data-track="share.compare" data-track-detail="${esc(pick.s)}" aria-label="把 ${esc(pick.coin)} 做成圖片分享">${PICTURE_ICON}</span><span class="ox-cmp-go" aria-hidden="true">›</span></span>
         <span class="ox-cmp-pattern">${esc(pick.name)}</span>
         <span class="ox-cmp-rets">${resultCells(pick)}</span>
       </span>
@@ -195,7 +196,24 @@ export function mountCompare(host, { onOpen } = {}) {
     boxes.forEach(box => observer.observe(box));
   }
 
+  // 分享圖片: the picture button by the tier, or a long press on the coin.
+  async function sharePick(at, symbol) {
+    const point = pointOf(at), pick = pickOf(at, symbol);
+    if (!point || !pick) return;
+    let candles = [];
+    try { candles = await candlesFor(symbol, abort.signal); } catch {}
+    const breakIdx = candles.findIndex(c => c.time === at - STEP), last = pick.last;
+    const result = r => r.state === 'done' ? [`之後 ${r.label}`, pct(r.ret), r.ret > 0 ? SHARE_UP : r.ret < 0 ? SHARE_DOWN : null] : [`之後 ${r.label}`, r.state === 'wait' ? '還沒到' : '—'];
+    return shareCoin({ name: pick.coin, symbol: 'USDT 永續', chips: [[pick.name, 'gold'], [pick.t ? 'T' + pick.t : '', 'tier'], ['4 小時 K', 'plain']],
+      candles, points: indexPoints(pick.pts, candles, STEP), breakIdx: breakIdx >= 0 ? breakIdx : null, label: point.time + ' 突破',
+      big: last ? { label: `突破後 ${last.label}`, value: pct(last.ret), color: last.ret > 0 ? SHARE_UP : last.ret < 0 ? SHARE_DOWN : '#eef1f4' } : null,
+      facts: [['突破那根收盤', sharePrice(pick.base)], ...pick.results.slice(0, 2).map(result)],
+      dateLabel: point.time + ' 突破', note: PERFORMANCE_NOTE, kind: 'compare' });
+  }
+  const stopPress = longPress(root, '.ox-cmp-pick', el => sharePick(Number(el.dataset.cmpAt), el.dataset.cmpSymbol));
   root.addEventListener('click', event => {
+    const pic = event.target.closest('[data-cmp-share]');
+    if (pic) { event.stopPropagation(); const pickEl = pic.closest('.ox-cmp-pick'); sharePick(Number(pickEl?.dataset.cmpAt), pickEl?.dataset.cmpSymbol); return; }
     const target = event.target.closest('button');
     if (!target || !root.contains(target)) return;
     if ('cmpRetry' in target.dataset) { view.error = null; if (!view.model) view.loaded = false; render(); load(true); return; }
@@ -256,7 +274,7 @@ export function mountCompare(host, { onOpen } = {}) {
       load();
     },
     destroy() {
-      destroyed = true; observer?.disconnect(); abort.abort(); view.detail?.close(); host.replaceChildren();
+      destroyed = true; stopPress(); observer?.disconnect(); abort.abort(); view.detail?.close(); host.replaceChildren();
     }
   };
 }

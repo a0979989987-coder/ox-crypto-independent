@@ -2,7 +2,7 @@
 // and the member's Bitget UID. Signed-out visitors keep using everything; nothing here
 // locks a tool. Mounts into #ox-settings-account when the page has it, otherwise at the
 // top of 選單, where the old OX ACCOUNT row was.
-import { SYNC_KEYS, MAX_SYNC_CHARS, mergeValue } from './sync-keys.js?v=20261028-sites1';
+import { SYNC_KEYS, MAX_SYNC_CHARS, mergeValue } from './sync-keys.js?v=20261031-share1';
 const api = path => new URL('/api/v1/' + path, location.href);
 const BY_STORAGE = new Map(SYNC_KEYS.map(item => [item.storage, item]));
 const JOINED_KEY = 'ox-crypto:synced-account', RELOADED_KEY = 'ox-crypto:account-synced';

@@ -5,6 +5,7 @@ import { createToolWarmup } from '../components/tool-warmup.js';
 import { cryptoModule } from "../markets/crypto/index.js";
 import "../markets/crypto/radar-board.js";
 import "../markets/crypto/radar-compare.js";
+import "../markets/crypto/share-entries.js";
 import "./swipe-views.js";
 
 export function bootOXModules(modules = []) {

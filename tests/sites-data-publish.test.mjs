@@ -4,7 +4,7 @@ import { readFile, stat, mkdtemp, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { verifyPublisher } from '../worker/github-identity.js';
-import { publishData, DATA_POINTER, sha256, readStoredData } from '../worker/data-store.js';
+import { publishData, DATA_POINTER, sha256, readStoredData, dataPath } from '../worker/data-store.js';
 import { snapshotAssetResponse } from '../worker/snapshots.js';
 import { REQUIRED_DATA } from '../worker/site.js';
 import { collectPublicData, publishSiteData } from '../scripts/publish-site-data.mjs';
@@ -66,6 +66,8 @@ test('anonymous requests cannot write data; the public data set is only data fil
   assert.equal(response.status, 401); assert.equal((await response.json()).error.code, 'PUBLISHER_UNAUTHORIZED');
   const snapshot = collectPublicData('HEAD');
   for (const path of REQUIRED_DATA) assert.ok(snapshot.files.has(path), path);
+  // 公布前後走勢 is a public data file like the macro results (optional, not required).
+  assert.ok(dataPath('data/macro-reactions.json')); assert.ok(!REQUIRED_DATA.includes('data/macro-reactions.json'));
   for (const path of snapshot.files.keys()) assert.match(path, /^(?:data|previews\/data)\/[A-Za-z0-9_.-]+\.json$/);
 });
 
@@ -98,6 +100,8 @@ test('the Sites build serves data only through the Worker, keeps source and secr
     await assert.rejects(stat(join(client, 'previews/data/crypto-flow-history.json')), { code: 'ENOENT' });
     assert.ok((await stat(join(client, '_seed/data/news.json'))).isFile());
     assert.ok((await stat(join(client, '_seed/previews/data/crypto-tools-snapshot.json'))).isFile());
+    assert.ok((await stat(join(client, '_seed/data/macro-reactions.json'))).isFile());
+    await assert.rejects(stat(join(client, 'data/macro-reactions.json')), { code: 'ENOENT' });
     for (const name of ['index.html', 'admin.html', 'privacy.html', 'terms.html', 'src/app/account.js', 'src/app/usage.js', 'src/generated/runtime.js']) assert.ok((await stat(join(client, name))).isFile(), name);
     const top = await readdir(client);
     for (const name of ['server', 'worker', 'scripts', 'tests', 'docs', 'api', 'supabase', 'package.json', '.env.example', 'vercel.json', 'node_modules']) assert.ok(!top.includes(name), name + ' is not public');

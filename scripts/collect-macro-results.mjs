@@ -53,8 +53,10 @@ export function parseFedCalendar(html, now = new Date()) {
     const date = `${year}-${String(months.indexOf(month)+1).padStart(2,'0')}-${days.split('-').at(-1).padStart(2,'0')}`;
     const url = row.match(/href="(\/newsevents\/pressreleases\/monetary\d{8}a\.htm)"/)?.[1];
     const item = base('fed-rate', date, '美聯準會 FOMC 利率決策', 'https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm', now.toISOString());
-    item.date = date; item.occursAt = null; item.releasedAt = null; item.unit = '%'; item.allDay = false;
-    item.scheduleBasis = '官方會議最後日（美東日期），確切台北公布時間待官方公告。';
+    // Statements come out at 2:00 p.m. ET on the meeting's last day: 02:00 Taipei the next
+    // day in summer time, 03:00 in winter. The result itself still waits for the statement.
+    item.date = null; item.meetingDate = date; item.occursAt = easternTime(date, 14, 0); item.releasedAt = null; item.unit = '%'; item.allDay = false;
+    item.scheduleBasis = '聯準會在會議最後一天美東 14:00 公布決議（台北隔天凌晨），結果以官方聲明為準。';
     if (url) item.statementUrl = new URL(url, 'https://www.federalreserve.gov').href;
     events.push(item);
   }
@@ -67,7 +69,7 @@ export function parseFedRate(html, item, stamp = new Date().toISOString()) {
   const release = body.match(/For release at (\d+):(\d+) p\.m\. (?:EDT|EST)/);
   if (!range || !release) throw Error('Fed policy range or publication time missing');
   const rate = value => { const [whole, fraction] = value.split('-'); if (!fraction) return Number(whole); const [n,d] = fraction.split('/').map(Number); return Number(whole) + n / d; };
-  const releasedAt = easternTime(item.date, Number(release[1]) + 12, Number(release[2]));
+  const releasedAt = easternTime(item.meetingDate || item.date, Number(release[1]) + 12, Number(release[2]));
   if (Date.parse(releasedAt) > Date.parse(stamp)) throw Error('Fed release is in the future');
   return { ...item, date: null, occursAt: releasedAt, releasedAt, actual: rate(range[2]), label: '聯邦基金利率區間上限', rateRange: `${rate(range[1])}–${rate(range[2])}%`, sourceUrl: item.statementUrl, scheduleBasis: null, updatedAt: stamp };
 }

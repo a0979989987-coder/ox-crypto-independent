@@ -521,3 +521,33 @@ body.ox-terminal.theme-light.theme-light.theme-light .oxn-root .oxn-mobile-dates
  background:#fff;
 }
 body.theme-light.theme-light .oxn-root .oxn-week-date.is-market-closed{outline-color:#e5cf91}
+
+/* 公布前後走勢 (macro-reaction.js): this release beside the previous one, Bitget BTC／ETH 5 分 K.
+   Release moment in fluorescent yellow; 青藍漲／桃紅跌 like the rest of OX 加密. */
+.oxn-reaction{--rx-up:#00b8d4;--rx-down:#ff3078;--rx-hi:#e8ff2e;--rx-band:.12;--rx-line:rgba(255,255,255,.1);--rx-muted:#a3a7ab;--rx-card:rgba(255,255,255,.035);margin:18px 0 6px;min-width:0}
+body.theme-light .oxn-reaction{--rx-up:#4598df;--rx-down:#e86480;--rx-hi:#a3b800;--rx-band:.16;--rx-line:rgba(16,24,40,.09);--rx-muted:#6b7280;--rx-card:#f6f7f9}
+.oxn-reaction-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 10px}
+.oxn-reaction-head h3{margin:0;font-size:15px;font-weight:700;letter-spacing:.01em}
+.oxn-modal .oxn-reaction-seg{display:inline-flex;flex:none;gap:2px;padding:2px;border:1px solid var(--rx-line);border-radius:9px;background:none}
+.oxn-modal .oxn-reaction-seg button{min-width:46px;height:26px;min-height:0;margin:0;padding:0 10px;border:0;border-radius:7px;background:none;box-shadow:none;color:var(--rx-muted);font-size:12px;font-weight:700;line-height:26px;letter-spacing:.02em}
+.oxn-modal .oxn-reaction-seg button[aria-pressed="true"]{background:#eeeee7;color:#15181d}
+body.theme-light .oxn-modal .oxn-reaction-seg button[aria-pressed="true"]{background:#30343b;color:#fff}
+.oxn-reaction-body{display:grid;gap:10px;min-width:0}
+@media(min-width:720px){.oxn-reaction-body{grid-template-columns:1fr 1fr}}
+.oxn-reaction-card{min-width:0;padding:10px 10px 8px;border:1px solid var(--rx-line);border-radius:12px;background:var(--rx-card)}
+.oxn-reaction-title{margin:0 0 6px;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.oxn-reaction-chart svg{display:block;width:100%;height:auto;overflow:visible}
+.oxn-reaction-chart .u{fill:var(--rx-up);stroke:var(--rx-up)}.oxn-reaction-chart .d{fill:var(--rx-down);stroke:var(--rx-down)}
+.oxn-reaction-chart line.u,.oxn-reaction-chart line.d{stroke-width:1}
+.oxn-reaction-chart .grid{stroke:var(--rx-line);stroke-width:1;stroke-dasharray:2 3}
+.oxn-reaction-chart .hl-band{fill:var(--rx-hi);opacity:var(--rx-band)}
+.oxn-reaction-chart .hl-line{stroke:var(--rx-hi);stroke-width:1.6}
+.oxn-reaction-chart text{font:600 9.5px system-ui,-apple-system,"PingFang TC","Noto Sans TC",sans-serif;font-variant-numeric:tabular-nums}
+.oxn-reaction-chart .tick{fill:var(--rx-muted)}.oxn-reaction-chart .hl-text{fill:var(--rx-hi);font-weight:800}
+.oxn-reaction-facts{display:grid;grid-template-columns:1fr 1fr;gap:7px 12px;margin:8px 0 0;padding:8px 0 0;border-top:1px solid var(--rx-line)}
+.oxn-reaction-facts>div{min-width:0}
+.oxn-reaction-facts small{display:block;color:var(--rx-muted);font-size:11px;line-height:1.4}
+.oxn-reaction-facts b{display:block;font-size:13px;font-weight:700;line-height:1.35;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.oxn-reaction .up{color:var(--rx-up)}.oxn-reaction .down{color:var(--rx-down)}
+.oxn-reaction-empty{margin:4px 0 2px;color:var(--rx-muted);font-size:12.5px}
+.oxn-reaction-note{margin:8px 2px 0;color:var(--rx-muted);font-size:11px}

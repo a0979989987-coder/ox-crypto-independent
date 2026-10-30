@@ -1,0 +1,33 @@
+/* 分享圖片 entry buttons outside the tools' shadow roots: 盤面 (price card), 首頁 (beside
+   the BTC chart's timeframes), 型態 cards (by the tier badge) and 資訊「今日重點」.
+   Small and quiet: a thin outline with the picture icon. The preview dialog styles
+   itself (src/markets/crypto/share-image.js). */
+.ox-share-pic{display:inline-flex;align-items:center;justify-content:center;gap:5px;margin:0;padding:0;border:1px solid #ffffff38;border-radius:8px;background:#ffffff08;box-shadow:none;color:#e9eae4;font:600 11.5px/1 -apple-system,"PingFang TC","Noto Sans TC",system-ui,sans-serif;white-space:nowrap;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:border-color .2s ease,transform .18s ease}
+.ox-share-pic svg{flex:none;width:14px;height:14px}
+.ox-share-pic:hover{border-color:#ffffff7a}
+.ox-share-pic:active{transform:scale(.94)}
+.ox-share-pic:focus-visible{outline:2px solid currentColor;outline-offset:2px}
+
+/* 盤面: bottom-right of the price cell, beside the price. */
+#view-radar .market-line-price .ox-chart-share{position:absolute;right:8px;bottom:8px;z-index:2;width:28px;height:24px;min-width:0;min-height:0}
+#view-radar .market-line-price .ox-chart-share::after{content:"";position:absolute;inset:-8px -6px}
+#view-radar .market-line-price #price{padding-right:34px}
+
+/* 首頁: left end of the timeframe row. */
+#view-home .ox-chart-heading .ox-home-share{flex:none;height:28px;margin-right:auto;padding:0 10px 0 8px}
+
+/* 型態 cards: a picture button right after the tier badge; long press works too. */
+#view-radar .ox-cmp-pick{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+#view-radar .ox-cmp-pic{position:relative;flex:none;display:inline-grid;place-items:center;width:22px;height:18px;border:1px solid #ffffff52;border-radius:5px;color:var(--ink,#e9eae4);opacity:.92;cursor:pointer}
+#view-radar .ox-cmp-pic::after{content:"";position:absolute;inset:-9px -6px}
+#view-radar .ox-cmp-pic svg{width:12px;height:12px}
+#view-radar .ox-cmp-pic:hover{border-color:#ffffffa0;opacity:1}
+
+/* 資訊・關鍵新聞: 今日重點 at the end of the count row. */
+.oxn-news-range{align-items:center}
+.oxn-root .oxn-share-pic{height:28px;margin-left:auto;padding:0 10px 0 8px;border-color:rgba(128,128,128,.38);background:transparent;color:inherit}
+
+body.theme-light .ox-share-pic{border-color:#30343b38;background:#ffffffc7;color:#30343b}
+body.theme-light .ox-share-pic:hover{border-color:#30343b70}
+body.theme-light #view-radar .ox-cmp-pic{border-color:#30343b4d;color:#30343b}
+body.theme-light .oxn-root .oxn-share-pic{border-color:rgba(48,52,59,.25);background:transparent;color:inherit}

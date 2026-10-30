@@ -65,3 +65,39 @@ test('size differences remain visible in a clustered value range without inventi
   const equal=radiusTargets(Array.from({length:50},()=>({value:70})),356,504);
   assert.ok(equal.every(r=>r===equal[0]));
 });
+
+test('N 日漲跌: live price against the close N days before today; the choice is kept on the device', async () => {
+  const { periodChange, readPeriodDays, writePeriodDays, clampDays, createDailyCloses, PERIOD_KEY, taipeiDay } = await import('../src/markets/crypto/bubbles/period.js');
+  const candles = [100, 110, 120, 130, 140, 150].map((close, i) => ({ time: i * 86400, close }));
+  assert.equal(periodChange(candles, 3), (150 / 120 - 1) * 100);
+  assert.equal(Math.round(periodChange(candles, 3, 132) * 1e6) / 1e6, 10, 'the live price stands in for today');
+  assert.equal(periodChange(candles, 5, 150), 50);
+  assert.equal(periodChange(candles, 6), null, 'not enough days');
+  assert.equal(periodChange([], 3), null);
+  const store = new Map(), storage = { getItem: k => store.get(k) ?? null, setItem: (k, v) => store.set(k, String(v)) };
+  assert.equal(readPeriodDays(storage), 5, '5 天 by default');
+  assert.equal(writePeriodDays(3, storage), 3); assert.equal(store.get(PERIOD_KEY), '3'); assert.equal(readPeriodDays(storage), 3);
+  assert.equal(writePeriodDays(90, storage), 60); assert.equal(clampDays(1), 2); assert.equal(clampDays('abc'), 5);
+  // One read per coin per Taipei day, two at a time; a failed read is retried later.
+  let clock = Date.parse('2026-10-30T02:00:00Z'), calls = [], open = 0, most = 0;
+  const reply = rows => ({ code: '00000', data: rows.map(([t, c]) => [String(t * 1000), '1', '1', '1', String(c), '1', '1']) });
+  const daily = createDailyCloses(async url => {
+    open++; most = Math.max(most, open); calls.push(new URL(url).searchParams.get('symbol'));
+    await new Promise(r => setTimeout(r, 5)); open--;
+    if (url.includes('BADUSDT')) throw Error('down');
+    assert.match(url, /granularity=1D&limit=64$/);
+    return reply([[86400 * 2, 12], [86400, 11]]);
+  }, { now: () => clock });
+  const seen = []; daily.subscribe(symbol => seen.push(symbol));
+  assert.equal(daily.want(['AUSDT', 'BUSDT', 'CUSDT', 'BADUSDT']), 4);
+  assert.equal(daily.want(['AUSDT']), 0, 'already queued');
+  while (daily.pending()) await new Promise(r => setTimeout(r, 5));
+  assert.equal(most, 2); assert.equal(seen.length, 4);
+  assert.deepEqual(daily.get('AUSDT').map(c => c.close), [11, 12], 'oldest first');
+  assert.deepEqual(daily.get('BADUSDT'), []);
+  assert.equal(daily.want(['AUSDT', 'BADUSDT']), 0, 'the same day reuses them');
+  clock += 11 * 60000; assert.equal(daily.want(['AUSDT', 'BADUSDT']), 1, 'a failed coin is tried again after 10 minutes');
+  while (daily.pending()) await new Promise(r => setTimeout(r, 5));
+  clock = Date.parse('2026-10-30T16:30:00Z'); assert.notEqual(taipeiDay(clock), taipeiDay(Date.parse('2026-10-30T02:00:00Z')));
+  assert.equal(daily.get('AUSDT'), null, 'a new Taipei day reads again');
+});

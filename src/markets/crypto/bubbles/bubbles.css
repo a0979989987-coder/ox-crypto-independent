@@ -72,3 +72,14 @@
 :is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)::after{content:""!important;position:absolute!important;left:50%!important;top:50%!important;width:18px!important;height:1.5px!important;border:0!important;border-radius:1px!important;background:currentColor!important;box-shadow:none!important;transform:translate(-50%,-50%) rotate(45deg)!important;opacity:1!important;pointer-events:none}
 :is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close)::after{transform:translate(-50%,-50%) rotate(-45deg)!important}
 :is(#ox-control-close,button):is([aria-label*="關閉"],[aria-label="返回上一層"],[data-close],[data-twr-close],.close-btn,.modal-close,.ox-provider-close,.ox-control-close,.chart-tools-close):focus-visible{outline:2px solid currentColor!important;outline-offset:2px}
+
+/* N 日漲跌: 3天／5天／自訂 beside the metric, a quiet segmented pill. */
+.oxb-period{display:flex;align-items:center;gap:1px;flex:0 0 auto;height:30px;margin-left:auto;padding:2px;border:1px solid #ffffff26;border-radius:15px;background:#ffffff06}
+.oxb-period button{height:24px;min-width:0;padding:0 8px;border:0;border-radius:12px;background:none;color:#a9aea9;font:600 11px/1 Inter,system-ui,sans-serif;white-space:nowrap}
+.oxb-period button[aria-pressed=true]{background:#e9e9e2;color:#15181d}
+.oxb-period input{width:38px;height:24px;margin-left:2px;padding:0;border:1px solid #ffffff30;border-radius:12px;background:#0000;color:#eeeee7;font:600 11px/1 Inter,system-ui,sans-serif;text-align:center;-moz-appearance:textfield;appearance:textfield}
+.oxb-period input::-webkit-outer-spin-button,.oxb-period input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.oxb-period input[hidden]{display:none}
+.oxb-period input:focus{outline:none;border-color:#ffffff9c}
+.oxb-period+.oxb-direction{margin-left:0}
+@media(max-width:380px){.oxb-period button{padding:0 6px}.oxb-period input{width:34px}}
