@@ -417,8 +417,8 @@
       const s = cryptoState();
       const text = !run.loaded ? '' : run.refreshing ?
         // Without a live connection the saved close stays labelled, without 更新中.
-        s?.radarLoadError ? `${closeLabel(run.close)} 收盤資料` :
-        `${closeLabel(run.close)} 收盤資料・更新中${run.pass?.full && s?.scanQueue.length ? ` ${Math.min(s.scanIndex, s.scanQueue.length)}/${s.scanQueue.length}` : ''}` :
+        s?.radarLoadError ? `${closeLabel(run.close)} 收盤` :
+        `${closeLabel(run.close)} 收盤・更新中${run.pass?.full && s?.scanQueue.length ? ` ${Math.min(s.scanIndex, s.scanQueue.length)}/${s.scanQueue.length}` : ''}` :
         `${closeLabel(run.updatedAt)} 已更新`;
       for (const host of [document.getElementById('screener-list'), document.querySelector('#view-home .ox-home-t1')]) {
         if (!host) continue;

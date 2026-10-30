@@ -64,7 +64,7 @@ const done = async v => { v.release(); assert.deepEqual(v.audit.pageErrors, []);
 try {
   // Fresh: everything from the snapshot while no candle has answered.
   let v = await visit('fresh', { serve: snapshot, holdCandles: true });
-  assert.match(v.info.label, /^\d\d:\d\d 收盤資料・更新中$/);
+  assert.match(v.info.label, /^\d\d:\d\d 收盤・更新中$/);
   assert.deepEqual(v.info.long, expected('long')); assert.deepEqual(v.info.short, expected('short'));
   assert.ok(v.info.ready);
   assert.ok(v.info.queue < v.info.total || v.info.total <= 62, 'only candidates and the most traded coins');
@@ -77,7 +77,7 @@ try {
   await v.page.waitForFunction(() => state.directionFilter === 'short');
   const shortCards = await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol));
   assert.deepEqual(shortCards, expected('short'));
-  assert.match(await v.page.locator('#screener-list').evaluate(el => el.previousElementSibling?.textContent || ''), /收盤資料・更新中/);
+  assert.match(await v.page.locator('#screener-list').evaluate(el => el.previousElementSibling?.textContent || ''), /收盤・更新中/);
   results.push({ case: 'fresh', firstPaintMs: v.firstPaintMs, label: v.info.label, long: longCards.length, short: shortCards.length, heldCandles: v.candleRequests() });
   // Releasing the candles finishes the re-check; the label then shows the update time.
   v.release();
@@ -88,14 +88,14 @@ try {
   v = await visit('stale', { serve: shifted(70), holdCandles: true });
   assert.ok(v.info.long.length || v.info.short.length);
   assert.equal(v.info.queue, v.info.total, 'a full pass');
-  assert.match(v.info.label, /收盤資料・更新中/);
+  assert.match(v.info.label, /收盤・更新中/);
   results.push({ case: 'stale', firstPaintMs: v.firstPaintMs, label: v.info.label, queue: v.info.queue });
   await done(v);
 
   // On Vercel: the same-origin file is the empty placeholder, the live-data branch has it.
   v = await visit('github', { github: snapshot, holdCandles: true, view: 'chart' });
   assert.deepEqual(v.info.long, expected('long'));
-  assert.match(v.info.label, /收盤資料・更新中/);
+  assert.match(v.info.label, /收盤・更新中/);
   results.push({ case: 'github', firstPaintMs: v.firstPaintMs, label: v.info.label });
   await done(v);
 
@@ -110,7 +110,7 @@ try {
   await v.page.waitForTimeout(2000);
   await done(v);
   v = await visit('repeat', { persistent: profile, holdCandles: true, view: 'chart' });
-  assert.match(v.info.label, /收盤資料/);
+  assert.match(v.info.label, /收盤/);
   assert.deepEqual(v.info.long, expected('long'));
   results.push({ case: 'repeat', firstPaintMs: v.firstPaintMs, label: v.info.label });
   await done(v);
