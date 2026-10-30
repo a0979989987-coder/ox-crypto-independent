@@ -31,8 +31,7 @@ window.OXChartDrawings = function mountChartDrawings({box,chartEl,state,market='
   const listen=(target,type,fn,options={})=>target.addEventListener(type,fn,{...(typeof options==='boolean'?{capture:options}:options),signal:life.signal});
   const expanded=isExpanded||(()=>document.body.classList.contains('chart-focus')||document.fullscreenElement===box||document.webkitFullscreenElement===box);
   const radar=box.closest(market==='tw'?'.tw-chart-radar':'#view-radar');
-  // 盤面 puts the coin list under a full-width chart, so its tools stay out without folding anything.
-  const toolsVisible=()=>expanded()||!!radar?.classList.contains(market==='tw'?'is-folded':'ox-scanner-collapsed')||(market!=='tw'&&radar?.dataset.radarMode==='chart');
+  const toolsVisible=()=>expanded()||!!radar?.classList.contains(market==='tw'?'is-folded':'ox-scanner-collapsed');
   const TYPES={trend:'趨勢線',ray:'射線',horizontal:'水平線',horizontalRay:'水平射線',vertical:'垂直線',arrow:'箭頭',rectangle:'矩形區間',ellipse:'橢圓',fib:'斐波那契回撤',measure:'測量',longPosition:'多單盈虧比',shortPosition:'空單盈虧比',highlighter:'螢光筆',brush:'畫筆',emoji:'表情符號'};
   const EMOJIS=['🚀','🔥','🐂','🐻','📈','📉','⚠️','⭐','🙂','😂','💎','🚩'];
   const position=d=>d.type==='longPosition'||d.type==='shortPosition';
@@ -283,7 +282,7 @@ window.OXChartDrawings = function mountChartDrawings({box,chartEl,state,market='
   chartEl.oxDrawingController=controller;
   function sync(){syncScope();if(selected()&&!visible(selected()))selectedId=null;syncUI();schedule();}
   const observer=new ResizeObserver(schedule);observer.observe(chartEl);
-  const mutation=new MutationObserver(()=>{if(!toolsVisible()){flushStyle();cancel({exit:true});selectedId=null;panel=null;}sync();});mutation.observe(document.body,{attributes:true,attributeFilter:['class']});if(radar)mutation.observe(radar,{attributes:true,attributeFilter:['class','data-radar-mode']});
+  const mutation=new MutationObserver(()=>{if(!toolsVisible()){flushStyle();cancel({exit:true});selectedId=null;panel=null;}sync();});mutation.observe(document.body,{attributes:true,attributeFilter:['class']});if(radar)mutation.observe(radar,{attributes:true,attributeFilter:['class']});
   for(const type of ['ox:chartdata','ox:chartpriceview','ox:themechange','ox:marketchange','fullscreenchange','webkitfullscreenchange'])listen(document,type,sync);
   listen(chartEl,'wheel',schedule,{passive:true});listen(chartEl,'dblclick',schedule,{capture:true,passive:true});listen(window,'resize',sync,{passive:true});listen(window,'pagehide',flushStyle);
   let boundChart=null;

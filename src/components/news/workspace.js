@@ -132,48 +132,18 @@ export function mountNewsWorkspace(host, api) {
     positionCalendar();
   }
   function selectedDate() { return state.selectedDay?.slice(0,7) === state.month ? state.selectedDay : taipeiDay().slice(0,7) === state.month ? taipeiDay() : `${state.month}-01`; }
-  // One calendar on phones. Collapsed, the month grid shows only the selected
-  // week with each day's event count; expanding reveals the rest of the same
-  // grid and collapsing hides it again, so nothing is swapped and the motion
-  // is one continuous change.
   function renderMobileCalendar() {
     const selected = selectedDate();
-    renderCalendar(); content.querySelector('.oxn-day-events')?.remove();
-    const calendar = content.querySelector('.oxn-calendar'), grid = calendar?.querySelector('.oxn-calendar-grid');
-    if (!grid) { renderUpcomingEvents(selected, true); return; }
-    const viewport = node('div', 'oxn-month-viewport'); grid.before(viewport);
-    viewport.append(grid, ...[calendar.querySelector('.oxn-calendar-caption')].filter(Boolean));
-    const toggle = button('', '', () => toggleMonth(), 'oxn-month-expand'); calendar.append(toggle);
-    const week = () => grid.querySelector(`[data-date="${selected}"]`) || grid.firstElementChild;
-    const shift = () => week().getBoundingClientRect().top - grid.getBoundingClientRect().top;
-    const fullHeight = () => grid.offsetHeight + (calendar.querySelector('.oxn-calendar-caption')?.offsetHeight || 0);
-    function sync() {
-      toggle.textContent = monthExpanded ? '收起行事曆 ▴' : '展開行事曆 ▾';
-      toggle.setAttribute('aria-label', monthExpanded ? '收起完整月份行事曆' : '展開完整月份行事曆');
-      toggle.setAttribute('aria-expanded', String(monthExpanded)); calendar.classList.toggle('is-collapsed', !monthExpanded);
+    const shell = node('section', 'oxn-mobile-dates'); shell.setAttribute('aria-label','日期選擇');
+    const week = node('div', 'oxn-week-strip');
+    const start = new Date(selected+'T12:00:00Z'); start.setUTCDate(start.getUTCDate() - (start.getUTCDay()+6)%7);
+    for (let i=0;i<7;i++) { const d=new Date(start); d.setUTCDate(d.getUTCDate()+i); const day=d.toISOString().slice(0,10);
+      const b=button('',day,()=>{state.selectedDay=day;state.month=day.slice(0,7);persist();renderControls();renderContent();},'oxn-week-date');
+      b.append(node('small','','一二三四五六日'[i]),node('strong','',String(d.getUTCDate())));b.setAttribute('aria-pressed',String(day===selected));if(day===taipeiDay())b.setAttribute('aria-current','date');week.append(b);
     }
-    function place() {
-      if (monthExpanded) { viewport.style.height = ''; grid.style.transform = ''; return; }
-      viewport.style.height = `${week().offsetHeight}px`; grid.style.transform = `translateY(${-shift()}px)`;
-    }
-    function toggleMonth() {
-      const offset = shift(), small = week().offsetHeight, full = fullHeight(), expand = !monthExpanded;
-      monthExpanded = expand; sync(); place();
-      if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-      const timing = { duration: expand ? 420 : 360, easing: 'cubic-bezier(.32,.72,0,1)' };
-      const height = [{ height: `${small}px` }, { height: `${full}px` }], move = [{ transform: `translateY(${-offset}px)` }, { transform: 'translateY(0)' }];
-      if (!expand) { height.reverse(); move.reverse(); }
-      viewport.animate(height, timing); grid.animate(move, timing);
-    }
-    // Collapsed, a tap picks the day for the list below, as the week strip did.
-    viewport.addEventListener('click', event => {
-      if (monthExpanded) return; const cell = event.target.closest('.oxn-day'); if (!cell) return;
-      event.stopPropagation(); event.preventDefault(); state.selectedDay = cell.dataset.date; persist(); renderContent();
-    }, true);
-    sync(); place();
-    // The grid is fitted to the screen on the next frame (positionCalendar).
-    requestAnimationFrame(() => requestAnimationFrame(place));
-    renderUpcomingEvents(selected, true);
+    const toggle=button(monthExpanded?'收起行事曆 ▴':'展開行事曆 ▾','展開或收起完整月份行事曆',()=>{monthExpanded=!monthExpanded;renderContent();},'oxn-month-expand');toggle.setAttribute('aria-expanded',String(monthExpanded));shell.append(week,toggle);content.append(shell);
+    if(monthExpanded) { renderCalendar(); content.querySelector('.oxn-day-events')?.remove(); }
+    renderUpcomingEvents(selected,true);
   }
   function renderUpcomingEvents(start,mobile) {
     const section=node('section',mobile?'oxn-mobile-events oxn-upcoming-events':'oxn-day-events oxn-upcoming-events');section.setAttribute('aria-label','起始日期與未來七天事件');

@@ -15,7 +15,6 @@
   const KEY = 'ox-radar-mode';
   const rail = root.querySelector('.ox-radar-mode-rail');
   const tabs = rail ? [...rail.querySelectorAll('[data-radar-tab]')] : [];
-  const mobile = () => matchMedia('(max-width:720px)').matches;
   let applied = null;
 
   const valid = mode => MODES.includes(mode);
@@ -106,44 +105,6 @@
     requestAnimationFrame(position);
     if (current() === 'watch') renderWatch();
     syncQuotes();
-  });
-
-  /* ---- 盤面 list: chips with real labels on phones ---- */
-  const chips = root.querySelector('.ox-tier-chips');
-  const directionChip = chips?.querySelector('[data-direction-chip]');
-  const directionToggle = document.getElementById('direction-toggle');
-  function syncChips() {
-    chips?.querySelectorAll('.tab-btn[data-tab]').forEach(chip => chip.setAttribute('aria-pressed', String(chip.classList.contains('active'))));
-    if (!directionChip) return;
-    const short = directionToggle ? directionToggle.classList.contains('is-short') : (typeof state !== 'undefined' && state.directionFilter === 'short');
-    directionChip.classList.toggle('is-short', short);
-    directionChip.classList.toggle('is-long', !short);
-    directionChip.setAttribute('aria-pressed', String(short));
-    directionChip.setAttribute('aria-label', short ? '目前空頭，點擊切換多頭' : '目前多頭，點擊切換空頭');
-    directionChip.querySelector('.ox-direction-chip-text').textContent = short ? '空頭' : '多頭';
-    directionChip.querySelector('.ox-direction-chip-icon').textContent = short ? '↓' : '↑';
-  }
-  directionChip?.addEventListener('click', event => {
-    event.preventDefault();
-    event.stopPropagation();
-    if (typeof toggleScannerDirection === 'function') toggleScannerDirection();
-    syncChips();
-  });
-  if (chips) new MutationObserver(syncChips).observe(chips, { attributes: true, subtree: true, attributeFilter: ['class'] });
-  if (directionToggle) new MutationObserver(syncChips).observe(directionToggle, { attributes: true, attributeFilter: ['class'] });
-  document.addEventListener('ox:filterchange', syncChips);
-  syncChips();
-
-  // On phones the list sits under the chart: picking a coin brings the chart back into view.
-  document.getElementById('screener-list')?.addEventListener('click', event => {
-    if (!mobile() || event.target.closest('[data-watch-symbol]') || !event.target.closest('.coin-card[data-symbol]')) return;
-    const box = root.querySelector('.chart-box');
-    if (!box) return;
-    const rect = box.getBoundingClientRect();
-    if (rect.top < 0 || rect.top > innerHeight * .5) {
-      const reduce = matchMedia('(prefers-reduced-motion:reduce)').matches;
-      window.scrollTo({ top: Math.max(0, rect.top + scrollY - 8), behavior: reduce ? 'auto' : 'smooth' });
-    }
   });
 
   /* ---- 自選: watchlist and search ---- */

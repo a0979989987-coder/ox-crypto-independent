@@ -60,7 +60,10 @@ try{
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
    let openingFutureSpace;
    if(market==='crypto'){
-    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    // The candles may load while 盤面 is still hidden; it re-anchors the latest candle a frame
+    // after it first shows. Measure once the chart is on screen and its position holds still.
+    await page.waitForFunction(s=>document.querySelector(s).offsetWidth>0,chart);
+    await page.evaluate(s=>new Promise(r=>{const qa=document.querySelector(s).__chartQA;let last=null,same=0,n=0;const tick=()=>{const ts=qa.chart.timeScale(),x=ts.timeToCoordinate(qa.rows.at(-1).time);same=x===last?same+1:0;last=x;if(same>=8||++n>120)r();else requestAnimationFrame(tick);};requestAnimationFrame(tick);}),chart);
     openingFutureSpace=await page.evaluate(s=>{
      const {chart:c,rows}=document.querySelector(s).__chartQA,ts=c.timeScale();
      return {symbol:state.symbol,pixels:ts.width()-ts.timeToCoordinate(rows.at(-1).time),labelWidth:state.chartPriceAxisWidth,range:ts.getVisibleLogicalRange()};
@@ -76,12 +79,9 @@ try{
     assert.deepEqual(await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart),manualRange,'returning to radar must preserve the user pan and zoom');
     await page.evaluate(({chart,range})=>document.querySelector(chart).__chartQA.chart.timeScale().setVisibleLogicalRange(range),{chart,range:openingFutureSpace.range});
    }
-   if(market==='tw'){
-    assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'tool strip stays hidden while the radar is open');
-    // The existing compact layout exposes expand after folding its scanner panel.
-    await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();
-   }
-   // Crypto 盤面 keeps its coin list under a full-width chart, so the tool strip is out without folding.
+   assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'tool strip stays hidden while the radar is open');
+   // The existing compact layout exposes the tools and expand after folding its scanner panel (crypto 盤面: the right T1/T2/T3 list).
+   await page.locator(market==='tw'?'.twcr-chart-box .chart-controls [data-action="fold"]':'#radar-scanner-toggle').click();
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
    await page.waitForFunction(m=>!!document.fullscreenElement||document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
@@ -131,8 +131,8 @@ try{
    await inspector.locator('[data-action="close"]').click();await toolbar.locator('[data-action="cursor"]').click();
    // The existing close control exits both CSS focus and native desktop fullscreen.
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="exit"]':'#btn-chart-exit-overlay').click();await page.waitForFunction(m=>!document.fullscreenElement&&!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
-   // Leaving the chart (Taiwan: unfolding its radar; crypto: the 畫板 tab) puts the tool strip away.
-   if(market==='tw')await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();else await page.evaluate(()=>window.OXRadarModes.set('board'));
+   // Unfolding the radar puts the tool strip away again.
+   await page.locator(market==='tw'?'.twcr-chart-box .chart-controls [data-action="fold"]':'#radar-scanner-toggle').click();
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'hidden'});
    assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    results.push({market,width,theme,touch,actualApp:true,realChart:true,creation:true,selection:true,drag:true,settings:true,focusExit:true,openingFutureSpace,retainedViewport:market==='crypto',errors});console.log(JSON.stringify(results.at(-1)));
