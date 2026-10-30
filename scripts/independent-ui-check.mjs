@@ -62,6 +62,27 @@ try{
     assert.equal(await page.locator('dialog.ox-pd').count(),0);
     await page.waitForFunction(()=>document.getElementById('view-radar').dataset.radarMode==='chart'&&state.symbol==='SOLUSDT'&&state.period==='4H');
     assert.equal(await page.locator('#chart-timeframe-strip .btn-tf.active').getAttribute('data-tf'),'4H');
+    // 首頁: BTC with 畫型態, 市場寬度 and 主流, 今日突破 from the same record, both radar lists, 此刻發生.
+    await page.evaluate(()=>{setChartPeriod('1D',{load:false});switchSymbol('BTCUSDT');switchAppView('home');});
+    await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"]').waitFor({timeout:15000});
+    assert.match(await page.locator('#home-btc-price').innerText(),/^[\d,.]+$/);
+    assert.match(await page.locator('#home-btc-change').innerText(),/^[+-]?[\d,.]+（[+-]\d+\.\d\d%）$/);
+    assert.match(await page.locator('#home-breadth-up').innerText(),/^\d+$/);
+    assert.match(await page.locator('#home-eth-change').innerText(),/^[+-]\d+\.\d\d%$/);
+    assert.match(await page.locator('#view-home [data-home-breaks-time]').innerText(),/^\d+\/\d+ \d\d:00 突破・1 個$/);
+    assert.match(await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"]').innerText(),/SOL[\s\S]*T1[\s\S]*W 底・雙底[\s\S]*突破後/);
+    await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"] .oxh-mini svg').waitFor();
+    await page.locator('#home-t1-long-list [data-home-symbol], #home-t1-short-list [data-home-symbol]').first().waitFor({timeout:15000});
+    await page.waitForFunction(()=>!/載入新聞/.test(document.querySelector('#view-home [data-home-news-list]').textContent),null,{timeout:20000});
+    assert.equal(await page.locator('#home-btc-mini-chart, #home-btc-strength, #home-market-score').count(),0);
+    await page.locator('#view-home .ox-home-share').click();
+    await page.locator('dialog.ox-share-preview[open] img').waitFor({timeout:15000});
+    await page.locator('dialog.ox-share-preview[open] [data-share-close]').click();
+    await page.locator('#view-home [data-home-go="board"]').click();
+    await page.waitForFunction(()=>document.body.dataset.view==='radar'&&document.getElementById('view-radar').dataset.radarMode==='board');
+    await page.evaluate(()=>switchAppView('home'));
+    await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"]').click();
+    await page.waitForFunction(()=>document.getElementById('view-radar').dataset.radarMode==='chart'&&state.symbol==='SOLUSDT'&&state.period==='4H');
     assert.equal(await page.evaluate(()=>document.body.dataset.market),'crypto');
     assert.deepEqual(await page.evaluate(()=>OXModules.router.list().map(m=>m.id)),['crypto']);
     assert.equal(await page.locator('[data-market-choice="tw"],[data-tw-tool]').count(),0);

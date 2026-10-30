@@ -39,10 +39,21 @@ function text(ctx, s, x, y, { size = 28, weight = 700, color = C.ink, align = 'l
   ctx.fillText(String(s), x, y, max);
   return Math.min(ctx.measureText(String(s)).width, max ?? Infinity);
 }
-// A plain mark: OX on a gold rounded square, then 「OX 加密」.
+// The OX mark (white and pale blue), the same shapes as the 畫板 logo in the dock, then 「OX 加密」.
+const LOGO_PATHS = [
+  'M534 16L503 8L476 8L461 11L434 22L93 221L78 232L64 246L57 255L45 277L38 301L36 332L36 663L41 693L53 719L74 745L93 759L180 812L190 812L196 809L202 802L207 788L207 557L211 532L216 515L232 481L251 454L272 431L326 378L361 353L394 337L432 326L468 322L501 324L524 329L545 337L564 347L582 360L619 397L634 405L647 408L668 407L690 398L703 388L711 379L722 359L727 335L727 187L724 163L715 140L701 120L687 107L584 44Z',
+  'M800 168L789 168L782 172L774 185L772 196L773 399L770 428L762 458L746 494L729 521L680 576L652 602L625 622L590 641L556 652L518 657L481 655L459 650L433 640L410 627L398 618L371 590L362 583L351 577L338 573L312 574L291 583L277 594L269 603L259 621L253 644L253 796L257 816L266 838L278 855L298 873L444 961L460 967L480 971L512 969L536 961L885 760L903 747L912 738L925 721L934 704L940 686L943 663L943 317L941 299L936 281L928 264L919 250L905 234L887 220Z'
+];
+let MARK = null;
+function mark(ctx, x, y, size) {
+  MARK ??= LOGO_PATHS.map(d => new Path2D(d));
+  ctx.save(); ctx.translate(x, y); ctx.scale(size / 980, size / 980);
+  ctx.shadowColor = 'rgba(153,200,226,.35)'; ctx.shadowBlur = 40;
+  ctx.fillStyle = '#eef1f4'; ctx.fill(MARK[0]); ctx.fillStyle = '#99c8e2'; ctx.fill(MARK[1]);
+  ctx.restore();
+}
 function header(ctx, right) {
-  roundRect(ctx, PAD, PAD - 6, 52, 52, 14, C.gold);
-  text(ctx, 'OX', PAD + 26, PAD + 29, { size: 25, weight: 900, color: '#15120a', align: 'center' });
+  mark(ctx, PAD - 2, PAD - 8, 56);
   text(ctx, 'OX 加密', PAD + 66, PAD + 34, { size: 30, weight: 900 });
   if (!right) return;
   ctx.font = `700 25px ${FONT}`;
@@ -129,14 +140,14 @@ function ensureStyle() {
   const font = FONT.replaceAll('"', "'");
   style.textContent = `dialog.ox-share-preview{position:fixed;inset:0;width:100vw;height:100dvh;max-width:none;max-height:none;margin:0;padding:20px;border:0;box-sizing:border-box;background:rgba(3,5,8,.86);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;font-family:${font};color:#fff}
 dialog.ox-share-preview::backdrop{background:transparent}
-/* The light theme paints every dialog white; the preview stays dark. */
-dialog.ox-share-preview:not(#ox-share-none){background:rgba(3,5,8,.86)!important;background-image:none!important;color:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+/* 白金 paints every dialog and button; the preview stays dark with its own buttons. */
+html body dialog.ox-share-preview.ox-share-preview.ox-share-preview:not(#ox-share-none){background:rgba(3,5,8,.86)!important;background-image:none!important;color:#fff!important;border:0!important;border-radius:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
 .ox-share-preview img{display:block;max-width:min(86vw,440px);max-height:68dvh;border-radius:14px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;box-shadow:0 18px 50px #000b}
 .ox-share-preview p{margin:0;color:#c9d1db!important;font:500 13px/1.5 ${font}!important;text-align:center}
 .ox-share-preview .sp-row{display:flex;gap:10px}
 .ox-share-preview .sp-btn{all:unset!important;box-sizing:border-box!important;min-width:78px!important;padding:10px 18px!important;border-radius:11px!important;font:750 14px/1 ${font}!important;text-align:center!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent!important}
-.ox-share-preview .sp-main{background:#f5c451!important;color:#15120a!important}
-.ox-share-preview .sp-line{border:1px solid rgba(255,255,255,.38)!important;color:#fff!important}
+html body dialog.ox-share-preview .sp-btn.sp-main:not(#ox-share-none){background:#f5c451!important;color:#15120a!important;border:0!important;box-shadow:none!important}
+html body dialog.ox-share-preview .sp-btn.sp-line:not(#ox-share-none){background:transparent!important;border:1px solid rgba(255,255,255,.38)!important;color:#fff!important;box-shadow:none!important}
 .ox-share-preview .sp-btn:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}`;
   document.head.append(style);
 }
@@ -232,8 +243,9 @@ function wrap(ctx, s, width) {
   return lines;
 }
 
-// 首頁: BTC, the market's strength, then 上漲 and 下跌 T1／T2／T3 side by side.
-export async function shareHome({ dateLabel = shareTime(), btc, tiles = [], state = '', long = [], short = [] }) {
+// 首頁: BTC, four numbers (市場寬度, ETH, SOL), the latest breakouts, then 上漲 and 下跌
+// T1／T2／T3 side by side.
+export async function shareHome({ dateLabel = shareTime(), btc, tiles = [], breaks = null, long = [], short = [] }) {
   const cv = canvas(), ctx = cv.getContext('2d');
   base(ctx); header(ctx, dateLabel);
   text(ctx, 'BTC 永續', PAD, PAD + 136, { size: 30, weight: 800, color: C.muted });
@@ -242,27 +254,41 @@ export async function shareHome({ dateLabel = shareTime(), btc, tiles = [], stat
   text(ctx, value, PAD, PAD + 252, { size: 112, weight: 900, max: W - PAD * 2 - 280 });
   if (btc?.change) { text(ctx, '24H 漲跌', cx, PAD + 190, { size: 23, weight: 700, color: C.muted }); text(ctx, btc.change, cx, PAD + 252, { size: 52, weight: 900, color: btc.color || C.ink, max: 250 }); }
   let y = PAD + 300;
-  if (tiles.length) { stats(ctx, tiles, y, 128); y += 128; }
-  if (state) { text(ctx, state, PAD, y + 50, { size: 26, weight: 700, color: C.soft, max: W - PAD * 2 }); y += 70; } else y += 24;
+  if (tiles.length) { stats(ctx, tiles, y, 120); y += 120; }
+  // The newest 4H close's breakouts on one line: coin and the change since the breakout.
+  if (breaks?.items?.length) {
+    roundRect(ctx, PAD, y + 20, W - PAD * 2, 104, 26, 'rgba(255,255,255,.035)', C.line);
+    text(ctx, breaks.title, PAD + 26, y + 60, { size: 24, weight: 800, color: C.soft, max: W - PAD * 2 - 52 });
+    let x = PAD + 26;
+    for (const item of breaks.items) {
+      ctx.font = `800 30px ${FONT}`; const nw = ctx.measureText(item.name).width;
+      ctx.font = `800 27px ${FONT}`; const cw = ctx.measureText(item.change).width;
+      if (x + nw + 10 + cw > W - PAD - 26) break;
+      text(ctx, item.name, x, y + 106, { size: 30, weight: 800 });
+      text(ctx, item.change, x + nw + 10, y + 106, { size: 27, weight: 800, color: item.color || C.ink });
+      x += nw + 10 + cw + 30;
+    }
+    y += 124;
+  } else y += 4;
   // Two columns of candidates, a tier label where each tier starts.
-  const colW = (W - PAD * 2 - 24) / 2, rowH = 58, bottom = H - PAD - 130;
+  const colW = (W - PAD * 2 - 24) / 2, rowH = 56, bottom = H - PAD - 130;
   [[long, '上漲', C.up], [short, '下跌', C.down]].forEach(([rows, title, color], c) => {
-    const x = PAD + c * (colW + 24); let ry = y + 12;
+    const x = PAD + c * (colW + 24); let ry = y + 20;
     roundRect(ctx, x, ry, colW, bottom - ry, 26, 'rgba(255,255,255,.035)', C.line);
-    text(ctx, `${title}・T1／T2／T3`, x + 26, ry + 52, { size: 28, weight: 900, color, max: colW - 52 });
-    ry += 78;
+    text(ctx, `${title}・T1／T2／T3`, x + 26, ry + 50, { size: 27, weight: 900, color, max: colW - 52 });
+    ry += 72;
     if (!rows.length) { text(ctx, '目前沒有候選', x + 26, ry + 36, { size: 26, weight: 600, color: C.muted }); return; }
     let last = null;
     for (const r of rows) {
       const head = r.tier !== last;
-      if (ry + rowH + (head ? 40 : 0) > bottom - 8) break;
-      if (head) { text(ctx, r.tier, x + 26, ry + 28, { size: 22, weight: 800, color: '#9fd8ff' }); ry += 40; last = r.tier; }
-      text(ctx, r.name, x + 26, ry + 36, { size: 32, weight: 800, max: colW - 230 });
-      text(ctx, r.change, x + colW - 26, ry + 36, { size: 30, weight: 900, color: r.color || C.ink, align: 'right' });
+      if (ry + rowH + (head ? 38 : 0) > bottom - 8) break;
+      if (head) { text(ctx, r.tier, x + 26, ry + 28, { size: 22, weight: 800, color: '#9fd8ff' }); ry += 38; last = r.tier; }
+      text(ctx, r.name, x + 26, ry + 36, { size: 31, weight: 800, max: colW - 230 });
+      text(ctx, r.change, x + colW - 26, ry + 36, { size: 29, weight: 900, color: r.color || C.ink, align: 'right' });
       ry += rowH;
     }
   });
-  footer(ctx, '強度與分級為系統計算\n型態辨識網站，不是投資建議');
+  footer(ctx, '分級與突破為系統計算\n型態辨識網站，不是投資建議');
   return deliver(cv, `OX_加密總覽_${fileDay()}.png`, 'home');
 }
 

@@ -1,8 +1,9 @@
 // Where 分享圖片 starts outside the tools: 盤面 (a picture button in the price card),
-// 首頁 (beside the BTC chart's timeframes), and the handlers the 畫板 tab passes to the
+// 首頁 (the picture button beside 畫型態), and the handlers the 畫板 tab passes to the
 // board (card long press / picture button, 分享 after drawing). The images themselves
 // are drawn by ./share-image.js; the 型態 tab, 型態詳情 and 資訊 call it directly.
-import { shareCoin, shareDrawing, shareHome, sharePct, shareTone, sharePrice, shareMoney, shareTime, PICTURE_ICON } from './share-image.js?v=20261031-share1';
+import { shareCoin, shareDrawing, shareHome, sharePct, shareTone, sharePrice, shareMoney, shareTime, PICTURE_ICON } from './share-image.js?v=20261031-home1';
+import { homeBreakSummary } from './home-feed.js';
 
 const runtime = () => typeof state !== 'undefined' ? state : null;
 const finite = v => { const n = Number(v); return Number.isFinite(n) ? n : null; };
@@ -54,23 +55,25 @@ export function shareChart() {
   });
 }
 
-// 首頁: BTC, the market's strength and both T1／T2／T3 lists.
+// 首頁: BTC, 市場寬度, ETH and SOL, the latest breakouts and both T1／T2／T3 lists.
 export function shareHomeOverview() {
-  const rt = runtime(), btc = rt?.btcTicker, text = id => document.getElementById(id)?.textContent?.trim() || '—';
-  const change = finite(btc?.change24h) == null ? null : Number(btc.change24h) * 100;
+  const rt = runtime(), text = id => document.getElementById(id)?.textContent?.trim() || '—';
+  const btc = ticker('BTCUSDT'), eth = ticker('ETHUSDT'), sol = ticker('SOLUSDT');
   const list = side => ['t1', 't2', 't3'].flatMap(tier => (rt?.tierMapBySide?.[side]?.[tier] || []).map(c => ({ c, tier: String(c.displayTier || c.tier || tier).toUpperCase() })))
     .filter(({ c }) => side === 'long' ? Number(c.change24h) > 0 : Number(c.change24h) < 0)
     .slice(0, 8).map(({ c, tier }) => ({ tier, name: coin(c.symbol), change: sharePct(Number(c.change24h) * 100), color: shareTone(Number(c.change24h)) }));
-  const score = id => { const v = finite(text(id)); return v == null ? '—' : `${v} / 100`; };
+  const count = id => { const v = finite(text(id)); return v == null ? '—' : `${v} 個`; };
+  const breaks = homeBreakSummary();
   return shareHome({
-    btc: { price: btc ? sharePrice(Number(btc.lastPr)) : text('home-btc-price'), change: change == null ? '' : sharePct(change), color: shareTone(change) },
-    tiles: [['BTC 強度', score('home-btc-strength')], ['小幣強度', score('home-alt-strength')], ['市場環境', score('home-market-score')]],
-    state: [text('home-market-state'), text('home-btc-strength-label') !== '—' ? 'BTC ' + text('home-btc-strength-label') : '', text('home-alt-strength-label') !== '—' ? '小幣 ' + text('home-alt-strength-label') : ''].filter(s => s && s !== '—').join('・'),
+    btc: { price: btc.price == null ? text('home-btc-price') : sharePrice(btc.price), change: btc.change == null ? '' : sharePct(btc.change), color: shareTone(btc.change) },
+    tiles: [['上漲', count('home-breadth-up'), shareTone(1)], ['下跌', count('home-breadth-down'), shareTone(-1)],
+      ['ETH', sharePct(eth.change), shareTone(eth.change)], ['SOL', sharePct(sol.change), shareTone(sol.change)]],
+    breaks: breaks && { title: `今日突破・${breaks.time}`, items: breaks.picks.slice(0, 6).map(p => ({ name: p.coin, change: sharePct(p.change), color: shareTone(p.change) })) },
     long: list('long'), short: list('short')
   });
 }
 
-// The two page buttons, added once their places exist; styles in share.css.
+// 盤面's button, added once its place exists; styles in share.css.
 function button(className, label, track, html) {
   const b = document.createElement('button');
   b.type = 'button'; b.className = 'ox-share-pic ' + className; b.dataset.track = track;
@@ -84,15 +87,13 @@ function mount() {
     b.addEventListener('click', event => { event.stopPropagation(); shareChart(); });
     cell.append(b);
   }
-  const heading = document.querySelector('#view-home .ox-chart-heading');
-  if (heading && !heading.querySelector('.ox-home-share')) {
-    const b = button('ox-home-share', '把首頁做成圖片分享', 'share.home', PICTURE_ICON + '<span>分享</span>');
-    b.addEventListener('click', event => { event.stopPropagation(); shareHomeOverview(); });
-    const toolbar = heading.querySelector('.v34-home-main-toolbar');
-    toolbar ? heading.insertBefore(b, toolbar) : heading.append(b);
-  }
 }
 if (typeof document !== 'undefined') {
+  // 首頁's picture button (.ox-home-share) is in the page itself, beside 畫型態.
+  document.addEventListener('click', event => {
+    if (!event.target.closest?.('#view-home .ox-home-share')) return;
+    event.stopPropagation(); shareHomeOverview();
+  });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true }); else mount();
   // The price card is rebuilt by some layouts; put the button back when it goes missing.
   for (const type of ['ox:viewchange', 'ox:radar-modechange', 'ox:marketchange']) document.addEventListener(type, () => requestAnimationFrame(mount));

@@ -4,7 +4,7 @@
 // 長期勝率 added up over every record; a card opens 型態詳情 (./detail.js). Mounted by
 // src/markets/crypto/radar-compare.js; styles live in src/styles/components/crypto-shell.css (.ox-cmp).
 import { withDeadline } from '../../../components/resource-deadline.js';
-import { STEP, compareModel, defaultOpen, isLog, miniChart, closesChart, parseRows, pct, tone, nextCloseText, patternKinds, filterModel, longRunStats, periodLabel, taipeiTime, LONG_RUN_MIN } from './model.js?v=20261030-board2';
+import { STEP, compareModel, defaultOpen, isLog, miniChart, closesChart, parseRows, pct, tone, nextCloseText, patternKinds, filterModel, longRunStats, periodLabel, taipeiTime, LONG_RUN_MIN } from './model.js?v=20261031-home1';
 import { openPatternDetail, indexPoints } from './detail.js?v=20261031-share1';
 import { shareCoin, sharePrice, SHARE_UP, SHARE_DOWN, PERFORMANCE_NOTE, longPress, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
 
@@ -59,6 +59,11 @@ function candlesFor(symbol, signal) {
   if (series.size > 240) series.delete(series.keys().next().value);
   return promise;
 }
+
+// 首頁「今日突破」reads the same record and 4H candles through this module, so the two
+// share one download of each (src/markets/crypto/home-feed.js loads it on demand).
+export { candlesFor };
+export { compareModel, miniChart, closesChart } from './model.js?v=20261031-home1';
 
 const CHEVRON = '<svg class="ox-cmp-chev" viewBox="0 0 24 24" aria-hidden="true"><path d="m8 10 4 4 4-4"/></svg>';
 
