@@ -55,7 +55,7 @@ html body.ox-terminal .oxn-modal-content{max-width:100%;overflow-x:hidden}
    The rail copies the original 行事曆／關鍵新聞 rail (news workspace .ox-mode-rail):
    41px tall, 33px tabs, 11px labels, the same glass tile. Each tab's tap area
    reaches over the rail padding, so the whole rail height takes a tap. */
-html body.ox-terminal #view-radar .ox-radar-modes{margin:0 0 10px;min-width:0}
+html body.ox-terminal #view-radar .ox-radar-modes{margin:8px 0 10px;min-width:0}
 html body.ox-terminal #view-radar .ox-radar-mode-rail{
  position:relative;display:flex;align-items:stretch;gap:0;width:100%;box-sizing:border-box;padding:3px;
  border:1px solid #ffffff38;border-radius:9px;
@@ -259,7 +259,9 @@ html body.ox-terminal.theme-light .ox-watch-row .ox-coin-logo{background:#f1f3f6
 .ox-watch-quote{display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-variant-numeric:tabular-nums;white-space:nowrap}
 .ox-watch-quote strong{font-size:15px;font-weight:600;line-height:1.2}
 .ox-watch-quote span{font-size:13px;font-weight:600}
-html body.ox-terminal .ox-watch-row .ox-watch-star{position:static!important;display:grid!important;place-items:center;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;margin:0!important;padding:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;color:var(--muted)!important;cursor:pointer}
+/* The star stays positioned: the shared .watch-star::after tap area (inset:-7px) otherwise
+   stretched over the whole list, so a tap on a coin starred it instead of opening it. */
+html body.ox-terminal .ox-watch-row .ox-watch-star{position:relative!important;inset:auto!important;display:grid!important;place-items:center;width:44px!important;height:44px!important;min-width:44px!important;min-height:44px!important;margin:0!important;padding:0!important;border:0!important;border-radius:12px!important;background:transparent!important;box-shadow:none!important;color:var(--muted)!important;cursor:pointer}
 html body.ox-terminal .ox-watch-row .ox-watch-star svg{width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linejoin:round}
 html body.ox-terminal .ox-watch-row .ox-watch-star.is-starred{color:#f4c65b!important}
 html body.ox-terminal .ox-watch-row .ox-watch-star.is-starred svg{fill:currentColor}
@@ -272,3 +274,20 @@ html body.ox-terminal .oxn-day-events-heading .oxn-text-button{position:relative
 html body.ox-terminal #view-home .ox-analysis-heading .ox-text-button::after{content:"";position:absolute;inset:-8px -9px}
 html body.ox-terminal .oxn-root .oxn-month-arrow::after{content:"";position:absolute;inset:0 -9px}
 html body.ox-terminal .oxn-day-events-heading .oxn-text-button::after{content:"";position:absolute;inset:-9px -4px}
+
+/* ---------- 白金: the 24H change on the 盤面 quote card keeps its up/down colour
+   (an ID-level 白金 rule for the card's values painted it plain ink). ---------- */
+html body.ox-terminal.theme-light #view-radar :is(.market-line-item,.metric-card) strong.positive{color:#176ed0!important}
+html body.ox-terminal.theme-light #view-radar :is(.market-line-item,.metric-card) strong.negative{color:#d13c5b!important}
+
+/* ---------- Press feedback ----------
+   iOS drew a grey box over the whole list when a coin row was tapped (rows use one
+   delegated click handler). The flash is off everywhere; tappable rows and cards
+   brighten a little while pressed instead, and 設定 rows tint like iOS settings
+   rows rather than shrinking. Buttons keep the shared press (motion.css). */
+html{-webkit-tap-highlight-color:transparent}
+html body.ox-terminal :is(#screener-list :is(.coin-card,.turnover-card,.watch-list-card),#view-home .ox-home-t1-row,.ox-watch-row,.oxn-news-row,.oxn-event-row){transition:filter .16s ease}
+html body.ox-terminal:not(.theme-light) :is(#screener-list :is(.coin-card,.turnover-card,.watch-list-card),#view-home .ox-home-t1-row,.oxn-news-row,.oxn-event-row):active{filter:brightness(1.22)}
+html body.ox-terminal.theme-light :is(#screener-list :is(.coin-card,.turnover-card,.watch-list-card),#view-home .ox-home-t1-row,.oxn-news-row,.oxn-event-row):active{filter:brightness(.96)}
+html body.ox-terminal #view-settings :is(.ox-control-row,.ox-control-advanced-back):not([disabled]):active{scale:1!important;filter:none!important;background-color:#ffffff0d!important}
+html body.ox-terminal.theme-light #view-settings :is(.ox-control-row,.ox-control-advanced-back):not([disabled]):active{background-color:#30343b0b!important}

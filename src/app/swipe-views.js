@@ -12,7 +12,7 @@ const EDGE = 20, DIRECTION_RATIO = 1.6;
 const FLICK_DISTANCE = 60, FLICK_SPEED = 0.3, DRAG_DISTANCE = 120, MAX_TIME = 900;
 const OWN_GESTURES = 'input,textarea,select,[contenteditable],canvas,.chart-container,.chart-box,dialog,[role="dialog"],[role="menu"],.oxn-modal-backdrop,.oxn-popover,.ox-control-overlay,.chart-tools-overlay,#ox-account-overlay,#ox-market-quick-switch,.app-dock';
 // Layers drawn over the page keep every swipe to themselves.
-const OVERLAYS = 'dialog[open],.oxn-modal-backdrop,.oxn-popover.is-open,.chart-tools-overlay.is-open,#ox-account-overlay.is-open,#radar-tier-menu:not([hidden])';
+const OVERLAYS = 'dialog[open],.oxn-modal-backdrop,.oxn-popover.is-open,.chart-tools-overlay.is-open,#ox-account-overlay.is-open,#radar-tier-menu:not([hidden]),#ox-provider-backdrop.show';
 const BUSY_BODY = ['ox-control-open', 'ox-mqs-open', 'ox-mqs-dragging', 'chart-focus', 'ox-feature-blocked'];
 
 export function isSwipe(dx, dy, elapsed) {

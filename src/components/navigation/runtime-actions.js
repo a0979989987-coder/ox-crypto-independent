@@ -1,9 +1,29 @@
+// The 首頁 BTC chart is a canvas that keeps touches for panning, so on phones a tap on it
+// never became a click and the chart did not open. A short, still tap opens it, as a click does.
+let homeChartTap = null, homeChartTapAt = 0;
+document.addEventListener("touchstart", e => {
+  const wrap = e.touches.length === 1 && e.target.closest?.(".btc-premium-chart-wrap[data-home-symbol]");
+  homeChartTap = wrap ? { wrap, x: e.touches[0].clientX, y: e.touches[0].clientY, at: performance.now() } : null;
+}, { capture: true, passive: true });
+document.addEventListener("touchmove", e => {
+  const t = e.touches[0];
+  if (homeChartTap && (e.touches.length > 1 || Math.hypot(t.clientX - homeChartTap.x, t.clientY - homeChartTap.y) > 10)) homeChartTap = null;
+}, { capture: true, passive: true });
+document.addEventListener("touchend", () => {
+  const tap = homeChartTap; homeChartTap = null;
+  if (!tap || performance.now() - tap.at > 500 || !tap.wrap.isConnected) return;
+  homeChartTapAt = performance.now();
+  switchSymbol(tap.wrap.dataset.homeSymbol);
+}, { capture: true, passive: true });
+document.addEventListener("touchcancel", () => { homeChartTap = null; }, { capture: true, passive: true });
+
 document.addEventListener("click", e => {
   const star = e.target.closest("[data-watch-symbol]");
   if (star?.dataset.watchSymbol) { e.preventDefault(); e.stopPropagation(); toggleWatchSymbol(star.dataset.watchSymbol); return; }
 
   const homeSymbol = e.target.closest("[data-home-symbol]");
   if (homeSymbol?.dataset.homeSymbol) {
+    if (homeChartTapAt && performance.now() - homeChartTapAt < 700 && homeSymbol.matches(".btc-premium-chart-wrap")) return;
     if (homeSymbol.dataset.homeSide) {
       setScannerDirectionFilter(homeSymbol.dataset.homeSide);
       setScannerTierFilter(homeSymbol.dataset.homeTier || 'all');

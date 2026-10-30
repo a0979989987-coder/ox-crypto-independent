@@ -59,11 +59,12 @@ function setChartFocus(enabled) {
   requestAnimationFrame(() => {
     resizeChartToContainer(true);
     if (chartBox && !prefersReducedMotion && typeof chartBox.animate === 'function') {
-      const transform = getComputedStyle(chartBox).transform;
+      // "none scale(.965)" is not a valid transform and the browser dropped the whole animation.
+      const transform = getComputedStyle(chartBox).transform, prefix = transform === 'none' ? '' : `${transform} `;
       chartBox.animate(
         enabled
-          ? [{ transform: `${transform} scale(.965)`, opacity: .86 }, { transform, opacity: 1 }]
-          : [{ transform, opacity: 1 }, { transform: `${transform} scale(.985)`, opacity: .9 }],
+          ? [{ transform: `${prefix}scale(.965)`, opacity: .86 }, { transform, opacity: 1 }]
+          : [{ transform, opacity: 1 }, { transform: `${prefix}scale(.985)`, opacity: .9 }],
         { duration: enabled ? 520 : 360, easing: 'cubic-bezier(.22,.8,.24,1)', fill: 'both' }
       ).onfinish = () => { chartBox.getAnimations().forEach(animation => animation.cancel()); };
     }

@@ -78,8 +78,8 @@ if (section) {
         const { mountCryptoBubbles } = await loadToolModule(new URL('../bubbles/view.js?v=20261005-stable18',import.meta.url).href,{current:()=>token===generation&&active()});
         if(token!==generation||!active())return;
         instance=mountCryptoBubbles(mountHost,{restore});
-        // Phones: the zoom and count controls are at least 34px for a thumb.
-        const touch=document.createElement('style');touch.textContent='@media(max-width:720px){.oxb-zoom{gap:5px}.oxb-zoom button,.oxb-zoom select{width:34px;height:34px}.oxb-zoom select{width:auto;min-width:64px;font-size:12px}.oxb-zoom svg{width:17px;height:17px}.oxb-asset-grid button{font-size:13px}.oxb-asset-grid b{font-size:12px}}';
+        // Phones: the zoom buttons keep their 26px size; a thumb's tap reaches 4px past each one.
+        const touch=document.createElement('style');touch.textContent='@media(max-width:720px){.oxb-zoom{gap:5px}.oxb-zoom button{position:relative}.oxb-zoom button::after{content:"";position:absolute;inset:-4px -3px}}';
         mountHost.shadowRoot?.append(touch);
         return;
       }

@@ -77,7 +77,8 @@
       setTimeout(async()=>{
         if(item.market)window.OXMarketController?.setMarket(item.market,{toast:false});
         if(item.radarMode)window.OXRadarModes?.set(item.radarMode);
-        if(item.view&&typeof switchAppView==="function")switchAppView(item.view);
+        // 資訊 opens through the news entry so it gets its history step; a day list closed with Back stays on 資訊.
+        if(item.view==="data"&&window.OXNews?.openMarket)window.OXNews.openMarket();else if(item.view&&typeof switchAppView==="function")switchAppView(item.view);
         if(item.action==="notifications")document.getElementById("ox-control-open-notifications")?.click();
         await new Promise(r=>setTimeout(r,110));
         if(item.action==="provider"){ProviderController.openPicker();return}
@@ -324,6 +325,10 @@
       this.ensurePicker();
       this.restartTicker();
       window.addEventListener("resize",()=>this.positionPicker(),{passive:true});
+      // Esc closes the exchange list like the other menus (its backdrop otherwise keeps every tap).
+      document.addEventListener("keydown",e=>{if(e.key==="Escape"&&q("#ox-provider-picker")?.classList.contains("show")){this.closePicker();q("#ticker-pair")?.focus({preventScroll:true});}});
+      // Leaving the page or the 盤面 tab must not leave the list and its backdrop over the next page.
+      document.addEventListener("ox:viewchange",()=>this.closePicker());document.addEventListener("ox:radar-modechange",()=>this.closePicker());
     }
   };
   window.OXProviderController=ProviderController;

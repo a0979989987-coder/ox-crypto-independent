@@ -34,8 +34,8 @@
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "a4f55276cd91f1cae2a8a7f5bb1aa6cf65a81356366a9024983fb47d2cd10770",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; bubble controls get phone-sized touch targets."
+      "sha256": "2c89abd66fd0ac480adc4eff2d47f69544c35f3ca68531c0019b4a488538575b",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
