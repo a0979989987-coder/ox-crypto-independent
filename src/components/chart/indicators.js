@@ -532,7 +532,7 @@
     const doc = root.document;
     if (!doc?.head || doc.querySelector('link[data-ox-chart-indicators]')) return;
     const link = doc.createElement('link');
-    link.rel = 'stylesheet'; link.href = 'src/styles/components/chart-indicators.css?v=20261030-board2'; link.dataset.oxChartIndicators = '';
+    link.rel = 'stylesheet'; link.href = 'src/styles/components/chart-indicators.css?v=20261031-v2'; link.dataset.oxChartIndicators = '';
     doc.head.append(link);
   }
   root.addEventListener?.('storage', event => {

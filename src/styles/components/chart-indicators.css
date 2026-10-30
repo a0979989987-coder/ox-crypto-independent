@@ -88,6 +88,8 @@ body.theme-light .ox-ind-sheet-foot button.is-primary{border-color:#8d712e;backg
 html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open,html body.ox-terminal #view-radar[data-radar-mode] .chart-controls #chart-indicator-open.ox-ind-open{display:inline-flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:3px!important;width:auto!important;min-width:0!important;flex:0 0 auto!important;padding:0 6px 0 5px!important;line-height:1!important;white-space:nowrap}
 html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open svg,html body.ox-terminal #view-radar[data-radar-mode] .chart-controls #chart-indicator-open.ox-ind-open svg{width:14px!important;height:14px!important;flex:none!important}
 #chart-indicator-open.ox-ind-open span{font:600 11px/1 system-ui,-apple-system,"PingFang TC",sans-serif;letter-spacing:.02em;white-space:nowrap}
+/* Phones: the chart sits beside the coin list, so the button keeps only its icon and 1D／1W stay in view. */
+@media(max-width:720px){html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open span{display:none!important}html body.ox-terminal #view-radar .chart-controls #chart-indicator-open.ox-ind-open{padding:0 6px!important}}
 
 /* K 線／線圖 at the top of 指標與篩選. */
 #chart-tools-overlay .ox-chart-style{display:flex;gap:4px;margin:0 0 12px;padding:3px;border:1px solid rgba(255,255,255,.16);border-radius:11px;background:rgba(255,255,255,.03)}
