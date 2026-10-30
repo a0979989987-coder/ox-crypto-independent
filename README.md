@@ -40,5 +40,6 @@ Vercel 照常運作，直到擁有者切換。Sites 版由 `npm run build:sites`
 - 會員：Google 登入（`GOOGLE_CLIENT_ID`、密鑰 `GOOGLE_CLIENT_SECRET`，回呼 `https://crypto.oxpattern.com/api/v1/auth/google/callback`）。同步的設定清單在 `src/app/sync-keys.js`；可暫停的工具在 `src/app/site-features.js`。
 - Bitget UID 自動查詢（唯讀，選用）：密鑰 `BITGET_AFFILIATE_API_KEY`、`BITGET_AFFILIATE_SECRET_KEY`、`BITGET_AFFILIATE_PASSPHRASE`。通過只顯示「Bitget 已驗證」，不影響任何功能。
 - 資料更新：排程把資料提交到 main 後，若儲存庫變數 `OX_SITES_DATA` 是 `on`，同一個工作會用 GitHub OIDC 把 `data/`、`previews/data/` 發布到 Site 的 R2（`scripts/publish-site-data.mjs`）；`OX_SITE_ORIGIN` 可在網域生效前指向 chatgpt.site 網址。首次請手動執行 `Publish verified data to Sites`。
+- 資安：API 只接受網站自己的網址（`crypto.oxpattern.com`；Site 的 chatgpt.site 網址放在 Worker 變數 `OX_SITE_ORIGIN`，多個用逗號分開），同一個 IP 每分鐘超過 600 次回 429，會改資料的請求沒有 Origin 一律拒絕；每個回應都帶 nosniff、Referrer-Policy、Permissions-Policy、HSTS。
 - 本機：`OX_DEV_ADMIN=你的Email OX_DEV_FAKE_GOOGLE=1 node scripts/dev-server.mjs --port 4313`（本機 D1 在 `.local/`，假的 Google 登入只在本機）。
 - 切換網域後，把 `vercel.redirect.json` 的內容換進 `vercel.json`，舊網址就會轉到 crypto.oxpattern.com。
