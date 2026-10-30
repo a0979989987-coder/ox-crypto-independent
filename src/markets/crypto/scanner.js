@@ -13,31 +13,38 @@ function orderCryptoScanTickers(tickers){const sorted=[...tickers].sort((a,b)=>
  const up=rest.filter(t=>num(t.change24h)>=0),down=rest.filter(t=>num(t.change24h)<0),balanced=[];
  for(let i=0;i<Math.max(up.length,down.length);i++){if(up[i])balanced.push(up[i]);if(down[i])balanced.push(down[i]);}
  return [...benchmarks,...balanced];}
+// The next pass. With saved rows (the hourly snapshot or this device's last
+// results) radar-snapshot.js re-checks their candidates first; after a fresh
+// complete evaluation only the candidates and the most traded coins.
+function cryptoScanPlan() {
+  const eligible=state.tickers.filter(t=>num(t.usdtVolume)>0);
+  return globalThis.OXRadarSnapshot?.plan(eligible)||orderCryptoScanTickers(eligible).map(t=>t.symbol);
+}
 
 // Refill a completed slot immediately; a slow symbol must not hold the next
 // liquid candidates behind an entire fixed batch.
 async function scanCryptoPool(next,scan,limit=3){
  await Promise.allSettled(Array.from({length:limit},async()=>{let symbol;while((symbol=next())!==null){await scan(symbol);await new Promise(resolve=>setTimeout(resolve,0));}}));
 }
+// Saved rows (the hourly snapshot or this device's last scan) come back with
+// the current quote. A row never replaces a newer analysis of the same coin.
+function restoreRadarRows(rows,tickers=new Map(state.tickers.map(t=>[t.symbol,t]))) {
+  let restored=0;
+  for (const row of rows) {
+    const ticker=tickers.get(row.symbol),current=state.analyzedCache.get(row.symbol);
+    if (!ticker || !isCryptoSymbolAllowed(row.symbol) || current?.at>=row.at || Date.now()-row.at>RADAR_RETAIN_MS) continue;
+    state.analyzedCache.set(row.symbol,OXEngine.withTurnover({...row,ticker,change24h:num(ticker.change24h)},ticker.usdtVolume));
+    restored++;
+  }
+  return restored;
+}
 function restoreRadarSnapshot() {
   if (state.radarSnapshotChecked) return;
   state.radarSnapshotChecked = true;
-  try {
-    const snapshot = JSON.parse(localStorage.getItem(RADAR_SNAPSHOT_KEY));
-    if (!snapshot || Date.now()-snapshot.savedAt > RADAR_RETAIN_MS || !Array.isArray(snapshot.rows)) return;
-    const tickers = new Map(state.tickers.map(t=>[t.symbol,t]));
-    for (const row of snapshot.rows) {
-      const ticker=tickers.get(row.symbol);
-      if (!ticker || !isCryptoSymbolAllowed(row.symbol) || !['long','short'].some(side=>
-        OXClassic.qualifyClassicRow(row,side,{observations:true}))) continue;
-      state.analyzedCache.set(row.symbol,OXEngine.withTurnover({...row,ticker,change24h:num(ticker.change24h)},ticker.usdtVolume));
-    }
-    state.radarSnapshotReady = state.analyzedCache.size > 0;
-  } catch (_) {}
+  try { localStorage.removeItem(RADAR_SNAPSHOT_KEY); } catch (_) {}
+  globalThis.OXRadarSnapshot?.restore();
 }
-function saveRadarSnapshot() {
-  try { localStorage.setItem(RADAR_SNAPSHOT_KEY,JSON.stringify({savedAt:Date.now(),rows:[...state.analyzedCache.values()]})); } catch (_) {}
-}
+function saveRadarSnapshot() { globalThis.OXRadarSnapshot?.save(); }
 
 function closedTierCandles(candles,frame,now=Date.now()) {
  const duration=({m:60,H:3600,D:86400,W:604800})[frame.slice(-1)]*Number(frame.slice(0,-1));
@@ -81,6 +88,75 @@ function intradayClassicObservation(frames,side) {
    stage:'短線帶量觀察 · 4H '+(active4H?'資金推進':'新型態確認'),
    matchedReasons:['1H 有效壓力／支撐與同向放量',active4H?'4H 近期明顯推進':'4H 新壓力／支撐形成',...(fast.matchedReasons||[])]};
 }
+// One coin's radar row from its 1H / 4H / 1D candles. The page's scan and the
+// hourly snapshot job (scripts/collect-crypto-radar.mjs) both run exactly this.
+function fetchCryptoRadarCandles(symbol,options={owner:'radar-scan',priority:0}) {
+  // Another view may have fetched the same series moments ago (盤面's levels,
+  // 幣種詳情): within the same hour its newest 180 candles are this request.
+  const series=frame=>{
+    const seen=BitgetAPI.peekCandles?.(symbol,frame),now=Date.now();
+    if(seen&&Math.abs(now-seen.serverTime)<15000&&Math.floor(seen.serverTime/3600000)===Math.floor(now/3600000)&&seen.candles.length>=180)return Promise.resolve(seen.candles.slice(-180));
+    return BitgetAPI.fetchCandles(symbol,frame,180,null,options);
+  };
+  return Promise.all([series('1H'),series('4H'),series('1D').catch(()=>[])]).then(([hour,fourHour,day])=>({'1H':hour,'4H':fourHour,'1D':day}));
+}
+function cryptoRadarRow(symbol,ticker,raw,{tickers=state.tickers,btcTicker=state.btcTicker}={}) {
+  const candles=raw['1H'];
+  const frames={'1H':cryptoClassicBars(raw['1H'],'1H'),'4H':cryptoClassicBars(raw['4H'],'4H'),'1D':cryptoClassicBars(raw['1D'],'1D')};
+  // A rate-limit or malformed candle response must not replace a valid
+  // prior scan with a neutral row and make the symbol disappear.
+  if(frames['1H'].length<OXClassic.CLASSIC_RULES.minimumBars||
+     frames['4H'].length<OXClassic.CLASSIC_RULES.minimumBars)throw Error('核心級別 K 線不足');
+  const classic=Object.fromEntries(['long','short'].map(side=>{
+    const signals=[['4H','1H'],['1D','4H']].map(([setupFrame,triggerFrame])=>OXClassic.evaluateFrames(frames,{side,setupFrame,triggerFrame,
+      ...(setupFrame==='1D'?{confirmationFrame:'1H'}:{})}));
+    const fast=intradayClassicObservation(frames,side);
+    if(fast)signals.push(fast);
+    const qualified=signals.filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
+    return [side,qualified[0]||signals[0]];
+  }));
+  const candidates=Object.values(classic).filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
+  const signal=candidates[0]||classic.long;
+  const row=OXEngine.describe(signal,classic),liq=OXEngine.computeLiquidity(ticker,tickers),rs=OXEngine.computeRelativeStrength(ticker,btcTicker);
+  const timeframeTiers=Object.fromEntries(Object.entries(frames).map(([frame,bars])=>[frame,classifyTierFrame(bars,frame)]));
+  return {row:OXEngine.withTurnover({
+    ...row,timeframeTiers,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
+    signalFrame:signal.frame||'4H',triggerFrame:signal.triggerFrame||'1H',sparkline:candles.slice(-24).map(c=>c.close),
+    liqScore:liq.score,rsScore:rs.score,quoteVol:liq.quoteVol,liqPercentile:liq.percentileStr,
+    reasons:row.reasons,
+    change24h:num(ticker.change24h),ret1h:candleReturn(candles,1),ret4h:candleReturn(candles,4),
+    ret24h:candleReturn(candles,24),
+  },ticker.usdtVolume),signal};
+}
+// The Bitget contract catalog and the crypto quotes the radar ranks.
+function applyCryptoCatalog(contractList,instrumentMetadata) {
+  const metaBySymbol = new Map((instrumentMetadata || []).map(m => [m.symbol, m]));
+  state.instrumentCatalog.clear();
+  state.contracts.clear();
+  state.assetClassCounts = { crypto: 0, stock: 0, etf: 0, commodity: 0, index: 0, other: 0 };
+
+  contractList.forEach(c => {
+    const meta = metaBySymbol.get(c.symbol) || {};
+    const merged = {
+      ...c,
+      assetSymbolType: meta.symbolType || "",
+      isRwa: meta.isRwa ?? c.isRwa,
+      assetClass: undefined
+    };
+    const assetClass = classifyInstrument(merged);
+    const tagged = { ...merged, assetClass };
+    state.instrumentCatalog.set(tagged.symbol, tagged);
+    state.assetClassCounts[assetClass] = (state.assetClassCounts[assetClass] || 0) + 1;
+    if (assetClass === ASSET_CLASS.CRYPTO) state.contracts.set(tagged.symbol, tagged);
+  });
+}
+function selectCryptoTickers(rawTickers) {
+  return rawTickers.filter(t =>
+    state.contracts.has(t.symbol) &&
+    isCryptoSymbolAllowed(t.symbol) &&
+    [t.lastPr, t.change24h, t.usdtVolume].every(v => Number.isFinite(num(v)))
+  );
+}
 function cryptoFrameTier(row,frame,side) {
  const data=row.timeframeTiers?.[frame];
  return data&&data.eligible&&Date.now()-data.at<=RADAR_RETAIN_MS&&(!side||data.side?.toLowerCase()===side.toLowerCase())?data:null;
@@ -100,32 +176,11 @@ async function refreshMarketTickers() {
     if (!state.contracts.size) {
       const [contractList, instrumentMetadata] = catalog;
       if(state.activeMarket!=="crypto")return;
-      const metaBySymbol = new Map((instrumentMetadata || []).map(m => [m.symbol, m]));
-      state.instrumentCatalog.clear();
-      state.contracts.clear();
-      state.assetClassCounts = { crypto: 0, stock: 0, etf: 0, commodity: 0, index: 0, other: 0 };
-
-      contractList.forEach(c => {
-        const meta = metaBySymbol.get(c.symbol) || {};
-        const merged = {
-          ...c,
-          assetSymbolType: meta.symbolType || "",
-          isRwa: meta.isRwa ?? c.isRwa,
-          assetClass: undefined
-        };
-        const assetClass = classifyInstrument(merged);
-        const tagged = { ...merged, assetClass };
-        state.instrumentCatalog.set(tagged.symbol, tagged);
-        state.assetClassCounts[assetClass] = (state.assetClassCounts[assetClass] || 0) + 1;
-        if (assetClass === ASSET_CLASS.CRYPTO) state.contracts.set(tagged.symbol, tagged);
-      });
+      applyCryptoCatalog(contractList, instrumentMetadata);
     }
 
-    state.tickers = rawTickers.filter(t => 
-      state.contracts.has(t.symbol) && 
-      isCryptoSymbolAllowed(t.symbol) &&
-      [t.lastPr, t.change24h, t.usdtVolume].every(v => Number.isFinite(num(v)))
-    );
+    state.tickers = selectCryptoTickers(rawTickers);
+    state.tickersSource = 'live';
 
     // Purge any stale non-crypto records before rebuilding ranking / scanner state.
     for (const symbol of Array.from(state.analyzedCache.keys())) {
@@ -139,15 +194,14 @@ async function refreshMarketTickers() {
 
     // Rank the whole active crypto universe. The former 3m turnover cutoff
     // silently removed genuine lower-turnover setups before they were scored.
-    const eligible = state.tickers.filter(t => num(t.usdtVolume) > 0);
-    const scanOrder=orderCryptoScanTickers(eligible);
-    
+    restoreRadarSnapshot();
+    // Saved rows take the newest quote; a fresh snapshot needs only a re-check.
+    globalThis.OXRadarSnapshot?.onTickers();
     if (!state.scanQueue.length) {
-      state.scanQueue = scanOrder.map(t => t.symbol);
+      state.scanQueue = cryptoScanPlan();
       state.scanIndex = 0;
     }
 
-    restoreRadarSnapshot();
     rebuildTierLists();
     if (state.activeView === 'radar') {
       renderCurrentTab();
@@ -214,41 +268,16 @@ async function runScanQueueLoop() {
       if (!ticker) return;
 
       try {
-        const [candles,contextBars,dailyBars] = await Promise.all([
-          BitgetAPI.fetchCandles(symbol, '1H', 180,null,{owner:'radar-scan',priority:0}), BitgetAPI.fetchCandles(symbol, '4H', 180,null,{owner:'radar-scan',priority:0}),
-          BitgetAPI.fetchCandles(symbol,'1D',180,null,{owner:'radar-scan',priority:0}).catch(()=>[])
-        ]);
+        const raw = await fetchCryptoRadarCandles(symbol);
         if(state.activeMarket!=='crypto'||!['home','radar'].includes(state.activeView))return;
-        const frames={'1H':cryptoClassicBars(candles,'1H'),'4H':cryptoClassicBars(contextBars,'4H'),'1D':cryptoClassicBars(dailyBars,'1D')};
-        // A rate-limit or malformed candle response must not replace a valid
-        // prior scan with a neutral row and make the symbol disappear.
-        if(frames['1H'].length<OXClassic.CLASSIC_RULES.minimumBars||
-           frames['4H'].length<OXClassic.CLASSIC_RULES.minimumBars)throw Error('核心級別 K 線不足');
-        const classic=Object.fromEntries(['long','short'].map(side=>{
-          const signals=[['4H','1H'],['1D','4H']].map(([setupFrame,triggerFrame])=>OXClassic.evaluateFrames(frames,{side,setupFrame,triggerFrame,
-            ...(setupFrame==='1D'?{confirmationFrame:'1H'}:{})}));
-          const fast=intradayClassicObservation(frames,side);
-          if(fast)signals.push(fast);
-          const qualified=signals.filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
-          return [side,qualified[0]||signals[0]];
-        }));
-        const candidates=Object.values(classic).filter(s=>s.eligible||s.observationEligible).sort(OXClassic.compareClassic);
-        const signal=candidates[0]||classic.long;
-        const row=OXEngine.describe(signal,classic),liq=OXEngine.computeLiquidity(ticker,state.tickers),rs=OXEngine.computeRelativeStrength(ticker,state.btcTicker);
-        const timeframeTiers=Object.fromEntries(Object.entries(frames).map(([frame,bars])=>[frame,classifyTierFrame(bars,frame)]));
+        const {row,signal}=cryptoRadarRow(symbol,ticker,raw);
+        const timeframeTiers=row.timeframeTiers;
         const tierConfig=globalThis.OXTierFilters?.get('crypto');
-        if(tierConfig?.enabled)await Promise.all(tierConfig.rules.filter(r=>!frames[r.frame]).map(async rule=>{
+        if(tierConfig?.enabled)await Promise.all(tierConfig.rules.filter(r=>!timeframeTiers[r.frame]).map(async rule=>{
           try {timeframeTiers[rule.frame]=classifyTierFrame(await BitgetAPI.fetchCandles(symbol,rule.frame,180,null,{owner:'radar-scan',priority:0}),rule.frame);}
           catch {timeframeTiers[rule.frame]=null;}
         }));
-        state.analyzedCache.set(symbol, OXEngine.withTurnover({
-          ...row,timeframeTiers,symbol,ticker,at:Date.now(),lastPrice:candles.at(-1)?.close,
-          signalFrame:signal.frame||'4H',triggerFrame:signal.triggerFrame||'1H',sparkline:candles.slice(-24).map(c=>c.close),
-          liqScore:liq.score,rsScore:rs.score,quoteVol:liq.quoteVol,liqPercentile:liq.percentileStr,
-          reasons:row.reasons,
-          change24h:num(ticker.change24h),ret1h:candleReturn(candles,1),ret4h:candleReturn(candles,4),
-          ret24h:candleReturn(candles,24),
-        },ticker.usdtVolume));
+        state.analyzedCache.set(symbol, row);
         passCompleted++;
         const firstCandidate=(signal.eligible||signal.observationEligible)&&
           !['t1','t2','t3'].some(tier=>['long','short'].some(side=>state.tierMapBySide?.[side]?.[tier]?.length));
@@ -262,11 +291,13 @@ async function runScanQueueLoop() {
     // their own analysis completes, even while another request is pending.
     if (completed) {
       initialScanLoading?.finish();initialScanLoading=null;
+      globalThis.OXRadarSnapshot?.onPass({completed:passCompleted,failed:passFailed});
       // Refresh the universe between full passes so newly listed contracts
       // can enter the radar without a page reload.
-      state.scanQueue=orderCryptoScanTickers(state.tickers.filter(t=>num(t.usdtVolume)>0)).map(t=>t.symbol);
+      state.scanQueue=cryptoScanPlan();
       state.scanIndex = 0;
-      state.radarSnapshotReady = passCompleted>0&&passFailed===0;
+      // Rows from the hourly snapshot stay a valid ranking when a few coins fail.
+      state.radarSnapshotReady = passCompleted>0&&(passFailed===0||!!globalThis.OXRadarSnapshot?.loaded());
       state.radarScanFailed = passFailed>0||passCompleted===0;
       if(passCompleted>0)saveRadarSnapshot();
       passCompleted=0;passFailed=0;
@@ -275,7 +306,7 @@ async function runScanQueueLoop() {
     // All tools share the public-feed scheduler and its 429 cooldown.
     // Rate limiting belongs to public-feed. Do not add 2.5 seconds of idle
     // time to every batch; only rest between complete passes and yield CPU.
-    await waitForRadar(completed?Math.max(CONFIG.batchIntervalMs,1000):0);
+    await waitForRadar(completed?Math.max(CONFIG.batchIntervalMs,1000,globalThis.OXRadarSnapshot?.restMs()||0):0);
   }
 }
 

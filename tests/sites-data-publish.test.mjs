@@ -23,7 +23,7 @@ test('publisher identity checks the signature and binds audience, repository IDs
   const request = token => new Request(origin + '/api/v1/crypto/data-upload/release', { headers: { Authorization: 'Bearer ' + token } });
   const options = { now, fetcher: async url => { assert.equal(url, 'https://token.actions.githubusercontent.com/.well-known/jwks'); return Response.json({ keys: [jwk] }); } };
   assert.deepEqual(await verifyPublisher(request(await token(claims)), options), claims);
-  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml'])
+  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml', 'update-crypto-radar.yml'])
     assert.ok(await verifyPublisher(request(await token({ ...claims, workflow_ref: claims.workflow_ref.replace('update-news.yml', workflow) })), options), workflow);
   for (const mutation of [{ aud: 'https://ox-tw-independent.btcfly.chatgpt.site' }, { repository: 'a0979989987-coder/ox-tw-independent' }, { repository_id: '1405941562' }, { repository_owner_id: '1' }, { ref: 'refs/heads/feature' },
     { workflow_ref: claims.workflow_ref.replace('update-news.yml', 'verify-independent.yml') }, { exp: seconds - 1 }, { exp: seconds + 3600 }, { event_name: 'pull_request' }])

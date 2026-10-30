@@ -13,6 +13,8 @@
   <meta name="description" content="OX Market Command Center - 市場總覽、指標、雷達篩選、K 線與提醒工作區。">
   <script src="src/app/live-visibility.js?v=20261001-tiercomb2"></script>
   <script src="src/components/loading-state.js?v=20261006-perf1"></script>
+  <!-- Starts the hourly radar snapshot download before the rest of the page; it paints once the DOM is parsed. -->
+  <script src="src/markets/crypto/radar-snapshot.js?v=20261031-fast-radar2"></script>
   <title>OX 加密｜Crypto Market Command Center</title>
   <!-- build: v4.0-modular-classified-rc2-2026-09-22 -->
   <!-- build-refine: v3.8-ui-glass-fluid-2026-09-22 -->
@@ -735,7 +737,7 @@
 
 <script src="src/core/runtime-config.js?v=20261002-rank8"></script>
 <script src="src/components/strength/snapshots.js?v=20261001-tiercomb2"></script>
-<script src="src/components/alerts/level-alerts.js?v=20261001-tiercomb2"></script>
+<script src="src/components/alerts/level-alerts.js?v=20261031-fast-radar1"></script>
 <script src="src/components/strength/market-strength.js?v=20261005-touch1"></script>
 <script src="src/app/token-logos.js?v=20261001-tiercomb2"></script>
 <script src="src/app/view-home-theme.js?v=20261030-restore1"></script>
@@ -745,7 +747,7 @@
 <script src="src/core/classic-engine.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/liquidity-policy.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
-<script src="src/markets/crypto/scanner.js?v=20261007-stable-dialog8"></script>
+<script src="src/markets/crypto/scanner.js?v=20261031-fast-radar1"></script>
 <script src="src/components/chart/gestures.js?v=20261028-ind1"></script>
 <script src="src/components/chart/workspace.js?v=20261030-board2"></script>
 <script src="src/components/chart/indicators.js?v=20261031-v2"></script>

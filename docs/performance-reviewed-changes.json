@@ -130,8 +130,8 @@
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "84a6c5a5398b1d80e8e2240146f11b72dc7e75b866de19db292489a61a6d31fd",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions."
+      "sha256": "1baf2da336136712e5378e6f8fbe65299853377fbba161d2e1b8544c6d1c3322",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
