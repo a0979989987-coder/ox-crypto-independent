@@ -1,9 +1,12 @@
-// 篩選 on the pattern board: time frames, a minimum 24H 成交額 (USDT) and 板塊.
+// 篩選 on the pattern board: time frames, a minimum 24H 成交額 (USDT), 板塊,
+// 量能放大 (the latest candle's volume against the five before) and 指標信號
+// (signals.js, read on each card's own candles).
 // 板塊 are the 31 editorial sector groups, verified against Bitget contracts by
 // the same function the sector tools use. The device remembers the choice under
 // BOARD_FILTER_KEY; a later account sync can read or write it through
 // readBoardFilter / writeBoardFilter (writes announce BOARD_FILTER_EVENT).
 import { SECTOR_GROUPS, verifiedSectorUniverse } from '../analytics/sector-taxonomy.js';
+import { SIGNAL_IDS } from './signals.js?v=20261030-board2';
 
 export const BOARD_FILTER_KEY = 'ox-crypto:board-filter-v1';
 export const BOARD_FILTER_EVENT = 'ox:board-filterchange';
@@ -12,6 +15,8 @@ export const BOARD_LIMITS = Object.freeze([0, 80, 160]);
 // 100萬 / 1000萬 / 1億 USDT: roughly the top 220, 60 and 10 Bitget contracts.
 export const TURNOVER_PRESETS = Object.freeze([1e6, 1e7, 1e8]);
 const SECTOR_IDS = new Set(SECTOR_GROUPS.map(group => group.id));
+// 量能放大 multiples are kept to one decimal, at most 100 倍.
+const MAX_RATIO = 100;
 
 export function turnoverText(value) {
   if (!(value > 0)) return '不限';
@@ -25,12 +30,14 @@ export function normalizeBoardFilter(raw, timeframes = null) {
   let frames = Array.isArray(value.frames) ? [...new Set(value.frames.filter(known))] : [];
   if (!frames.length) frames = DEFAULT_BOARD_FRAMES.filter(known);
   if (timeframes) frames.sort((a, b) => timeframes[b] - timeframes[a]);
-  const turnover = Number(value.turnover), limit = Number(value.limit);
+  const turnover = Number(value.turnover), limit = Number(value.limit), ratio = Number(value.ratio);
   return {
     frames,
     limit: BOARD_LIMITS.includes(limit) ? limit : 0,
     turnover: Number.isFinite(turnover) && turnover > 0 ? Math.round(turnover) : 0,
-    sectors: Array.isArray(value.sectors) ? [...new Set(value.sectors.filter(id => SECTOR_IDS.has(id)))] : []
+    sectors: Array.isArray(value.sectors) ? [...new Set(value.sectors.filter(id => SECTOR_IDS.has(id)))] : [],
+    ratio: Number.isFinite(ratio) && ratio > 0 ? Math.min(MAX_RATIO, Math.round(ratio * 10) / 10) : 0,
+    signals: Array.isArray(value.signals) ? SIGNAL_IDS.filter(id => value.signals.includes(id)) : []
   };
 }
 
@@ -48,7 +55,11 @@ export function writeBoardFilter(next, timeframes = null, storage = globalThis.l
 }
 
 // Number of active 篩選 conditions besides the time frames.
-export const activeFilterCount = filter => (filter?.turnover > 0 ? 1 : 0) + (filter?.sectors?.length ? 1 : 0);
+export const activeFilterCount = filter => poolFilterCount(filter) + seriesFilterCount(filter);
+// 24H 成交額 and 板塊 narrow the scanned pool itself.
+export const poolFilterCount = filter => (filter?.turnover > 0 ? 1 : 0) + (filter?.sectors?.length ? 1 : 0);
+// 量能放大 and 指標信號 are read on each series after it is scanned.
+export const seriesFilterCount = filter => (filter?.ratio > 0 ? 1 : 0) + (filter?.signals?.length ? 1 : 0);
 
 // Sector membership for the contracts in a fetched universe. Returns null until
 // the universe carries Bitget instrument rows.

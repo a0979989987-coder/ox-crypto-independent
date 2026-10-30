@@ -53,7 +53,7 @@ if (slot) {
     const token = ++generation;
     const current = () => token === generation && visible();
     try {
-      const { mountPatternSearch } = await loadToolModule(new URL('./patterns/view.js?v=20261005-stable18', import.meta.url).href, { current });
+      const { mountPatternSearch } = await loadToolModule(new URL('./patterns/view.js?v=20261030-board2', import.meta.url).href, { current });
       if (!current()) return;
       board = mountPatternSearch(mountHost, {
         scanButton: false,

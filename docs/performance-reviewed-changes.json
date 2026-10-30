@@ -52,8 +52,8 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "ab49c2ebd56f1911b9c4f176f90e78bdee549479053cd8f286986c5c64299b26",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots."
+      "sha256": "bf994eb7fc28a30f09df0b8b56ad341c873e81f7d604281ba299c8e42339750d",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30)."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
@@ -148,8 +148,8 @@
     {
       "path": "src/markets/crypto/patterns/patterns.css",
       "sourceSha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c",
-      "sha256": "f82693fa1b5d4222769fb4c8151f8a28ddd25f4c06d30e7d95b878880ac97380",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots."
+      "sha256": "2c4287cd46c453283817b117be36853dd78600c69e5491c862b4faba67a9dfa1",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: compact three-across cards while nothing is drawn, 指標信號 row (2026-10-30)."
     },
     {
       "path": "src/markets/crypto/analytics/tools-model.js",
@@ -160,8 +160,8 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "095092411caafdab4f2a23269027232f930208f96b63f1dbfcaebda3e3b7d026",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots."
+      "sha256": "f1714f13a4de7fe775f54f925f85f0037a5cb66523e669cb519a35a1dc04970a",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. The chart hands its candle series to the indicator controller for the user-requested K 線／線圖 switch (2026-10-30)."
     },
     {
       "path": "src/components/chart/drawings.js",
