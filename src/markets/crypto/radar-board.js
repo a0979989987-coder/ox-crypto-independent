@@ -1,5 +1,6 @@
 import { loadToolModule } from '../../components/load-tool-module.js?v=20261005-recovery20';
 import { showToolLoadError } from '../../components/tool-load-error.js?v=20261005-recovery20';
+import { shareBoardRow, shareBoardDrawing } from './share-entries.js?v=20261031-share1';
 // The pattern board is the first tab of the 畫板 dock view (#view-radar,
 // data-radar-mode="board"). It used to be the 型態搜尋 tool under 指標; the
 // same module is mounted here once and suspended while another tab or view is
@@ -53,10 +54,13 @@ if (slot) {
     const token = ++generation;
     const current = () => token === generation && visible();
     try {
-      const { mountPatternSearch } = await loadToolModule(new URL('./patterns/view.js?v=20261030-board2', import.meta.url).href, { current });
+      const { mountPatternSearch } = await loadToolModule(new URL('./patterns/view.js?v=20261031-share1', import.meta.url).href, { current });
       if (!current()) return;
       board = mountPatternSearch(mountHost, {
         scanButton: false,
+        // 分享圖片: a card's picture button or a long press; 分享 beside undo after drawing.
+        onShare: shareBoardRow,
+        onShareDrawing: shareBoardDrawing,
         onOpenRadar(symbol) {
           window.OXRadarModes?.set('chart');
           window.switchSymbol?.(symbol);

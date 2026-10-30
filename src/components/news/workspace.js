@@ -5,6 +5,7 @@ import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, ev
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
 import { macroReactionSection, reactionMetric } from './macro-reaction.js?v=20261031-react1';
 import { node, button, anchoredPanel, modal } from './layers.js';
+import { PICTURE_ICON } from '../../markets/crypto/share-image.js?v=20261031-share1';
 const newsDateFormatter = new Intl.DateTimeFormat('zh-TW', { timeZone:'Asia/Taipei', dateStyle:'short', timeStyle:'short', hour12:false });
 const fmt = value => Number.isFinite(Date.parse(value)) ? newsDateFormatter.format(new Date(value)) : '時間待確認';
 const label = item => localizeNewsText(item.titleZh || (/[\u4e00-\u9fff]/.test(item.title||'') ? item.title : '中文翻譯準備中'));
@@ -268,12 +269,44 @@ export function mountNewsWorkspace(host, api) {
     const base = baseItems(), prefs = api.preferences(); let items = filterNews(base, state);
     if (state.reader === 'unread') items = items.filter(i => !(prefs.read || []).includes(i.id)); if (state.reader === 'following') items = items.filter(i => (prefs.followedSources || []).includes(i.sourceId));
     const range = node('div', 'oxn-news-range'); range.append(node('span', '', `${items.length} 篇・台北時間`), node('span', '', data.snapshot.generatedAt ? `快照 ${fmt(data.snapshot.generatedAt)}` : '快照時間未提供')); content.append(range);
+    // 今日重點: today's headlines, most important first, as one image.
+    if (items.length) { const pic = button('', '把今日重點新聞做成圖片', () => shareTodayNews(items), 'ox-share-pic oxn-share-pic'); pic.dataset.track = 'share.news'; pic.innerHTML = PICTURE_ICON + '<span>今日重點</span>'; range.append(pic); }
     if (state.asset || state.query || state.words.length) { const selected = node('div', 'oxn-active-filters'); selected.append(node('span', '', [state.asset ? ranking(base).find(a => a.id === state.asset)?.name || '資產篩選' : '', state.query, ...state.words].filter(Boolean).join(' · ')), button('清除', '', () => { state.asset = null; state.query = ''; state.words = []; persist(); renderControls(); renderContent(); })); content.append(selected); }
     const list = node('div', 'oxn-news-list'); for (const item of items.slice(0, state.limit)) list.append(newsRow(item));
     if (!items.length) list.append(node('p', 'oxn-empty', !state.times.length || state.sources?.length === 0 ? '沒有選取時間或來源。可在藥丸中選擇「全部」或恢復預設。' : '已收錄資料中沒有符合條件的新聞。'));
     content.append(list); if (items.length > state.limit) content.append(button(`載入更多（尚有 ${items.length - state.limit} 篇）`, '', () => { state.limit += 40; persist(); renderContent(); }, 'oxn-load-more'));
     const published = [...(data.snapshot.news || []), ...(data.snapshot.pendingNews || [])].filter(i => scope() === 'all' || i.markets?.includes(scope())).map(i => i.publishedAt).sort();
     content.append(node('p', 'oxn-caption', `${statsText(base)}。${published.length ? `現有文章發布範圍：${fmt(published[0])}～${fmt(published.at(-1))}；來源 RSS 篇數有限，未完整覆蓋所選區間。` : '目前没有本市場來源資料。'}`));
+  }
+  // Few articles carry stars, so market-wide words lift a headline (BTC, ETH, the Fed,
+  // CPI, 非農, ETF, SEC, 清算, 資金費率…) and single-coin hype sinks; ties go to the newest.
+  const KEY_WORDS = /比特幣|BTC|以太坊|ETH|聯準會|Fed|FOMC|鮑爾|利率|降息|升息|CPI|PCE|非農|就業|通膨|ETF|SEC|監管|法案|清算|爆倉|資金費率|未平倉|穩定幣|USDT|USDC|美股|那斯達克|關稅|美元指數|美債|Strategy|貝萊德|BlackRock|灰度|交易所/gi;
+  const HYPE = /空投|迷因|meme|百倍|千倍|暴漲.{0,4}幣|潛力幣|翻倍|必看/i;
+  async function shareTodayNews(items) {
+    const today = taipeiDay(), day = i => i.publishedAt ? taipeiDay(new Date(i.publishedAt)) : '';
+    let pick = items.filter(i => day(i) === today);
+    if (pick.length < 3) pick = items.slice(0, 40);
+    const score = i => { const t = label(i); return (importance(i).value || 0) * 10 + Math.min(3, (t.match(KEY_WORDS) || []).length) * 3 - (HYPE.test(t) ? 6 : 0); };
+    // Unrelated headlines only fill in when there are too few market ones.
+    if (pick.filter(i => score(i) > 0).length >= 5) pick = pick.filter(i => score(i) > 0);
+    // The same story from two outlets: the same figures (3.747 萬枚 ETH, 8330 萬美元), a figure
+    // and a name, or mostly the same words.
+    const nums = t => new Set((t.match(/\d+(?:[.,]\d+)+|\d{3,}/g) || []).map(s => s.replace(/,/g, '')));
+    const names = t => new Set((t.match(/[A-Za-z]{3,}/g) || []).map(s => s.toLowerCase()));
+    const pairs = t => { const s = t.replace(/[^\p{Script=Han}]/gu, ''), out = new Set(); for (let k = 0; k < s.length - 1; k++) out.add(s.slice(k, k + 2)); return out; };
+    const shared = (a, b) => [...a].filter(x => b.has(x)).length;
+    const same = (a, b) => { const n = shared(a.n, b.n); return n >= 2 || n >= 1 && shared(a.w, b.w) >= 1 || shared(a.p, b.p) / Math.max(1, Math.min(a.p.size, b.p.size)) >= .6; };
+    const kept = [];
+    for (const i of [...pick].sort((a, b) => score(b) - score(a) || String(b.publishedAt).localeCompare(String(a.publishedAt)))) {
+      const t = label(i), mark = { i, n: nums(t), w: names(t), p: pairs(t) };
+      if (kept.some(k => same(mark, k))) continue;
+      kept.push(mark); if (kept.length === 8) break;
+    }
+    pick = kept.map(k => k.i);
+    if (!pick.length) return;
+    const { shareNews } = await import('../../markets/crypto/share-image.js?v=20261031-share1');
+    const ref = day(pick[0]) || today, hm = i => fmt(i.publishedAt).split(' ').at(-1);
+    shareNews({ dateLabel: `${+ref.slice(5, 7)}/${+ref.slice(8, 10)}`, items: pick.map(i => ({ title: label(i), meta: `${sourceName(i)}・${day(i) === ref ? hm(i) : fmt(i.publishedAt)}` })) });
   }
   function newsRow(item) {
     const row = node('details', 'oxn-news-row'); row.dataset.newsId = item.id;

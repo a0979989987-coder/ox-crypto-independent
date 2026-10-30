@@ -1,6 +1,6 @@
 import {withDeadline} from './resource-deadline.js';
 const state=globalThis.__OXToolLoads??={loaded:new Map(),pending:new Map(),failed:new Set(),attempt:0};
-const versions={analytics:'20261007-readable-replay9',compare:'20261030-board2',patterns:'20261030-board2'};
+const versions={analytics:'20261007-readable-replay9',compare:'20261031-share1',patterns:'20261031-share1',bubbles:'20261031-share1'};
 const bundles=new Map([['crypto/patterns/view.js','patterns'],['crypto/bubbles/view.js','bubbles'],['crypto/analytics/flow-view.js','analytics'],['crypto/compare/view.js','compare']].map(([p,id])=>['/src/markets/'+p,'/src/generated/tool-'+id+'.js?v='+(versions[id]||'20261007-stable-dialog8')]));
 const transient=e=>e?.name==='TimeoutError'||e?.name==='TypeError'&&/fetch|dynamically imported module|importing a module script|load.*module|module.*load/i.test(e.message);
 export async function loadToolModule(url,{current=()=>true,importer=url=>import(url),pause=ms=>new Promise(r=>setTimeout(r,ms)),timeoutMs=15000}={}){

@@ -47,7 +47,7 @@ if (slot) {
     const token = ++generation;
     const current = () => token === generation && visible();
     try {
-      const { mountCompare } = await loadToolModule(new URL('./compare/view.js?v=20261030-board2', import.meta.url).href, { current });
+      const { mountCompare } = await loadToolModule(new URL('./compare/view.js?v=20261031-share1', import.meta.url).href, { current });
       if (!current()) return;
       view = mountCompare(mountHost, { onOpen: (symbol, frame) => openOnChart(symbol, frame || '4H') });
       suspended = false;

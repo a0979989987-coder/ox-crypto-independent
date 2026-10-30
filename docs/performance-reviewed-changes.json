@@ -4,8 +4,8 @@
     {
       "path": "src/markets/crypto/bubbles/view.js",
       "sourceSha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894",
-      "sha256": "b40d1836991601f77e053f304416296374ed43361dbbae598e38e3f34a887cb5",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "fa25191541bd68d8b72558acc8126bd1b528c93a81c36d57f5f8ff83152a6fce",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
@@ -52,8 +52,8 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "bf994eb7fc28a30f09df0b8b56ad341c873e81f7d604281ba299c8e42339750d",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30)."
+      "sha256": "71cf27933de715077aa409bcb96a8e3e8b5d3e15941e89948ef06434751e22de",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
@@ -94,8 +94,8 @@
     {
       "path": "src/markets/crypto/bubbles/bubbles-light.css",
       "sourceSha256": "306237a373a8ac5334cbc9871dc72116f9f2ad2b22af9c64a5c6f66d3c8945cf",
-      "sha256": "380c3cd8ef21cc7952456be64e40e7e3fb659e7f1923bb20119e610bb41decc2",
-      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression."
+      "sha256": "a1222f1049314b63a4fc0e353cc3128c73b1ec1e33e51d972ffd31dd5907f319",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-light.css",
@@ -106,8 +106,8 @@
     {
       "path": "src/markets/crypto/patterns/patterns-light.css",
       "sourceSha256": "ae1a48cc3625a32ea89732354f13ada964265c949976ef2045f77712041eb0f3",
-      "sha256": "674af1e8f76f1399e945f3923e60883703ad2f3428f1c50c6f169b24ca97e766",
-      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots."
+      "sha256": "ed638a394ee0980ab3b850906bf22cd838ae63e916ec61ba2f4909f498506776",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     },
     {
       "path": "server/account/handler.js",
@@ -148,8 +148,8 @@
     {
       "path": "src/markets/crypto/patterns/patterns.css",
       "sourceSha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c",
-      "sha256": "2c4287cd46c453283817b117be36853dd78600c69e5491c862b4faba67a9dfa1",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: compact three-across cards while nothing is drawn, 指標信號 row (2026-10-30)."
+      "sha256": "32492bc4fcd0fede66a891be35a3f13c3d2943a2d987f212fd5adf770cfc56e2",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: compact three-across cards while nothing is drawn, 指標信號 row (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     },
     {
       "path": "src/markets/crypto/analytics/tools-model.js",
@@ -180,6 +180,18 @@
       "sourceSha256": "9203a6b79a60f7989f962d5315a0bc0eca633d8bd6d103e1d0c0e2c9be4808bc",
       "sha256": "eba6ee1cb67839a9af95e298281d04191feda18f76203cd5224353e669c4193e",
       "reason": "Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots."
+    },
+    {
+      "path": "src/markets/crypto/bubbles/bubbles.css",
+      "sourceSha256": "63c13c1a4bfc785a8937a0d421c234e648e1a1150066af95a588a507a5de386c",
+      "sha256": "5621b4a87afa88e497fab22a0e55a81e782f5e2ffa84eb610445abafb8b2e78a",
+      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
+    },
+    {
+      "path": "src/markets/crypto/bubbles/field.js",
+      "sourceSha256": "12c3f1892f777848c05ec0820a19a75c6dab03f74ac9582807955428a592fa1c",
+      "sha256": "faa0152ef538b8e7cd4ca1c498b0a6648d3cf28b826fcdc7ba68eec5cebd27b3",
+      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
     }
   ]
 }

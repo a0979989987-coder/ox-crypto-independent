@@ -210,3 +210,17 @@
 .px-grid.px-compact :is(.px-energy,.px-turnover){display:none}
 @media(min-width:721px){.px-grid.px-compact{grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px}.px-grid.px-compact .px-card{padding:9px 10px 7px}.px-grid.px-compact .px-symbol{font-size:13.5px}.px-grid.px-compact .px-card canvas{height:86px}}
 .px-signals{margin-bottom:6px}
+
+/* 分享: a picture button by each card's tier badge (a long press works too), and
+   分享 beside undo once something is drawn. */
+.px-card{-webkit-touch-callout:none;-webkit-user-select:none;user-select:none}
+.px-card-share{position:relative;flex:none;display:inline-grid;place-items:center;width:21px;height:17px;border:1px solid #ffffff52;border-radius:5px;color:#e9eae4;opacity:.92;cursor:pointer}
+.px-card-share::after{content:"";position:absolute;inset:-9px -6px}
+.px-card-share svg{width:12px;height:12px}
+.px-card-share:hover{border-color:#ffffffa0;opacity:1}
+.px-grid.px-compact .px-card-share{width:19px;height:15px;border-radius:4px}.px-grid.px-compact .px-card-share svg{width:11px;height:11px}
+.px-grid.px-compact .px-card-right .px-tier-badge{order:-1}.px-grid.px-compact .px-card-share{margin-right:auto}
+.px-share{pointer-events:auto;flex:none;display:inline-flex;align-items:center;gap:5px;height:30px;margin-left:auto;padding:0 11px 0 9px;border:1px solid #ffffff3d;border-radius:9px;background:linear-gradient(145deg,#41464bb8,#24282dd6);color:#f2f3ed;font-size:11.5px;font-weight:600;white-space:nowrap;box-shadow:inset 0 1px #ffffff3a;transition:transform .2s ease}
+.px-share svg{width:14px;height:14px}
+.px-share:active{transform:scale(.95)}
+.px-board .px-board-bottom>.px-share:not([hidden])~.px-icon{margin-left:0}

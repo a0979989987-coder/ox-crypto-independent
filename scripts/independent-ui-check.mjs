@@ -44,9 +44,20 @@ try{
     assert.match(await page.locator('#ox-radar-compare .ox-cmp-point.is-open').innerText(),/SOL[\s\S]*W 底・雙底[\s\S]*4 小時[\s\S]*還沒到/);
     await page.locator('#ox-radar-compare .ox-cmp-point:not(.is-open):not(.is-none) .ox-cmp-head').first().click();
     assert.match(await page.locator('#ox-radar-compare .ox-cmp-point.is-open').nth(1).innerText(),/XRP[\s\S]*\+10\.00%[\s\S]*BTC \+1\.00%[\s\S]*3 天[\s\S]*還沒到/);
+    // 分享圖片: the picture button by the tier opens a preview (a modal dialog) and closes again.
+    await page.locator('#ox-radar-compare .ox-cmp-pick[data-cmp-symbol="SOLUSDT"] [data-cmp-share]').click();
+    await page.locator('dialog.ox-share-preview[open] img').waitFor({timeout:15000});
+    assert.match(await page.locator('dialog.ox-share-preview[open]').innerText(),/存圖[\s\S]*關閉/);
+    await page.locator('dialog.ox-share-preview[open] [data-share-close]').click();
+    assert.equal(await page.locator('dialog.ox-share-preview').count(),0);
     await page.locator('#ox-radar-compare .ox-cmp-pick[data-cmp-symbol="SOLUSDT"]').click();
     await page.locator('dialog.ox-pd[open] .ox-pd-chart svg').waitFor({timeout:15000});
     assert.match(await page.locator('dialog.ox-pd[open]').innerText(),/SOL[\s\S]*W 底・雙底[\s\S]*突破價[\s\S]*之後 4 小時[\s\S]*還沒到[\s\S]*開啟盤面看完整 K 線/);
+    // The sheet's own picture button: the preview opens above the sheet, which stays open.
+    await page.locator('dialog.ox-pd[open] [data-pd-share]').click();
+    await page.locator('dialog.ox-share-preview[open] img').waitFor({timeout:15000});
+    await page.locator('dialog.ox-share-preview[open] [data-share-close]').click();
+    assert.equal(await page.locator('dialog.ox-pd[open]').count(),1);
     await page.locator('dialog.ox-pd[open] [data-pd-open]').click();
     assert.equal(await page.locator('dialog.ox-pd').count(),0);
     await page.waitForFunction(()=>document.getElementById('view-radar').dataset.radarMode==='chart'&&state.symbol==='SOLUSDT'&&state.period==='4H');
@@ -63,7 +74,9 @@ try{
       try { await page.locator(`#ox-crypto-tools-nav [data-crypto-tool="${tool}"]`).click({timeout:5000}); }
       catch(error){console.log(await page.evaluate(()=>({view:document.body.dataset.view,market:document.body.dataset.market,classes:document.body.className,gate:document.getElementById('ox-feature-gate')?.textContent,navHidden:document.getElementById('ox-crypto-tools-nav')?.hidden,active:[...document.querySelectorAll('.app-view.active')].map(e=>e.id)})));await page.screenshot({path:'/workspace/scratch/ac5c466affa8/smoke-failure.png'});throw error;}
       await page.waitForFunction(t=>document.querySelector('#view-strength .strength-page').dataset.cryptoTool===t,tool);
-      if(tool==='bubbles')await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
+      if(tool==='bubbles'){await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
+        // N 日漲跌 above the names: 5 天 unless this device chose otherwise.
+        assert.equal(await page.locator('#ox-crypto-tools-inline .oxb-period [aria-pressed="true"]').getAttribute('data-period'),'5');}
       else if(tool!=='strength')await page.locator('#ox-crypto-tools-inline .cfx-content').filter({visible:true}).waitFor();
       assert.equal(await page.locator('#ox-crypto-tools-loading .ox-tool-load-error').count(),0);
     }
@@ -73,6 +86,7 @@ try{
     assert.equal(await page.locator('.oxn-day').count()>27,true);
     await page.locator('[data-news-tab="key"]').click();
     await page.locator('.oxn-root').waitFor();
+    await page.locator('.oxn-share-pic').waitFor();
     await page.evaluate(()=>switchAppView('media'));
     await page.locator('#view-media.active').waitFor();
     const opener=page.locator('#ox-control-open,#ox-dock-menu').filter({visible:true}).first();

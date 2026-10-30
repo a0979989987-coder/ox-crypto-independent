@@ -49,3 +49,9 @@
 :host([data-ox-theme="light"]) .chart>path[stroke="#e5e9e8"]{stroke:#8d712e}
 
 :host([data-ox-theme="light"]) :is(.ox-loading-label,.ox-loading-count,.ox-loading-detail){color:#616d7c!important}
+
+:host([data-ox-theme="light"]) .oxb-period{border-color:#0000001c;background:#ffffffb3}
+:host([data-ox-theme="light"]) .oxb-period button{color:#667080}
+:host([data-ox-theme="light"]) .oxb-period button[aria-pressed=true]{background:#30343b;color:#fff}
+:host([data-ox-theme="light"]) .oxb-period input{border-color:#00000026;color:#30343b}
+:host([data-ox-theme="light"]) .oxb-period input:focus{border-color:#30343b80}
