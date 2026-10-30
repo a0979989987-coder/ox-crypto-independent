@@ -11,6 +11,7 @@ export const SYNC_KEYS = Object.freeze([
   { storage: 'ox-watchlist', key: 'watchlist', type: 'json', merge: 'records', label: '自選' },
   { storage: 'ox-chart-indicators', key: 'chart-indicators', type: 'json', merge: 'value', label: '盤面指標' },
   { storage: 'ox-chart-timeframes', key: 'chart-timeframes', type: 'json', merge: 'value', label: '時間級別' },
+  { storage: 'ox-crypto:chart-style-v1', key: 'chart-style', type: 'text', merge: 'value', label: 'K 線／線圖' },
   { storage: 'ox-radar-filter-mode', key: 'radar-filter-mode', type: 'text', merge: 'value', label: '雷達篩選模式' },
   { storage: 'ox-radar-custom-filters', key: 'radar-custom-filters', type: 'json', merge: 'value', label: '雷達自訂篩選' },
   { storage: 'ox-crypto-sector-watch:guest', key: 'sector-watch', type: 'json', merge: 'list', label: '板塊關注' }

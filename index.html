@@ -96,7 +96,7 @@
   <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261005-weeklist4">
   <link rel="stylesheet" href="src/styles/layout/mobile-content-width.css?v=20261005-gutters1">
   <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261006-perf1">
-  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261029-compare2">
+  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261030-board2">
   <link rel="stylesheet" href="src/styles/components/settings-page.css?v=20261028-shell1">
   <link rel="stylesheet" href="src/styles/components/glass-layers.css?v=20261028-shell1">
   <link rel="stylesheet" href="src/styles/components/member-account.css?v=20261028-sites1">
@@ -221,7 +221,7 @@
       <div class="ox-radar-mode-rail" role="tablist">
         <span class="ox-radar-mode-indicator" aria-hidden="true"></span>
         <button type="button" role="tab" id="ox-radar-tab-board" data-radar-tab="board" aria-selected="true" aria-controls="ox-radar-board">畫板</button>
-        <button type="button" role="tab" id="ox-radar-tab-compare" data-radar-tab="compare" aria-selected="false" tabindex="-1" aria-controls="ox-radar-compare" data-track="radar.compare">對比</button>
+        <button type="button" role="tab" id="ox-radar-tab-compare" data-radar-tab="compare" aria-selected="false" tabindex="-1" aria-controls="ox-radar-compare" data-track="radar.compare">型態</button>
         <button type="button" role="tab" id="ox-radar-tab-chart" data-radar-tab="chart" aria-selected="false" tabindex="-1">盤面</button>
         <button type="button" role="tab" id="ox-radar-tab-watch" data-radar-tab="watch" aria-selected="false" tabindex="-1" aria-controls="ox-radar-watch">自選</button>
       </div>
@@ -286,7 +286,7 @@
           </div>
         </div>
         <div class="ctrl-group chart-tool-actions">
-          <button class="chart-tool-icon indicator-open-button" id="chart-indicator-open" type="button" aria-label="指標與篩選設定" aria-haspopup="dialog" title="指標與篩選設定"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h4m4 0h8M4 12h10m4 0h2M4 18h2m4 0h10"/><circle cx="10" cy="6" r="2"/><circle cx="16" cy="12" r="2"/><circle cx="8" cy="18" r="2"/></svg></button>
+          <button class="chart-tool-icon indicator-open-button ox-ind-open" id="chart-indicator-open" type="button" aria-label="指標與圖表樣式" aria-haspopup="dialog" title="指標"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4v16h16"/><path d="m7.5 15 3.5-4.5 3 3 5-6.5"/></svg><span>指標</span></button>
           <button class="chart-tool-icon" id="radar-scanner-toggle" type="button" aria-label="收起右側雷達" title="收起右側雷達" aria-expanded="true" aria-controls="radar-scanner-panel"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5l7 7-7 7"/></svg></button>
           <button class="btn-act ox-chart-expand-dot" id="btn-chart-fullscreen" type="button" aria-label="展開圖表" aria-pressed="false" title="展開圖表"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3H3v6m12-6h6v6M3 15v6h6m6 0h6v-6"/></svg></button>
         </div>
@@ -757,8 +757,8 @@
 <script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/scanner.js?v=20261007-stable-dialog8"></script>
 <script src="src/components/chart/gestures.js?v=20261028-ind1"></script>
-<script src="src/components/chart/workspace.js?v=20261028-ind1"></script>
-<script src="src/components/chart/indicators.js?v=20261028-ind1"></script>
+<script src="src/components/chart/workspace.js?v=20261030-board2"></script>
+<script src="src/components/chart/indicators.js?v=20261030-board2"></script>
 <script src="src/markets/crypto/presentation.js?v=20261028-shell1"></script>
 <script src="src/components/account/store.js?v=20261007-stable-dialog8"></script>
 <script src="src/components/control-panel/feature-pack.js?v=20261028-shell1"></script>
@@ -816,8 +816,8 @@
 <!-- OX v3.8.4 — OX CONTROL 功能搜尋 + 真實交易所 Data Provider 切換 -->
 <!-- CSS moved: ox-v384-feature-search-provider-switch-styles -->
 
-<script src="src/components/search/provider-switch.js?v=20261029-compare1"></script>
-<script src="src/app/module-boot.js?v=20261029-compare1"></script>
+<script src="src/components/search/provider-switch.js?v=20261030-board2"></script>
+<script src="src/app/module-boot.js?v=20261030-board2"></script>
 
 <script src="src/app/editorial-workspace.js?v=20261028-shell1"></script>
 <script src="src/components/radar/controls.js?v=20261001-tiercomb2"></script>

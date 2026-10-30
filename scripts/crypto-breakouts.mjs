@@ -6,7 +6,9 @@
 //   c[k]    — close of the k-th 4H candle after the breakout candle (c[0] = breakout candle)
 //   pts     — the pattern as the board draws it: [candle open time, price]
 //   btc     — BTCUSDT close at each boundary of the kept points, for the same spans
-//   history — per-point summary, kept after the detail points are dropped
+//   history — per-point summary, kept after the detail points are dropped; byTier and
+//             byPattern hold totals that add up across points (n, s, w per period) for
+//             the 型態 tab's 長期勝率. Older entries without them are simply not counted.
 // Classification is the board's own code (prepareCandles → classifyPrepared →
 // rankPatternMatches), run on exactly the candles that had closed at `at`.
 import { parseCandles } from '../src/markets/crypto/patterns/source.js';
@@ -151,11 +153,25 @@ export function periodStats(picks, k, btcFrom, btcTo) {
   return { n: r.length, avg: round(mean(r)), win: Math.round(r.filter(v => v > 0).length / r.length * 100),
     btc: btcFrom > 0 && btcTo > 0 ? round((btcTo / btcFrom - 1) * 100) : null };
 }
+// Totals that add up across records for the long-run 勝率: per period k, the number
+// of picks with a close (n), their summed return in % (s) and how many rose (w).
+export function periodTotals(picks) {
+  return Object.fromEntries(PERIODS.flatMap(k => {
+    const r = picks.filter(p => Number.isFinite(p.c?.[k]) && p.c[0] > 0).map(p => (p.c[k] / p.c[0] - 1) * 100);
+    return r.length ? [['n' + k, r.length], ['s' + k, round(r.reduce((s, v) => s + v, 0))], ['w' + k, r.filter(v => v > 0).length]] : [];
+  }));
+}
 export function pointSummary(point, btc) {
   const out = { at: point.at, n: point.picks.length };
   for (const k of PERIODS) out['k' + k] = periodStats(point.picks, k, btc[point.at], btc[point.at + k * STEP]);
   out.tiers = Object.fromEntries([1, 2, 3].map(t => [t, point.picks.filter(p => p.t === t)]).filter(([, list]) => list.length)
     .map(([t, list]) => [t, { n: list.length, ...Object.fromEntries(PERIODS.map(k => ['k' + k, periodStats(list, k)?.avg ?? null])) }]));
+  // byTier / byPattern: the same picks' totals, kept in the history after the point
+  // leaves the detail, so 長期勝率 covers every recorded close. Present once a close is in.
+  const byTier = Object.fromEntries([1, 2, 3].map(t => [t, periodTotals(point.picks.filter(p => p.t === t))]).filter(([, v]) => v['n' + PERIODS[0]]));
+  const byPattern = Object.fromEntries([...new Set(point.picks.map(p => p.p))].map(id => [id, periodTotals(point.picks.filter(p => p.p === id))]).filter(([, v]) => v['n' + PERIODS[0]]));
+  if (Object.keys(byTier).length) out.byTier = byTier;
+  if (Object.keys(byPattern).length) out.byPattern = byPattern;
   return out;
 }
 

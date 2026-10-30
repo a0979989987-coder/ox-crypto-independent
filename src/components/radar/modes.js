@@ -1,6 +1,6 @@
 /* 畫板 dock view: one page with four top tabs, like the Taiwan site.
  *   畫板 board — the pattern board (mounted by src/markets/crypto/radar-board.js)
- *   對比 compare — earlier 4H closes' confirmed breakouts and how they moved
+ *   型態 compare — earlier 4H closes' confirmed breakouts and how they moved (was 對比)
  *                  (mounted by src/markets/crypto/radar-compare.js)
  *   盤面 chart — the K-line chart, quote card, T1/T2/T3 list and coin details
  *   自選 watch — the watchlist with a search box to star any USDT perpetual

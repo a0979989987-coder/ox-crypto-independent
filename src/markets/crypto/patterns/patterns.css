@@ -194,3 +194,19 @@
 .px-match span{min-width:0}
 .px-match span:first-child{flex:1 1 0}
 .px-match span:last-child{flex:none;max-width:72%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:right}
+/* Nothing drawn or chosen: small cards, three across on a phone, to scan many shapes at once. */
+.px-grid.px-compact{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.px-grid.px-compact .px-card{padding:7px 7px 5px;border-radius:12px}
+.px-grid.px-compact .px-card-top{display:block}
+.px-grid.px-compact .px-symbol{display:block;font-size:12.5px;line-height:1.3}
+.px-grid.px-compact .px-frame{font-size:9px;margin-left:3px}
+.px-grid.px-compact .px-card-right{display:flex;align-items:center;justify-content:space-between;gap:4px;margin-top:1px}
+.px-grid.px-compact .px-tier-badge{font-size:8px;padding:1px 3px}
+.px-grid.px-compact .px-change{font-size:10px}
+.px-grid.px-compact .px-match{margin-top:2px;font-size:10px}
+.px-grid.px-compact .px-match span:first-child{display:none}
+.px-grid.px-compact .px-match span:last-child{max-width:100%;text-align:left}
+.px-grid.px-compact .px-card canvas{height:66px;margin:3px 0 0}
+.px-grid.px-compact :is(.px-energy,.px-turnover){display:none}
+@media(min-width:721px){.px-grid.px-compact{grid-template-columns:repeat(auto-fill,minmax(176px,1fr));gap:8px}.px-grid.px-compact .px-card{padding:9px 10px 7px}.px-grid.px-compact .px-symbol{font-size:13.5px}.px-grid.px-compact .px-card canvas{height:86px}}
+.px-signals{margin-bottom:6px}

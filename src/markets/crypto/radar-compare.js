@@ -1,6 +1,6 @@
 import { loadToolModule } from '../../components/load-tool-module.js?v=20261005-recovery20';
 import { showToolLoadError } from '../../components/tool-load-error.js?v=20261005-recovery20';
-// 對比 is the second tab of the 畫板 dock view (#view-radar, data-radar-mode="compare"):
+// 型態 (it was 對比) is the second tab of the 畫板 dock view (#view-radar, data-radar-mode="compare"):
 // earlier 4H closes' confirmed upward breakouts from the pattern board and how they moved
 // afterwards. The view module (./compare/view.js) and the record (data/crypto-breakouts.json)
 // load the first time the tab opens; the view is suspended while another tab or view is on
@@ -41,20 +41,20 @@ if (slot) {
     mountHost.className = 'ox-radar-compare-host';
     const loading = document.createElement('div');
     loading.className = 'ox-tool-loading';
-    loading.innerHTML = window.OXLoading?.markup('對比載入中') || '對比載入中…';
+    loading.innerHTML = window.OXLoading?.markup('型態載入中') || '型態載入中…';
     slot.replaceChildren(mountHost, loading);
     pending = true;
     const token = ++generation;
     const current = () => token === generation && visible();
     try {
-      const { mountCompare } = await loadToolModule(new URL('./compare/view.js?v=20261029-compare1', import.meta.url).href, { current });
+      const { mountCompare } = await loadToolModule(new URL('./compare/view.js?v=20261030-board2', import.meta.url).href, { current });
       if (!current()) return;
-      view = mountCompare(mountHost, { onOpen: symbol => openOnChart(symbol, '4H') });
+      view = mountCompare(mountHost, { onOpen: (symbol, frame) => openOnChart(symbol, frame || '4H') });
       suspended = false;
       loading.remove();
     } catch (error) {
       if (error?.name === 'AbortError') return;
-      console.warn('[OX 對比]', error);
+      console.warn('[OX 型態]', error);
       if (token === generation) showToolLoadError(loading, error, () => { generation++; pending = false; view = null; sync(); });
     } finally {
       if (token === generation) pending = false;

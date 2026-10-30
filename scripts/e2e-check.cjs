@@ -99,7 +99,8 @@ function bitgetBody(url) {
     const symbol = url.searchParams.get("symbol") || "BTCUSDT";
     return { code: "00000", data: [tickers.find(row => row.symbol === symbol) || tickers[0]] };
   }
-  if (url.pathname.endsWith("/candles")) return { code: "00000", data: candlesFor(url) };
+  // Bitget stamps every response with its server time; the pattern code checks candles against it.
+  if (url.pathname.endsWith("/candles")) return { code: "00000", requestTime: Date.now(), data: candlesFor(url) };
   return { code: "00000", data: [] };
 }
 

@@ -19,7 +19,7 @@
     {id:"account",title:"帳號與登入",keywords:["帳號","登入","註冊","會員","google","account","login"],category:"設定 · 會員功能尚未開放",icon:glyph('account'),target:"#ox-settings-account",view:"settings"},
     {id:"theme",title:"主題外觀",keywords:["主題","白金","深色","黑色","白色","淺色","自動","dark","light","theme"],category:"深色 · 白金 · 跟隨系統",icon:glyph('theme'),target:"#view-settings .ox-theme-segment",view:"settings"},
     {id:"patterns",title:"型態畫板",keywords:["型態","畫板","搜尋","掃描","patterns"],category:"畫板",icon:glyph('chart'),view:"radar",radarMode:"board"},
-    {id:"compare",title:"突破對比",keywords:["對比","突破","績效","勝率","4H","compare"],category:"畫板 · 對比",icon:glyph('chart'),view:"radar",radarMode:"compare"},
+    {id:"compare",title:"型態突破紀錄",keywords:["型態","對比","突破","績效","勝率","長期勝率","4H","compare"],category:"畫板 · 型態",icon:glyph('chart'),view:"radar",radarMode:"compare"},
     {id:"chart",title:"盤面 K 線",keywords:["盤面","k線","K 線","圖表","雷達","T1","T2","T3","chart","radar"],category:"畫板 · 盤面",icon:glyph('chart'),view:"radar",radarMode:"chart"},
     {id:"bubbles",title:"泡泡圖",keywords:["泡泡","板塊","bubbles"],category:"目前市場 · 指標",icon:glyph('bubbles'),view:"strength",tool:"bubbles"},
     {id:"news",title:"行事曆與新聞",keywords:["新聞","資訊","行事曆","calendar","news"],category:"目前市場 · 資訊",icon:glyph('calendar'),view:"data"},
