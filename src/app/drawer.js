@@ -45,7 +45,8 @@ function open() {
   drawer.setAttribute('aria-hidden', 'false'); drawer.inert = false;
   document.querySelectorAll('main,.app-dock,.ox-shell-header').forEach(el => el.inert = true);
   globalThis.OXTrack?.('drawer.open');
-  requestAnimationFrame(() => drawer.querySelector('button:not([disabled]),a')?.focus({ preventScroll: true }));
+  // Focus moves into the drawer itself, so no button shows a focus ring after a tap.
+  requestAnimationFrame(() => drawer.focus({ preventScroll: true }));
 }
 function close() {
   if (!isOpen()) return;
@@ -94,7 +95,7 @@ export function openSub(view) {
 }
 export function initDrawer() {
   scrim = document.createElement('div'); scrim.className = 'oc-scrim';
-  drawer = document.createElement('aside'); drawer.className = 'oc-drawer'; drawer.setAttribute('aria-label', '選單'); drawer.setAttribute('aria-hidden', 'true'); drawer.inert = true;
+  drawer = document.createElement('aside'); drawer.className = 'oc-drawer'; drawer.setAttribute('aria-label', '選單'); drawer.tabIndex = -1; drawer.setAttribute('aria-hidden', 'true'); drawer.inert = true;
   document.body.append(scrim, drawer);
   scrim.addEventListener('click', close);
   document.addEventListener('keydown', e => { if (e.key === 'Escape' && isOpen()) close(); });

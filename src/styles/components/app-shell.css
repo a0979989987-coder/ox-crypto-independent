@@ -272,3 +272,7 @@ html body.ox-terminal .oc-drawer .oc-item{font:500 16px var(--oc-font)}
 @media (min-width:901px){.oc-top .oc-ava{display:none}.oc-top .oc-search{flex:0 1 520px}}
 /* Wide screens: the 行情 lists keep a readable line length. */
 @media (min-width:1100px){#ox-market-radar,#ox-market-list{max-width:980px}}
+/* Wide screens: the top bar lines up with the 首頁 content (crypto-home.css, 1240px) and scrolls with it. */
+@media (min-width:980px){.oc-top{position:relative;max-width:1240px;margin:0 auto;padding:14px 0 0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}}
+html body.ox-terminal .oc-drawer:focus{outline:none!important}
+html body.ox-terminal .oc-drawer :is(.oc-item,.oc-btn):focus-visible{outline:2px solid var(--oc-accent)!important;outline-offset:2px;border-radius:12px;box-shadow:none!important}

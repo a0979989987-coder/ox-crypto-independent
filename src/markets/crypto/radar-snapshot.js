@@ -421,7 +421,7 @@
         s?.radarLoadError ? `${closeLabel(run.close)} 收盤` :
         `${closeLabel(run.close)} 收盤・更新中${run.pass?.full && s?.scanQueue.length ? ` ${Math.min(s.scanIndex, s.scanQueue.length)}/${s.scanQueue.length}` : ''}` :
         `${closeLabel(run.updatedAt)} 已更新`;
-      for (const host of [document.getElementById('screener-list'), document.querySelector('#view-home .ox-home-t1')]) {
+      for (const host of [document.getElementById('screener-list'), document.querySelector('#view-home .oxh-radar-head')]) {
         if (!host) continue;
         let node = host.id === 'screener-list' ? host.previousElementSibling?.matches?.('[data-radar-freshness]') ? host.previousElementSibling : null : host.querySelector(':scope > [data-radar-freshness]');
         if (!node && text) {

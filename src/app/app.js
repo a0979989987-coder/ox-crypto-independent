@@ -6,6 +6,7 @@ import { cryptoModule } from "../markets/crypto/index.js";
 import "../markets/crypto/radar-board.js";
 import "../markets/crypto/radar-compare.js";
 import "../markets/crypto/share-entries.js";
+import "../markets/crypto/home-feed.js";
 import "./swipe-views.js";
 import "./recent.js";
 import { initTopbar } from "./topbar.js";

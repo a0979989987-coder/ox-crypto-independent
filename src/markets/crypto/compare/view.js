@@ -7,7 +7,7 @@
 // A card opens 型態詳情 (./detail.js). Mounted by src/markets/crypto/radar-compare.js;
 // styles live in src/styles/components/crypto-shell.css (.ox-cmp).
 import { withDeadline } from '../../../components/resource-deadline.js';
-import { STEP, compareModel, defaultOpen, isLog, miniChart, closesChart, parseRows, pct, tone, nextCloseText, longRunStats, periodLabel, taipeiTime, patternName, LONG_RUN_MIN } from './model.js?v=20261030-board2';
+import { STEP, compareModel, defaultOpen, isLog, miniChart, closesChart, parseRows, pct, tone, nextCloseText, longRunStats, periodLabel, taipeiTime, patternName, LONG_RUN_MIN } from './model.js?v=20261031-v3merge';
 import { createTextTabs } from '../../../app/text-tabs.js';
 import { openPatternDetail, indexPoints } from './detail.js?v=20261031-share1';
 import { shareCoin, sharePrice, SHARE_UP, SHARE_DOWN, PERFORMANCE_NOTE, longPress, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
@@ -63,6 +63,11 @@ function candlesFor(symbol, signal) {
   if (series.size > 240) series.delete(series.keys().next().value);
   return promise;
 }
+
+// 首頁「今日突破」reads the same record and 4H candles through this module, so the two
+// share one download of each (src/markets/crypto/home-feed.js loads it on demand).
+export { candlesFor };
+export { compareModel, miniChart, closesChart } from './model.js?v=20261031-v3merge';
 
 const TABS = [['point', '每 4 小時突破'], ['stats', '長期勝率'], ['history', '過去紀錄']], HISTORY_ROWS = 30;
 const average = list => list.length ? list.reduce((s, v) => s + v, 0) / list.length : null;

@@ -145,8 +145,9 @@ function marker(x, width, height, label, line = true) {
 
 // Candles [{time (open, seconds), open, high, low, close}], one uninterrupted 4H run.
 // Shows up to `maxK` candles after the breakout (the 3 天 mark), shading them in the
-// colour of the latest result; '' when the breakout candle is not in the series.
-export function miniChart(pick, at, candles, { step = STEP, maxK = 18, label = '突破', size = MINI } = {}) {
+// colour of the latest result; '' when the breakout candle is not in the series. `mark`
+// adds a dashed line at the breakout candle (首頁 cards).
+export function miniChart(pick, at, candles, { step = STEP, maxK = 18, label = '突破', size = MINI, mark = false } = {}) {
   const { width, height, bars } = size, bt = at - step;
   const bi = candles.findIndex(c => c.time === bt);
   if (bi < 0) return '';
@@ -164,7 +165,7 @@ export function miniChart(pick, at, candles, { step = STEP, maxK = 18, label = '
     svg += `<line class="${cls}" x1="${f(x)}" x2="${f(x)}" y1="${f(Y(c.high))}" y2="${f(Y(c.low))}"/><rect class="${cls}" x="${f(x - body / 2)}" y="${f(top)}" width="${f(body)}" height="${f(Math.max(.8, Y(Math.min(c.open, c.close)) - top))}"/>`;
   });
   if (line.length > 1) svg += `<polyline class="ln" points="${line.map(([x, y]) => f(X(x)) + ',' + f(Y(y))).join(' ')}"/>`;
-  svg += marker(X(rel), width, height, label, false);
+  svg += marker(X(rel), width, height, label, mark);
   return `<svg viewBox="0 0 ${width} ${height}" aria-hidden="true">${svg}</svg>`;
 }
 

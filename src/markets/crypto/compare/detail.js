@@ -12,7 +12,7 @@
 import { patternById } from '../patterns/catalog.js?v=patterns5d-20260929';
 import { fetchSeries, parseCandles } from '../patterns/source.js?v=20261002-rank8';
 import { prepareCandles, classifyPrepared, rankPatternMatches } from '../patterns/matcher.js?v=20261002-rank8';
-import { STEP, taipeiTime, pct, tone } from './model.js?v=20261030-board2';
+import { STEP, taipeiTime, pct, tone } from './model.js?v=20261031-home1';
 import { shareCoin, sharePrice, SHARE_UP, SHARE_DOWN, PERFORMANCE_NOTE, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
 
 export const FRAMES = Object.freeze([['1H', '1 小時'], ['4H', '4 小時'], ['1D', '日'], ['1W', '週']]);
