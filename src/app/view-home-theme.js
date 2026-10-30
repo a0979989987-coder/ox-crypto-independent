@@ -267,7 +267,7 @@ function renderHomeOverview() {
     seen.add(`${coin.symbol}:${type}`); events.push({ symbol:coin.symbol, type, reason, tag, icon });
   };
   for (const c of (state.tierMap.t1 || []).slice(0, 3)) pushEvent(c, "進入 T1", c.triggerType || c.statusText || "Trigger 已確認", "T1", "⚡");
-  for (const c of (state.tierMap.surge || []).slice(0, 3)) pushEvent(c, "異常活躍", `1H 放量 ${c.volRatio1h ?? "—"}x · 24H ${fmtPct(c.change24h)}`, "SURGE", "🔥");
+  for (const c of (state.tierMap.surge || []).slice(0, 3)) pushEvent(c, "異常活躍", `1H 放量 ${Number.isFinite(Number(c.volRatio1h)) && c.volRatio1h !== null ? Number(c.volRatio1h).toFixed(2) : "—"}x · 24H ${fmtPct(c.change24h)}`, "SURGE", "🔥");
   for (const c of (state.tierMap.t2 || []).slice(0, 3)) pushEvent(c, "接近 Trigger", c.setupName || "結構已就緒", "T2", "◎");
   const rsCandidates = Array.from(state.analyzedCache.values()).filter(c => !benchmarkSymbols.has(c.symbol) && num(c.rsScore) >= 75).sort((a,b)=>num(b.rsScore)-num(a.rsScore));
   for (const c of rsCandidates.slice(0,2)) pushEvent(c, "相對 BTC 轉強", `Relative Strength ${c.rsScore}`, "RS", "↗");
