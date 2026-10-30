@@ -141,8 +141,8 @@ export function mountCompare(host, { onOpen } = {}) {
       ${open ? `<div class="ox-cmp-stats-body">
         <div class="ox-cmp-seg" role="group" aria-label="之後多久">${periods.map(k => `<button type="button" data-cmp-stat="${k}" aria-pressed="${k === view.statK}">${periodLabel(k, step)}</button>`).join('')}</div>
         ${stats ? `<table class="ox-cmp-table">${head('等級')}<tbody>${stats.tiers.map(t => row('T' + t.id, t)).join('')}</tbody></table>
-        <table class="ox-cmp-table">${head('型態')}<tbody>${stats.patterns.map(o => row(esc(o.name), o)).join('') || `<tr><td colspan="5" class="mu">每種型態滿 ${LONG_RUN_MIN} 次才列出</td></tr>`}</tbody></table>` : `<p class="ox-cmp-note">${label}後的收盤還沒到，到了會自動加進來。</p>`}
-        <p class="ox-cmp-note">勝率＝之後收盤比突破那根收盤高的比例。BTC＝同一段時間 BTC 的漲跌。${stats?.few ? `另有 ${stats.few} 種型態不到 ${LONG_RUN_MIN} 次，先不列。` : ''}</p>
+        ${stats.patterns.length ? `<table class="ox-cmp-table">${head('型態')}<tbody>${stats.patterns.map(o => row(esc(o.name), o)).join('')}</tbody></table>` : ''}` : `<p class="ox-cmp-note">${label}後的收盤還沒到，到了會自動加進來。</p>`}
+        <p class="ox-cmp-note">勝率＝之後收盤比突破那根收盤高的比例。BTC＝同一段時間 BTC 的漲跌。${stats?.few ? `${stats.patterns.length ? '另有' : '目前'} ${stats.few} 種型態不到 ${LONG_RUN_MIN} 次，先不列；每次收盤後會累積。` : ''}</p>
       </div>` : ''}
     </section>`;
   }
