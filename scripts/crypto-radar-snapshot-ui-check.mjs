@@ -73,7 +73,7 @@ try {
   await v.page.locator('#screener-list .coin-card[data-tier]').first().waitFor();
   const longCards = await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol));
   assert.deepEqual(longCards, expected('long'));
-  await v.page.locator('[data-direction-chip]').click();
+  await v.page.locator('#direction-toggle').click();
   await v.page.waitForFunction(() => state.directionFilter === 'short');
   const shortCards = await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol));
   assert.deepEqual(shortCards, expected('short'));
