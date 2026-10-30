@@ -3,6 +3,7 @@ import { createToolsRail } from '../strength/tools-rail.js?v=20261005-stable18';
 import { MARKET_NAMES, CATEGORY_NAMES, MARKET_CATEGORIES, TIME_CHOICES, sourceName } from './config.js?v=20261005-calendar11';
 import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, eventCategory, importance, matchesImportance, newsBase, filterNews, hotWords, ranking, sourcesFor, coverage, safeLink, plain, agendaDays, inMarket, upcomingEventDays } from './model.js?v=20261005-load16';
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
+import { macroReactionSection, reactionMetric } from './macro-reaction.js?v=20261031-react1';
 import { node, button, anchoredPanel, modal } from './layers.js';
 const newsDateFormatter = new Intl.DateTimeFormat('zh-TW', { timeZone:'Asia/Taipei', dateStyle:'short', timeStyle:'short', hour12:false });
 const fmt = value => Number.isFinite(Date.parse(value)) ? newsDateFormatter.format(new Date(value)) : '時間待確認';
@@ -337,6 +338,7 @@ export function mountNewsWorkspace(host, api) {
         box.append(node('small', 'oxn-caption', `公布：${item.releasedAt ? fmt(item.releasedAt) : '待公布'} · 更新：${item.updatedAt ? fmt(item.updatedAt) : '待更新'}`));
         detail.body.append(box);
       }
+      if (category === 'macro' && reactionMetric(item)) detail.body.append(macroReactionSection(item));
       if (category === 'governance') detail.body.append(fieldList([['治理議案', item.proposalTitleZh || '中文翻譯準備中'], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
       if (item.eventTimeType) detail.body.append(node('p', 'oxn-caption', item.eventTimeType === 'software-release-publication' ? '此時間為官方軟體版本發布時間，不是主網硬分叉生效時間。' : item.eventTimeType));
       if (category === 'unlock') { const counter = node('p', 'oxn-countdown', api.unlockCountdown(item)); detail.body.append(counter); if (item.status === 'confirmed' && item.occursAt && !item.date) countdown = setInterval(() => { counter.textContent = api.unlockCountdown(item); }, 1000); }
