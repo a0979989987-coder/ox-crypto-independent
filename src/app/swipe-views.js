@@ -23,7 +23,8 @@ export function isSwipe(dx, dy, elapsed) {
 export const zoneFor = (y, height) => y < height * TOP_ZONE ? 'tabs' : 'dock';
 // Next dock view for a swipe; a finger moving left (dx < 0) goes forward.
 export function neighbor(view, direction) {
-  const index = ORDER.indexOf(view);
+  // 行情 → 圖表 (view chart) sits at 行情's place.
+  const index = ORDER.indexOf(view === 'chart' ? 'strength' : view);
   return index < 0 ? null : ORDER[index + direction] || null;
 }
 

@@ -10,7 +10,7 @@
     const market = document.body.dataset.market || window.state?.activeMarket || 'crypto';
     document.querySelectorAll('[data-terminal-view]').forEach(el => { el.textContent = marketNames[market] || marketNames.crypto; });
     document.querySelectorAll('.ox-desktop-nav [data-view-target]').forEach(el => {
-      const active = el.dataset.viewTarget === view;
+      const active = el.dataset.viewTarget === (view === 'chart' ? 'strength' : view);
       el.classList.toggle('active',active);
       if(active) el.setAttribute('aria-current','page'); else el.removeAttribute('aria-current');
     });

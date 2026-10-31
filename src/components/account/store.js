@@ -47,12 +47,12 @@ const MarketController = (() => {
     const st=document.getElementById("ox-market-status-text"); if(st) st.textContent = "加密市場行情已連線";
     syncPlaceholder();
     renderOxLive();
-    if (market === "crypto" && kick) { refreshMarketTickers(); if(state.activeView==="stock") loadSymbolCandles(true); if(state.activeView==="home") HomeMiniChart.ensureAndLoad(true); }
+    if (market === "crypto" && kick) { refreshMarketTickers(); if(state.activeView==="stock"||state.activeView==="chart") loadSymbolCandles(true); if(state.activeView==="home") HomeMiniChart.ensureAndLoad(true); }
     if(toast) showMarketToast(`已切換至${labels[market]}`);
     try { AccountStore.capturePrefs(); } catch (e) {}
   };
   const syncPlaceholder = () => {
-    const marketView = ["home","strength","radar","pattern","stock"].includes(state.activeView);
+    const marketView = ["home","strength","chart","radar","pattern","stock"].includes(state.activeView);
     const nonCrypto = state.activeMarket !== "crypto" && marketView;
     const unsupported = false;
     document.body.classList.toggle("market-data-unavailable", unsupported);

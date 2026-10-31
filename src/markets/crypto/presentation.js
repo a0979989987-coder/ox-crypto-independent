@@ -157,7 +157,8 @@ function updateHeaderHUD() {
 
 function switchSymbol(symbol) {
   // Opening a coin, from any list or tool, means its 個股 page (K 線, details, 自選／分享／畫相似型態).
-  if (state.activeView !== "stock") switchAppView("stock");
+  // On 行情 → 圖表 the chart beside the list switches in place.
+  if (state.activeView !== "stock" && state.activeView !== "chart") switchAppView("stock");
   document.getElementById("view-radar")?.setAttribute("data-selected-symbol", symbol);
   globalThis.OXRecent?.add({ type: "coin", id: symbol });
   if (symbol === state.symbol) { updateHeaderHUD(); return; }
@@ -185,7 +186,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const visible=new Set();
   const change=(el,value)=>{if(!el)return;el.textContent=fmtPct(value);el.classList.toggle('positive',value>=0);el.classList.toggle('negative',value<0);};
   function paint(quotes){
-    if(!['strength','stock'].includes(state.activeView)&& !document.body.classList.contains('chart-focus'))return;
+    if(!['strength','stock','chart'].includes(state.activeView)&& !document.body.classList.contains('chart-focus'))return;
     const bySymbol=new Map(quotes.map(q=>[q.symbol,q]));
     for(const card of visible){const q=bySymbol.get(card.dataset.symbol);if(!q)continue;
       card.querySelectorAll('.coin-change,.turnover-change').forEach(el=>change(el,q.change24h));
@@ -198,7 +199,7 @@ document.addEventListener('DOMContentLoaded',()=>{
     if(bySymbol.has(state.symbol)){updateHeaderHUD();updateQuickStats();}
   }
   function sync(){
-    const enabled=window.OXFeatures?.ready&&!document.body.classList.contains('ox-feature-blocked')&&state.activeMarket==='crypto'&&(['strength','stock'].includes(state.activeView)||document.body.classList.contains('chart-focus'));
+    const enabled=window.OXFeatures?.ready&&!document.body.classList.contains('ox-feature-blocked')&&state.activeMarket==='crypto'&&(['strength','stock','chart'].includes(state.activeView)||document.body.classList.contains('chart-focus'));
     if(!enabled){subscription?.stop();subscription=null;return;}
     const symbols=[state.symbol,'BTCUSDT','ETHUSDT',...[...visible].map(c=>c.dataset.symbol)];
     if(subscription)subscription.update(symbols);else subscription=globalThis.OXCryptoQuotes?.subscribe(symbols,paint);

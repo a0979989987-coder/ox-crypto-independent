@@ -2,24 +2,40 @@ import { loadToolModule } from '../../../components/load-tool-module.js?v=202610
 import { showToolLoadError } from '../../../components/tool-load-error.js?v=20261005-recovery20';
 import { createTextTabs } from "../../../app/text-tabs.js";
 import { mountMarketList } from "../market-list.js";
-// 行情: one page with small text tabs on top, like the Taiwan site. 雷達 is the OX
-// radar list (T1／T2／T3, 熱門, 自選, 多空; its markup is #ox-market-radar in
-// index.html and scanner.js draws the rows), 自選 and 排行 are coin lists
+// 行情: one page with small text tabs on top, like the Taiwan site. 圖表 is the
+// original radar page (view chart: the K-line on the left, the T1／T2／T3 list on the
+// right, coin details below; it shares #view-radar with the 個股 page, so this row
+// moves there and the list panel moves next to the chart). 雷達 is the same OX
+// radar list at full width (T1／T2／T3, 熱門, 自選, 多空; its markup is #ox-market-radar
+// in index.html and scanner.js draws the rows), 自選 and 排行 are coin lists
 // (../market-list.js), 強弱對比 keeps the page's own strength cards, and the other
 // tools mount inline. Preserve the existing strength calculations and DOM.
 const section = document.querySelector('#view-strength .strength-page');
 if (section) {
   // 型態搜尋 moved to the 畫板 dock view (src/markets/crypto/radar-board.js).
-  const tabs = [['radar','雷達'],['watch','自選'],['rank','排行'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
+  const tabs = [['chart','圖表'],['radar','雷達'],['watch','自選'],['rank','排行'],['bubbles','泡泡圖'],['strength','強弱對比'],['heatmap','熱力圖'],['rotation','板塊輪動'],['flow','主動買賣']];
   const LISTS = new Set(['watch','rank']);
   let selected = globalThis.OXFeatures?.selectedTool?.('crypto');
-  if (!tabs.some(([id]) => id === selected)) selected = 'radar';
-  const rail = createTextTabs({ tabs, selected, label:'行情分類', attribute:'data-crypto-tool', sticky:true, onSelect(id){if(id===selected)return;unmount();selected=id;sync();if(scrollY>0)scrollTo({top:0});} });
+  if (!tabs.some(([id]) => id === selected)) selected = 'chart';
+  // 圖表 is its own view (chart); the other tabs are the 行情 view (strength).
+  const onChart = () => document.body.dataset.view === 'chart';
+  const rail = createTextTabs({ tabs, selected, label:'行情分類', attribute:'data-crypto-tool', sticky:true, onSelect(id){if(id===selected)return;unmount();selected=id;if(id==='chart'||onChart()){window.switchAppView?.(id==='chart'?'chart':'strength');return;}sync();if(scrollY>0)scrollTo({top:0});} });
   const nav = rail.element; nav.id='ox-crypto-tools-nav'; nav.hidden=true;
   const ns = rail.shadow;
   section.prepend(nav);
   const radarPane = document.getElementById('ox-market-radar');
   if (radarPane) nav.after(radarPane);
+  // 圖表: this row sits on top of #view-radar and the radar list panel beside the chart
+  // (as the original radar page); 雷達 takes the panel back at full width.
+  const radarView = document.getElementById('view-radar'), scannerPanel = document.getElementById('radar-scanner-panel');
+  function place() {
+    const chart = onChart(), workspace = radarView?.querySelector(':scope > .workspace');
+    if (chart && radarView && nav.parentElement !== radarView) radarView.prepend(nav);
+    else if (!chart && nav.parentElement !== section) section.prepend(nav);
+    if (!scannerPanel) return;
+    if (chart && workspace && scannerPanel.parentElement !== workspace) { workspace.append(scannerPanel); scannerPanel.classList.add('panel'); }
+    else if (!chart && radarPane && scannerPanel.parentElement !== radarPane) { radarPane.append(scannerPanel); scannerPanel.classList.remove('panel'); }
+  }
   const listPane = document.createElement('section'); listPane.id = 'ox-market-list'; listPane.hidden = true; listPane.setAttribute('aria-label', '幣種清單');
   (radarPane || nav).after(listPane);
   let list = null;
@@ -45,7 +61,7 @@ if (section) {
   let mountedTool=null;
   let instance = null, pending = false, generation = 0, observer = null, scrollObserver=null, dialog = null;
   let previousOverflow = '';
-  const active = () => (document.body.dataset.market || 'crypto') === 'crypto' && document.body.dataset.view === 'strength';
+  const active = () => (document.body.dataset.market || 'crypto') === 'crypto' && (document.body.dataset.view === 'strength' || onChart());
   function exitFocus() {
     if (!dialog) return;
     slot.append(host); dialog.close(); dialog.remove(); dialog = null;
@@ -84,13 +100,14 @@ if (section) {
     else list?.suspend();
   }
   async function sync() {
+    place();
     nav.hidden = !active();
     if (!active()) { delete section.dataset.cryptoTool; syncPanes(); unmount(); return; }
     if(window.OXFeatures&&!window.OXFeatures.enterTool(selected,'data-crypto-tool',sync)){delete section.dataset.cryptoTool;syncPanes();unmount();return;}
     if(section.dataset.cryptoTool!==selected)document.dispatchEvent(new CustomEvent('ox:crypto-toolchange',{detail:{tool:selected}}));
     section.dataset.cryptoTool=selected; rail.mark(selected); positionIndicator();requestAnimationFrame(positionIndicator);
     syncPanes();
-    if(selected==='strength'||selected==='radar'||LISTS.has(selected)){unmount();return;}
+    if(selected==='chart'||selected==='strength'||selected==='radar'||LISTS.has(selected)){unmount();return;}
     slot.hidden = false;
     if (instance || pending) return;
     const retainedEntry=retained.get(selected);

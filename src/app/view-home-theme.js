@@ -26,6 +26,7 @@ function updateChartExpandButton() {
 }
 
 function createCoinLogo(symbol) {
+  if (globalThis.OXCoinLogo) return globalThis.OXCoinLogo.element(symbol, { cls: "ox-coin-logo", size: 24 });
   const base = String(symbol || "").replace(/USDT$/, "");
   const key = base.replace(/^1000(?=[A-Z])/, "").toLowerCase();
   const badge = document.createElement("span");
@@ -73,15 +74,21 @@ function setChartFocus(enabled) {
 }
 
 // Pages: the dock's 首頁／行情／畫板／型態／資訊, the 個股 page, and 設定／媒體 from the
-// drawer. 畫板 (board), 型態 (compare) and 個股 (chart) share #view-radar; the page
-// picks its mode. 個股 is a page you step into: it gets a history entry, so the
+// drawer. 畫板 (board), 型態 (compare), 個股 and 行情 → 圖表 (both chart) share #view-radar;
+// the page picks its mode. 個股 is a page you step into: it gets a history entry, so the
 // phone's back gesture (and the page's ‹) returns to wherever it was opened from.
-const APP_VIEWS = ['home','strength','radar','pattern','stock','data','media','settings','news'];
-const VIEW_SECTION = { pattern: 'radar', stock: 'radar' };
-const RADAR_MODE = { radar: 'board', pattern: 'compare', stock: 'chart' };
+// 圖表 (view chart) is 行情's first tab, the original radar page: the chart with the
+// T1／T2／T3 list beside it (analytics/entry.js moves the list there); the dock shows 行情.
+const APP_VIEWS = ['home','strength','chart','radar','pattern','stock','data','media','settings','news'];
+const VIEW_SECTION = { pattern: 'radar', stock: 'radar', chart: 'radar' };
+const RADAR_MODE = { radar: 'board', pattern: 'compare', stock: 'chart', chart: 'chart' };
+const DOCK_VIEW = { chart: 'strength' };
 let stockReturn = 'strength', ignoreStockPop = false, poppingStock = false;
 function switchAppView(view) {
   if (!APP_VIEWS.includes(view)) return;
+  // 行情 opens on the tab it shows last; 圖表 is its own view.
+  if (view === 'strength' && window.OXMarketTabs?.current?.() === 'chart') view = 'chart';
+  else if (view === 'chart' && window.OXMarketTabs && window.OXMarketTabs.current() !== 'chart') { window.OXMarketTabs.select('chart'); if (state.activeView === 'chart') return; }
   if (window.OXFeatures && !window.OXFeatures.enterView(view)) return;
   if (document.body.classList.contains('chart-focus')) setChartFocus(false);
 
@@ -96,8 +103,8 @@ function switchAppView(view) {
   }
   if (radar && RADAR_MODE[view] && radar.dataset.radarMode !== RADAR_MODE[view]) radar.dataset.radarMode = RADAR_MODE[view];
   const section = VIEW_SECTION[view] || view;
-  const order = ['home','strength','radar','pattern','data','media','settings'];
-  const direction = Math.sign(order.indexOf(view) - order.indexOf(previous));
+  const order = ['home','strength','radar','pattern','data','media','settings'], place = v => order.indexOf(DOCK_VIEW[v] || v);
+  const direction = Math.sign(place(view) - place(previous));
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   // Switch immediately: holding the old page for its exit animation blocks taps and scrolling.
   document.querySelectorAll('.app-view.ox-view-entering').forEach(el => el.classList.remove('ox-view-entering'));
@@ -106,7 +113,7 @@ function switchAppView(view) {
     state.activeView = view;
     document.body.dataset.view = view;
     document.querySelectorAll('[data-app-view]').forEach(el => el.classList.toggle('active', el.dataset.appView === section));
-    document.querySelectorAll('[data-view-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.viewTarget === view));
+    document.querySelectorAll('[data-view-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.viewTarget === (DOCK_VIEW[view] || view)));
 
     const incoming = document.querySelector(`[data-app-view="${section}"]`);
     // A brief opacity entrance leaves touch and scrolling available immediately.
@@ -120,7 +127,7 @@ function switchAppView(view) {
       if (state.activeView !== view) return;
       if (view === 'strength' && state.activeMarket === 'crypto') { renderMarketStrength(); }
       if (view === 'home' && state.activeMarket === 'crypto') { renderHomeOverview(); HomeMiniChart.ensureAndLoad(false); }
-      if (view === 'stock' && state.activeMarket === 'crypto') {
+      if ((view === 'stock' || view === 'chart') && state.activeMarket === 'crypto') {
         resizeChartToContainer();
         updateHeaderHUD();
         renderBenchmarkBar();

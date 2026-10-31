@@ -85,6 +85,19 @@ try{
     // The existing compact layout exposes the tools and expand after folding its scanner panel.
     await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();
    }
+   if(market==='crypto'){
+    // 行情 → 圖表 shares this chart: the T1/T2/T3 list sits on its right and the drawing tools
+    // wait until the list is folded; the 個股 page never shows the list.
+    await page.evaluate(()=>switchAppView('chart'));
+    await page.locator('#view-radar .workspace #radar-scanner-panel').waitFor({state:'visible'});
+    assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'drawing tools stay hidden beside the list');
+    await page.locator('#radar-scanner-toggle').click();
+    await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
+    await page.locator('#radar-scanner-toggle').click();
+    await page.waitForFunction(()=>!document.getElementById('view-radar').classList.contains('ox-scanner-collapsed'));
+    await page.evaluate(()=>switchAppView('stock'));
+    assert.equal(await page.locator('#view-radar #radar-scanner-panel').count(),0,'the 個股 page has no side list');
+   }
    // Crypto's 個股 page has no side list: the drawing tools are on screen from the start.
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
