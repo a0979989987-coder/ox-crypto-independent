@@ -148,28 +148,47 @@ html body dialog.ox-share-preview.ox-share-preview.ox-share-preview:not(#ox-shar
 .ox-share-preview .sp-btn{all:unset!important;box-sizing:border-box!important;min-width:78px!important;padding:10px 18px!important;border-radius:11px!important;font:750 14px/1 ${font}!important;text-align:center!important;cursor:pointer!important;-webkit-tap-highlight-color:transparent!important}
 html body dialog.ox-share-preview .sp-btn.sp-main:not(#ox-share-none){background:#f5c451!important;color:#15120a!important;border:0!important;box-shadow:none!important}
 html body dialog.ox-share-preview .sp-btn.sp-line:not(#ox-share-none){background:transparent!important;border:1px solid rgba(255,255,255,.38)!important;color:#fff!important;box-shadow:none!important}
-.ox-share-preview .sp-btn:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}`;
+.ox-share-preview .sp-btn:focus-visible{outline:2px solid #fff!important;outline-offset:2px!important}
+html body dialog.ox-share-preview .sp-btn.sp-chip:not(#ox-share-none){min-width:64px!important;padding:8px 14px!important;border:1px solid rgba(255,255,255,.28)!important;background:transparent!important;color:#c9d1db!important;font-weight:650!important;box-shadow:none!important}
+html body dialog.ox-share-preview .sp-btn.sp-chip[aria-pressed="true"]:not(#ox-share-none){background:#fff!important;border-color:#fff!important;color:#101317!important}`;
   document.head.append(style);
 }
 // A preview first, with 分享 / 存圖 / 關閉: the share sheet then opens from the visitor's
 // own tap (iOS refuses it after a long press plus the drawing time). A modal dialog sits
 // in the top layer, above an open 型態詳情 or event sheet.
-async function deliver(cv, file, kind) {
+// choices (optional): [{ label, active, make: () => Promise<{ cv, file }> }] — small chips above
+// the picture that draw it again another way (the radar's 多頭／空頭／多空).
+async function deliver(cv, file, kind, { choices = null } = {}) {
   globalThis.OXTrack?.('share.image', kind);
-  const blob = await new Promise(resolve => cv.toBlob(resolve, 'image/png'));
+  const toBlob = c => new Promise(resolve => c.toBlob(resolve, 'image/png'));
+  const blob = await toBlob(cv);
   if (!blob) return null;
   ensureStyle();
-  const shareFile = new File([blob], file, { type: 'image/png' });
+  let shareFile = new File([blob], file, { type: 'image/png' });
   let canShare = false; try { canShare = !!navigator.canShare?.({ files: [shareFile] }); } catch {}
-  const url = URL.createObjectURL(blob), back = document.createElement('dialog');
+  let url = URL.createObjectURL(blob);
+  const back = document.createElement('dialog');
   back.className = 'ox-share-preview'; back.setAttribute('aria-label', '分享圖片預覽');
-  back.innerHTML = `<img alt="分享圖片"><p>${canShare ? '按分享傳到 LINE、IG、Threads；也可以長按圖片存起來' : '長按圖片可以存到相簿，或按存圖'}</p><div class="sp-row">${canShare ? '<button type="button" data-share-go class="sp-btn sp-main">分享</button>' : ''}<a download class="sp-btn ${canShare ? 'sp-line' : 'sp-main'}" data-share-save>存圖</a><button type="button" data-share-close class="sp-btn sp-line">關閉</button></div>`;
-  back.querySelector('img').src = url;
-  const save = back.querySelector('a'); save.href = url; save.download = file;
+  const chipRow = choices?.length ? `<div class="sp-row sp-choices" role="group" aria-label="圖片內容">${choices.map((c, i) => `<button type="button" class="sp-btn sp-chip" data-share-choice="${i}" aria-pressed="${!!c.active}">${c.label}</button>`).join('')}</div>` : '';
+  back.innerHTML = `${chipRow}<img alt="分享圖片"><p>${canShare ? '按分享傳到 LINE、IG、Threads；也可以長按圖片存起來' : '長按圖片可以存到相簿，或按存圖'}</p><div class="sp-row">${canShare ? '<button type="button" data-share-go class="sp-btn sp-main">分享</button>' : ''}<a download class="sp-btn ${canShare ? 'sp-line' : 'sp-main'}" data-share-save>存圖</a><button type="button" data-share-close class="sp-btn sp-line">關閉</button></div>`;
+  const img = back.querySelector('img'), save = back.querySelector('a');
+  const show = () => { img.src = url; save.href = url; save.download = shareFile.name; };
+  show();
   const close = () => { if (back.open) back.close(); back.remove(); URL.revokeObjectURL(url); };
+  let drawing = 0;
   back.addEventListener('cancel', event => { event.preventDefault(); close(); });
   back.addEventListener('click', async event => {
     if (event.target === back || event.target.closest('[data-share-close]')) { close(); return; }
+    const choice = event.target.closest('[data-share-choice]');
+    if (choice && choices) {
+      const token = ++drawing, picked = choices[Number(choice.dataset.shareChoice)];
+      back.querySelectorAll('[data-share-choice]').forEach(b => b.setAttribute('aria-pressed', String(b === choice)));
+      const next = await picked.make(), nextBlob = next && await toBlob(next.cv);
+      if (!nextBlob || token !== drawing || !back.isConnected) return;
+      URL.revokeObjectURL(url); url = URL.createObjectURL(nextBlob);
+      shareFile = new File([nextBlob], next.file, { type: 'image/png' }); show();
+      return;
+    }
     if (event.target.closest('[data-share-save]')) { globalThis.OXTrack?.('share.saved', kind); return; }
     if (event.target.closest('[data-share-go]')) {
       try { await navigator.share({ files: [shareFile], text: siteHost() }); globalThis.OXTrack?.('share.sent', kind); close(); }
@@ -178,6 +197,8 @@ async function deliver(cv, file, kind) {
   });
   document.body.append(back);
   try { back.showModal(); } catch { back.setAttribute('open', ''); }
+  // The picture takes the first focus, so no button shows a focus ring on a tap.
+  if (choices) { img.tabIndex = -1; img.style.outline = 'none'; img.focus({ preventScroll: true }); }
   return back;
 }
 
@@ -332,3 +353,94 @@ export function longPress(root, selector, onPress, { ms = 500 } = {}) {
 }
 // The picture icon on cards and buttons: a small framed landscape.
 export const PICTURE_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.6"/><circle cx="9" cy="10" r="1.7"/><path d="m20.5 15.5-4.8-4.8-8.7 8.8"/></svg>';
+
+// Coin logos for a card: the site's own files (src/app/coin-logo.js), decoded before drawing.
+// A logo that does not arrive within a second and a half is drawn as the coin's letters.
+async function logos(symbols) {
+  const map = new Map();
+  await Promise.all([...new Set(symbols)].map(async symbol => {
+    const path = globalThis.OXCoinLogo?.src?.(symbol); if (!path) return;
+    const img = new Image(); img.src = new URL(path, document.baseURI).href;
+    try { await Promise.race([img.decode(), new Promise((_, no) => setTimeout(no, 1500))]); if (img.naturalWidth) map.set(symbol, img); } catch {}
+  }));
+  return map;
+}
+function coinMark(ctx, img, name, x, y, size) {
+  ctx.save(); ctx.beginPath(); ctx.arc(x + size / 2, y + size / 2, size / 2, 0, Math.PI * 2); ctx.closePath();
+  ctx.fillStyle = '#2b3038'; ctx.fill();
+  if (img) { ctx.clip(); ctx.drawImage(img, x, y, size, size); }
+  else text(ctx, String(name).replace(/^(?:1000000|100000|10000|1000|1M)(?=[A-Z])/, '').slice(0, 2), x + size / 2, y + size / 2 + size * .17, { size: size * .42, weight: 800, color: '#dfe6ee', align: 'center' });
+  ctx.restore();
+  ctx.beginPath(); ctx.arc(x + size / 2, y + size / 2, size / 2 - .5, 0, Math.PI * 2); ctx.strokeStyle = 'rgba(255,255,255,.14)'; ctx.lineWidth = 1.5; ctx.stroke();
+}
+
+// 行情 → 圖表／雷達: the T1／T2／T3 lists of the hour's close as one card.
+// side 'long' or 'short' fills two columns (T1, then T2 and T3); 'both' puts 多頭 and 空頭
+// side by side. rows: { long: [{ symbol, name, tier: 'T1', ox, change }], short: [...] }.
+export async function drawRadarCard({ side = 'long', rows, closeText = '', logoMap = null }) {
+  const cv = canvas(), ctx = cv.getContext('2d'), both = side === 'both';
+  base(ctx); header(ctx, closeText);
+  const sides = both ? ['long', 'short'] : [side];
+  const title = both ? '多空雷達' : side === 'long' ? '多頭雷達' : '空頭雷達';
+  const titleColor = both ? C.ink : side === 'long' ? C.up : C.down;
+  text(ctx, title, PAD, PAD + 150, { size: 70, weight: 900, color: titleColor });
+  ctx.font = `900 70px ${FONT}`; const tw = ctx.measureText(title).width;
+  text(ctx, 'T1／T2／T3', PAD + tw + 22, PAD + 150, { size: 40, weight: 800, color: C.soft });
+  const total = sides.reduce((n, s) => n + (rows[s]?.length || 0), 0);
+  text(ctx, `OX 每小時收盤從全部 USDT 永續合約篩出・共 ${total} 個`, PAD, PAD + 200, { size: 25, weight: 600, color: C.muted, max: W - PAD * 2 });
+  const top = PAD + 236, bottom = H - PAD - 128, gap = 24, colW = (W - PAD * 2 - gap) / 2, rowH = 60, headH = 46;
+  // Lay the rows out column by column; a tier heading starts each tier and each new column.
+  const columns = both ? sides.map(s => ({ side: s, items: rows[s] || [] })) : [{ side, items: rows[side] || [], spill: true }];
+  const placed = [[], []];
+  if (both) columns.forEach((c, i) => { placed[i] = c.items; });
+  else {
+    let col = 0, used = 0, last = null;
+    for (const r of columns[0].items) {
+      const need = rowH + (r.tier !== last || !placed[col].length ? headH : 0);
+      if (used + need > bottom - top - 76) { if (col === 1) break; col = 1; used = 0; }
+      const head = r.tier !== last || !placed[col].length;
+      used += rowH + (head ? headH : 0); placed[col].push(r); last = r.tier;
+    }
+  }
+  const shown = placed[0].length + placed[1].length;
+  [0, 1].forEach(c => {
+    const x = PAD + c * (colW + gap), list = placed[c];
+    roundRect(ctx, x, top, colW, bottom - top, 28, 'rgba(255,255,255,.035)', C.line);
+    let y = top + 28, last = null, drawn = 0;
+    if (both) {
+      const s = sides[c];
+      text(ctx, s === 'long' ? '多頭' : '空頭', x + 28, y + 34, { size: 32, weight: 900, color: s === 'long' ? C.up : C.down });
+      text(ctx, `${(rows[s] || []).length} 個`, x + colW - 28, y + 34, { size: 24, weight: 700, color: C.muted, align: 'right' });
+      y += 62;
+    }
+    if (!list.length && (both || c === 0)) { text(ctx, '這一小時沒有符合條件的幣種', x + 28, y + 40, { size: 26, weight: 600, color: C.muted, max: colW - 56 }); return; }
+    for (const r of list) {
+      const head = r.tier !== last;
+      if (head) {
+        if (y + headH + rowH > bottom - 12) break;
+        const n = (both ? rows[sides[c]] : rows[side]).filter(o => o.tier === r.tier).length;
+        text(ctx, r.tier, x + 28, y + 34, { size: 26, weight: 900, color: '#9fd8ff' });
+        text(ctx, `${n} 個`, x + 28 + 50, y + 34, { size: 22, weight: 600, color: C.muted });
+        y += headH; last = r.tier;
+      }
+      if (y + rowH > bottom - 12) break;
+      coinMark(ctx, logoMap?.get(r.symbol), r.name, x + 26, y + 9, 42);
+      text(ctx, r.name, x + 82, y + 40, { size: 30, weight: 850, max: colW - 82 - 252 });
+      text(ctx, r.ox == null ? '' : `OX ${r.ox}`, x + colW - 172, y + 40, { size: 22, weight: 700, color: C.muted, align: 'right' });
+      text(ctx, sharePct(r.change), x + colW - 26, y + 40, { size: 28, weight: 900, color: shareTone(r.change), align: 'right', max: 136 });
+      y += rowH; drawn++;
+    }
+    if (both && drawn < list.length) text(ctx, `還有 ${list.length - drawn} 個`, x + colW - 28, bottom - 22, { size: 22, weight: 600, color: C.muted, align: 'right' });
+  });
+  const hidden = (both ? sides.reduce((n, s) => n + (rows[s] || []).length, 0) : (rows[side] || []).length) - shown;
+  if (!both && hidden > 0) text(ctx, `還有 ${hidden} 個在 OX 加密 › 行情`, W - PAD - 26, bottom - 22, { size: 22, weight: 600, color: C.muted, align: 'right' });
+  footer(ctx, '分級為系統每小時計算\n僅供研究參考，非投資建議');
+  return cv;
+}
+export async function shareRadar({ side = 'long', rows, closeText = '', fileTime = fileDay() }) {
+  const logoMap = await logos([...(rows.long || []), ...(rows.short || [])].map(r => r.symbol));
+  const name = s => `OX_${s === 'both' ? '多空' : s === 'long' ? '多頭' : '空頭'}雷達_${fileTime}.png`;
+  const make = async s => ({ cv: await drawRadarCard({ side: s, rows, closeText, logoMap }), file: name(s) });
+  const first = await make(side);
+  return deliver(first.cv, first.file, 'radar', { choices: [['long', '多頭'], ['short', '空頭'], ['both', '多空']].map(([s, label]) => ({ label, active: s === side, make: () => make(s) })) });
+}

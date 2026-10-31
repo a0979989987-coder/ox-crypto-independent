@@ -365,7 +365,7 @@
       // rebuildTierLists also renders 首頁 and OX LIVE when they are showing.
       try { if (typeof rebuildTierLists === 'function') rebuildTierLists(); } catch (error) { console.error('Radar snapshot ranking failed', error); }
       // The list is 行情 → 雷達; the quote card belongs to the 個股 page.
-      try { if (s.activeView === 'strength') renderCurrentTab(); if (s.activeView === 'stock') { updateHeaderHUD(); renderBenchmarkBar(); } } catch {}
+      try { if (s.activeView === 'strength' || s.activeView === 'chart') renderCurrentTab(); if (s.activeView === 'stock' || s.activeView === 'chart') { updateHeaderHUD(); renderBenchmarkBar(); } } catch {}
       label();
     }
     // A fresh complete evaluation re-checks its candidates; otherwise the full scan.
@@ -419,18 +419,22 @@
       const text = !run.loaded ? '' : run.refreshing ?
         // Without a live connection the saved close stays labelled, without 更新中.
         s?.radarLoadError ? `${closeLabel(run.close)} 收盤` :
-        `${closeLabel(run.close)} 收盤・更新中${run.pass?.full && s?.scanQueue.length ? ` ${Math.min(s.scanIndex, s.scanQueue.length)}/${s.scanQueue.length}` : ''}` :
+        `${closeLabel(run.close)} 收盤・更新中` :
         `${closeLabel(run.updatedAt)} 已更新`;
+      // A full pass's progress follows in its own span; the narrow list beside the 圖表 chart leaves it out.
+      const count = text && run.refreshing && !s?.radarLoadError && run.pass?.full && s?.scanQueue.length ? ` ${Math.min(s.scanIndex, s.scanQueue.length)}/${s.scanQueue.length}` : '';
       for (const host of [document.getElementById('screener-list'), document.querySelector('#view-home .oxh-radar-head')]) {
         if (!host) continue;
-        let node = host.id === 'screener-list' ? host.previousElementSibling?.matches?.('[data-radar-freshness]') ? host.previousElementSibling : null : host.querySelector(':scope > [data-radar-freshness]');
+        // The radar list's label sits in its .ox-radar-meta row (index.html), beside the picture button.
+        const before = host.previousElementSibling;
+        let node = host.id === 'screener-list' ? before?.matches?.('[data-radar-freshness]') ? before : before?.querySelector?.(':scope > [data-radar-freshness]') || null : host.querySelector(':scope > [data-radar-freshness]');
         if (!node && text) {
           node = document.createElement('small'); node.dataset.radarFreshness = ''; node.setAttribute('aria-live', 'polite');
           node.style.cssText = host.id === 'screener-list' ? 'display:block;padding:2px 12px 4px;font-size:11px;line-height:1.4;color:var(--muted);text-align:right' :
             'grid-column:1/-1;display:block;padding:6px 12px 8px;font-size:11px;line-height:1.4;color:var(--muted);text-align:right';
           if (host.id === 'screener-list') host.before(node); else host.append(node);
         }
-        if (node) { node.hidden = !text; if (node.textContent !== text) node.textContent = text; }
+        if (node) { node.hidden = !text; if (node.textContent !== text + count) { node.textContent = text; if (count) { const n = document.createElement('span'); n.className = 'rf-n'; n.textContent = count; node.append(n); } } }
       }
       // Follow a full pass's progress and the connection while the saved rows refresh.
       clearTimeout(run.labelTimer); run.labelTimer = 0;
@@ -468,7 +472,7 @@
       const waiting = tierModeWithoutFrames();
       if (s.radarSnapshotReady === !waiting) return;
       s.radarSnapshotReady = !waiting;
-      try { if (s.activeView === 'strength') renderCurrentTab(); } catch {}
+      try { if (s.activeView === 'strength' || s.activeView === 'chart') renderCurrentTab(); } catch {}
     });
     document.addEventListener('visibilitychange', () => { if (document.hidden) { if (run.loaded) saveNow(); } else label(); });
     boot();

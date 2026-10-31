@@ -28,14 +28,14 @@ function lastPrice(symbol) {
 }
 // The coin's own artwork when the site has it, else its first two letters.
 function logo(symbol) {
-  const base = coin(symbol), key = base.replace(/^1000(?=[A-Z])/, '').toLowerCase();
-  const src = typeof OX_COIN_LOGOS !== 'undefined' ? OX_COIN_LOGOS[key] : null;
-  return `<span class="oxh-logo" aria-hidden="true">${esc(base.slice(0, 2))}${src ? `<img src="${esc(src)}" alt="" width="20" height="20" decoding="async">` : ''}</span>`;
+  if (globalThis.OXCoinLogo) return globalThis.OXCoinLogo.html(symbol, { cls: 'oxh-logo', size: 20 });
+  return `<span class="oxh-logo" aria-hidden="true">${esc(coin(symbol).slice(0, 2))}</span>`;
 }
-const dropBrokenLogos = box => box.querySelectorAll('.oxh-logo img').forEach(img => img.addEventListener('error', () => img.remove(), { once: true }));
+// Pictures that fail are dropped by OXCoinLogo.fail (src/app/coin-logo.js).
+const dropBrokenLogos = () => {};
 
 // ---------- 今日突破 ----------
-const compareURL = () => new URL('./compare/view.js?v=20261031-home1', import.meta.url).href;
+const compareURL = () => new URL('./compare/view.js?v=20261101-v4', import.meta.url).href;
 const breaks = { at: null, time: '', count: 0, picks: [], charts: new Map(), queue: [], queued: new Set(), active: 0, observer: null, module: null, job: null, candle: 0 };
 
 function sinceBreak(pick) {

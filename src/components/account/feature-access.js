@@ -6,7 +6,9 @@
   // 行情 tools (雷達 is crypto.radar); 型態搜尋 (crypto.patterns) is the 畫板 page, and 型態
   // lists the board's own breakouts, so it follows the board's switch. The 個股 page is
   // the radar's chart (crypto.radar). 自選 and 排行 are plain coin lists without a switch.
-  const selected={crypto:'radar'};
+  // 行情 → 圖表 (view chart, the chart beside the radar list) is crypto.radar too.
+  const selected={crypto:'chart'};
+  const toolFeature=tool=>tool==='chart'?'radar':tool;
   const landing=new URL(location.href),returnId=landing.searchParams.get('ox_feature');
   let returning=ids.includes(returnId), started=false, lastRefresh=0;
   let panel,progress;
@@ -35,9 +37,9 @@
   }
   function reveal(){if(progress)progress.hidden=true;document.body?.classList.remove('ox-feature-blocked');if(panel){panel.hidden=true;panel.style.display='none';}}
   function viewFeature(view,market=document.body?.dataset.market||'crypto'){
-    if(view==='strength'){const id=market+'.'+selected[market];return ids.includes(id)?id:null;}
+    if(view==='strength'){const id=market+'.'+toolFeature(selected[market]);return ids.includes(id)?id:null;}
     if(view==='radar'||view==='pattern')return market+'.patterns';
-    if(view==='stock')return market+'.radar';
+    if(view==='stock'||view==='chart')return market+'.radar';
     if(view==='home')return market+'.'+view;
     if(['data','news'].includes(view))return newsSelected==='calendar'?'news.calendar':'news.feed';
     if(view==='media')return 'media';
@@ -58,7 +60,7 @@
   function enterView(view){const id=viewFeature(view);if(!id){pending=null;currentFeature=null;reveal();return true;}return enter(id,()=>window.switchAppView?.(view));}
   function enterTool(tool,attribute,resume){
     const market=attribute==='data-crypto-tool'?'crypto':null;
-    const id=market?market+'.'+tool:attribute==='data-news-tab'?(tool==='calendar'?'news.calendar':'news.feed'):null;
+    const id=market?market+'.'+toolFeature(tool):attribute==='data-news-tab'?(tool==='calendar'?'news.calendar':'news.feed'):null;
     if(!id||!ids.includes(id)){if(market){selected[market]=tool;if(document.body?.dataset.view==='strength'){currentFeature=null;pending=null;reveal();}}return true;}
     if(!enter(id,resume))return false;if(market&&tool!=='patterns')selected[market]=tool;else if(attribute==='data-news-tab')newsSelected=tool;return true;
   }
@@ -97,7 +99,7 @@
     if(id.startsWith('news.')){newsSelected=id==='news.calendar'?'calendar':'key';window.OXNews?.openMarket();document.dispatchEvent(new CustomEvent('ox:feature-news-return',{detail:{tab:newsSelected}}));}
     else if(id==='media')window.switchAppView?.('media');
     else if(id==='crypto.patterns')window.switchAppView?.(document.body.dataset.view==='pattern'?'pattern':'radar');
-    else if(id==='crypto.radar'&&document.body.dataset.view==='stock')window.switchAppView?.('stock');
+    else if(id==='crypto.radar'&&['stock','chart'].includes(document.body.dataset.view))window.switchAppView?.(document.body.dataset.view);
     else {const tool=id.split('.')[1];const view=tool==='home'?'home':'strength';if(view==='strength')selected[market]=tool;window.switchAppView?.(view);if(view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market,tool}}));}
   }
   function restore(){if(!returning||!started)return;returning=false;const apply=()=>navigate(returnId);if(enter(returnId,apply))apply();}
