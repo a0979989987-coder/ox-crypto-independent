@@ -18,7 +18,7 @@
   // Radar lists publish available rows during scans. Background data tasks
   // must not append a loading animation to those lists.
   if(view==='radar'&&market==='crypto')return null;
-  if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'.ox-home-t1':':not(*)');
+  if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'#view-home .oxh-radar':':not(*)');
   return null;
  }
  function paint(){

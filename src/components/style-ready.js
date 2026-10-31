@@ -1,6 +1,6 @@
 import { loadStyle } from './style-resource.js?v=20261005-stable18';
 export function preloadToolStyles(href) {
-  return Promise.all([href, String(href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261005-load16'),
+  return Promise.all([href, String(href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261031-share1'),
     new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5', import.meta.url).href].map(url => loadStyle(url, { priority: 'low' })));
 }
 // Inject complete, shared CSS text instead of relying on shadow-link load
@@ -62,7 +62,7 @@ export function revealStyledShadow(shadow, signal, selector = 'main', minHeight 
   shadow.append(mobile);
   const syncTheme=()=>{shadow.host.dataset.oxTheme=document.body.classList.contains('theme-light')?'light':'dark';};
   syncTheme();document.addEventListener('ox:themechange',syncTheme,{signal});
-  const light=document.createElement('link');light.rel='stylesheet';light.dataset.oxHref=(sheet.dataset.oxHref||sheet.href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261005-load16');
+  const light=document.createElement('link');light.rel='stylesheet';light.dataset.oxHref=(sheet.dataset.oxHref||sheet.href).replace(/\.css(?:\?.*)?$/, '-light.css?v=20261031-share1');
   const roles=document.createElement('link');roles.rel='stylesheet';roles.dataset.oxHref=new URL('../styles/themes/light-tool-roles.css?v=20261005-graytop5',import.meta.url).href;
   shadow.append(light,roles);
   return guardStyledContent(shadow,main,[sheet,light,roles],signal,selector,minHeight);

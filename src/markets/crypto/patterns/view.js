@@ -4,13 +4,15 @@ import { queryFromStrokes, normalize, sortMatches, patternCounts, prepareCandles
 import * as cryptoSource from './source.js?v=20261002-rank8';
 import * as cryptoCache from './index-cache.js?v=20261002-rank8';
 import { candleChart } from './charts.js?v=20261005-graytop5';
-import { BOARD_FILTER_KEY, BOARD_FILTER_EVENT, TURNOVER_PRESETS, turnoverText, normalizeBoardFilter, readBoardFilter, writeBoardFilter, activeFilterCount, boardSectors, passesBoardFilter } from './filters.js?v=20261028-board1';
-// 篩選 (frames, 24H 成交額, 板塊) is remembered on this device; see filters.js.
+import { BOARD_FILTER_KEY, BOARD_FILTER_EVENT, TURNOVER_PRESETS, turnoverText, normalizeBoardFilter, readBoardFilter, writeBoardFilter, activeFilterCount, poolFilterCount, seriesFilterCount, boardSectors, passesBoardFilter } from './filters.js?v=20261030-board2';
+import { SIGNALS, RATIO_PRESETS, seriesFacts, passesSeriesFilter } from './signals.js?v=20261030-board2';
+import { longPress, PICTURE_ICON } from '../share-image.js?v=20261031-share1';
+// 篩選 (frames, 24H 成交額, 板塊, 量能放大, 指標信號) is remembered on this device; see filters.js.
 export { BOARD_FILTER_KEY, BOARD_FILTER_EVENT };
 export const getBoardFilter=()=>readBoardFilter(CRYPTO_TIMEFRAMES);
 export const setBoardFilter=next=>writeBoardFilter({...readBoardFilter(CRYPTO_TIMEFRAMES),...next},CRYPTO_TIMEFRAMES);
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const icons={down:'<path d="m6 9 6 6 6-6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',undo:'<path d="m9 5-5 5 5 5M4 10h10a5 5 0 1 1 0 10"/>',refresh:'<path d="M4 4v6h6M4 10a8 8 0 1 1 1 8"/>',scan:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><g class="px-scan-sweep"><path d="M12 12 18 6"/></g><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>'};
+const icons={share:'<path d="M12 15V3"/><path d="m7 8 5-5 5 5"/><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"/>',down:'<path d="m6 9 6 6 6-6"/>',close:'<path d="m6 6 12 12M18 6 6 18"/>',undo:'<path d="m9 5-5 5 5 5M4 10h10a5 5 0 1 1 0 10"/>',refresh:'<path d="M4 4v6h6M4 10a8 8 0 1 1 1 8"/>',scan:'<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><g class="px-scan-sweep"><path d="M12 12 18 6"/></g><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/>',expand:'<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>'};
 const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name]||''}</svg>`;
 const volume=n=>!Number.isFinite(n)?'—':n>=1e8?(n/1e8).toFixed(2)+'億':n>=1e4?(n/1e4).toFixed(1)+'萬':n.toFixed(0);
 const signed=n=>Number.isFinite(n)?`${n>=0?'+':''}${n.toFixed(2)}%`:'—';
@@ -19,12 +21,15 @@ const preferencesByMarket=new Map();
 const sessionsByMarket=new Map();
 // Nothing drawn or chosen: take turns between patterns inside each tier (rows
 // already sorted by tier), so the default board mixes shapes instead of a run of one.
+// Named shapes come first (通道, 楔形, 三角, W 底, M 頂, 諧波…), then 走勢路徑, and
+// plain 水平阻力／支撐 and 趨勢線 last.
+export const shapeRank=id=>{const rule=patternById(id)?.rule||'';return /^(level|trend)/.test(rule)?2:rule==='path'?1:0;};
 export function mixPatterns(list){
   const out=[];let i=0;
   while(i<list.length){
     const tier=list[i].displayTier,groups=new Map();
     while(i<list.length&&list[i].displayTier===tier){const row=list[i++],key=row.match?.id||row.match?.label||'';if(!groups.has(key))groups.set(key,[]);groups.get(key).push(row);}
-    const queues=[...groups.values()];while(queues.some(queue=>queue.length))for(const queue of queues)if(queue.length)out.push(queue.shift());
+    for(const rank of [0,1,2]){const queues=[...groups].filter(([key])=>shapeRank(key)===rank).map(([,queue])=>queue);while(queues.some(queue=>queue.length))for(const queue of queues)if(queue.length)out.push(queue.shift());}
   }
   return out;
 }
@@ -40,7 +45,7 @@ export function storePatternSession(cache,market,sessionKey,value){
 }
 // Warm real observations without mounting a hidden UI or competing with live charts.
 let warmController=null,warmTask=null,warmAt=0;
-export const preloadPatternStyles=()=>preloadToolStyles(new URL('./patterns.css?v=20261028-board1',import.meta.url).href);
+export const preloadPatternStyles=()=>preloadToolStyles(new URL('./patterns.css?v=20261031-share1',import.meta.url).href);
 export function stopPatternPreload(){warmController?.abort();}
 export function preloadPatternSearch({signal:externalSignal}={}){
   if(warmTask)return warmTask;
@@ -75,13 +80,13 @@ export function mountPatternSearch(host,options={}){
   const remembers=!options.source&&market==='crypto',stored=remembers?readBoardFilter(TIMEFRAMES):null;
   let saved=preferencesByMarket.get(preferenceKey)||{frames:stored?.frames||source.defaultFrames||['4H','1H'],limit:stored?.limit??source.defaultLimit??0,query:null,strokes:[]};
   if(stored)saved={...saved,frames:stored.frames,limit:stored.limit};
-  let filter=stored?{turnover:stored.turnover,sectors:[...stored.sectors]}:{turnover:0,sectors:[]},sectorInfo=null,sectorUniverse=null;
+  let filter=stored?{turnover:stored.turnover,sectors:[...stored.sectors],ratio:stored.ratio,signals:[...stored.signals]}:{turnover:0,sectors:[],ratio:0,signals:[]},sectorInfo=null,sectorUniverse=null;
   const sourceLabel=source.label||'Bitget',asset=source.asset||'幣種',currency=source.currency||'U',period=source.period||'24H';
   const displayName=source.displayName||((row)=>row.symbol.replace(/USDT$/,''));
   const turnoverLabel=source.turnoverLabel||`${period} 成交額`;
   const shadow=host.shadowRoot||host.attachShadow({mode:'open'}),life=new AbortController();
   let frames=[...saved.frames],limit=saved.limit,query=saved.query,strokes=structuredClone(saved.strokes),universe=null,controller=null,version=0,busy=false,lastScan=0,resumePending=false;
-  let rows=new Map(),shown=24,tierFilter='all',progress={done:0,total:0,failed:0,coinsDone:0,coinsTotal:0},paintTimer=0,drawTimer=0,boardRAF=0,scanFinishTimer=0,lastSignature='',selectedRow=null,detailChart=null,detailController=null,detailVersion=0,detailFrame=null;
+  let lastSorted=[],rows=new Map(),shown=24,tierFilter='all',progress={done:0,total:0,failed:0,coinsDone:0,coinsTotal:0},paintTimer=0,drawTimer=0,boardRAF=0,scanFinishTimer=0,lastSignature='',selectedRow=null,detailChart=null,detailController=null,detailVersion=0,detailFrame=null;
   let chartInstances=new Map(),chartObserver=null,worker=null,workerFailed=false,workerId=0,jobs=new Map(),fallback=new Map();
   let glowEnded=0,moreObserver=null;const reducedMotion=matchMedia('(prefers-reduced-motion:reduce)').matches;
   let entries=new Map(),queryVersion=0,searchRunning=false,searchPending=false,disposed=false,suspended=false,lastError='',backgroundScan=false;
@@ -91,7 +96,7 @@ export function mountPatternSearch(host,options={}){
   let searchSignature=session?JSON.stringify([query,frames,limit,filter]):'';
   // Count chips sit in their own row under the board: readable on a phone and
   // still visible while the market is being scanned.
-  shadow.innerHTML=`<link rel="stylesheet" data-ox-href="${new URL('./patterns.css?v=20261028-board1',import.meta.url)}"><main class="px" data-style-pending="true" inert style="visibility:hidden!important"><section class="px-board" aria-label="型態畫板"><canvas tabindex="0" aria-label="在整個畫板由左向右畫走勢，完成後自動比對；亦可使用型態選單"></canvas><div class="px-controls"><button class="px-control" data-action="timeframes" aria-haspopup="dialog" aria-expanded="false"><span data-frame-label></span>${icon('down')}</button><button class="px-control" data-action="patterns" aria-haspopup="dialog" aria-expanded="false"><span data-pattern-label>型態</span>${icon('down')}</button></div><span class="px-hint">畫出走勢，或選擇型態</span><div class="px-board-bottom"><button class="px-mode-toggle" data-action="toggle-mode" hidden aria-label="切換搜尋模式" title="切換搜尋模式"><span class="px-mode-glyph" aria-hidden="true">⌁</span><span data-mode-label></span></button><button class="px-icon" data-action="undo" aria-label="清除上一筆" title="清除上一筆">${icon('undo')}</button></div></section><div class="px-tier-filters" role="group" aria-label="OX 品質分級，點選只看該級" hidden><button data-tier-filter="all" aria-pressed="true">全部</button><button data-tier-filter="1" aria-pressed="false">T1</button><button data-tier-filter="2" aria-pressed="false">T2</button><button data-tier-filter="3" aria-pressed="false">T3</button></div><button class="px-refresh-pill" data-action="refresh" aria-label="重新掃描" title="重新掃描"${options.scanButton===false?' hidden':''}><svg class="px-pill-progress" viewBox="0 0 40 40" aria-hidden="true"><circle class="px-pill-track" cx="20" cy="20" r="17"/><circle class="px-pill-arc" cx="20" cy="20" r="17"/></svg><span class="px-refresh-glyph">${icon('scan')}</span></button><div class="px-results"><div class="px-scan-error" role="alert" hidden></div><div class="px-status-row" hidden><span class="px-local-loading" hidden></span><span class="px-status" role="status" aria-live="polite">${esc(source.label||'Bitget · USDT 永續')}</span></div><section class="px-grid" aria-label="依 T1 T2 T3 排列的${asset}"><div class="px-empty">等待畫入型態</div></section></div><button class="px-more" data-action="more" hidden>顯示更多</button><dialog class="px-dialog px-presets" aria-label="選擇型態"><div class="px-dialog-head"><span>型態</span><button class="px-icon" data-action="close" aria-label="關閉型態選單">${icon('close')}</button></div><div class="px-dialog-body"><input class="px-search" aria-label="搜尋型態" placeholder="搜尋型態"><div class="px-count-status" aria-live="polite"></div><div class="px-options"></div></div></dialog><dialog class="px-dialog px-settings" aria-label="篩選"><div class="px-dialog-head"><span>篩選<small class="px-filter-summary" aria-live="polite"></small></span><button class="px-icon" data-action="close" aria-label="關閉篩選">${icon('close')}</button></div><div class="px-dialog-body"><div class="px-filter-title">時間級別</div><div class="px-frames">${Object.keys(TIMEFRAMES).map(f=>`<button class="px-frame-option" data-frame="${f}">${f}</button>`).join('')}</div>${remembers?`<div class="px-filter-title">24H 成交額<small>USDT 以上</small></div><div class="px-lots"><label class="px-lots-input"><input type="number" inputmode="decimal" min="0" step="any" data-turnover placeholder="自訂" aria-label="24H 成交額下限，單位萬 USDT"><span aria-hidden="true">萬</span></label>${TURNOVER_PRESETS.map(n=>`<button class="px-frame-option" data-turnover-preset="${n}" aria-label="24H 成交額 ${turnoverText(n)} USDT 以上">${turnoverText(n)}</button>`).join('')}</div><div class="px-filter-title">板塊<small>可複選</small><button class="px-filter-clear" data-sectors-clear>全部板塊</button></div><div class="px-groups" aria-label="板塊"></div>`:''}<label class="px-setting"><span>成交額觀察池</span><select data-limit aria-label="掃描${asset}數"><option value="80">前 80 ${asset}</option><option value="160">前 160 ${asset}</option><option value="0">全部合資格${asset}</option></select></label><details class="px-help"></details></div></dialog><dialog class="px-dialog px-detail" aria-label="型態 K 線詳情"><div class="px-dialog-head"><span class="px-detail-title"></span><div class="px-detail-tools"><button class="px-to-radar" data-action="open-radar" aria-label="在雷達查看這個${asset}">前往雷達</button><button class="px-icon" data-action="reset-chart" aria-label="重設圖表範圍">${icon('refresh')}</button><button class="px-icon" data-action="close" aria-label="關閉圖表">${icon('close')}</button></div></div><div class="px-detail-frames" role="group" aria-label="K 線時間級別">${Object.keys(TIMEFRAMES).map(f=>`<button data-detail-frame="${f}" aria-pressed="false">${f}</button>`).join('')}</div><div class="px-detail-stage"><canvas aria-label="可拖曳及雙指縮放的 K 線圖"></canvas><div class="px-detail-loading" role="status" hidden></div></div><div class="px-detail-footer"></div></dialog></main>`;
+  shadow.innerHTML=`<link rel="stylesheet" data-ox-href="${new URL('./patterns.css?v=20261031-share1',import.meta.url)}"><main class="px" data-style-pending="true" inert style="visibility:hidden!important"><section class="px-board" aria-label="型態畫板"><canvas tabindex="0" aria-label="在整個畫板由左向右畫走勢，完成後自動比對；亦可使用型態選單"></canvas><div class="px-controls"><button class="px-control" data-action="timeframes" aria-haspopup="dialog" aria-expanded="false"><span data-frame-label></span>${icon('down')}</button><button class="px-control" data-action="patterns" aria-haspopup="dialog" aria-expanded="false"><span data-pattern-label>型態</span>${icon('down')}</button></div><span class="px-hint">畫出走勢，或選擇型態</span><div class="px-board-bottom"><button class="px-mode-toggle" data-action="toggle-mode" hidden aria-label="切換搜尋模式" title="切換搜尋模式"><span class="px-mode-glyph" aria-hidden="true">⌁</span><span data-mode-label></span></button><button class="px-share" data-action="share-drawing" data-track="share.drawing" hidden aria-label="把畫的型態和最像的 4 個做成圖片">${icon('share')}<span>分享</span></button><button class="px-icon" data-action="undo" aria-label="清除上一筆" title="清除上一筆">${icon('undo')}</button></div></section><div class="px-tier-filters" role="group" aria-label="OX 品質分級，點選只看該級" hidden><button data-tier-filter="all" aria-pressed="true">全部</button><button data-tier-filter="1" aria-pressed="false">T1</button><button data-tier-filter="2" aria-pressed="false">T2</button><button data-tier-filter="3" aria-pressed="false">T3</button></div><button class="px-refresh-pill" data-action="refresh" aria-label="重新掃描" title="重新掃描"${options.scanButton===false?' hidden':''}><svg class="px-pill-progress" viewBox="0 0 40 40" aria-hidden="true"><circle class="px-pill-track" cx="20" cy="20" r="17"/><circle class="px-pill-arc" cx="20" cy="20" r="17"/></svg><span class="px-refresh-glyph">${icon('scan')}</span></button><div class="px-results"><div class="px-scan-error" role="alert" hidden></div><div class="px-status-row" hidden><span class="px-local-loading" hidden></span><span class="px-status" role="status" aria-live="polite">${esc(source.label||'Bitget · USDT 永續')}</span></div><section class="px-grid" aria-label="依 T1 T2 T3 排列的${asset}"><div class="px-empty">等待畫入型態</div></section></div><button class="px-more" data-action="more" hidden>顯示更多</button><dialog class="px-dialog px-presets" aria-label="選擇型態"><div class="px-dialog-head"><span>型態</span><button class="px-icon" data-action="close" aria-label="關閉型態選單">${icon('close')}</button></div><div class="px-dialog-body"><input class="px-search" aria-label="搜尋型態" placeholder="搜尋型態"><div class="px-count-status" aria-live="polite"></div><div class="px-options"></div></div></dialog><dialog class="px-dialog px-settings" aria-label="篩選"><div class="px-dialog-head"><span>篩選<small class="px-filter-summary" aria-live="polite"></small></span><button class="px-icon" data-action="close" aria-label="關閉篩選">${icon('close')}</button></div><div class="px-dialog-body"><div class="px-filter-title">時間級別</div><div class="px-frames">${Object.keys(TIMEFRAMES).map(f=>`<button class="px-frame-option" data-frame="${f}">${f}</button>`).join('')}</div>${remembers?`<div class="px-filter-title">24H 成交額<small>USDT 以上</small></div><div class="px-lots"><label class="px-lots-input"><input type="number" inputmode="decimal" min="0" step="any" data-turnover placeholder="自訂" aria-label="24H 成交額下限，單位萬 USDT"><span aria-hidden="true">萬</span></label>${TURNOVER_PRESETS.map(n=>`<button class="px-frame-option" data-turnover-preset="${n}" aria-label="24H 成交額 ${turnoverText(n)} USDT 以上">${turnoverText(n)}</button>`).join('')}</div><div class="px-filter-title">量能放大<small>最新 K 量 ÷ 前 5 根均量</small></div><div class="px-lots px-ratio"><label class="px-lots-input"><input type="number" inputmode="decimal" min="0" step="0.1" data-ratio placeholder="自訂" aria-label="量能放大倍數以上"><span aria-hidden="true">倍</span></label>${RATIO_PRESETS.map(n=>`<button class="px-frame-option" data-ratio-preset="${n}" data-track="board.ratio" data-track-detail="${n}" aria-label="量能放大 ${n} 倍以上">${n} 倍</button>`).join('')}</div><div class="px-filter-title">指標信號<small>依卡片級別・勾選的都要符合</small><button class="px-filter-clear" data-signals-clear>不限</button></div><div class="px-groups px-signals" aria-label="指標信號">${SIGNALS.map(([id,name])=>`<button class="px-frame-option" data-signal="${id}" aria-pressed="false" data-track="board.signal" data-track-detail="${id}">${esc(name)}</button>`).join('')}</div><div class="px-filter-title">板塊<small>可複選</small><button class="px-filter-clear" data-sectors-clear>全部板塊</button></div><div class="px-groups px-sectors" aria-label="板塊"></div>`:''}<label class="px-setting"><span>成交額觀察池</span><select data-limit aria-label="掃描${asset}數"><option value="80">前 80 ${asset}</option><option value="160">前 160 ${asset}</option><option value="0">全部合資格${asset}</option></select></label><details class="px-help"></details></div></dialog><dialog class="px-dialog px-detail" aria-label="型態 K 線詳情"><div class="px-dialog-head"><span class="px-detail-title"></span><div class="px-detail-tools"><button class="px-to-radar" data-action="open-radar" aria-label="看這個${asset}的個股 K 線">看個股 K 線</button><button class="px-icon" data-action="reset-chart" aria-label="重設圖表範圍">${icon('refresh')}</button><button class="px-icon" data-action="close" aria-label="關閉圖表">${icon('close')}</button></div></div><div class="px-detail-frames" role="group" aria-label="K 線時間級別">${Object.keys(TIMEFRAMES).map(f=>`<button data-detail-frame="${f}" aria-pressed="false">${f}</button>`).join('')}</div><div class="px-detail-stage"><canvas aria-label="可拖曳及雙指縮放的 K 線圖"></canvas><div class="px-detail-loading" role="status" hidden></div></div><div class="px-detail-footer"></div></dialog></main>`;
  revealStyledShadow(shadow,life.signal);
  document.addEventListener('ox:themechange',()=>requestAnimationFrame(drawBoard),{signal:life.signal});
   const q=s=>shadow.querySelector(s),qa=s=>[...shadow.querySelectorAll(s)],board=q('.px-board canvas');
@@ -109,11 +114,14 @@ export function mountPatternSearch(host,options={}){
   const tickerMaps=new WeakMap();
   function tickerIndex(pool){let map=tickerMaps.get(pool);if(!map){map=new Map((pool.allTickers||pool.tickers||[]).map(t=>[t.symbol,t]));tickerMaps.set(pool,map);}return map;}
   const filtering=()=>remembers&&activeFilterCount(filter)>0;
-  function passesFilter(symbol,turnover){return !filtering()||passesBoardFilter(filter,coinFacts(symbol,turnover));}
-  // The scan covers only contracts that pass 篩選, so a narrow filter finishes quickly.
-  function scanPool(pool){if(!filtering())return pool;const tickers=pool.tickers.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume)));return {...pool,tickers};}
+  const poolFiltering=()=>remembers&&poolFilterCount(filter)>0,seriesFiltering=()=>remembers&&seriesFilterCount(filter)>0;
+  function passesFilter(symbol,turnover){return !poolFiltering()||passesBoardFilter(filter,coinFacts(symbol,turnover));}
+  // 量能放大 and 指標信號 read each card's own candles (its timeframe), after the scan.
+  function passesSeries(entry){return !seriesFiltering()||passesSeriesFilter(filter,seriesFacts(entry.key,entry.data.candles));}
+  // The scan covers only contracts that pass 24H 成交額 and 板塊, so a narrow filter finishes quickly.
+  function scanPool(pool){if(!poolFiltering())return pool;const tickers=pool.tickers.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume)));return {...pool,tickers};}
   function renderSectors(){
-    const host=q('.px-groups');if(!host)return;
+    const host=q('.px-sectors');if(!host)return;
     const info=refreshSectors();
     if(!info){host.innerHTML=`<span class="px-groups-note">${busy?'板塊資料載入中…':'板塊資料暫時無法取得，可重新掃描'}</span>`;return;}
     host.innerHTML=info.groups.map(g=>`<button class="px-frame-option" data-sector="${esc(g.id)}" aria-pressed="${filter.sectors.includes(g.id)}" title="${esc(g.title)}">${esc(g.name)}<small>${g.count}</small></button>`).join('');
@@ -121,14 +129,18 @@ export function mountPatternSearch(host,options={}){
   function filterSummary(){
     const summary=q('.px-filter-summary');if(!summary)return;
     const pool=universe?.tickers;
-    summary.textContent=!pool?'':filtering()?`${pool.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume))).length}／${pool.length} ${asset}`:`${pool.length} ${asset}`;
+    const passing=()=>seriesFiltering()?new Set(activeEntries().map(e=>e.data.symbol)).size:pool.filter(t=>passesFilter(t.symbol,Number(t.usdtVolume))).length;
+    summary.textContent=!pool?'':filtering()?`${passing()}／${pool.length} ${asset}`:`${pool.length} ${asset}`;
   }
   function labels(){
     const active=remembers?activeFilterCount(filter):0;
     q('[data-frame-label]').textContent=remembers?`篩選 · ${frames.join(' + ')}${active?` · ${active}`:''}`:frames.join(' + ');q('[data-pattern-label]').textContent=patternById(query?.id)?.name||'型態';
-    q('[data-action="timeframes"]').setAttribute('aria-label',`篩選：${frames.join('、')}${filter.turnover?`，24H 成交額 ${turnoverText(filter.turnover)} USDT 以上`:''}${filter.sectors.length?`，${filter.sectors.length} 個板塊`:''}`);
+    q('[data-action="timeframes"]').setAttribute('aria-label',`篩選：${frames.join('、')}${filter.turnover?`，24H 成交額 ${turnoverText(filter.turnover)} USDT 以上`:''}${filter.ratio?`，量能 ${filter.ratio} 倍以上`:''}${filter.sectors.length?`，${filter.sectors.length} 個板塊`:''}${filter.signals.length?`，${filter.signals.length} 個指標信號`:''}`);
     qa('[data-turnover-preset]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.turnoverPreset)===filter.turnover)));
     const turnoverInput=q('[data-turnover]');if(turnoverInput&&shadow.activeElement!==turnoverInput)turnoverInput.value=filter.turnover?String(Number((filter.turnover/1e4).toFixed(2))):'';
+    qa('[data-ratio-preset]').forEach(b=>b.setAttribute('aria-pressed',String(Number(b.dataset.ratioPreset)===filter.ratio)));
+    const ratioInput=q('[data-ratio]');if(ratioInput&&shadow.activeElement!==ratioInput)ratioInput.value=filter.ratio&&!RATIO_PRESETS.includes(filter.ratio)?String(filter.ratio):'';
+    qa('[data-signal]').forEach(b=>b.setAttribute('aria-pressed',String(filter.signals.includes(b.dataset.signal))));q('[data-signals-clear]')?.setAttribute('aria-pressed',String(!filter.signals.length));
     qa('[data-sector]').forEach(b=>b.setAttribute('aria-pressed',String(filter.sectors.includes(b.dataset.sector))));q('[data-sectors-clear]')?.setAttribute('aria-pressed',String(!filter.sectors.length));
     filterSummary();
     const toggle=q('.px-mode-toggle'),hasModes=!!strokes.length&&!!query?.points&&!!query?.id;
@@ -184,7 +196,7 @@ export function mountPatternSearch(host,options={}){
     const symbols=new Set(universe?universe.tickers.map(t=>t.symbol):[...new Map(list.sort((a,b)=>b.data.turnover-a.data.turnover).map(e=>[e.data.symbol,e])).keys()].slice(0,limit||Infinity));
     return list.filter(e=>symbols.has(e.data.symbol));
   }
-  function activeEntries(){return filtering()?poolEntries().filter(e=>passesFilter(e.data.symbol,e.data.turnover)):poolEntries();}
+  function activeEntries(){return filtering()?poolEntries().filter(e=>passesFilter(e.data.symbol,e.data.turnover)&&passesSeries(e)):poolEntries();}
   function counts(){return patternCounts(activeEntries(),frames);}
   function updateCounts(){
     const totals=counts();qa('[data-count]').forEach(e=>{e.textContent=totals[e.dataset.count]?String(totals[e.dataset.count]):busy&&!backgroundScan?'…':'0';});
@@ -267,13 +279,18 @@ export function mountPatternSearch(host,options={}){
     const displayTier=r=>r.match.tier;
     const totals=[1,2,3].map(t=>[...rows.values()].filter(r=>displayTier(r)===t).length);
     qa('[data-tier-filter]').forEach(b=>{const choice=b.dataset.tierFilter,count=choice==='all'?rows.size:totals[Number(choice)-1];b.setAttribute('aria-pressed',choice===tierFilter);b.innerHTML=`${choice==='all'?'全部':'T'+choice}<b>${count}</b>`;b.setAttribute('aria-label',`${choice==='all'?'全部':'T'+choice} ${count} 個`);});
-    const ranked=sortMatches([...rows.values()].filter(r=>tierFilter==='all'||String(displayTier(r))===tierFilter).map(r=>({...r,displayTier:displayTier(r),rankPriority:null}))),sorted=strokes.length||query?ranked:mixPatterns(ranked),visible=sorted.slice(0,shown),signature=sorted.length+'|'+visible.map(r=>`${r.symbol}:${r.frame}:${r.similarity}:${r.match.tier}:${r.match.radarTier}:${r.match.stage}:${r.oxScore}:${r.serverTime}`).join('|');
+    const ranked=sortMatches([...rows.values()].filter(r=>tierFilter==='all'||String(displayTier(r))===tierFilter).map(r=>({...r,displayTier:displayTier(r),rankPriority:null}))),sorted=lastSorted=strokes.length||query?ranked:mixPatterns(ranked),visible=sorted.slice(0,shown),signature=sorted.length+'|'+visible.map(r=>`${r.symbol}:${r.frame}:${r.similarity}:${r.match.tier}:${r.match.radarTier}:${r.match.stage}:${r.oxScore}:${r.serverTime}`).join('|');
     q('.px-more').hidden=sorted.length<=shown;
+    const shareButton=q('.px-share');if(shareButton)shareButton.hidden=!strokes.length||!sorted.length||!options.onShareDrawing;
+    // Nothing drawn or chosen: small cards, three across, to scan many shapes at once.
+    q('.px-grid').classList.toggle('px-compact',!strokes.length&&!query);
     if(!force&&signature===lastSignature)return;lastSignature=signature;clearCharts();
-    if(!visible.length){syncQuotes();q('.px-grid').innerHTML=`<div class="px-empty">${tierFilter!=='all'&&rows.size?`此階段暫無符合的${asset}`:filtering()&&pool&&!activeEntries().length&&!(busy&&!backgroundScan)?`篩選後沒有${asset}，可放寬 24H 成交額或板塊`:!query?(busy&&!backgroundScan?'載入走勢與型態…':'行情資料暫無可用資料，可重新掃描'):busy&&!backgroundScan?'正在加入已分類結果…':progress.failed===progress.total&&progress.total?'行情未取得，請重新掃描':'目前沒有符合的型態，可切換級別或重畫'}</div>`;return;}
+    if(!visible.length){syncQuotes();q('.px-grid').innerHTML=`<div class="px-empty">${tierFilter!=='all'&&rows.size?`此階段暫無符合的${asset}`:filtering()&&pool&&!activeEntries().length&&!(busy&&!backgroundScan)?`篩選後沒有${asset}，可放寬篩選條件`:!query?(busy&&!backgroundScan?'載入走勢與型態…':'行情資料暫無可用資料，可重新掃描'):busy&&!backgroundScan?'正在加入已分類結果…':progress.failed===progress.total&&progress.total?'行情未取得，請重新掃描':'目前沒有符合的型態，可切換級別或重畫'}</div>`;return;}
     let lastTier=null;
-    q('.px-grid').innerHTML=visible.map(r=>{const tier=displayTier(r),group=tierFilter==='all'&&lastTier!==tier?`<div class="px-tier-heading" data-tier-heading="${tier}">${query?'型態 ':'觀察 '}T${tier}<span>${tier===1?'結構與量能完整':tier===2?'部分確認':'型態／走勢觀察'}</span></div>`:'';lastTier=tier;return `${group}<button class="px-card" data-tier="${tier}" data-result="${esc(r.symbol+':'+r.frame)}" aria-label="${esc(r.symbol)} ${r.frame} ${query?'型態':'走勢'} T${tier} ${esc(r.match.stage)}，開啟 K 線"><div class="px-card-top"><span class="px-symbol">${esc(displayName(r))}<span class="px-frame">${r.frame}${r.candles.at(-1).provisional?' · 未收':''}</span></span><span class="px-card-right"><b class="px-tier-badge">T${tier}</b><span class="px-change ${r.change>=0?'px-up':'px-down'}">${signed(r.change)}</span></span></div><div class="px-match"><span>${esc(query?r.match.stage:r.match.stage)}</span><span>${query?'相似 '+r.similarity.toFixed(1):esc(r.match.label.replace(/・.*$/,''))}</span></div><canvas aria-label="${esc(r.symbol)} 實際型態 K 線"></canvas><div class="px-energy"><span>OX</span><strong>${r.oxScore??'—'}</strong><span class="px-track" role="meter" aria-label="OX 強度" aria-valuemin="0" aria-valuemax="100" ${r.oxScore===null?'':`aria-valuenow="${Math.min(100,r.oxScore)}"`}><i style="width:${Math.max(0,Math.min(100,r.oxScore??0))}%"></i></span></div><div class="px-turnover"><span>${esc(turnoverLabel)}</span><b>${volume(r.turnover)} ${currency}</b></div></button>`;}).join('');
-    const mountCard=card=>{if(card.dataset.chartMounted)return;const row=rows.get(card.dataset.result);if(row){card.dataset.chartMounted='true';chartInstances.set(card,candleChart(card.querySelector('canvas'),row,{palette:source.palette}));while(chartInstances.size>32){const [old,chart]=chartInstances.entries().next().value;chart.destroy();chartInstances.delete(old);delete old.dataset.chartMounted;}}};
+    q('.px-grid').innerHTML=visible.map(r=>{const tier=displayTier(r),group=tierFilter==='all'&&lastTier!==tier?`<div class="px-tier-heading" data-tier-heading="${tier}">${query?'型態 ':'觀察 '}T${tier}<span>${tier===1?'結構與量能完整':tier===2?'部分確認':'型態／走勢觀察'}</span></div>`:'';lastTier=tier;return `${group}<button class="px-card" data-tier="${tier}" data-result="${esc(r.symbol+':'+r.frame)}" aria-label="${esc(r.symbol)} ${r.frame} ${query?'型態':'走勢'} T${tier} ${esc(r.match.stage)}，開啟 K 線"><div class="px-card-top"><span class="px-symbol">${esc(displayName(r))}<span class="px-frame">${r.frame}${r.candles.at(-1).provisional?' · 未收':''}</span></span><span class="px-card-right">${options.onShare?`<span class="px-card-share" role="button" data-card-share data-track="share.card" data-track-detail="${esc(r.symbol)}" aria-label="把 ${esc(displayName(r))} 做成圖片分享">${PICTURE_ICON}</span>`:''}<b class="px-tier-badge">T${tier}</b><span class="px-change ${r.change>=0?'px-up':'px-down'}">${signed(r.change)}</span></span></div><div class="px-match"><span>${esc(query?r.match.stage:r.match.stage)}</span><span>${query?'相似 '+r.similarity.toFixed(1):esc(r.match.label.replace(/・.*$/,''))}</span></div><canvas aria-label="${esc(r.symbol)} 實際型態 K 線"></canvas><div class="px-energy"><span>OX</span><strong>${r.oxScore??'—'}</strong><span class="px-track" role="meter" aria-label="OX 強度" aria-valuemin="0" aria-valuemax="100" ${r.oxScore===null?'':`aria-valuenow="${Math.min(100,r.oxScore)}"`}><i style="width:${Math.max(0,Math.min(100,r.oxScore??0))}%"></i></span></div><div class="px-turnover"><span>${esc(turnoverLabel)}</span><b>${volume(r.turnover)} ${currency}</b></div></button>`;}).join('');
+    // Small cards show many charts at once (seven across on a wide screen); their canvases are small.
+    const chartCap=q('.px-grid').classList.contains('px-compact')?80:32;
+    const mountCard=card=>{if(card.dataset.chartMounted)return;const row=rows.get(card.dataset.result);if(row){card.dataset.chartMounted='true';chartInstances.set(card,candleChart(card.querySelector('canvas'),row,{palette:source.palette}));while(chartInstances.size>chartCap){const [old,chart]=chartInstances.entries().next().value;chart.destroy();chartInstances.delete(old);delete old.dataset.chartMounted;}}};
     chartObserver=new IntersectionObserver(items=>{for(const e of items)if(e.isIntersecting){visibleQuoteCards.add(e.target);mountCard(e.target);}else {visibleQuoteCards.delete(e.target);chartInstances.get(e.target)?.destroy();chartInstances.delete(e.target);delete e.target.dataset.chartMounted;}syncQuotes();},{rootMargin:'150px'});
     // Draw visible cards immediately. Incremental indexing must not repeatedly
     // cancel a deferred observer before the first frame is painted.
@@ -356,6 +373,10 @@ export function mountPatternSearch(host,options={}){
   function openResult(key){
     const row=rows.get(key);if(!row)return;selectedRow=row;q('.px-detail').showModal();displayDetail(row);
   }
+  // 分享: the picture button on a card, or a long press anywhere on the card.
+  const shareRow=card=>{const row=card&&rows.get(card.dataset.result);if(row)options.onShare?.({...row,title:displayName(row)});};
+  const stopPress=options.onShare?longPress(shadow,'.px-card',shareRow):()=>{};
+  shadow.addEventListener('click',e=>{const pic=e.target.closest?.('[data-card-share]');if(!pic)return;e.preventDefault();e.stopPropagation();shareRow(pic.closest('.px-card'));},{capture:true,signal:life.signal});
   shadow.addEventListener('click',e=>{
     const preset=e.target.closest('[data-preset]'),frame=e.target.closest('[data-frame]'),tierChoice=e.target.closest('[data-tier-filter]'),detailChoice=e.target.closest('[data-detail-frame]'),result=e.target.closest('[data-result]'),button=e.target.closest('[data-action]');
     if(e.type==='click'&&suppressControlClick){suppressControlClick=false;e.preventDefault();e.stopPropagation();return;}
@@ -368,6 +389,14 @@ export function mountPatternSearch(host,options={}){
       if(sectorsClear)filter={...filter,sectors:[]};
       applyFilter();return;
     }
+    // 量能放大 and 指標信號 only narrow what is already scanned: no new scan.
+    const ratioPreset=e.target.closest('[data-ratio-preset]'),signal=e.target.closest('[data-signal]'),signalsClear=e.target.closest('[data-signals-clear]');
+    if(ratioPreset||signal||signalsClear){
+      if(ratioPreset){const n=Number(ratioPreset.dataset.ratioPreset);filter={...filter,ratio:filter.ratio===n?0:n};}
+      if(signal){const id=signal.dataset.signal;filter={...filter,signals:filter.signals.includes(id)?filter.signals.filter(x=>x!==id):[...filter.signals,id]};}
+      if(signalsClear)filter={...filter,signals:[]};
+      applyFilter(false);return;
+    }
     if(frame){const f=frame.dataset.frame;if(frames.includes(f)){if(frames.length===1)return;frames=frames.filter(x=>x!==f);}else frames.push(f);frames.sort((a,b)=>TIMEFRAMES[b]-TIMEFRAMES[a]);labels();preferences();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,300);return;}
     if(detailChoice){selectDetailFrame(detailChoice.dataset.detailFrame);return;}
     if(result){openResult(result.dataset.result);return;}
@@ -376,6 +405,7 @@ export function mountPatternSearch(host,options={}){
       case 'patterns':presetOptions();q('.px-search').value='';openDialog('.px-presets',button);break;
       case 'timeframes':renderSectors();labels();openDialog('.px-settings',button);break;
       case 'close':closeDialogs();break;
+      case 'share-drawing':if(strokes.length&&lastSorted.length)options.onShareDrawing?.({strokes:structuredClone(strokes),rows:lastSorted.slice(0,4).map(r=>({...r,title:displayName(r)}))});break;
       case 'undo':clearTimeout(drawTimer);glowEnded=0;strokes=[];query=strokes.length?queryFromStrokes(strokes):null;labels();scheduleBoard();preferences();search();break;
       case 'toggle-mode':if(query?.points&&query?.id){query={...query,mode:query.mode==='sketch'?'pattern':'sketch'};shown=24;labels();preferences();search();}break;
       case 'refresh':universe=null;scan();break;
@@ -387,14 +417,17 @@ export function mountPatternSearch(host,options={}){
   q('.px-search').addEventListener('input',e=>presetOptions(e.target.value),{signal:life.signal});
   // 篩選 narrows the shown cards at once; a short-delayed scan then covers any
   // contract that newly passes and was not observed yet.
-  function applyFilter(){shown=24;labels();preferences();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,350);}
+  function applyFilter(rescan=true){shown=24;labels();preferences();search();if(!rescan)return;clearTimeout(drawTimer);drawTimer=setTimeout(scan,350);}
   q('[data-turnover]')?.addEventListener('change',e=>{const value=Number(e.target.value);filter={...filter,turnover:Number.isFinite(value)&&value>0?Math.round(value*1e4):0};applyFilter();},{signal:life.signal});
-  q('[data-turnover]')?.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}},{signal:life.signal});
+  q('[data-ratio]')?.addEventListener('change',e=>{const value=Number(e.target.value);filter={...filter,ratio:normalizeBoardFilter({ratio:value}).ratio};applyFilter(false);},{signal:life.signal});
+  qa('[data-turnover],[data-ratio]').forEach(input=>input.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();e.target.blur();}},{signal:life.signal}));
+  // 指標信號 use the 盤面 chart's parameters: a change there re-reads the cards.
+  document.addEventListener('ox:chart-indicators-change',()=>{if(filter.signals.length&&!disposed){lastSignature='';search();}},{signal:life.signal});
   // Another tab or a later account sync may replace the remembered 篩選.
   if(remembers)document.addEventListener(BOARD_FILTER_EVENT,event=>{
     if(ignoreFilterEvent||disposed)return;const next=normalizeBoardFilter(event.detail,TIMEFRAMES);
-    if(JSON.stringify([next.frames,next.limit,next.turnover,next.sectors])===JSON.stringify([frames,limit,filter.turnover,filter.sectors]))return;
-    const scope=next.limit!==limit;frames=next.frames;limit=next.limit;filter={turnover:next.turnover,sectors:next.sectors};if(scope)universe=null;
+    if(JSON.stringify([next.frames,next.limit,next.turnover,next.sectors,next.ratio,next.signals])===JSON.stringify([frames,limit,filter.turnover,filter.sectors,filter.ratio,filter.signals]))return;
+    const scope=next.limit!==limit;frames=next.frames;limit=next.limit;filter={turnover:next.turnover,sectors:next.sectors,ratio:next.ratio,signals:next.signals};if(scope)universe=null;
     saved={...saved,frames:[...frames],limit};preferencesByMarket.set(preferenceKey,saved);shown=24;labels();renderSectors();search();clearTimeout(drawTimer);drawTimer=setTimeout(scan,350);
   },{signal:life.signal});
   q('[data-limit]').addEventListener('change',e=>{limit=Number(e.target.value);universe=null;preferences();scan();},{signal:life.signal});
@@ -413,5 +446,7 @@ export function mountPatternSearch(host,options={}){
   const syncPill=()=>q('.px-refresh-pill').classList.toggle('is-compact',!!dock?.classList.contains('ox-dock-compact'));
   const dockObserver=dock?new MutationObserver(syncPill):null;dockObserver?.observe(dock,{attributes:true,attributeFilter:['class']});syncPill();
   labels();scheduleBoard();if(session){renderResults(true);updateStatus();}if(!session||!lastScan||progress.done!==progress.total||(source.scanCurrent?!source.scanCurrent(universe):Date.now()-lastScan>60000||!frames.every(f=>activeEntries().some(e=>e.data.frame===f))))scan();
-  return {closeInner:closeDialogs,clearPrivateState(){preferencesByMarket.clear();sessionsByMarket.clear();},suspend(){suspended=true;syncQuotes();queryVersion++;resumePending=busy;stop();clearTimeout(drawTimer);cancelAnimationFrame(boardRAF);boardRAF=0;closeDialogs(true);},resume(){suspended=false;syncQuotes();scheduleBoard();if(resumePending||!lastScan||Date.now()-lastScan>60000||[...entries.values()].some(e=>!entryCurrent(e)))scan();else search();},refresh(){universe=null;scan();},destroy(){storePatternSession(sessionsByMarket,market,sessionKey,{entries:new Map(entries),rows:new Map(rows),universe,lastScan,progress:{...progress},shown,tierFilter});disposed=true;syncQuotes();queryVersion++;preferences();stop();resetWorker();life.abort();resize.disconnect();dockObserver?.disconnect();clearCharts();moreObserver?.disconnect();detailChart?.destroy();closeDialogs(true);clearInterval(timer);clearTimeout(drawTimer);cancelAnimationFrame(boardRAF);shadow.replaceChildren();}};
+  // 畫相似型態 from the 個股 page: a shape (x 0→1 left to right, y 0→1 bottom to top) searched like a drawing.
+  function drawShape(points){if(disposed)return;clearTimeout(drawTimer);queryVersion++;rows.clear();strokes=[points.map(p=>({x:Math.max(0,Math.min(1,Number(p.x)||0)),y:Math.max(0,Math.min(1,Number(p.y)||0))}))];glowEnded=performance.now();query=queryFromStrokes(strokes);shown=24;labels();scheduleBoard();preferences();renderResults(true);status(query?'正在搜尋已分類資料…':'請由左向右畫一段走勢');drawTimer=setTimeout(search,100);}
+  return {closeInner:closeDialogs,drawShape,clearPrivateState(){preferencesByMarket.clear();sessionsByMarket.clear();},suspend(){suspended=true;syncQuotes();queryVersion++;resumePending=busy;stop();clearTimeout(drawTimer);cancelAnimationFrame(boardRAF);boardRAF=0;closeDialogs(true);},resume(){suspended=false;syncQuotes();scheduleBoard();if(resumePending||!lastScan||Date.now()-lastScan>60000||[...entries.values()].some(e=>!entryCurrent(e)))scan();else search();},refresh(){universe=null;scan();},destroy(){storePatternSession(sessionsByMarket,market,sessionKey,{entries:new Map(entries),rows:new Map(rows),universe,lastScan,progress:{...progress},shown,tierFilter});disposed=true;syncQuotes();queryVersion++;preferences();stop();resetWorker();stopPress();life.abort();resize.disconnect();dockObserver?.disconnect();clearCharts();moreObserver?.disconnect();detailChart?.destroy();closeDialogs(true);clearInterval(timer);clearTimeout(drawTimer);cancelAnimationFrame(boardRAF);shadow.replaceChildren();}};
 }

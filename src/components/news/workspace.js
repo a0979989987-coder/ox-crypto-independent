@@ -1,9 +1,11 @@
 import {localizeNewsText} from './localization.js';
-import { createToolsRail } from '../strength/tools-rail.js?v=20261005-stable18';
+import { createTextTabs } from '../../app/text-tabs.js';
 import { MARKET_NAMES, CATEGORY_NAMES, MARKET_CATEGORIES, TIME_CHOICES, sourceName } from './config.js?v=20261005-calendar11';
 import { defaultState, taipeiDay, validDate, monthGrid, shiftMonth, eventDay, eventCategory, importance, matchesImportance, newsBase, filterNews, hotWords, ranking, sourcesFor, coverage, safeLink, plain, agendaDays, inMarket, upcomingEventDays } from './model.js?v=20261005-load16';
 import { macroResult, macroValue } from './macro.js?v=20261005-macro1';
+import { macroReactionSection, reactionMetric } from './macro-reaction.js?v=20261031-react1';
 import { node, button, anchoredPanel, modal } from './layers.js';
+import { PICTURE_ICON } from '../../markets/crypto/share-image.js?v=20261031-share1';
 const newsDateFormatter = new Intl.DateTimeFormat('zh-TW', { timeZone:'Asia/Taipei', dateStyle:'short', timeStyle:'short', hour12:false });
 const fmt = value => Number.isFinite(Date.parse(value)) ? newsDateFormatter.format(new Date(value)) : '時間待確認';
 const label = item => localizeNewsText(item.titleZh || (/[\u4e00-\u9fff]/.test(item.title||'') ? item.title : '中文翻譯準備中'));
@@ -33,8 +35,9 @@ export function mountNewsWorkspace(host, api) {
     const tags = node('div', 'oxn-tags'); for (const [id, text] of [['all', '全部閱讀狀態'], ['unread', '僅未讀'], ['following', '追蹤來源']]) { const b = button(text, '', () => { state.reader = id; persist(); renderContent(); [...tags.children].forEach(n => n.setAttribute('aria-pressed', String(n === b))); }); b.setAttribute('aria-pressed', String((state.reader || 'all') === id)); tags.append(b); }
     body.append(tags, button('恢復隱藏新聞／來源', '', () => { api.save({ hidden: [], mutedSources: [] }); renderContent(); }, 'oxn-action'), button('更新來源快照', '', api.refresh, 'oxn-action'), node('p', 'oxn-caption', '資料依來源快照更新，並非即時串流；重新讀取會保留最後成功資料。'));
   }), 'oxn-close oxn-more'); header.append(more);
-  const rail = createToolsRail({ tabs: [['calendar', '行事曆'], ['key', '關鍵新聞']], selected: state.tab, label: '新聞內容', attribute: 'data-news-tab', equal: true,
-    onSelect(tab) { state.tab = tab; persist(); panel?.destroy({ focus: false }); renderControls(); renderContent(); } }); rail.element.classList.add('oxn-tabs');
+  // 行事曆／關鍵新聞: the small text tabs of 行情 and 型態, pinned at the top while the list scrolls.
+  const rail = createTextTabs({ tabs: [['calendar', '行事曆'], ['key', '關鍵新聞']], selected: state.tab, label: '新聞內容', attribute: 'data-news-tab', sticky: true,
+    onSelect(tab) { state.tab = tab; persist(); panel?.destroy({ focus: false }); renderControls(); renderContent(); if (scrollY > 0) scrollTo({ top: 0 }); } }); rail.element.classList.add('oxn-tabs');
   const controls = node('div', 'oxn-controls'), notification = node('div', 'oxn-notification'), content = node('div', 'oxn-content');
   root.append(header, rail.element, controls, notification, content); host.replaceChildren(root);
   const scope = () => api.scope === 'all' ? state.market : api.scope;
@@ -132,48 +135,18 @@ export function mountNewsWorkspace(host, api) {
     positionCalendar();
   }
   function selectedDate() { return state.selectedDay?.slice(0,7) === state.month ? state.selectedDay : taipeiDay().slice(0,7) === state.month ? taipeiDay() : `${state.month}-01`; }
-  // One calendar on phones. Collapsed, the month grid shows only the selected
-  // week with each day's event count; expanding reveals the rest of the same
-  // grid and collapsing hides it again, so nothing is swapped and the motion
-  // is one continuous change.
   function renderMobileCalendar() {
     const selected = selectedDate();
-    renderCalendar(); content.querySelector('.oxn-day-events')?.remove();
-    const calendar = content.querySelector('.oxn-calendar'), grid = calendar?.querySelector('.oxn-calendar-grid');
-    if (!grid) { renderUpcomingEvents(selected, true); return; }
-    const viewport = node('div', 'oxn-month-viewport'); grid.before(viewport);
-    viewport.append(grid, ...[calendar.querySelector('.oxn-calendar-caption')].filter(Boolean));
-    const toggle = button('', '', () => toggleMonth(), 'oxn-month-expand'); calendar.append(toggle);
-    const week = () => grid.querySelector(`[data-date="${selected}"]`) || grid.firstElementChild;
-    const shift = () => week().getBoundingClientRect().top - grid.getBoundingClientRect().top;
-    const fullHeight = () => grid.offsetHeight + (calendar.querySelector('.oxn-calendar-caption')?.offsetHeight || 0);
-    function sync() {
-      toggle.textContent = monthExpanded ? '收起行事曆 ▴' : '展開行事曆 ▾';
-      toggle.setAttribute('aria-label', monthExpanded ? '收起完整月份行事曆' : '展開完整月份行事曆');
-      toggle.setAttribute('aria-expanded', String(monthExpanded)); calendar.classList.toggle('is-collapsed', !monthExpanded);
+    const shell = node('section', 'oxn-mobile-dates'); shell.setAttribute('aria-label','日期選擇');
+    const week = node('div', 'oxn-week-strip');
+    const start = new Date(selected+'T12:00:00Z'); start.setUTCDate(start.getUTCDate() - (start.getUTCDay()+6)%7);
+    for (let i=0;i<7;i++) { const d=new Date(start); d.setUTCDate(d.getUTCDate()+i); const day=d.toISOString().slice(0,10);
+      const b=button('',day,()=>{state.selectedDay=day;state.month=day.slice(0,7);persist();renderControls();renderContent();},'oxn-week-date');
+      b.append(node('small','','一二三四五六日'[i]),node('strong','',String(d.getUTCDate())));b.setAttribute('aria-pressed',String(day===selected));if(day===taipeiDay())b.setAttribute('aria-current','date');week.append(b);
     }
-    function place() {
-      if (monthExpanded) { viewport.style.height = ''; grid.style.transform = ''; return; }
-      viewport.style.height = `${week().offsetHeight}px`; grid.style.transform = `translateY(${-shift()}px)`;
-    }
-    function toggleMonth() {
-      const offset = shift(), small = week().offsetHeight, full = fullHeight(), expand = !monthExpanded;
-      monthExpanded = expand; sync(); place();
-      if (matchMedia('(prefers-reduced-motion:reduce)').matches) return;
-      const timing = { duration: expand ? 420 : 360, easing: 'cubic-bezier(.32,.72,0,1)' };
-      const height = [{ height: `${small}px` }, { height: `${full}px` }], move = [{ transform: `translateY(${-offset}px)` }, { transform: 'translateY(0)' }];
-      if (!expand) { height.reverse(); move.reverse(); }
-      viewport.animate(height, timing); grid.animate(move, timing);
-    }
-    // Collapsed, a tap picks the day for the list below, as the week strip did.
-    viewport.addEventListener('click', event => {
-      if (monthExpanded) return; const cell = event.target.closest('.oxn-day'); if (!cell) return;
-      event.stopPropagation(); event.preventDefault(); state.selectedDay = cell.dataset.date; persist(); renderContent();
-    }, true);
-    sync(); place();
-    // The grid is fitted to the screen on the next frame (positionCalendar).
-    requestAnimationFrame(() => requestAnimationFrame(place));
-    renderUpcomingEvents(selected, true);
+    const toggle=button(monthExpanded?'收起行事曆 ▴':'展開行事曆 ▾','展開或收起完整月份行事曆',()=>{monthExpanded=!monthExpanded;renderContent();},'oxn-month-expand');toggle.setAttribute('aria-expanded',String(monthExpanded));shell.append(week,toggle);content.append(shell);
+    if(monthExpanded) { renderCalendar(); content.querySelector('.oxn-day-events')?.remove(); }
+    renderUpcomingEvents(selected,true);
   }
   function renderUpcomingEvents(start,mobile) {
     const section=node('section',mobile?'oxn-mobile-events oxn-upcoming-events':'oxn-day-events oxn-upcoming-events');section.setAttribute('aria-label','起始日期與未來七天事件');
@@ -267,12 +240,44 @@ export function mountNewsWorkspace(host, api) {
     const base = baseItems(), prefs = api.preferences(); let items = filterNews(base, state);
     if (state.reader === 'unread') items = items.filter(i => !(prefs.read || []).includes(i.id)); if (state.reader === 'following') items = items.filter(i => (prefs.followedSources || []).includes(i.sourceId));
     const range = node('div', 'oxn-news-range'); range.append(node('span', '', `${items.length} 篇・台北時間`), node('span', '', data.snapshot.generatedAt ? `快照 ${fmt(data.snapshot.generatedAt)}` : '快照時間未提供')); content.append(range);
+    // 今日重點: today's headlines, most important first, as one image.
+    if (items.length) { const pic = button('', '把今日重點新聞做成圖片', () => shareTodayNews(items), 'ox-share-pic oxn-share-pic'); pic.dataset.track = 'share.news'; pic.innerHTML = PICTURE_ICON + '<span>今日重點</span>'; range.append(pic); }
     if (state.asset || state.query || state.words.length) { const selected = node('div', 'oxn-active-filters'); selected.append(node('span', '', [state.asset ? ranking(base).find(a => a.id === state.asset)?.name || '資產篩選' : '', state.query, ...state.words].filter(Boolean).join(' · ')), button('清除', '', () => { state.asset = null; state.query = ''; state.words = []; persist(); renderControls(); renderContent(); })); content.append(selected); }
     const list = node('div', 'oxn-news-list'); for (const item of items.slice(0, state.limit)) list.append(newsRow(item));
     if (!items.length) list.append(node('p', 'oxn-empty', !state.times.length || state.sources?.length === 0 ? '沒有選取時間或來源。可在藥丸中選擇「全部」或恢復預設。' : '已收錄資料中沒有符合條件的新聞。'));
     content.append(list); if (items.length > state.limit) content.append(button(`載入更多（尚有 ${items.length - state.limit} 篇）`, '', () => { state.limit += 40; persist(); renderContent(); }, 'oxn-load-more'));
     const published = [...(data.snapshot.news || []), ...(data.snapshot.pendingNews || [])].filter(i => scope() === 'all' || i.markets?.includes(scope())).map(i => i.publishedAt).sort();
     content.append(node('p', 'oxn-caption', `${statsText(base)}。${published.length ? `現有文章發布範圍：${fmt(published[0])}～${fmt(published.at(-1))}；來源 RSS 篇數有限，未完整覆蓋所選區間。` : '目前没有本市場來源資料。'}`));
+  }
+  // Few articles carry stars, so market-wide words lift a headline (BTC, ETH, the Fed,
+  // CPI, 非農, ETF, SEC, 清算, 資金費率…) and single-coin hype sinks; ties go to the newest.
+  const KEY_WORDS = /比特幣|BTC|以太坊|ETH|聯準會|Fed|FOMC|鮑爾|利率|降息|升息|CPI|PCE|非農|就業|通膨|ETF|SEC|監管|法案|清算|爆倉|資金費率|未平倉|穩定幣|USDT|USDC|美股|那斯達克|關稅|美元指數|美債|Strategy|貝萊德|BlackRock|灰度|交易所/gi;
+  const HYPE = /空投|迷因|meme|百倍|千倍|暴漲.{0,4}幣|潛力幣|翻倍|必看/i;
+  async function shareTodayNews(items) {
+    const today = taipeiDay(), day = i => i.publishedAt ? taipeiDay(new Date(i.publishedAt)) : '';
+    let pick = items.filter(i => day(i) === today);
+    if (pick.length < 3) pick = items.slice(0, 40);
+    const score = i => { const t = label(i); return (importance(i).value || 0) * 10 + Math.min(3, (t.match(KEY_WORDS) || []).length) * 3 - (HYPE.test(t) ? 6 : 0); };
+    // Unrelated headlines only fill in when there are too few market ones.
+    if (pick.filter(i => score(i) > 0).length >= 5) pick = pick.filter(i => score(i) > 0);
+    // The same story from two outlets: the same figures (3.747 萬枚 ETH, 8330 萬美元), a figure
+    // and a name, or mostly the same words.
+    const nums = t => new Set((t.match(/\d+(?:[.,]\d+)+|\d{3,}/g) || []).map(s => s.replace(/,/g, '')));
+    const names = t => new Set((t.match(/[A-Za-z]{3,}/g) || []).map(s => s.toLowerCase()));
+    const pairs = t => { const s = t.replace(/[^\p{Script=Han}]/gu, ''), out = new Set(); for (let k = 0; k < s.length - 1; k++) out.add(s.slice(k, k + 2)); return out; };
+    const shared = (a, b) => [...a].filter(x => b.has(x)).length;
+    const same = (a, b) => { const n = shared(a.n, b.n); return n >= 2 || n >= 1 && shared(a.w, b.w) >= 1 || shared(a.p, b.p) / Math.max(1, Math.min(a.p.size, b.p.size)) >= .6; };
+    const kept = [];
+    for (const i of [...pick].sort((a, b) => score(b) - score(a) || String(b.publishedAt).localeCompare(String(a.publishedAt)))) {
+      const t = label(i), mark = { i, n: nums(t), w: names(t), p: pairs(t) };
+      if (kept.some(k => same(mark, k))) continue;
+      kept.push(mark); if (kept.length === 8) break;
+    }
+    pick = kept.map(k => k.i);
+    if (!pick.length) return;
+    const { shareNews } = await import('../../markets/crypto/share-image.js?v=20261031-share1');
+    const ref = day(pick[0]) || today, hm = i => fmt(i.publishedAt).split(' ').at(-1);
+    shareNews({ dateLabel: `${+ref.slice(5, 7)}/${+ref.slice(8, 10)}`, items: pick.map(i => ({ title: label(i), meta: `${sourceName(i)}・${day(i) === ref ? hm(i) : fmt(i.publishedAt)}` })) });
   }
   function newsRow(item) {
     const row = node('details', 'oxn-news-row'); row.dataset.newsId = item.id;
@@ -291,7 +296,7 @@ export function mountNewsWorkspace(host, api) {
     actions.append(read, follow, button('隱藏', '', () => { api.save({ hidden: [...new Set([...(api.preferences().hidden || []), item.id])] }); row.remove(); })); body.append(actions);
     for (const asset of item.assets || []) {
       const assetActions = node('div', 'oxn-asset-actions'); assetActions.append(button(`${asset.name}相關新聞`, '', () => { state.asset = asset.id; persist(); renderControls(); renderContent(); }));
-      if (asset.market === 'crypto' && asset.venueSymbol && typeof window.switchSymbol === 'function') assetActions.append(button('前往幣種雷達', '', () => { window.OXMarketController?.setMarket('crypto'); window.switchSymbol(asset.venueSymbol); })); body.append(assetActions);
+      if (asset.market === 'crypto' && asset.venueSymbol && typeof window.switchSymbol === 'function') assetActions.append(button('看個股 K 線', '', () => { window.OXMarketController?.setMarket('crypto'); window.switchSymbol(asset.venueSymbol); })); body.append(assetActions);
     }
     if (item.reports?.length > 1) { const related = node('div', 'oxn-related'); related.append(node('small', '', '同篇轉載／連結（不算獨立查證）')); for (const report of item.reports.slice(1)) { const a = link(sourceName(report), report.link); if (a) related.append(a); } body.append(related); }
     const health = data.snapshot.sources?.find(s => s.id === item.sourceId); if (health?.status === 'error') body.append(node('p', 'oxn-caption', '來源更新失敗・保留前次快照'));
@@ -337,6 +342,7 @@ export function mountNewsWorkspace(host, api) {
         box.append(node('small', 'oxn-caption', `公布：${item.releasedAt ? fmt(item.releasedAt) : '待公布'} · 更新：${item.updatedAt ? fmt(item.updatedAt) : '待更新'}`));
         detail.body.append(box);
       }
+      if (category === 'macro' && reactionMetric(item)) detail.body.append(macroReactionSection(item));
       if (category === 'governance') detail.body.append(fieldList([['治理議案', item.proposalTitleZh || '中文翻譯準備中'], ['投票開始／台北時間', fmt(item.startsAt)], ['投票截止／台北時間', fmt(item.endsAt||item.occursAt)]]));
       if (item.eventTimeType) detail.body.append(node('p', 'oxn-caption', item.eventTimeType === 'software-release-publication' ? '此時間為官方軟體版本發布時間，不是主網硬分叉生效時間。' : item.eventTimeType));
       if (category === 'unlock') { const counter = node('p', 'oxn-countdown', api.unlockCountdown(item)); detail.body.append(counter); if (item.status === 'confirmed' && item.occursAt && !item.date) countdown = setInterval(() => { counter.textContent = api.unlockCountdown(item); }, 1000); }

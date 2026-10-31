@@ -38,6 +38,9 @@ test('BLS parsers use official publication date, revisions, sign and seasonal mo
 test('Fed fractional range and publication time remain distinct from meeting schedule', () => {
   const html='2026 FOMC Meetings<div class="row fomc-meeting"><div class="fomc-meeting__month"><strong>September</strong></div><div class="fomc-meeting__date">15-16*</div><a href="/newsevents/pressreleases/monetary20260916a.htm">HTML</a>2025 FOMC Meetings';
   const [meeting]=parseFedCalendar(html,new Date(now));assert.equal(meeting.releasedAt,null);
+  // Before the statement the meeting already sits at its Taipei release time.
+  assert.equal(meeting.occursAt,'2026-09-16T18:00:00.000Z');assert.equal(meeting.date,null);assert.equal(meeting.meetingDate,'2026-09-16');
+  const [winter]=parseFedCalendar(html.replace('September','December').replace('15-16*','8-9'),new Date(now));assert.equal(winter.occursAt,'2026-12-09T19:00:00.000Z');
   const e=parseFedRate('For release at 2:00 p.m. EDT target range by 1/4 percentage point to 3-3/4 to 4 percent',meeting);
   assert.equal(e.actual,4);assert.equal(e.rateRange,'3.75–4%');assert.equal(e.occursAt,'2026-09-16T18:00:00.000Z');assert.equal(e.date,null);
 });

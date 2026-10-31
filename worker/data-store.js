@@ -55,7 +55,10 @@ export async function publishData(request, bucket, claims) {
     const sequence = Number(claims.run_id); if (!Number.isSafeInteger(sequence) || sequence < 1) throw Error('Invalid run');
     const previousObject = await bucket.get(DATA_POINTER), previous = previousObject ? await previousObject.json() : null;
     if ((previous?.commit ?? null) !== input.previousCommit) return reply({ ok: false, error: { code: 'RELEASE_CHANGED' } }, 409);
-    const release = { schemaVersion: 1, commit: input.commit, sequence, publishedAt: new Date().toISOString(), files: input.files };
+    // Releases of the same commit differ in their live files (the hourly radar): a writer
+    // that read an older release must start over instead of restoring its older copy.
+    if (input.previousRevision !== undefined && (previous?.revision ?? 0) !== input.previousRevision) return reply({ ok: false, error: { code: 'RELEASE_CHANGED' } }, 409);
+    const release = { schemaVersion: 1, commit: input.commit, sequence, revision: (previous?.revision ?? 0) + 1, publishedAt: new Date().toISOString(), files: input.files };
     const stored = await bucket.put(DATA_POINTER, JSON.stringify(release), { httpMetadata: { contentType: 'application/json' },
       onlyIf: previousObject ? { etagMatches: previousObject.etag } : { etagDoesNotMatch: '*' } });
     if (!stored) return reply({ ok: false, error: { code: 'RELEASE_CHANGED' } }, 409);

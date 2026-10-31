@@ -1,0 +1,278 @@
+/* OX 加密 app shell, after the Taiwan site's redesign: the 首頁 top bar (avatar,
+   search, 通知), its sheets, the left drawer and its pages, the 行情 lists
+   (雷達, 自選, 排行), the 個股 page bar and the page tab placement. Two themes as
+   everywhere else: black with a white glow, and 白金. Up and down follow Bitget:
+   青藍 up, 桃紅 down. The dock and its glass are not styled here. */
+:root{--oc-font:-apple-system,BlinkMacSystemFont,"SF Pro Text","PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif;--oc-ink:#f0ede5;--oc-muted:#9ea3aa;--oc-line:rgba(255,255,255,.09);--oc-soft:rgba(255,255,255,.06);--oc-glass:rgba(255,255,255,.055);--oc-edge:rgba(255,255,255,.15);--oc-glow:0 0 18px rgba(255,255,255,.07),inset 0 1px 0 rgba(255,255,255,.16);--oc-bar:rgba(18,20,23,.72);--oc-solid:#121417;--oc-accent:#ffffff;--oc-up:#00b8d4;--oc-down:#ff3078;--oc-up-solid:#0fa9c2;--oc-down-solid:#ef3474;--oc-flat-solid:#6f767e;--oc-primary-bg:#f0ede5;--oc-primary-ink:#121417;--oc-star:#f4c65b}
+body.theme-light{--oc-ink:#30343b;--oc-muted:#6d7480;--oc-line:rgba(0,0,0,.08);--oc-soft:rgba(141,113,46,.08);--oc-glass:rgba(255,255,255,.78);--oc-edge:rgba(141,113,46,.22);--oc-glow:0 6px 22px rgba(80,60,20,.08),inset 0 1px 0 #fff;--oc-bar:rgba(255,255,255,.84);--oc-solid:#ffffff;--oc-accent:#8d712e;--oc-up:#176ed0;--oc-down:#d13c5b;--oc-up-solid:#1d74d6;--oc-down-solid:#d6415f;--oc-flat-solid:#8c939c;--oc-primary-bg:linear-gradient(135deg,#c2a253,#8d712e);--oc-primary-ink:#fff;--oc-star:#d9a628}
+.oc-i{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.oc-btn{appearance:none;-webkit-appearance:none;border:0;background:none;color:inherit;font:inherit;padding:0;margin:0;cursor:pointer;-webkit-tap-highlight-color:transparent}
+html body.ox-terminal .oc-btn{box-shadow:none;min-height:0}
+
+/* ---------- 首頁 top bar ---------- */
+.oc-top{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;margin:0 -8px 8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px;background:var(--oc-bar);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);font-family:var(--oc-font);color:var(--oc-ink)}
+html body.ox-terminal main.wrap{padding-top:10px}
+html body.ox-terminal[data-view="home"] main.wrap{padding-top:0!important}
+body:not([data-view="home"]) .oc-top{display:none!important}
+.oc-ava{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;overflow:hidden;font:600 15px var(--oc-font);position:relative}
+.oc-ava img{width:100%;height:100%;object-fit:cover}
+.oc-ava b{font-weight:600}
+.oc-ava .oc-person{width:100%;height:100%;fill:none;stroke-width:2.4;stroke-linecap:round}
+.oc-ava .oc-person circle{fill:currentColor;fill-opacity:.12}
+body:not(.theme-light) .oc-ava{background:radial-gradient(circle at 30% 25%,#3a424d,#171a20 70%);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 0 14px rgba(255,255,255,.08);color:#dfe6ee}
+body:not(.theme-light) .oc-ava .oc-person{stroke:#e6ebf1}
+body.theme-light .oc-ava{background:radial-gradient(circle at 30% 25%,#fffdf7,#f1e7cf 75%);box-shadow:0 2px 8px rgba(80,60,20,.12),inset 0 0 0 1px rgba(141,113,46,.28);color:#8d712e}
+body.theme-light .oc-ava .oc-person{stroke:#8d712e}
+.oc-back,.oc-round{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);position:relative;color:var(--oc-ink)}
+html body.ox-terminal .oc-back,html body.ox-terminal .oc-round{border:1px solid var(--oc-edge)}
+.oc-search{flex:1;min-width:0;height:38px;border-radius:19px;display:flex;align-items:center;gap:8px;padding:0 14px;font:500 14px var(--oc-font);color:var(--oc-muted);background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);text-align:left;overflow:hidden}
+html body.ox-terminal .oc-search{border:1px solid var(--oc-edge);color:var(--oc-muted)}
+.oc-search span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .25s,transform .25s}.oc-search span.out{opacity:0;transform:translateY(-6px)}
+.oc-dot{position:absolute;right:8px;top:8px;width:8px;height:8px;border-radius:50%;background:#f16a70;box-shadow:0 0 0 2px var(--oc-solid)}
+.oc-dot[hidden]{display:none}
+
+/* ---------- sheets: search, 通知, 意見回饋 and the drawer's pages ---------- */
+.oc-sheet{position:fixed;inset:0;z-index:2147483200;display:flex;flex-direction:column;background:var(--oc-solid);color:var(--oc-ink);font-family:var(--oc-font);animation:oc-in .22s ease}
+.oc-sheet-head{display:flex;align-items:center;gap:10px;padding:calc(env(safe-area-inset-top,0px) + 10px) 14px 10px;max-width:760px;width:100%;margin:0 auto;box-sizing:border-box}
+.oc-sheet-head h2{flex:1;margin:0;font:600 18px var(--oc-font);color:var(--oc-ink)}
+.oc-input{flex:1;min-width:0;height:40px;border-radius:20px;display:flex;align-items:center;gap:8px;padding:0 14px;background:var(--oc-glass);border:1px solid var(--oc-edge);color:var(--oc-muted)}
+.oc-input:focus-within{border-color:var(--oc-accent)}
+html body.ox-terminal .oc-input input{flex:1;min-width:0;border:0!important;outline:0!important;background:none!important;box-shadow:none!important;color:var(--oc-ink)!important;font:500 16px var(--oc-font);padding:0!important;height:auto;-webkit-appearance:none;appearance:none}
+html body.ox-terminal .oc-input input::-webkit-search-cancel-button{-webkit-appearance:none}
+.oc-cancel{font:500 15px var(--oc-font);color:var(--oc-ink);padding:8px 4px}
+.oc-body{flex:1;overflow:auto;overscroll-behavior:contain;padding:4px 14px calc(env(safe-area-inset-bottom,0px) + 28px);max-width:760px;width:100%;margin:0 auto;box-sizing:border-box}
+.oc-sec{margin:16px 2px 8px;font:500 13px var(--oc-font);color:var(--oc-muted);display:flex;justify-content:space-between}
+.oc-chips{display:flex;flex-wrap:wrap;gap:8px}
+.oc-chip{padding:7px 12px;border-radius:14px;font:500 13.5px var(--oc-font);background:var(--oc-soft);color:var(--oc-ink)}
+.oc-row{display:flex;align-items:center;gap:12px;width:100%;padding:11px 2px;border-bottom:1px solid var(--oc-line);text-align:left;color:var(--oc-ink)}
+.oc-row b{font:600 15.5px var(--oc-font)}.oc-row small{display:block;font:400 12px var(--oc-font);color:var(--oc-muted);margin-top:2px}
+.oc-row .grow{flex:1;min-width:0}.oc-row .px{font:500 15px var(--oc-font);font-variant-numeric:tabular-nums}
+.oc-logo-coin{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;overflow:hidden;position:relative;background:var(--oc-soft);color:var(--oc-ink);font:600 11px var(--oc-font)}
+.oc-logo-coin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.oc-chg{flex:none;min-width:76px;text-align:center;padding:5px 7px;border-radius:7px;color:#fff;font:600 13.5px var(--oc-font);font-variant-numeric:tabular-nums;box-sizing:border-box}
+.oc-chg.u{background:var(--oc-up-solid)}.oc-chg.d{background:var(--oc-down-solid)}.oc-chg.f{background:var(--oc-flat-solid)}
+.oc-kind{flex:none;width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:var(--oc-soft);color:var(--oc-accent)}
+.oc-empty{padding:30px 6px;text-align:center;color:var(--oc-muted);font:400 14px/1.6 var(--oc-font)}
+.oc-note{display:flex;gap:12px;padding:12px 2px;border-bottom:1px solid var(--oc-line);width:100%;text-align:left;color:var(--oc-ink)}
+.oc-note .oc-kind{width:40px;height:40px}.oc-note b{display:block;font:600 15px var(--oc-font)}.oc-note p{margin:3px 0 0;font:400 13px/1.45 var(--oc-font);color:var(--oc-muted)}
+.oc-note.new b::after{content:"";display:inline-block;width:7px;height:7px;border-radius:50%;background:#f16a70;margin-left:6px;vertical-align:2px}
+.oc-feedback p{margin:4px 2px 12px;font:400 14px/1.6 var(--oc-font);color:var(--oc-muted)}
+html body.ox-terminal .oc-feedback textarea{width:100%;min-height:160px;box-sizing:border-box;border-radius:16px;border:1px solid var(--oc-edge)!important;background:var(--oc-glass)!important;box-shadow:none!important;color:var(--oc-ink)!important;font:400 16px/1.55 var(--oc-font);padding:12px;resize:vertical;outline:0!important}
+html body.ox-terminal .oc-feedback textarea:focus{border-color:var(--oc-accent)!important}
+.oc-feedback .actions{display:flex;justify-content:space-between;align-items:center;margin-top:10px;gap:10px}
+.oc-feedback .actions span{font:400 13px var(--oc-font);color:var(--oc-muted)}
+.oc-primary{height:42px;padding:0 22px;border-radius:21px;font:600 15px var(--oc-font);background:var(--oc-primary-bg);color:var(--oc-primary-ink)}
+html body.ox-terminal .oc-primary{color:var(--oc-primary-ink)}
+@keyframes oc-in{from{opacity:0;transform:translateY(10px)}}
+
+/* ---------- drawer ---------- */
+.oc-scrim{position:fixed;inset:0;z-index:2147483000;background:rgba(0,0,0,.5);opacity:0;transition:opacity .28s;pointer-events:none}
+body.theme-light .oc-scrim{background:rgba(40,30,10,.22)}
+/* Solid, not blurred: Safari lets blurred full-screen layers show the page through.
+   It only slides: iPhone Safari can leave the contents unpainted when visibility flips. */
+.oc-drawer{position:fixed;left:0;top:0;bottom:0;width:min(80vw,330px);z-index:2147483100;display:flex;flex-direction:column;box-sizing:border-box;padding:calc(env(safe-area-inset-top,0px) + 26px) 20px calc(env(safe-area-inset-bottom,0px) + 22px);background:var(--oc-solid);border-right:1px solid var(--oc-edge);color:var(--oc-ink);font-family:var(--oc-font);transform:translateX(-102%);transition:transform .3s cubic-bezier(.2,.8,.2,1);overflow-y:auto;overscroll-behavior:contain;isolation:isolate}
+body.oc-drawer-open .oc-drawer{transform:none}
+body.oc-drawer-open .oc-scrim{opacity:1;pointer-events:auto}
+body.oc-drawer-open main.wrap{transform:translateX(min(80vw,330px));transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+body.oc-drawer-closing main.wrap{transition:transform .3s cubic-bezier(.2,.8,.2,1)}
+body.oc-drawer-open .app-dock{opacity:0!important;pointer-events:none!important;transition:opacity .2s}
+.oc-me{display:flex;align-items:center;gap:12px}.oc-me .oc-ava{width:56px;height:56px;font-size:20px}
+.oc-me b{display:block;font:600 19px var(--oc-font)}.oc-me small{display:block;font:400 12.5px/1.4 var(--oc-font);color:var(--oc-muted);margin-top:3px;max-width:200px}
+.oc-login{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:14px;height:44px;border-radius:22px;font:600 15px var(--oc-font);background:var(--oc-primary-bg);color:var(--oc-primary-ink)}
+html body.ox-terminal .oc-login{color:var(--oc-primary-ink)}
+.oc-login[disabled]{opacity:.55;cursor:default}
+.oc-sync{display:flex;justify-content:space-between;align-items:center;margin-top:14px;padding:10px 12px;border-radius:14px;font:400 12.5px var(--oc-font);color:var(--oc-muted);background:var(--oc-glass);border:1px solid var(--oc-edge)}
+.oc-sync b{color:var(--oc-up);font-weight:500}
+.oc-list{margin-top:10px}
+.oc-item{display:flex;align-items:center;gap:14px;width:100%;height:52px;font:500 16px var(--oc-font);text-align:left;color:var(--oc-ink);text-decoration:none}
+html body.ox-terminal .oc-drawer a.oc-item{color:var(--oc-ink)}
+.oc-item .oc-i{width:22px;height:22px}.oc-item span{flex:1}.oc-item u{text-decoration:none;color:var(--oc-muted);font:500 14px var(--oc-font)}
+.oc-item em{font-style:normal;min-width:20px;height:20px;border-radius:10px;background:#f16a70;color:#fff;font:600 12px/20px var(--oc-font);text-align:center;padding:0 6px;box-sizing:border-box}
+.oc-hr{height:1px;background:var(--oc-line);margin:8px 0}
+.oc-dsec{display:flex;align-items:center;gap:8px;margin:10px 2px 8px;font:500 13px var(--oc-font);color:var(--oc-muted)}.oc-dsec svg{width:16px;height:16px}
+.oc-recent{display:grid;grid-template-columns:repeat(4,1fr);padding:14px 4px;border-radius:18px;background:var(--oc-glass);border:1px solid var(--oc-edge);margin-top:2px}
+.oc-recent button{display:flex;flex-direction:column;align-items:center;gap:6px;font:400 11.5px var(--oc-font);color:var(--oc-muted);min-width:0}
+.oc-recent i{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;position:relative;background:var(--oc-soft);color:var(--oc-accent);font:600 12px var(--oc-font);font-style:normal}
+.oc-recent i img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.oc-recent span{max-width:64px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.oc-recent .none{grid-column:1/-1;text-align:center;font:400 12.5px var(--oc-font);color:var(--oc-muted);padding:4px}
+.oc-foot{margin-top:auto;padding-top:18px;display:flex;align-items:flex-end;gap:26px}
+.oc-foot>button{display:flex;flex-direction:column;align-items:center;gap:5px;font:400 12.5px var(--oc-font);color:var(--oc-ink)}
+.oc-foot .oc-i{width:24px;height:24px}
+.oc-theme{margin-left:auto;display:flex;padding:3px;border-radius:12px;background:var(--oc-soft)}
+.oc-theme button{width:36px;height:30px;border-radius:9px;display:grid;place-items:center;color:var(--oc-muted)}
+.oc-theme button[aria-pressed="true"]{background:var(--oc-glass);color:var(--oc-ink);box-shadow:var(--oc-glow)}
+@media (prefers-reduced-motion:reduce){.oc-sheet{animation:none}.oc-drawer,body.oc-drawer-open main.wrap{transition:none}}
+
+/* ---------- 設定 and the media page opened from the drawer: a title bar with ‹ ---------- */
+.oc-subhead{position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:10px;margin:0 -8px 10px;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px;background:var(--oc-bar);-webkit-backdrop-filter:blur(18px);backdrop-filter:blur(18px);color:var(--oc-ink);font-family:var(--oc-font)}
+.oc-subhead h1{margin:0;font:600 17px var(--oc-font);color:var(--oc-ink)}
+html body.ox-terminal:is([data-view="settings"],[data-view="media"]) main.wrap{padding-top:0!important}
+/* The top bar's search finds features; the 設定 page does not repeat it. */
+html body.ox-terminal #view-settings #ox-feature-search-v38{display:none!important}
+
+/* ---------- drawer pages: 使用說明, OX Journal ---------- */
+.op-body{display:flex;flex-direction:column;gap:18px;padding-top:6px}
+.op-label{margin:0 4px 6px;font:500 12.5px var(--oc-font);color:var(--oc-muted)}
+.op-group{border-radius:16px;border:1px solid var(--oc-edge);background:var(--oc-glass);overflow:hidden}
+.op-row{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:10px 14px;text-align:left;color:var(--oc-ink);text-decoration:none;font:500 15px var(--oc-font);box-sizing:border-box}
+html body.ox-terminal .op-group a.op-row{color:var(--oc-ink)}
+.op-group>*+*{border-top:1px solid var(--oc-line)}
+.op-row .oc-i{width:20px;height:20px;color:var(--oc-muted)}
+.op-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.op-t b{font:500 15px var(--oc-font)}.op-t small{font:400 12.5px/1.4 var(--oc-font);color:var(--oc-muted)}
+.op-arrow{font-style:normal;color:var(--oc-muted);font-size:17px}
+.op-small{border:1px solid var(--oc-edge);background:var(--oc-glass);color:var(--oc-ink);border-radius:10px;padding:6px 12px;font:500 13px var(--oc-font);cursor:pointer;white-space:nowrap}
+html body.ox-terminal .op-small{border:1px solid var(--oc-edge);color:var(--oc-ink)}
+.op-note{margin:0 4px;font:400 12px/1.6 var(--oc-font);color:var(--oc-muted)}
+.op-card{border-radius:16px;border:1px solid var(--oc-edge);background:var(--oc-glass);padding:14px 14px 12px}
+.op-card h3{display:flex;align-items:center;gap:8px;margin:0 0 6px;font:600 15.5px var(--oc-font);color:var(--oc-ink)}.op-card h3 .oc-i{width:18px;height:18px;color:var(--oc-accent)}
+.op-card p{margin:0;font:400 13.5px/1.7 var(--oc-font);color:var(--oc-ink);opacity:.86}
+.op-card p+p{margin-top:8px}
+.op-card .op-go{margin-top:10px}
+.op-hero{display:flex;flex-direction:column;gap:10px;padding:18px 16px;border-radius:18px;border:1px solid var(--oc-edge);background:var(--oc-glass)}
+.op-hero .oc-logo{width:44px;height:44px}.op-hero small{font:500 11.5px var(--oc-font);letter-spacing:.08em;color:var(--oc-muted)}
+.op-hero h2{margin:0;font:600 24px/1.35 var(--oc-font);color:var(--oc-ink)}.op-hero p{margin:0;font:400 14px/1.7 var(--oc-font);color:var(--oc-muted)}
+.op-quote{margin:0;padding:12px 14px;border-left:3px solid var(--oc-accent);border-radius:0 12px 12px 0;background:var(--oc-soft);font:400 14px/1.75 var(--oc-font);color:var(--oc-ink)}
+.op-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.op-grid .op-card{padding:12px}.op-grid .op-card h3{font-size:14px}.op-grid .op-card p{font-size:12.5px;line-height:1.6}
+.oc-logo .d{fill:var(--oc-ink)}.oc-logo .b{fill:#99c8e2}
+body.theme-light .oc-logo .d{fill:#2a2d31}body.theme-light .oc-logo .b{fill:#6fa9cc}
+
+/* ---------- 行情: one page, small text tabs on top ---------- */
+html body.ox-terminal #view-strength .strength-page{padding-top:0!important}
+html body.ox-terminal #view-strength .strength-page > .page-hero{display:none!important}
+#ox-market-radar,#ox-market-list{min-width:0}
+#ox-market-radar[hidden],#ox-market-list[hidden]{display:none!important}
+
+/* 自選 and 排行 (src/markets/crypto/market-list.js) */
+.ml{color:var(--oc-ink);font-family:var(--oc-font);font-variant-numeric:tabular-nums}
+.ml button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ml .up{color:var(--oc-up)}.ml .down{color:var(--oc-down)}
+.ml-ratio{display:flex;gap:3px;height:5px;margin:4px 0 0}.ml-ratio i{display:block;border-radius:3px;min-width:3px}
+.ml-ratio-t{display:flex;justify-content:space-between;font:500 12.5px var(--oc-font);margin:6px 0 12px}.ml-ratio-t span:nth-child(2){color:var(--oc-muted)}
+.ml-seg{display:flex;gap:6px;margin:0 0 8px;overflow-x:auto;scrollbar-width:none;touch-action:pan-x;overscroll-behavior-x:contain}.ml-seg::-webkit-scrollbar{display:none}
+html body.ox-terminal .ml-seg button{flex:none;border:1px solid transparent;background:var(--oc-soft);padding:6px 13px;border-radius:10px;font:500 13px var(--oc-font);color:var(--oc-muted);box-shadow:none;min-height:0}
+html body.ox-terminal .ml-seg button[aria-pressed="true"]{background:var(--oc-glass);color:var(--oc-ink);box-shadow:var(--oc-glow);border-color:var(--oc-edge)}
+.ml-search{display:flex;align-items:center;gap:8px;height:42px;padding:0 14px;margin:0 0 8px;border-radius:14px;border:1px solid var(--oc-edge);background:var(--oc-glass);color:var(--oc-muted)}
+.ml-search:focus-within{border-color:var(--oc-accent)}
+html body.ox-terminal .ml-search input{flex:1;min-width:0;border:0!important;outline:0!important;background:none!important;box-shadow:none!important;color:var(--oc-ink)!important;font:500 16px var(--oc-font);padding:0!important;height:auto;-webkit-appearance:none;appearance:none}
+.ml-search svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;flex:none}
+.ml-lh,.ml-row{display:grid;grid-template-columns:30px minmax(0,1fr) auto 78px 30px;gap:10px;align-items:center}
+.ml-lh{padding:4px 2px;font:400 12px var(--oc-font);color:var(--oc-muted)}
+.ml-lh span{text-align:right}.ml-lh span:first-child{grid-column:1/3;text-align:left}
+html body.ox-terminal .ml-lh button{border:0;background:none;padding:0;font:inherit;color:inherit;text-align:right;box-shadow:none;min-height:0}
+.ml-row{padding:10px 2px;border-bottom:1px solid var(--oc-line);cursor:pointer;-webkit-tap-highlight-color:transparent}
+.ml-row:focus-visible{outline:2px solid var(--oc-accent);outline-offset:-2px;border-radius:8px}
+.ml-row .nm{min-width:0;text-align:left}.ml-row .nm b{display:block;font:600 15.5px var(--oc-font);overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ml-row .nm small{display:block;font:400 11.5px var(--oc-font);color:var(--oc-muted);margin-top:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.ml-row .px{font:500 15px var(--oc-font);text-align:right;white-space:nowrap}
+.ml .ml-chg{min-width:0;text-align:center;padding:6px 4px;border-radius:7px;color:#fff;font:600 13.5px var(--oc-font);white-space:nowrap}
+.ml .ml-chg.u{background:var(--oc-up-solid)}.ml .ml-chg.d{background:var(--oc-down-solid)}.ml .ml-chg.f{background:var(--oc-flat-solid)}
+.ml .ml-chg.alt{background:none;color:var(--oc-ink);padding:0;text-align:right;font-weight:500}
+html body.ox-terminal .ml-star{border:0;background:none;padding:4px;display:grid;place-items:center;color:var(--oc-muted);box-shadow:none;min-height:0}
+.ml-star svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linejoin:round}
+html body.ox-terminal .ml-star[aria-pressed="true"]{color:var(--oc-star)}.ml-star[aria-pressed="true"] svg{fill:currentColor}
+.ml-empty{padding:22px 6px;text-align:center;color:var(--oc-muted);font:400 13.5px/1.7 var(--oc-font)}
+.ml-sec{margin:18px 2px 4px;font:500 13px var(--oc-font);color:var(--oc-muted)}
+.ml-foot{margin:14px 2px 0;font:400 11.5px/1.6 var(--oc-font);color:var(--oc-muted)}
+.ox-coin-logo.ml-logo,.ox-rl-logo{position:relative;display:grid;place-items:center;width:30px;height:30px;border-radius:50%;overflow:hidden;background:#363a42;color:#f0f1f4;font:600 11px/1 var(--oc-font)}
+:is(.ox-coin-logo.ml-logo,.ox-rl-logo) img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--oc-solid)}
+body.theme-light :is(.ox-coin-logo.ml-logo,.ox-rl-logo){background:#f1f3f6;color:#374151}
+
+/* 雷達: the OX radar list, full width (rows drawn by scanner.js renderCurrentTab) */
+html body.ox-terminal #ox-market-radar #radar-scanner-panel{position:static!important;display:block!important;width:auto!important;min-width:0!important;max-width:none!important;height:auto!important;max-height:none!important;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;overflow:visible!important;opacity:1!important;visibility:visible!important;transform:none!important}
+html body.ox-terminal #ox-market-radar #radar-scanner-panel::before,html body.ox-terminal #ox-market-radar #radar-scanner-panel::after{display:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs{position:static!important;display:flex!important;align-items:center;gap:6px!important;margin:0 0 6px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;overflow:visible!important;height:auto!important;min-height:0!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs::before,html body.ox-terminal #ox-market-radar .scanner-tabs::after{display:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs :is(.tab-btn,.direction-toggle-btn){position:relative!important;flex:none!important;display:inline-flex!important;align-items:center;justify-content:center;gap:5px;width:auto!important;height:32px!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0 12px!important;border:1px solid transparent!important;border-radius:10px!important;background:var(--oc-soft)!important;box-shadow:none!important;color:var(--oc-muted)!important;font:500 13px var(--oc-font)!important;line-height:1!important;letter-spacing:0!important;text-shadow:none!important;transform:none!important;filter:none!important;opacity:1!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .tab-btn::after{content:"";position:absolute;inset:-6px -3px;border-radius:inherit;background:none!important;border:0!important;box-shadow:none!important;opacity:1!important;transform:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .tab-btn::before{display:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .tab-btn.active{background:var(--oc-glass)!important;border-color:var(--oc-edge)!important;box-shadow:var(--oc-glow)!important;color:var(--oc-ink)!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs svg{width:15px!important;height:15px!important;flex:none;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;filter:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-tab-icon{display:block!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-combined-mark{display:inline-flex!important;align-items:center;gap:5px;position:static!important;transform:none!important;width:auto!important;height:auto!important;background:none!important;border:0!important;box-shadow:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-combined-logo{display:block!important;width:15px!important;height:15px!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-tier-current{display:inline!important;position:static!important;margin:0!important;padding:0!important;background:none!important;border:0!important;color:inherit!important;font:inherit!important;transform:none!important;width:auto!important;height:auto!important;min-width:0!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-tier-current:empty::before{content:"T1／T2／T3"}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-combined-chevron{display:inline!important;position:static!important;margin:0 0 0 1px!important;padding:3px 2px!important;font-size:9px!important;line-height:1!important;color:inherit!important;background:none!important;border:0!important;transform:none!important;opacity:.7!important;width:auto!important;height:auto!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .tab-badge{display:none!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .watch-tab-desktop{display:inline!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .watch-tab-mobile{display:inline-flex!important;order:-1}
+html body.ox-terminal #ox-market-radar .scanner-tabs .radar-tab-text{display:inline!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .direction-toggle-btn{margin-left:auto!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .direction-toggle-btn.is-long{color:var(--oc-up)!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .direction-toggle-btn.is-short{color:var(--oc-down)!important}
+html body.ox-terminal #ox-market-radar .scanner-tabs .direction-toggle-icon,html body.ox-terminal #ox-market-radar .scanner-tabs .direction-toggle-text{display:inline!important;position:static!important;font:600 13px var(--oc-font)!important;color:inherit!important;background:none!important;border:0!important;transform:none!important;width:auto!important;height:auto!important;margin:0!important;padding:0!important}
+html body.ox-terminal #ox-market-radar [data-radar-freshness]{display:block!important;padding:2px 2px 6px!important;text-align:left!important;font:400 12px/1.5 var(--oc-font)!important;color:var(--oc-muted)!important}
+html body.ox-terminal #ox-market-radar #screener-list{position:static!important;display:block!important;height:auto!important;max-height:none!important;min-height:120px;overflow:visible!important;padding:0!important;margin:0!important;border:0!important;background:none!important;box-shadow:none!important;-webkit-mask-image:none!important;mask-image:none!important;scrollbar-gutter:auto!important}
+html body.ox-terminal #ox-market-radar .ox-rl-sec{display:flex;align-items:baseline;gap:8px;margin:14px 2px 2px;font:600 13px var(--oc-font);color:var(--oc-ink)}
+html body.ox-terminal #ox-market-radar .ox-rl-sec:first-child{margin-top:4px}
+html body.ox-terminal #ox-market-radar .ox-rl-sec small{font:400 12px var(--oc-font);color:var(--oc-muted)}
+html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row{display:grid!important;grid-template-columns:30px minmax(0,1fr) auto 78px 30px;align-items:center;gap:10px;position:relative!important;width:auto!important;min-height:0!important;height:auto!important;margin:0!important;padding:10px 2px!important;border:0!important;border-bottom:1px solid var(--oc-line)!important;border-radius:0!important;background:none!important;box-shadow:none!important;transform:none!important;opacity:1!important;animation:none!important;color:var(--oc-ink)!important;font-family:var(--oc-font);font-variant-numeric:tabular-nums;cursor:pointer;-webkit-tap-highlight-color:transparent}
+html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row::before,html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row::after{display:none!important}
+html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row.selected{background:none!important}
+html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row:focus-visible{outline:2px solid var(--oc-accent)!important;outline-offset:-2px;border-radius:8px!important}
+html body.ox-terminal #ox-market-radar .ox-rl-name{min-width:0}
+html body.ox-terminal #ox-market-radar .ox-rl-name b{display:block;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:600 15.5px var(--oc-font)!important;color:var(--oc-ink)!important}
+html body.ox-terminal #ox-market-radar .ox-rl-name small{display:block;margin-top:2px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:400 11.5px var(--oc-font)!important;color:var(--oc-muted)!important}
+html body.ox-terminal #ox-market-radar .ox-rl-name small em{font-style:normal;color:var(--oc-ink)}
+html body.ox-terminal #ox-market-radar .ox-rl-row .turnover-price{font:500 15px var(--oc-font)!important;color:var(--oc-ink)!important;text-align:right;white-space:nowrap}
+html body.ox-terminal #ox-market-radar .ox-rl-row .coin-change{display:block!important;text-align:center;padding:6px 4px!important;border-radius:7px!important;color:#fff!important;font:600 13.5px var(--oc-font)!important;white-space:nowrap;background:var(--oc-flat-solid)!important;text-shadow:none!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .coin-change.positive{background:var(--oc-up-solid)!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .coin-change.negative{background:var(--oc-down-solid)!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .watch-star{position:relative!important;inset:auto!important;display:grid!important;place-items:center;width:30px!important;height:30px!important;min-width:0!important;min-height:0!important;margin:0!important;padding:0!important;border:0!important;border-radius:8px!important;background:none!important;box-shadow:none!important;color:var(--oc-muted)!important;transform:none!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .watch-star::after{content:"";position:absolute;inset:-7px -6px!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .watch-star svg{width:19px!important;height:19px!important;fill:none!important;stroke:currentColor!important;stroke-width:1.7!important;stroke-linejoin:round}
+html body.ox-terminal #ox-market-radar .ox-rl-row .watch-star.is-starred{color:var(--oc-star)!important}
+html body.ox-terminal #ox-market-radar .ox-rl-row .watch-star.is-starred svg{fill:currentColor!important}
+html body.ox-terminal #ox-market-radar .ox-rl-empty{padding:30px 12px;text-align:center;color:var(--oc-muted);font:400 13.5px/1.7 var(--oc-font)}
+html body.ox-terminal #ox-market-radar .ox-rl-empty b{display:block;color:var(--oc-ink);font:600 15px var(--oc-font);margin-bottom:4px}
+html body.ox-terminal #ox-market-radar .ox-rl-empty button{margin-top:10px;min-height:40px;padding:0 16px;border:1px solid var(--oc-edge);border-radius:10px;background:var(--oc-glass);color:var(--oc-ink);font:500 14px var(--oc-font)}
+html body.ox-terminal:not(.theme-light) #ox-market-radar .coin-card.ox-rl-row:active{filter:brightness(1.22)}
+html body.ox-terminal.theme-light #ox-market-radar .coin-card.ox-rl-row:active{filter:brightness(.96)}
+@media (min-width:721px){
+ .ml-lh,.ml-row,html body.ox-terminal #ox-market-radar .coin-card.ox-rl-row{grid-template-columns:32px minmax(0,1fr) 150px 96px 34px;gap:14px}
+ html body.ox-terminal #ox-market-radar .ox-rl-row .ox-rl-setup{display:inline}
+}
+html body.ox-terminal #ox-market-radar .ox-rl-setup{display:none}
+
+/* ---------- 個股 page: the chart full width; a bar in the dock's place ---------- */
+html body.ox-terminal[data-view="stock"] nav.app-dock.glass-nav{display:none!important}
+html body.ox-terminal #view-radar #radar-scanner-toggle,html body.ox-terminal #view-radar .radar-scanner-reopen{display:none!important}
+html body.ox-terminal[data-view="stock"] #view-radar{padding-bottom:84px}
+html body.ox-terminal[data-view="stock"] #view-radar .ox-chart-share{display:none!important}
+.ox-stock-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px);border-top:1px solid var(--oc-line);background:var(--oc-bar);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);font-family:var(--oc-font)}
+body[data-view="stock"] .ox-stock-bar{display:flex}
+body.oc-drawer-open .ox-stock-bar,body.chart-focus .ox-stock-bar,body.ox-feature-blocked .ox-stock-bar{display:none!important}
+html body.ox-terminal .ox-stock-bar button{flex:1;min-width:0;height:46px;min-height:0;margin:0;border-radius:23px;display:flex;align-items:center;justify-content:center;gap:6px;border:1px solid var(--oc-edge);background:var(--oc-glass);-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px);box-shadow:var(--oc-glow);color:var(--oc-ink);font:500 14.5px var(--oc-font);cursor:pointer;-webkit-tap-highlight-color:transparent;white-space:nowrap;padding:0 10px}
+html body.ox-terminal .ox-stock-bar button.back{flex:none;width:46px;padding:0}
+html body.ox-terminal .ox-stock-bar button.primary{flex:1.6;border:0;background:var(--oc-primary-bg);color:var(--oc-primary-ink);font-weight:600}
+.ox-stock-bar svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.ox-stock-bar button[aria-pressed="true"] svg{fill:var(--oc-star);stroke:var(--oc-star)}
+@media (min-width:901px){.ox-stock-bar{left:auto;right:24px;bottom:24px;width:440px;padding:10px;border:1px solid var(--oc-edge);border-radius:30px;box-sizing:border-box}}
+
+/* ---------- 畫板, 型態 and 個股 share one view (#view-radar); its old top tab rail is gone ---------- */
+html body.ox-terminal #view-radar:not([data-radar-mode="chart"]) > :is(.top-summary,.workspace,.detail-panel,.benchmark-bar,.extra-section){display:none!important}
+html body.ox-terminal #view-radar[data-radar-mode="board"] > .ox-radar-board{margin-top:0}
+
+/* ---------- Desktop: the header's right button opens the drawer ---------- */
+html body.ox-terminal .ox-shell-header #ox-control-open.oc-header-ava{width:38px!important;height:38px!important;min-width:0!important;padding:0!important;border-radius:50%!important;display:grid!important;place-items:center;overflow:hidden}
+html body.ox-terminal:not(.theme-light) .ox-shell-header #ox-control-open.oc-header-ava{background:radial-gradient(circle at 30% 25%,#3a424d,#171a20 70%)!important;box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 0 14px rgba(255,255,255,.08)!important;border:0!important;color:#dfe6ee!important}
+html body.ox-terminal.theme-light .ox-shell-header #ox-control-open.oc-header-ava{background:radial-gradient(circle at 30% 25%,#fffdf7,#f1e7cf 75%)!important;box-shadow:0 2px 8px rgba(80,60,20,.12),inset 0 0 0 1px rgba(141,113,46,.28)!important;border:0!important;color:#8d712e!important}
+html body.ox-terminal .ox-shell-header #ox-control-open.oc-header-ava img{width:100%;height:100%;object-fit:cover}
+@media (min-width:721px){.oc-top{margin:0 0 10px;padding:12px 0 10px}}
+
+/* ---------- small fixes from the screenshots ---------- */
+/* Logos with transparent edges hide the two-letter fallback under them. */
+.oc-logo-coin img{background:var(--oc-solid)}
+.oc-recent i .oc-logo-coin{width:42px;height:42px;font-size:12px}
+html body.ox-terminal .oc-drawer .oc-item{font:500 16px var(--oc-font)}
+/* The tab rows sit at the same place on 行情, 型態 and 資訊. */
+@media (max-width:720px){html body.ox-terminal #view-data .oxn-root{padding-top:0!important}}
+@media (min-width:901px){.oc-top .oc-ava{display:none}.oc-top .oc-search{flex:0 1 520px}}
+/* Wide screens: the 行情 lists keep a readable line length. */
+@media (min-width:1100px){#ox-market-radar,#ox-market-list{max-width:980px}}
+/* Wide screens: the top bar lines up with the 首頁 content (crypto-home.css, 1240px) and scrolls with it. */
+@media (min-width:980px){.oc-top{position:relative;max-width:1240px;margin:0 auto;padding:14px 0 0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}}
+html body.ox-terminal .oc-drawer:focus{outline:none!important}
+html body.ox-terminal .oc-drawer :is(.oc-item,.oc-btn):focus-visible{outline:2px solid var(--oc-accent)!important;outline-offset:2px;border-radius:12px;box-shadow:none!important}

@@ -51,7 +51,7 @@ export class BubbleField {
   setRows(rows,metric,{layout=false}={}){this.metric=metric;const previous=new Map(this.nodes.map(n=>[n.symbol,n])),radii=this.radiusForRows(rows,this.width||360,this.height||500);let added=false;
     this.nodes=rows.map((row,i)=>{const seed=hash(row.symbol),angle=i*2.399963,spread=Math.sqrt((i+.5)/Math.max(rows.length,1))*.43;
       let n=previous.get(row.symbol);if(!n){added=true;n={x:this.width*(.5+Math.cos(angle)*spread),y:this.height*(.5+Math.sin(angle)*spread),vx:Math.cos(seed)*.2,vy:Math.sin(seed)*.2,r:radii[i],seed};}
-      const changed=n.value!==row.value||n.target!==radii[i]||n.metric!==metric||n.image!==row.image||n.change!==row.change;
+      const changed=n.value!==row.value||n.target!==radii[i]||n.metric!==metric||n.image!==row.image||n.change!==row.change||n.period?.change!==row.period?.change||n.period?.days!==row.period?.days;
       Object.assign(n,row,{target:radii[i],metric});if(layout||this.paused||this.reduced.matches)n.r=n.target;if(changed||!n.sprite)n.sprite=this.sprite(n);return n;
     });
     if(added||layout||this.paused||this.reduced.matches){for(let i=0;i<70;i++)this.resolveCollisions(false);}
@@ -66,7 +66,9 @@ export class BubbleField {
     const url=this.logo(canonical(n.base))||n.image;let img=url&&this.images.get(url);
     if(url&&!img){img=new Image();img.decoding='async';this.images.set(url,img);img.onload=()=>{if(this.life.signal.aborted)return;for(const row of this.nodes)if((this.logo(canonical(row.base))||row.image)===url)row.sprite=this.sprite(row);this.paint();};img.src=url;}
     const full=r>=23,logoSize=Math.min(25,r*.43);let nameY=center+(full?0:2);
-    if(full){const ly=center-r*.58;ctx.save();ctx.beginPath();ctx.arc(center,ly,logoSize/2,0,Math.PI*2);ctx.clip();if(img?.complete&&img.naturalWidth)ctx.drawImage(img,center-logoSize/2,ly-logoSize/2,logoSize,logoSize);else{ctx.fillStyle=tone+'45';ctx.fillRect(center-logoSize/2,ly-logoSize/2,logoSize,logoSize);ctx.fillStyle=light?'#374151':'#fff';ctx.font=`600 ${logoSize*.48}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.base.slice(0,1),center,ly);}ctx.restore();}
+    // N 日漲跌 sits above the name once the coin's daily candles are in; the logo until then.
+    if(full&&Number.isFinite(n.period?.change)){const ly=center-r*.56,v=n.period.change;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`600 ${Math.min(12,Math.max(8,r*.22))}px Inter,system-ui`;ctx.fillStyle=light?'#4b5563':'#dfe3e1';ctx.fillText(`${n.period.days}日 ${v>0?'+':''}${v.toFixed(1)}%`,center,ly,r*1.7);}
+    else if(full){const ly=center-r*.58;ctx.save();ctx.beginPath();ctx.arc(center,ly,logoSize/2,0,Math.PI*2);ctx.clip();if(img?.complete&&img.naturalWidth)ctx.drawImage(img,center-logoSize/2,ly-logoSize/2,logoSize,logoSize);else{ctx.fillStyle=tone+'45';ctx.fillRect(center-logoSize/2,ly-logoSize/2,logoSize,logoSize);ctx.fillStyle=light?'#374151':'#fff';ctx.font=`600 ${logoSize*.48}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.base.slice(0,1),center,ly);}ctx.restore();}
     ctx.textAlign='center';ctx.textBaseline='middle';let font=Math.min(27,r*.48);ctx.font=`500 ${font}px Inter,system-ui`;const maxWidth=r*1.68;if(ctx.measureText(n.base).width>maxWidth){font*=maxWidth/ctx.measureText(n.base).width;ctx.font=`500 ${font}px Inter,system-ui`;}
     ctx.fillStyle=light?'#374151':'#f1f1eb';ctx.fillText(n.base,center,nameY);if(r>=19){ctx.font=`500 ${Math.min(13,Math.max(8,r*.25))}px Inter,system-ui`;ctx.fillStyle=light?'#585347':'#e6e9e8';ctx.fillText(this.formatMetric(n.value,n.metric),center,nameY+Math.min(22,r*.39),r*1.73);}return c;
   }

@@ -401,9 +401,9 @@ function initChart() {
     scheduleChartPriceOverlayUpdate();
   }).observe(container);
   enableMobileChartPriceGestures(container);
-  // 均線, 布林, KD, RSI and MACD; settings persist under OXChartIndicators.STORAGE_KEY.
+  // 均線, 布林, KD, RSI, MACD, CCI and K 線／線圖; settings persist under OXChartIndicators.STORAGE_KEY / STYLE_KEY.
   state.chartIndicators = window.OXChartIndicators?.attach({
-    chart: state.chart, container,
+    chart: state.chart, container, candleSeries: state.candleSeries,
     getCandles: () => state.candleData || [],
     volumeVisible: () => state.volumeSeries?.options().visible !== false,
     baseMargins: () => ({ candles: getChartBaseScaleMargins(), volume: getChartBaseVolumeMargins() }),

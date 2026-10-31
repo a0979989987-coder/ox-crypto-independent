@@ -99,7 +99,8 @@ function bitgetBody(url) {
     const symbol = url.searchParams.get("symbol") || "BTCUSDT";
     return { code: "00000", data: [tickers.find(row => row.symbol === symbol) || tickers[0]] };
   }
-  if (url.pathname.endsWith("/candles")) return { code: "00000", data: candlesFor(url) };
+  // Bitget stamps every response with its server time; the pattern code checks candles against it.
+  if (url.pathname.endsWith("/candles")) return { code: "00000", requestTime: Date.now(), data: candlesFor(url) };
   return { code: "00000", data: [] };
 }
 
@@ -172,6 +173,9 @@ async function preparePage(context, viewport, { holdCandle } = {}) {
   await page.route("https://fapi.binance.com/**", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ symbol: "BTCUSDT", lastPrice: "63250", priceChangePercent: "1.2", quoteVolume: "900000000", volume: "12000" }) }));
   await page.route("https://api.bybit.com/**", route => route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify({ retCode: 0, result: { list: [{ lastPrice: "63250", price24hPcnt: ".012", turnover24h: "900000000", volume24h: "12000" }] } }) }));
   await page.route("https://www.tradingview-widget.com/**", route => route.fulfill({contentType:"text/html",body:"<p>Isolated widget fixture, no prices</p>"}));
+  // The hourly radar snapshot's GitHub copy; the repository's /data/crypto-radar.json is an
+  // empty placeholder, so the page scans like a first visit unless a check routes a snapshot.
+  await page.route("https://raw.githubusercontent.com/**", route => route.fulfill({ status: 404, contentType: "text/plain", body: "Not found" }));
   return { page, audit };
 }
 

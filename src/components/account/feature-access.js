@@ -3,10 +3,10 @@
   if(window.OXCanonicalRedirecting)return;
   const ids=['crypto.home','crypto.radar','crypto.patterns','crypto.bubbles','crypto.strength','crypto.heatmap','crypto.rotation','crypto.flow','news.feed','news.calendar','media'];
   let policies=null,pending=null,loading=null,epoch=0,requestEpoch=0,currentFeature=null,newsSelected='calendar',sessionUsable=false,policyState='pending';
-  // 指標 tools; 型態搜尋 (crypto.patterns) is the 畫板 tab of the radar view.
-  const selected={crypto:'bubbles'};
-  // 對比 lists the board's own breakouts, so it follows the board's switch.
-  const radarFeature=()=>['board','compare'].includes(document.getElementById('view-radar')?.dataset.radarMode)?'patterns':'radar';
+  // 行情 tools (雷達 is crypto.radar); 型態搜尋 (crypto.patterns) is the 畫板 page, and 型態
+  // lists the board's own breakouts, so it follows the board's switch. The 個股 page is
+  // the radar's chart (crypto.radar). 自選 and 排行 are plain coin lists without a switch.
+  const selected={crypto:'radar'};
   const landing=new URL(location.href),returnId=landing.searchParams.get('ox_feature');
   let returning=ids.includes(returnId), started=false, lastRefresh=0;
   let panel,progress;
@@ -35,8 +35,9 @@
   }
   function reveal(){if(progress)progress.hidden=true;document.body?.classList.remove('ox-feature-blocked');if(panel){panel.hidden=true;panel.style.display='none';}}
   function viewFeature(view,market=document.body?.dataset.market||'crypto'){
-    if(view==='strength')return market+'.'+selected[market];
-    if(view==='radar')return market+'.'+radarFeature();
+    if(view==='strength'){const id=market+'.'+selected[market];return ids.includes(id)?id:null;}
+    if(view==='radar'||view==='pattern')return market+'.patterns';
+    if(view==='stock')return market+'.radar';
     if(view==='home')return market+'.'+view;
     if(['data','news'].includes(view))return newsSelected==='calendar'?'news.calendar':'news.feed';
     if(view==='media')return 'media';
@@ -58,7 +59,7 @@
   function enterTool(tool,attribute,resume){
     const market=attribute==='data-crypto-tool'?'crypto':null;
     const id=market?market+'.'+tool:attribute==='data-news-tab'?(tool==='calendar'?'news.calendar':'news.feed'):null;
-    if(!id||!ids.includes(id))return true;
+    if(!id||!ids.includes(id)){if(market){selected[market]=tool;if(document.body?.dataset.view==='strength'){currentFeature=null;pending=null;reveal();}}return true;}
     if(!enter(id,resume))return false;if(market&&tool!=='patterns')selected[market]=tool;else if(attribute==='data-news-tab')newsSelected=tool;return true;
   }
   function replay(){
@@ -95,8 +96,9 @@
     if(['crypto'].includes(market))window.OXMarketController?.setMarket?.(market);
     if(id.startsWith('news.')){newsSelected=id==='news.calendar'?'calendar':'key';window.OXNews?.openMarket();document.dispatchEvent(new CustomEvent('ox:feature-news-return',{detail:{tab:newsSelected}}));}
     else if(id==='media')window.switchAppView?.('media');
-    else if(id==='crypto.patterns'||id==='crypto.radar'){const mode=window.OXRadarModes?.get();window.OXRadarModes?.set(id==='crypto.patterns'?(mode==='compare'?'compare':'board'):['board','compare'].includes(mode)?'chart':mode);window.switchAppView?.('radar');}
-    else {const tool=id.split('.')[1];const view=['home','radar'].includes(tool)?tool:'strength';if(view==='strength')selected[market]=tool;window.switchAppView?.(view);if(view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market,tool}}));}
+    else if(id==='crypto.patterns')window.switchAppView?.(document.body.dataset.view==='pattern'?'pattern':'radar');
+    else if(id==='crypto.radar'&&document.body.dataset.view==='stock')window.switchAppView?.('stock');
+    else {const tool=id.split('.')[1];const view=tool==='home'?'home':'strength';if(view==='strength')selected[market]=tool;window.switchAppView?.(view);if(view==='strength')document.dispatchEvent(new CustomEvent('ox:feature-tool-return',{detail:{market,tool}}));}
   }
   function restore(){if(!returning||!started)return;returning=false;const apply=()=>navigate(returnId);if(enter(returnId,apply))apply();}
   window.OXFeatures=Object.freeze({enter,enterView,enterTool,refresh,canPreload:id=>policies?.get(id)?.mode==='public',selectedTool:market=>selected[market],get returning(){return returning;},get ready(){return !!policies;},get newsTab(){return newsSelected;}});

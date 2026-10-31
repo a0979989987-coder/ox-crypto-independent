@@ -90,7 +90,7 @@ function listen() {
   }, { capture: true, passive: true });
   document.addEventListener('ox:viewchange', event => { if (event.detail?.to && event.detail.to !== event.detail.from) track('view.' + event.detail.to); });
   document.addEventListener('ox:crypto-toolchange', event => { if (event.detail?.tool) track('tool.' + event.detail.tool); });
-  // Coins opened on the radar chart, from any list or tool (switchSymbol marks #view-radar).
+  // Coins opened on the 個股 page, from any list or tool (switchSymbol marks #view-radar).
   const radar = document.getElementById('view-radar');
   if (radar) {
     let last = radar.dataset.selectedSymbol || '';
@@ -184,7 +184,7 @@ function blockTaps() {
   }, true);
   document.addEventListener('ox:viewchange', () => { dismissed.clear(); document.querySelector('.ox-switch-note')?.remove(); });
 }
-// Dim switched-off tools in the 指標 rail (it lives in an open shadow root).
+// Dim switched-off tools in the 行情 tab row (it lives in an open shadow root).
 function markRail() {
   const root = document.getElementById('ox-crypto-tools-nav')?.shadowRoot; if (!root) return;
   let style = root.getElementById('ox-switch-style');
@@ -195,12 +195,12 @@ function applySwitches(next) {
   const before = JSON.stringify(off);
   off = next && typeof next === 'object' ? next : {};
   guardFeatures(); markRail();
-  // A tool that is open right now closes; the 指標 page asks again on this event.
+  // A tool that is open right now closes; the 行情 page asks again on this event.
   if (before !== JSON.stringify(off)) document.dispatchEvent(new CustomEvent('ox:feature-policy-ready'));
   const shown = document.querySelector('#view-strength .strength-page')?.dataset.cryptoTool;
   if (document.body.dataset.view === 'strength' && shown && isOff(shown)) notice(shown);
   const view = viewSwitch(document.body.dataset.view);
-  if (view) { notice(view); window.switchAppView?.('radar'); }
+  if (view) { notice(view); window.switchAppView?.('home'); }
 }
 
 async function loadConfig() {
@@ -213,6 +213,8 @@ async function loadConfig() {
     config = body.data || {};
   } catch { if (backend === 'unknown') { backend = 'off'; queue = []; } return; }
   backend = 'on'; flush();
+  // The top bar's 通知 lists the announcement too.
+  globalThis.OXSiteConfig = config; document.dispatchEvent(new CustomEvent('ox:siteconfig', { detail: config }));
   if (maintenance(config.maintenance)) return;
   announcement(config.announcement);
   applySwitches(config.off);

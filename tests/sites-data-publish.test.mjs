@@ -4,7 +4,7 @@ import { readFile, stat, mkdtemp, rm, readdir } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { verifyPublisher } from '../worker/github-identity.js';
-import { publishData, DATA_POINTER, sha256, readStoredData } from '../worker/data-store.js';
+import { publishData, DATA_POINTER, sha256, readStoredData, dataPath } from '../worker/data-store.js';
 import { snapshotAssetResponse } from '../worker/snapshots.js';
 import { REQUIRED_DATA } from '../worker/site.js';
 import { collectPublicData, publishSiteData } from '../scripts/publish-site-data.mjs';
@@ -23,7 +23,7 @@ test('publisher identity checks the signature and binds audience, repository IDs
   const request = token => new Request(origin + '/api/v1/crypto/data-upload/release', { headers: { Authorization: 'Bearer ' + token } });
   const options = { now, fetcher: async url => { assert.equal(url, 'https://token.actions.githubusercontent.com/.well-known/jwks'); return Response.json({ keys: [jwk] }); } };
   assert.deepEqual(await verifyPublisher(request(await token(claims)), options), claims);
-  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml'])
+  for (const workflow of ['deploy-sites-data.yml', 'update-macro-results.yml', 'flow-history.yml', 'record-crypto-breakouts.yml', 'update-crypto-radar.yml'])
     assert.ok(await verifyPublisher(request(await token({ ...claims, workflow_ref: claims.workflow_ref.replace('update-news.yml', workflow) })), options), workflow);
   for (const mutation of [{ aud: 'https://ox-tw-independent.btcfly.chatgpt.site' }, { repository: 'a0979989987-coder/ox-tw-independent' }, { repository_id: '1405941562' }, { repository_owner_id: '1' }, { ref: 'refs/heads/feature' },
     { workflow_ref: claims.workflow_ref.replace('update-news.yml', 'verify-independent.yml') }, { exp: seconds - 1 }, { exp: seconds + 3600 }, { event_name: 'pull_request' }])
@@ -66,6 +66,8 @@ test('anonymous requests cannot write data; the public data set is only data fil
   assert.equal(response.status, 401); assert.equal((await response.json()).error.code, 'PUBLISHER_UNAUTHORIZED');
   const snapshot = collectPublicData('HEAD');
   for (const path of REQUIRED_DATA) assert.ok(snapshot.files.has(path), path);
+  // 公布前後走勢 is a public data file like the macro results (optional, not required).
+  assert.ok(dataPath('data/macro-reactions.json')); assert.ok(!REQUIRED_DATA.includes('data/macro-reactions.json'));
   for (const path of snapshot.files.keys()) assert.match(path, /^(?:data|previews\/data)\/[A-Za-z0-9_.-]+\.json$/);
 });
 
@@ -98,6 +100,8 @@ test('the Sites build serves data only through the Worker, keeps source and secr
     await assert.rejects(stat(join(client, 'previews/data/crypto-flow-history.json')), { code: 'ENOENT' });
     assert.ok((await stat(join(client, '_seed/data/news.json'))).isFile());
     assert.ok((await stat(join(client, '_seed/previews/data/crypto-tools-snapshot.json'))).isFile());
+    assert.ok((await stat(join(client, '_seed/data/macro-reactions.json'))).isFile());
+    await assert.rejects(stat(join(client, 'data/macro-reactions.json')), { code: 'ENOENT' });
     for (const name of ['index.html', 'admin.html', 'privacy.html', 'terms.html', 'src/app/account.js', 'src/app/usage.js', 'src/generated/runtime.js']) assert.ok((await stat(join(client, name))).isFile(), name);
     const top = await readdir(client);
     for (const name of ['server', 'worker', 'scripts', 'tests', 'docs', 'api', 'supabase', 'package.json', '.env.example', 'vercel.json', 'node_modules']) assert.ok(!top.includes(name), name + ' is not public');

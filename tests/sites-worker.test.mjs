@@ -20,7 +20,7 @@ test('the old account front end gets an all-public tool list and a not-configure
   assert.ok(policy.features.every(f => f.mode === 'public'));
   assert.deepEqual(await (await call(e, '/api/v1/account/config')).json(), { configured: false, providerConnectionVerified: false, databaseConnected: false });
   for (const path of ['session', 'google', 'email', 'bitget-link', 'admin-review', 'feature-admin', 'bitget-admin-lookup']) {
-    const response = await call(e, '/api/v1/account/' + path, { method: path === 'session' ? 'GET' : 'POST', body: path === 'session' ? undefined : {} });
+    const response = await call(e, '/api/v1/account/' + path, { method: path === 'session' ? 'GET' : 'POST', body: path === 'session' ? undefined : {}, headers: { Origin: ORIGIN } });
     assert.equal(response.status, 404, path);
   }
   assert.equal((await call(e, '/api/v1/unknown')).status, 404);
@@ -98,4 +98,45 @@ test('the local fake Google sign-in checks PKCE and never reaches the Worker as 
   // In production the Worker talks to the real Google endpoints only.
   const production = await call(e, '/api/v1/auth/google/start');
   assert.match(production.headers.get('location'), /^https:\/\/accounts\.google\.com\/o\/oauth2\/v2\/auth\?/);
+});
+
+test('every reply carries security headers; changes need a browser Origin; bursts from one address are limited', async () => {
+  const e = env();
+  for (const path of ['/no-such-page', '/api/v1/app/config', '/data/news.json', '/admin']) {
+    const response = await call(e, path);
+    assert.equal(response.headers.get('x-content-type-options'), 'nosniff', path);
+    assert.match(response.headers.get('strict-transport-security') || '', /max-age=\d+/, path);
+    assert.match(response.headers.get('permissions-policy') || '', /camera=\(\)/, path);
+    assert.ok(response.headers.get('referrer-policy'), path);
+  }
+  // The admin page keeps its stricter policy.
+  assert.equal((await call(e, '/admin')).headers.get('referrer-policy'), 'same-origin');
+  assert.equal((await call(e, '/no-such-page')).headers.get('referrer-policy'), 'strict-origin-when-cross-origin');
+  // A script posting without Origin is refused before anything runs; the page itself works.
+  const bare = await call(e, '/api/v1/app/feedback', { method: 'POST', body: { text: 'from a script' } });
+  assert.equal(bare.status, 403); assert.equal((await bare.json()).error.code, 'ORIGIN_REQUIRED');
+  assert.equal((await call(e, '/api/v1/app/feedback', { method: 'POST', body: { text: 'from the page' }, headers: { Origin: ORIGIN } })).status, 200);
+  // The GitHub publisher is not a browser: it still reaches its own token check.
+  assert.equal((await call(e, '/api/v1/crypto/data-upload/release', { method: 'PUT', body: {} })).status, 401);
+  // 600 calls a minute from one address, then 429; another address is unaffected.
+  const from = ip => ({ headers: { 'cf-connecting-ip': ip } });
+  let last;
+  for (let i = 0; i <= 600; i++) last = await call(e, '/api/v1/unknown', from('198.51.100.7'));
+  assert.equal(last.status, 429); assert.equal(last.headers.get('retry-after'), '60'); assert.equal((await last.json()).error.code, 'RATE_LIMITED');
+  assert.equal((await call(e, '/api/v1/unknown', from('198.51.100.9'))).status, 404);
+});
+
+test('the Site\'s chatgpt.site address can be allowed through OX_SITE_ORIGIN; nothing else is', async () => {
+  const site = 'https://ox-crypto.btcfly.chatgpt.site', request = origin => call(env({ OX_SITE_ORIGIN: site + '/' }), '/api/v1/app/config', { headers: { Origin: origin } });
+  assert.equal((await request(site)).status, 200);
+  assert.equal((await call(env(), '/api/v1/app/config', { headers: { Origin: site } })).status, 403, 'not without the setting');
+  for (const origin of ['https://a0979989987-coder.github.io', 'https://ox-crypto-independent.vercel.app', 'https://example.com']) assert.equal((await request(origin)).status, 403, origin);
+});
+
+test('the static Vercel copy sends the same security headers', async () => {
+  const vercel = JSON.parse(await readFile(new URL('vercel.json', root), 'utf8'));
+  const all = vercel.headers.find(rule => rule.source === '/(.*)'), names = Object.fromEntries(all.headers.map(h => [h.key, h.value]));
+  assert.equal(names['X-Content-Type-Options'], 'nosniff'); assert.equal(names['Referrer-Policy'], 'strict-origin-when-cross-origin');
+  assert.match(names['Permissions-Policy'], /camera=\(\)/); assert.match(names['Strict-Transport-Security'], /max-age=\d+/);
+  assert.equal(vercel.buildCommand, 'npm run build:tools && npm run check');
 });

@@ -18,16 +18,18 @@
   const registryRows=[
     {id:"account",title:"帳號與登入",keywords:["帳號","登入","註冊","會員","google","account","login"],category:"設定 · 會員功能尚未開放",icon:glyph('account'),target:"#ox-settings-account",view:"settings"},
     {id:"theme",title:"主題外觀",keywords:["主題","白金","深色","黑色","白色","淺色","自動","dark","light","theme"],category:"深色 · 白金 · 跟隨系統",icon:glyph('theme'),target:"#view-settings .ox-theme-segment",view:"settings"},
-    {id:"patterns",title:"型態畫板",keywords:["型態","畫板","搜尋","掃描","patterns"],category:"畫板",icon:glyph('chart'),view:"radar",radarMode:"board"},
-    {id:"compare",title:"突破對比",keywords:["對比","突破","績效","勝率","4H","compare"],category:"畫板 · 對比",icon:glyph('chart'),view:"radar",radarMode:"compare"},
-    {id:"chart",title:"盤面 K 線",keywords:["盤面","k線","K 線","圖表","雷達","T1","T2","T3","chart","radar"],category:"畫板 · 盤面",icon:glyph('chart'),view:"radar",radarMode:"chart"},
-    {id:"bubbles",title:"泡泡圖",keywords:["泡泡","板塊","bubbles"],category:"目前市場 · 指標",icon:glyph('bubbles'),view:"strength",tool:"bubbles"},
+    {id:"patterns",title:"型態畫板",keywords:["型態","畫板","搜尋","掃描","諧波","patterns"],category:"畫板",icon:glyph('chart'),view:"radar"},
+    {id:"compare",title:"每 4 小時突破・勝率",keywords:["型態","對比","突破","績效","勝率","長期勝率","過去紀錄","4H","compare"],category:"型態",icon:glyph('chart'),view:"pattern"},
+    {id:"radar",title:"雷達 T1／T2／T3",keywords:["雷達","T1","T2","T3","熱門","多頭","空頭","radar"],category:"行情 · 雷達",icon:glyph('chart'),view:"strength",tool:"radar"},
+    {id:"chart",title:"個股 K 線",keywords:["盤面","個股","k線","K 線","圖表","指標","畫線","chart"],category:"個股",icon:glyph('chart'),view:"stock"},
+    {id:"rank",title:"排行",keywords:["排行","漲幅","跌幅","成交額","資金費率","持倉","rank"],category:"行情 · 排行",icon:glyph('chart'),view:"strength",tool:"rank"},
+    {id:"bubbles",title:"泡泡圖",keywords:["泡泡","板塊","bubbles"],category:"行情 · 泡泡圖",icon:glyph('bubbles'),view:"strength",tool:"bubbles"},
     {id:"news",title:"行事曆與新聞",keywords:["新聞","資訊","行事曆","calendar","news"],category:"目前市場 · 資訊",icon:glyph('calendar'),view:"data"},
-    {id:"crypto",title:"加密貨幣",keywords:["加密","crypto","幣"],category:"市場 · 雷達",icon:glyph('market'),view:"radar",market:"crypto"},
+    {id:"crypto",title:"加密貨幣",keywords:["加密","crypto","幣"],category:"行情 · 雷達",icon:glyph('market'),view:"strength",tool:"radar",market:"crypto"},
     {id:"notifications",title:"通知設定",keywords:["通知","提醒","notification","前高前低"],category:"設定",icon:glyph('settings'),target:"#notification-permission-state",view:"settings",action:"notifications"},
     {id:"sound",title:"通知鈴聲",keywords:["鈴聲","聲音","sound","alert"],category:"設定",icon:glyph('settings'),target:"#btn-test-sound",view:"settings",action:"notifications"},
-    {id:"exchange",title:"交易所與資料源",keywords:["交易所","合約","bitget","binance","bybit","provider"],category:"加密 · 雷達",icon:glyph('market'),view:"radar",market:"crypto",action:"provider"},
-    {id:"watch",title:"自選清單",keywords:["自選","收藏","觀察","watchlist","watch"],category:"畫板 · 自選",icon:glyph('watch'),view:"radar",radarMode:"watch"}
+    {id:"exchange",title:"交易所與資料源",keywords:["交易所","合約","bitget","binance","bybit","provider"],category:"個股 · 資料源",icon:glyph('market'),view:"stock",market:"crypto",action:"provider"},
+    {id:"watch",title:"自選清單",keywords:["自選","收藏","觀察","watchlist","watch"],category:"行情 · 自選",icon:glyph('watch'),view:"strength",tool:"watch"}
   ];
   function findDeep(selector,root=document){const found=root.querySelector(selector);if(found)return found;for(const node of root.querySelectorAll('*')){if(node.shadowRoot){const found=findDeep(selector,node.shadowRoot);if(found)return found;}}return null;}
   async function waitTarget(selector){for(let i=0;i<40;i++){const node=findDeep(selector);if(node)return node;await new Promise(r=>setTimeout(r,50));}return null;}
@@ -76,8 +78,9 @@
       closeControl();
       setTimeout(async()=>{
         if(item.market)window.OXMarketController?.setMarket(item.market,{toast:false});
-        if(item.radarMode)window.OXRadarModes?.set(item.radarMode);
-        if(item.view&&typeof switchAppView==="function")switchAppView(item.view);
+        if(item.tool)window.OXMarketTabs?.select(item.tool);
+        // 資訊 opens through the news entry so it gets its history step; a day list closed with Back stays on 資訊.
+        if(item.view==="data"&&window.OXNews?.openMarket)window.OXNews.openMarket();else if(item.view&&typeof switchAppView==="function")switchAppView(item.view);
         if(item.action==="notifications")document.getElementById("ox-control-open-notifications")?.click();
         await new Promise(r=>setTimeout(r,110));
         if(item.action==="provider"){ProviderController.openPicker();return}
@@ -229,7 +232,7 @@
     restartTicker(){
       clearInterval(this.timer);this.timer=0;
       this.refreshTicker({quiet:true});
-      this.timer=setInterval(()=>{if(state.activeView==="radar")this.refreshTicker({quiet:true})},6000);
+      this.timer=setInterval(()=>{if(state.activeView==="stock")this.refreshTicker({quiet:true})},6000);
     },
     async select(id){
       id=String(id||"").toLowerCase();
@@ -324,6 +327,10 @@
       this.ensurePicker();
       this.restartTicker();
       window.addEventListener("resize",()=>this.positionPicker(),{passive:true});
+      // Esc closes the exchange list like the other menus (its backdrop otherwise keeps every tap).
+      document.addEventListener("keydown",e=>{if(e.key==="Escape"&&q("#ox-provider-picker")?.classList.contains("show")){this.closePicker();q("#ticker-pair")?.focus({preventScroll:true});}});
+      // Leaving the page or the 盤面 tab must not leave the list and its backdrop over the next page.
+      document.addEventListener("ox:viewchange",()=>this.closePicker());document.addEventListener("ox:radar-modechange",()=>this.closePicker());
     }
   };
   window.OXProviderController=ProviderController;
@@ -410,7 +417,7 @@
     const control=q("#ox-control-panel");
     if(control)observer.observe(control,{childList:true,subtree:true});
     document.addEventListener("ox:viewchange",()=>{
-      if(state.activeView==="radar"){
+      if(state.activeView==="stock"){
         ProviderController.ensureTitleTrigger();
         ProviderController.refreshTicker({quiet:true});
       }

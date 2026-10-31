@@ -261,7 +261,8 @@ html.ox-motion-lite .dock-radar.active .dock-radar-orb.glass-orb{animation:none!
 .app-dock > .dock-btn[data-view-target="home"]{grid-column:1 !important;}
 .app-dock > .dock-btn[data-view-target="strength"]{grid-column:2 !important;}
 .app-dock > .dock-btn[data-view-target="radar"]{grid-column:3 !important;}
-.app-dock > .dock-btn[data-view-target="data"]{grid-column:4 !important;}
+.app-dock > .dock-btn[data-view-target="pattern"]{grid-column:4 !important;}
+.app-dock > .dock-btn[data-view-target="data"]{grid-column:5 !important;}
 .app-dock > .dock-btn[data-view-target="media"]{grid-column:5 !important;}
 .app-dock > .ox-dock-indicator,
 .app-dock > .ox-motion-shine{

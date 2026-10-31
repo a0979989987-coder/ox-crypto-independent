@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
 import { CLASSIC_VERSION } from '../src/core/classic.js';
 import { rankPatternMatches, sortMatches } from '../src/markets/crypto/patterns/matcher.js';
-import { BOARD_CANDLES, CATCH_UP, KEEP_DETAIL, STEP, breakoutPicks, candlesAt, classifyCandles, closeIndex, pendingBoundaries, scanPoint, seriesPaths, updateLog } from '../scripts/crypto-breakouts.mjs';
+import { BOARD_CANDLES, CATCH_UP, KEEP_DETAIL, STEP, breakoutPicks, candlesAt, classifyCandles, closeIndex, pendingBoundaries, periodTotals, scanPoint, seriesPaths, updateLog } from '../scripts/crypto-breakouts.mjs';
 
 const L = 1793174400; // 2026-10-28 08:00 UTC, a 4H boundary
 const bar = (time, close, extra = {}) => ({ time, open: close, high: close * 1.01, low: close * .99, close, volume: 100, quoteVolume: close * 100, ...extra });
@@ -147,6 +147,49 @@ test('old points leave the detail but stay in the history', () => {
   assert.deepEqual(log.history[0].k18, { n: 1, avg: 0, win: 0, btc: 18 });
   assert.deepEqual(log.points[0].picks[0].c.length, 19);
   assert.deepEqual(log.points.at(-1).picks[0].c, [10]);
+});
+
+test('long-run totals by tier and by pattern add up and outlive the detail window', () => {
+  // A (T1, W 底) rises 1% every 4H candle, B (T2, 水平阻力) falls 1%; BTC is flat.
+  const rate = { A: .01, B: -.01 }, closeOf = (s, t) => s === 'BTCUSDT' ? 100 : 10 * (1 + rate[s]) ** ((t - L) / STEP);
+  const total = KEEP_DETAIL + 24;
+  let log = null;
+  for (let i = 0; i < total; i++) {
+    const at = L + i * STEP, c = s => [closeOf(s, at)];
+    log = updateLog(log, { points: [point(at, [{ ...pick('A', 1, c('A')), p: 'w' }, { ...pick('B', 2, c('B')), p: 'horizontal-resistance' }])], closeOf, now: 'x' });
+  }
+  assert.equal(log.points.length, KEEP_DETAIL);
+  assert.equal(log.history.length, total);
+  // The first record left the detail long ago; its totals stay, every period filled.
+  assert.deepEqual(log.history[0].byTier, { 1: { n1: 1, s1: 1, w1: 1, n6: 1, s6: 6.15, w6: 1, n18: 1, s18: 19.61, w18: 1 }, 2: { n1: 1, s1: -1, w1: 0, n6: 1, s6: -5.85, w6: 0, n18: 1, s18: -16.55, w18: 0 } });
+  assert.deepEqual(Object.keys(log.history[0].byPattern), ['w', 'horizontal-resistance']);
+  assert.deepEqual(log.history[0].byPattern.w, log.history[0].byTier[1]);
+  // Added up over the whole history: every record with a close counts once.
+  const sum = (key, id, field) => log.history.reduce((n, h) => n + (h[key]?.[id]?.[field] || 0), 0);
+  assert.equal(sum('byTier', 1, 'n1'), total - 1);
+  assert.equal(sum('byTier', 1, 'w1'), total - 1);
+  assert.equal(sum('byTier', 2, 'w1'), 0);
+  assert.equal(sum('byPattern', 'w', 'n18'), total - 18);
+  // The newest record has no close after it yet, so it carries no totals.
+  assert.equal(log.history.at(-1).byTier, undefined);
+  assert.deepEqual(periodTotals([]), {});
+});
+
+test('an old log without totals is extended as it is: picks untouched, old summaries kept', () => {
+  const closeOf = (s, t) => s === 'BTCUSDT' ? 100 : 10 + (t - L) / STEP;
+  let log = updateLog(null, { points: [point(L, [pick('A', 1, [10])])], closeOf, now: 'x' });
+  log = updateLog(log, { points: [point(L + STEP, [pick('B', 3, [11])])], closeOf, now: 'x' });
+  // As the recorder wrote it before 長期勝率: no totals, plus a summary of a point long gone.
+  const old = structuredClone(log), gone = { at: L - 100 * STEP, n: 1, k1: { n: 1, avg: 2, win: 100, btc: 0 }, k6: null, k18: null, tiers: { 1: { n: 1, k1: 2, k6: null, k18: null } } };
+  for (const h of old.history) { delete h.byTier; delete h.byPattern; }
+  old.history.unshift(gone);
+  const before = structuredClone(old);
+  const next = updateLog(old, { points: [point(L + 2 * STEP, [])], closeOf, now: 'y' });
+  assert.deepEqual(old, before, 'the input log is not mutated');
+  assert.deepEqual(next.points.map(p => p.picks.map(x => [x.s, x.t, x.p, x.c[0]])), [[['A', 1, 'w', 10]], [['B', 3, 'w', 11]], []]);
+  assert.deepEqual(next.history[0], gone, 'a summary outside the detail stays as it was');
+  assert.deepEqual(next.history[1].byTier, { 1: { n1: 1, s1: 10, w1: 1 } });
+  assert.deepEqual(next.history[2].byTier, { 3: { n1: 1, s1: 9.09, w1: 1 } });
 });
 
 // Real Bitget 4H responses from the test fixtures, replayed at earlier closes.

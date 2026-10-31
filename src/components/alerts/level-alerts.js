@@ -233,7 +233,8 @@ async function toggleLevelAlert(kind) {
 }
 
 function checkLevelAlerts() {
-  if (!state.tickers.length) return;
+  // Saved quotes (the radar snapshot before the live list arrives) never trigger alerts.
+  if (!state.tickers.length || state.tickersSource === "saved") return;
   if (localStorage.getItem("ox-setting-breakout") === "0") return;
   for (let i = 0; i < localStorage.length; i++) {
     const key = localStorage.key(i);

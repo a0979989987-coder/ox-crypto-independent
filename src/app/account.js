@@ -2,7 +2,7 @@
 // and the member's Bitget UID. Signed-out visitors keep using everything; nothing here
 // locks a tool. Mounts into #ox-settings-account when the page has it, otherwise at the
 // top of 選單, where the old OX ACCOUNT row was.
-import { SYNC_KEYS, MAX_SYNC_CHARS, mergeValue } from './sync-keys.js?v=20261028-sites1';
+import { SYNC_KEYS, MAX_SYNC_CHARS, mergeValue } from './sync-keys.js?v=20261031-share1';
 const api = path => new URL('/api/v1/' + path, location.href);
 const BY_STORAGE = new Map(SYNC_KEYS.map(item => [item.storage, item]));
 const JOINED_KEY = 'ox-crypto:synced-account', RELOADED_KEY = 'ox-crypto:account-synced';
@@ -202,8 +202,13 @@ function loginResult() {
   document.body.append(toast); setTimeout(() => toast.remove(), 3500);
 }
 
+// The drawer and the top bar's avatar show the same account.
+function publish() {
+  globalThis.OXMember = Object.freeze({ member: state.member, configured: state.configured, loaded: state.loaded, signIn: startSignIn });
+  document.dispatchEvent(new CustomEvent('ox:member', { detail: globalThis.OXMember }));
+}
 async function start() {
-  loginResult(); redirectOldEntry(); render();
+  loginResult(); redirectOldEntry(); render(); publish();
   // The menu can be rebuilt by the shell; put the card back when a page opens.
   for (const type of ['ox:viewchange', 'ox:runtime-ready']) document.addEventListener(type, () => { if (!root.isConnected) render(); });
   document.addEventListener('click', event => { if (event.target instanceof Element && event.target.closest('#ox-dock-menu,#ox-control-open,[data-view-target="settings"]')) setTimeout(() => { if (!root.isConnected) render(); }, 0); }, true);
@@ -212,7 +217,7 @@ async function start() {
     const body = response.ok && /json/.test(response.headers.get('content-type') || '') ? await response.json() : null;
     state.configured = !!body?.data?.configured; state.member = body?.data?.member || null;
   } catch {}
-  state.loaded = true; render();
+  state.loaded = true; render(); publish();
   if (!state.member) return;
   try {
     const updated = await sync();

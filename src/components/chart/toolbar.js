@@ -25,7 +25,8 @@
     let marker = $('.tf-glass-indicator', strip);
     if (!marker) { marker = document.createElement('span'); marker.className = 'tf-glass-indicator'; marker.setAttribute('aria-hidden','true'); strip.prepend(marker); }
     const active = $('.btn-tf.active', strip);
-    if (!active) return;
+    // The strip is laid out while 盤面 is hidden behind another 畫板 tab; place the marker when it shows.
+    if (!active || !active.offsetWidth) return;
     const x = active.offsetLeft;
     marker.style.width = `${active.offsetWidth}px`;
     marker.style.transform = `translateX(${x}px)`;
@@ -98,6 +99,7 @@
   $$('[data-custom-filter]').forEach(input => input.addEventListener('change', updateCustomFilters));
   strip?.addEventListener('scroll', () => requestAnimationFrame(addGlassMarker), {passive:true});
   window.addEventListener('resize', () => requestAnimationFrame(addGlassMarker), {passive:true});
+  if (strip && 'ResizeObserver' in window) new ResizeObserver(() => requestAnimationFrame(addGlassMarker)).observe(strip);
   strip?.addEventListener('click', event => {
     const button = event.target.closest('.btn-tf'); if (!button) return;
     const lastButton = $$('.btn-tf', strip).at(-1);

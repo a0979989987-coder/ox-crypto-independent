@@ -59,11 +59,12 @@ function setChartFocus(enabled) {
   requestAnimationFrame(() => {
     resizeChartToContainer(true);
     if (chartBox && !prefersReducedMotion && typeof chartBox.animate === 'function') {
-      const transform = getComputedStyle(chartBox).transform;
+      // "none scale(.965)" is not a valid transform and the browser dropped the whole animation.
+      const transform = getComputedStyle(chartBox).transform, prefix = transform === 'none' ? '' : `${transform} `;
       chartBox.animate(
         enabled
-          ? [{ transform: `${transform} scale(.965)`, opacity: .86 }, { transform, opacity: 1 }]
-          : [{ transform, opacity: 1 }, { transform: `${transform} scale(.985)`, opacity: .9 }],
+          ? [{ transform: `${prefix}scale(.965)`, opacity: .86 }, { transform, opacity: 1 }]
+          : [{ transform, opacity: 1 }, { transform: `${prefix}scale(.985)`, opacity: .9 }],
         { duration: enabled ? 520 : 360, easing: 'cubic-bezier(.22,.8,.24,1)', fill: 'both' }
       ).onfinish = () => { chartBox.getAnimations().forEach(animation => animation.cancel()); };
     }
@@ -71,20 +72,31 @@ function setChartFocus(enabled) {
   [100, 300].forEach(ms => setTimeout(() => { resizeChartToContainer(true); updatePriceTimer(); }, ms));
 }
 
+// Pages: the dock's 首頁／行情／畫板／型態／資訊, the 個股 page, and 設定／媒體 from the
+// drawer. 畫板 (board), 型態 (compare) and 個股 (chart) share #view-radar; the page
+// picks its mode. 個股 is a page you step into: it gets a history entry, so the
+// phone's back gesture (and the page's ‹) returns to wherever it was opened from.
+const APP_VIEWS = ['home','strength','radar','pattern','stock','data','media','settings','news'];
+const VIEW_SECTION = { pattern: 'radar', stock: 'radar' };
+const RADAR_MODE = { radar: 'board', pattern: 'compare', stock: 'chart' };
+let stockReturn = 'strength', ignoreStockPop = false, poppingStock = false;
 function switchAppView(view) {
+  if (!APP_VIEWS.includes(view)) return;
   if (window.OXFeatures && !window.OXFeatures.enterView(view)) return;
-  if (!['home','strength','radar','data','media','settings','news'].includes(view)) return;
   if (document.body.classList.contains('chart-focus')) setChartFocus(false);
 
   const previous = state.activeView;
-  if (view === 'radar' && previous !== 'radar' && state.activeMarket === 'crypto') {
-    state.directionFilter = 'long';
-    state.currentTab = 'all';
-    const radar = document.getElementById('view-radar');
-    if (radar) { delete radar.dataset.selectedSymbol; delete radar.dataset.priceDirection; delete radar.dataset.glowLevel; }
-    syncScannerFilterUI();
+  const radar = document.getElementById('view-radar');
+  if (view === 'stock' && previous !== 'stock') {
+    stockReturn = previous && previous !== 'stock' ? previous : 'strength';
+    // Before ox:viewchange, so the news page sees this entry and adds none of its own.
+    try { history.pushState({ oxStock: 1 }, ''); } catch {}
+  } else if (previous === 'stock' && view !== 'stock' && !poppingStock && history.state?.oxStock) {
+    ignoreStockPop = true; history.back();
   }
-  const order = ['home','strength','radar','data','media','settings'];
+  if (radar && RADAR_MODE[view] && radar.dataset.radarMode !== RADAR_MODE[view]) radar.dataset.radarMode = RADAR_MODE[view];
+  const section = VIEW_SECTION[view] || view;
+  const order = ['home','strength','radar','pattern','data','media','settings'];
   const direction = Math.sign(order.indexOf(view) - order.indexOf(previous));
   const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)')?.matches;
   // Switch immediately: holding the old page for its exit animation blocks taps and scrolling.
@@ -93,10 +105,10 @@ function switchAppView(view) {
   {
     state.activeView = view;
     document.body.dataset.view = view;
-    document.querySelectorAll('[data-app-view]').forEach(el => el.classList.toggle('active', el.dataset.appView === view));
+    document.querySelectorAll('[data-app-view]').forEach(el => el.classList.toggle('active', el.dataset.appView === section));
     document.querySelectorAll('[data-view-target]').forEach(btn => btn.classList.toggle('active', btn.dataset.viewTarget === view));
 
-    const incoming = document.querySelector(`[data-app-view="${view}"]`);
+    const incoming = document.querySelector(`[data-app-view="${section}"]`);
     // A brief opacity entrance leaves touch and scrolling available immediately.
     if (incoming && previous !== view && !reduced) incoming.classList.add('ox-mobile-view-in');
 
@@ -108,9 +120,9 @@ function switchAppView(view) {
       if (state.activeView !== view) return;
       if (view === 'strength' && state.activeMarket === 'crypto') { renderMarketStrength(); }
       if (view === 'home' && state.activeMarket === 'crypto') { renderHomeOverview(); HomeMiniChart.ensureAndLoad(false); }
-      if (view === 'radar' && state.activeMarket === 'crypto') {
+      if (view === 'stock' && state.activeMarket === 'crypto') {
         resizeChartToContainer();
-        renderCurrentTab();
+        updateHeaderHUD();
         renderBenchmarkBar();
       }
     }));
@@ -118,63 +130,70 @@ function switchAppView(view) {
 }
 
 
-function homeStrengthLabel(v) {
-  const n = clamp(Math.round(num(v)));
-  if (n >= 80) return "強";
-  if (n >= 65) return "偏強";
-  if (n >= 45) return "中性";
-  if (n >= 30) return "偏弱";
-  return "弱";
-}
+// The phone's back gesture on the 個股 page returns to the page it was opened from.
+// Registered before the news page's own listener, which it keeps out of this step.
+window.addEventListener('popstate', event => {
+  if (ignoreStockPop) { ignoreStockPop = false; event.stopImmediatePropagation(); return; }
+  if (state.activeView !== 'stock') return;
+  event.stopImmediatePropagation();
+  poppingStock = true;
+  try { switchAppView(stockReturn === 'stock' ? 'strength' : stockReturn); } finally { poppingStock = false; }
+});
+window.OXBack = () => { if (history.state?.oxStock) history.back(); else switchAppView(stockReturn === 'stock' ? 'strength' : stockReturn); };
 
-function homeMarketState(strength) {
-  const btc = num(strength.btcRaw), alt = num(strength.altRaw);
-  if (btc >= 68 && alt >= 65) return "偏多趨勢";
-  if (btc >= 68 && alt < 52) return "BTC 主導";
-  if (alt >= 68 && alt - btc >= 8) return "小幣轉強";
-  if (btc <= 38 && alt <= 40) return "偏空環境";
-  return "中性整理";
+// 首頁 numbers. A price comes from the live quote stream while 首頁 shows (home-feed.js
+// subscribes BTC, ETH and SOL), else from the ticker list, which the hourly radar snapshot
+// fills before Bitget answers, so the page has numbers within about a second.
+function homeQuote(symbol) {
+  const live = globalThis.OXCryptoQuotes?.get?.(symbol);
+  if (live) return live;
+  if (symbol === "BTCUSDT" && state.btcTicker) return state.btcTicker;
+  if (symbol === "ETHUSDT" && state.ethTicker) return state.ethTicker;
+  return state.tickers.find(t => t.symbol === symbol) || null;
 }
-
-function homeStructureText(a, ticker) {
-  if (a?.structureLabel) return a.structureLabel;
-  if (a?.side === "LONG") return "結構偏多";
-  if (a?.side === "SHORT") return "結構偏空";
-  if (ticker) return num(ticker.change24h) >= 0 ? "24H 偏強" : "24H 偏弱";
-  return "等待分析";
+// 市場寬度: every eligible USDT perpetual's 24H change (the radar's own ticker list).
+function homeBreadth(tickers = state.tickers) {
+  const changes = tickers.map(t => Number(t.change24h)).filter(Number.isFinite);
+  const sorted = [...changes].sort((a, b) => a - b), mid = sorted.length >> 1;
+  return {
+    up: changes.filter(v => v > 0).length, down: changes.filter(v => v < 0).length, total: changes.length,
+    median: sorted.length ? sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2 : null
+  };
+}
+// 24H change as 「-2,735.6（-3.44%）」: the amount from the 24H change ratio.
+function homeChangeText(quote) {
+  const last = Number(quote?.lastPr), ratio = Number(quote?.change24h);
+  if (!Number.isFinite(last) || !Number.isFinite(ratio) || last <= 0 || ratio <= -1) return "—";
+  const amount = last - last / (1 + ratio), sign = amount > 0 ? "+" : amount < 0 ? "-" : "";
+  return `${sign}${Math.abs(amount) > 0 ? fmtPrice(Math.abs(amount)) : "0"}（${fmtPct(ratio)}）`;
+}
+function renderHomeQuotes() {
+  const setText = (id, value) => { const el = document.getElementById(id); if (el && el.textContent !== value) el.textContent = value; };
+  const setTone = (id, value, text) => {
+    const el = document.getElementById(id); if (!el) return;
+    if (el.textContent !== text) el.textContent = text;
+    const tone = Number.isFinite(value) && text !== "—" ? value > 0 ? "up" : value < 0 ? "down" : "" : "";
+    if (el.className !== tone) el.className = tone;
+  };
+  const btc = homeQuote("BTCUSDT");
+  setText("home-btc-price", btc ? fmtPrice(btc.lastPr) : "—");
+  setTone("home-btc-change", Number(btc?.change24h), btc ? homeChangeText(btc) : "—");
+  for (const coin of ["eth", "sol"]) {
+    const quote = homeQuote(`${coin.toUpperCase()}USDT`), change = Number(quote?.change24h);
+    setText(`home-${coin}-price`, quote ? fmtPrice(quote.lastPr) : "—");
+    setTone(`home-${coin}-change`, change, quote && Number.isFinite(change) ? fmtPct(change) : "—");
+  }
+  const breadth = homeBreadth();
+  setText("home-breadth-up", breadth.total ? String(breadth.up) : "—");
+  setText("home-breadth-down", breadth.total ? String(breadth.down) : "—");
+  setTone("home-breadth-median", breadth.median, breadth.median == null ? "—" : fmtPct(breadth.median));
+  const bar = document.getElementById("home-breadth-bar");
+  if (bar) bar.style.width = `${breadth.up + breadth.down ? (breadth.up / (breadth.up + breadth.down) * 100).toFixed(1) : 50}%`;
 }
 
 function renderHomeOverview() {
-  const btc = state.btcTicker;
-  const eth = state.ethTicker;
-  const btcA = state.analyzedCache.get("BTCUSDT");
-  const ethA = state.analyzedCache.get("ETHUSDT");
-  const strength = computeMarketStrength();
-  const btcStrength = clamp(Math.round(num(strength.btcRaw)));
-  const altStrength = clamp(Math.round(num(strength.altRaw)));
-  const marketScore = Math.round((btcStrength + altStrength) / 2);
-  const setText = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
-  const setWidth = (id, value) => { const el = document.getElementById(id); if (el) { el.style.width = `${clamp(value)}%`; el.style.setProperty("--meter-color", value < 40 ? "var(--meter-weak)" : value < 60 ? "var(--meter-mid)" : "var(--meter-strong)"); } };
-  const setChange = (id, ticker) => {
-    const el = document.getElementById(id); if (!el) return;
-    el.textContent = ticker ? fmtPct(ticker.change24h) : "—";
-    el.className = ticker ? (num(ticker.change24h) >= 0 ? "positive" : "negative") : "";
-  };
-
-  const marketStateText = homeMarketState(strength);
-  setText("home-market-state", marketStateText);
-  setText("home-market-score", marketScore);
-  setText("home-t1-count", (state.tierMap.t1 || []).length);
-  setText("home-t2-count", (state.tierMap.t2 || []).length);
-  setText("home-surge-count", (state.tierMap.surge || []).length);
-  setText("home-side-market-state", marketStateText);
-  setText("home-side-market-score", marketScore);
-  setWidth("home-market-meter", marketScore);
-  setText("home-side-t1", (state.tierMap.t1 || []).length);
-  setText("home-side-t2", (state.tierMap.t2 || []).length);
-  setText("home-side-surge", (state.tierMap.surge || []).length);
-
-  // The paired T1 board reads the radar's independent long and short rankings.
+  renderHomeQuotes();
+  // The paired lists read the radar's independent long and short rankings.
   for (const [side, label] of [["long", "上漲"], ["short", "下跌"]]) {
     const rows = ["t1","t2","t3"].flatMap(tier => state.tierMapBySide?.[side]?.[tier] || []).filter(candidate =>
       side === "long" ? num(candidate.change24h) > 0 : num(candidate.change24h) < 0
@@ -192,6 +211,7 @@ function renderHomeOverview() {
     }
     let previousTier=null;
     for (const candidate of rows.slice(0, 30)) {
+      // .ox-home-t1-row keeps the double tap / long press K-line preview (home-preview.js).
       const row = existing.get(candidate.symbol) || document.createElement("button");
       row.type = "button";
       row.className = "ox-home-t1-row";
@@ -216,7 +236,7 @@ function renderHomeOverview() {
       tier.textContent = row.dataset.homeTier.toUpperCase();
       tier.hidden=!startsTier;
       const change = row.querySelector('em') || document.createElement("em");
-      change.className = num(candidate.change24h) > 0 ? "positive" : "negative";
+      change.className = num(candidate.change24h) > 0 ? "up" : "down";
       change.textContent = fmtPct(candidate.change24h);
       if(!row.children.length)row.append(tier,identity,score,change);
       displayed.push(row);
@@ -225,72 +245,7 @@ function renderHomeOverview() {
     // survive live updates. Only move rows when the actual ranking changes.
     displayed.forEach((row,index)=>{if(box.children[index]!==row)box.insertBefore(row,box.children[index]||null);});
     for(const child of [...box.children])if(!displayed.includes(child))child.remove();
-    const firstFive=displayed.slice(0,5);
-    const height=firstFive.reduce((sum,row)=>sum+(row.dataset.groupStart==='true'?64:51),0)+Math.max(0,firstFive.length-1)*9;
-    box.style.setProperty('--home-five-rows',`${height}px`);
   }
-
-  setText("home-btc-price", btc ? fmtPrice(btc.lastPr) : "—"); setChange("home-btc-change", btc);
-  setText("home-btc-volume", btc ? `${fmtCryptoVolume(btc.usdtVolume)} USDT` : "—");
-  const btcHigh24 = btc ? num(btc.high24h ?? btc.high24H ?? btc.highPr ?? btc.highPrice24h) : NaN;
-  const btcLow24 = btc ? num(btc.low24h ?? btc.low24H ?? btc.lowPr ?? btc.lowPrice24h) : NaN;
-  setText("home-btc-high", Number.isFinite(btcHigh24) && btcHigh24 > 0 ? fmtPrice(btcHigh24) : "—");
-  setText("home-btc-low", Number.isFinite(btcLow24) && btcLow24 > 0 ? fmtPrice(btcLow24) : "—");
-  setText("home-btc-hero-strength", btcStrength);
-  setText("home-btc-market-state", marketStateText);
-  setText("home-btc-note", `${homeStructureText(btcA, btc)}${btcA ? ` · OX ${btcA.oxScore}` : ""}`);
-
-  setText("home-eth-price", eth ? fmtPrice(eth.lastPr) : "—"); setChange("home-eth-change", eth);
-  setText("home-eth-note", `${homeStructureText(ethA, eth)}${ethA ? ` · OX ${ethA.oxScore}` : ""}`);
-  setWidth("home-eth-meter", ethA?.oxScore ?? clamp(50 + num(eth?.change24h) * 350));
-
-  setText("home-btc-strength", btcStrength); setText("home-btc-strength-label", homeStrengthLabel(btcStrength));
-  setText("home-btc-strength-note", btcA ? `結構 ${qualitative(btcA.structScore)} · 資金 ${qualitative(btcA.flowScore)} · Setup ${qualitative(btcA.setupScore)}` : "結構 / 資金 / 動能 / Trigger");
-  setWidth("home-btc-strength-meter", btcStrength);
-
-  setText("home-alt-strength", altStrength); setText("home-alt-strength-label", homeStrengthLabel(altStrength));
-  const altP = strength.altParts;
-  setText("home-alt-note", altP ? `已分析 ${strength.sampleSize} · 結構廣度 ${Math.round(altP.structureBreadth)}% · 資金活躍 ${Math.round(altP.moneyBreadth)}%` : `已分析 ${strength.sampleSize} 檔 · 等待更多樣本`);
-  setWidth("home-alt-meter", altStrength);
-  for (const [id, score] of [["home-btc-arc", btcStrength], ["home-alt-arc", altStrength]]) {
-    document.getElementById(id)?.style.setProperty("--meter-color", score < 40 ? "var(--meter-weak)" : score < 60 ? "var(--meter-mid)" : "var(--meter-strong)");
-  }
-  document.getElementById("home-btc-arc")?.setAttribute("stroke-dasharray", `${btcStrength} 100`);
-  document.getElementById("home-alt-arc")?.setAttribute("stroke-dasharray", `${altStrength} 100`);
-
-  // 重要資訊：只從現有 analyzedCache / tierMap 產生，不塞假資料
-  const events = [];
-  const seen = new Set();
-  const pushEvent = (coin, type, reason, tag, icon) => {
-    if (!coin?.symbol || seen.has(`${coin.symbol}:${type}`) || events.length >= 6) return;
-    seen.add(`${coin.symbol}:${type}`); events.push({ symbol:coin.symbol, type, reason, tag, icon });
-  };
-  for (const c of (state.tierMap.t1 || []).slice(0, 3)) pushEvent(c, "進入 T1", c.triggerType || c.statusText || "Trigger 已確認", "T1", "⚡");
-  for (const c of (state.tierMap.surge || []).slice(0, 3)) pushEvent(c, "異常活躍", `1H 放量 ${c.volRatio1h ?? "—"}x · 24H ${fmtPct(c.change24h)}`, "SURGE", "🔥");
-  for (const c of (state.tierMap.t2 || []).slice(0, 3)) pushEvent(c, "接近 Trigger", c.setupName || "結構已就緒", "T2", "◎");
-  const rsCandidates = Array.from(state.analyzedCache.values()).filter(c => !benchmarkSymbols.has(c.symbol) && num(c.rsScore) >= 75).sort((a,b)=>num(b.rsScore)-num(a.rsScore));
-  for (const c of rsCandidates.slice(0,2)) pushEvent(c, "相對 BTC 轉強", `Relative Strength ${c.rsScore}`, "RS", "↗");
-  const eventBox = document.getElementById("home-events");
-  if (eventBox) eventBox.innerHTML = events.length ? events.map(e => `<button class="v33-event-row" type="button" data-home-symbol="${e.symbol}"><span class="v33-event-icon">${e.icon}</span><span class="v33-row-main"><b>${e.symbol.replace(/USDT$/,"")} · ${e.type}</b><small>${e.reason}</small></span><span class="v33-row-pill">${e.tag}</span></button>`).join("") : `<div class="v33-list-empty">全市場輪巡進行中</div>`;
-
-  // OX 重點觀察：T1 / T2 最多三個
-  const watch = [...(state.tierMap.t1 || []), ...(state.tierMap.t2 || [])].filter((c,i,a)=>a.findIndex(x=>x.symbol===c.symbol)===i).slice(0,3);
-  const watchBox = document.getElementById("home-watchlist");
-  if (watchBox) watchBox.innerHTML = watch.length ? watch.map(c => `<button class="v33-watch-row" type="button" data-home-symbol="${c.symbol}"><span class="v33-row-main"><b>${c.symbol.replace(/USDT$/,"")} · ${c.setupName || "Setup 分析中"}</b><small>${c.structureLabel || c.side || "結構分析中"}</small><span class="v33-watch-stage">${c.tier === "t1" ? "T1 · 即戰力" : "T2 · 蹲點準備"}</span></span><span class="v33-watch-score">OX ${c.oxScore ?? "—"}</span></button>`).join("") : `<div class="v33-list-empty">等待 T1 / T2 候選標的</div>`;
-
-  // 強弱榜：直接讀現有 ticker 排名結果
-  const renderRank = (id, list) => {
-    const box = document.getElementById(id); if (!box) return;
-    const rows = (list || []).slice(0,5);
-    box.innerHTML = rows.length ? rows.map((t,i)=>`<button class="v33-rank-row" type="button" data-home-symbol="${t.symbol}"><span class="v33-rank-no">#${i+1}</span><span class="v33-rank-symbol">${t.symbol.replace(/USDT$/,"")}</span><span class="v33-rank-change ${num(t.change24h)>=0?"positive":"negative"}">${fmtPct(t.change24h)}</span></button>`).join("") : `<div class="v33-list-empty">等待 Ticker</div>`;
-  };
-  renderRank("home-gainers", state.tierMap.gainers);
-  renderRank("home-losers", state.tierMap.losers);
-
-  setText("home-radar-t1", (state.tierMap.t1 || []).length);
-  setText("home-radar-t2", (state.tierMap.t2 || []).length);
-  setText("home-radar-t3", (state.tierMap.t3 || []).length);
-  setText("home-radar-surge", (state.tierMap.surge || []).length);
 }
 
 function renderOxLive() {

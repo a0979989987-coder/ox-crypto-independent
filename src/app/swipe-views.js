@@ -1,19 +1,19 @@
 // Swipe left or right to move between tabs, as on the Taiwan site. A swipe
-// that starts in the top 35% of the screen moves the page's top tab rail
-// (畫板／盤面／自選, the 指標 tools, 行事曆／關鍵新聞); one that starts in the
-// lower 65% moves the dock views (首頁, 指標, 畫板, 資訊, 設定). A swipe counts
+// that starts in the top 35% of the screen moves the page's top tab row
+// (the 行情 tabs, 每 4 小時突破／長期勝率／過去紀錄, 行事曆／關鍵新聞); one that starts
+// in the lower 65% moves the dock views (首頁, 行情, 畫板, 型態, 資訊). A swipe counts
 // when it is a quick flick or a long drag and clearly horizontal, and never
 // when it starts on content that handles its own gestures: the K-line chart,
 // the pattern board canvas, bubbles, the heatmap, inputs, dialogs and rows
 // that scroll sideways.
-export const ORDER = ['home', 'strength', 'radar', 'data', 'settings'];
+export const ORDER = ['home', 'strength', 'radar', 'pattern', 'data'];
 export const TOP_ZONE = 0.35;
 const EDGE = 20, DIRECTION_RATIO = 1.6;
 const FLICK_DISTANCE = 60, FLICK_SPEED = 0.3, DRAG_DISTANCE = 120, MAX_TIME = 900;
-const OWN_GESTURES = 'input,textarea,select,[contenteditable],canvas,.chart-container,.chart-box,dialog,[role="dialog"],[role="menu"],.oxn-modal-backdrop,.oxn-popover,.ox-control-overlay,.chart-tools-overlay,#ox-account-overlay,#ox-market-quick-switch,.app-dock';
+const OWN_GESTURES = 'input,textarea,select,[contenteditable],canvas,.chart-container,.chart-box,dialog,[role="dialog"],[role="menu"],.oxn-modal-backdrop,.oxn-popover,.ox-control-overlay,.chart-tools-overlay,#ox-account-overlay,#ox-market-quick-switch,.app-dock,.oc-drawer,.oc-sheet,.ox-stock-bar';
 // Layers drawn over the page keep every swipe to themselves.
-const OVERLAYS = 'dialog[open],.oxn-modal-backdrop,.oxn-popover.is-open,.chart-tools-overlay.is-open,#ox-account-overlay.is-open,#radar-tier-menu:not([hidden])';
-const BUSY_BODY = ['ox-control-open', 'ox-mqs-open', 'ox-mqs-dragging', 'chart-focus', 'ox-feature-blocked'];
+const OVERLAYS = 'dialog[open],.oxn-modal-backdrop,.oxn-popover.is-open,.chart-tools-overlay.is-open,#ox-account-overlay.is-open,#radar-tier-menu:not([hidden]),#ox-provider-backdrop.show';
+const BUSY_BODY = ['ox-control-open', 'ox-mqs-open', 'ox-mqs-dragging', 'chart-focus', 'ox-feature-blocked', 'oc-drawer-open'];
 
 export function isSwipe(dx, dy, elapsed) {
   const distance = Math.abs(dx);
@@ -39,8 +39,8 @@ function handlesOwnGesture(path) {
   return false;
 }
 
-// The visible top tab rail of the current page: the 畫板 rail in the page and
-// the tool/news rails inside their shadow roots. The highest one on screen wins.
+// The visible top tab row of the current page: the tab rows live inside their
+// shadow roots. The highest one on screen wins.
 function topRail() {
   const roots = [document, ...[...document.querySelectorAll('*')].filter(el => el.shadowRoot).map(el => el.shadowRoot)];
   let best = null;

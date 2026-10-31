@@ -54,13 +54,17 @@ try{
   }
   try{
    await page.goto(`http://127.0.0.1:4296${basePath}/`,{waitUntil:'domcontentloaded'});
-   if(market==='crypto'){await page.waitForFunction(()=>typeof switchAppView==='function'&&OXFeatures.ready);await page.evaluate(()=>{switchAppView('radar');window.OXRadarModes?.set('chart');});}
+   // Crypto: the chart is the 個股 page (switchAppView('stock')), full width with its drawing tools.
+   if(market==='crypto'){await page.waitForFunction(()=>typeof switchAppView==='function'&&OXFeatures.ready);await page.evaluate(()=>switchAppView('stock'));}
    else{await page.locator('[data-twr-mode="chart"]').click();}
    const chart=market==='tw'?'#tw-radar-chart':'#chart',box=market==='tw'?'.twcr-chart-box':'#view-radar .chart-box';
    await page.waitForFunction(s=>document.querySelector(s)?.__chartQA?.rows.length>20,chart,{timeout:30000});
    let openingFutureSpace;
    if(market==='crypto'){
-    await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
+    // The candles may load while 個股 is still hidden; it re-anchors the latest candle a frame
+    // after it first shows. Measure once the chart is on screen and its position holds still.
+    await page.waitForFunction(s=>document.querySelector(s).offsetWidth>0,chart);
+    await page.evaluate(s=>new Promise(r=>{const qa=document.querySelector(s).__chartQA;let last=null,same=0,n=0;const tick=()=>{const ts=qa.chart.timeScale(),x=ts.timeToCoordinate(qa.rows.at(-1).time);same=x===last?same+1:0;last=x;if(same>=8||++n>120)r();else requestAnimationFrame(tick);};requestAnimationFrame(tick);}),chart);
     openingFutureSpace=await page.evaluate(s=>{
      const {chart:c,rows}=document.querySelector(s).__chartQA,ts=c.timeScale();
      return {symbol:state.symbol,pixels:ts.width()-ts.timeToCoordinate(rows.at(-1).time),labelWidth:state.chartPriceAxisWidth,range:ts.getVisibleLogicalRange()};
@@ -71,17 +75,17 @@ try{
     await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().setVisibleLogicalRange({from:30,to:65}),chart);
     await page.waitForFunction(s=>{const range=document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange();return range?.from===30&&range.to===65;},chart);
     const manualRange=await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart);
-    await page.evaluate(()=>switchAppView('home'));await page.evaluate(()=>switchAppView('radar'));
+    await page.evaluate(()=>switchAppView('home'));await page.evaluate(()=>switchAppView('stock'));
     await page.evaluate(()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r))));
-    assert.deepEqual(await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart),manualRange,'returning to radar must preserve the user pan and zoom');
+    assert.deepEqual(await page.evaluate(s=>document.querySelector(s).__chartQA.chart.timeScale().getVisibleLogicalRange(),chart),manualRange,'returning to the 個股 page must preserve the user pan and zoom');
     await page.evaluate(({chart,range})=>document.querySelector(chart).__chartQA.chart.timeScale().setVisibleLogicalRange(range),{chart,range:openingFutureSpace.range});
    }
    if(market==='tw'){
     assert.equal(await page.locator(box+' .chart-drawing-tools').isVisible(),false,'tool strip stays hidden while the radar is open');
-    // The existing compact layout exposes expand after folding its scanner panel.
+    // The existing compact layout exposes the tools and expand after folding its scanner panel.
     await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();
    }
-   // Crypto 盤面 keeps its coin list under a full-width chart, so the tool strip is out without folding.
+   // Crypto's 個股 page has no side list: the drawing tools are on screen from the start.
    await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="focus"]':'#btn-chart-fullscreen').click();
    await page.waitForFunction(m=>!!document.fullscreenElement||document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
@@ -131,9 +135,11 @@ try{
    await inspector.locator('[data-action="close"]').click();await toolbar.locator('[data-action="cursor"]').click();
    // The existing close control exits both CSS focus and native desktop fullscreen.
    await page.locator(market==='tw'?'.twcr-chart-box [data-action="exit"]':'#btn-chart-exit-overlay').click();await page.waitForFunction(m=>!document.fullscreenElement&&!document.body.classList.contains(m==='tw'?'tw-chart-focus':'chart-focus'),market);
-   // Leaving the chart (Taiwan: unfolding its radar; crypto: the 畫板 tab) puts the tool strip away.
-   if(market==='tw')await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();else await page.evaluate(()=>window.OXRadarModes.set('board'));
-   await page.locator(box+' .chart-drawing-tools').waitFor({state:'hidden'});
+   if(market==='tw'){
+    // Unfolding the radar puts the tool strip away again.
+    await page.locator('.twcr-chart-box .chart-controls [data-action="fold"]').click();
+    await page.locator(box+' .chart-drawing-tools').waitFor({state:'hidden'});
+   }else await page.locator(box+' .chart-drawing-tools').waitFor({state:'visible'});
    assert.deepEqual(errors,[]);assert(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1));
    results.push({market,width,theme,touch,actualApp:true,realChart:true,creation:true,selection:true,drag:true,settings:true,focusExit:true,openingFutureSpace,retainedViewport:market==='crypto',errors});console.log(JSON.stringify(results.at(-1)));
   }catch(e){await page.screenshot({path:resolve(artifacts,`${market}-mounted-failure-${width}.png`)});console.error(errors,await page.evaluate(()=>({errors:window.__oxRuntimeAudit?.duplicateListeners,classes:document.body.className,chart:document.querySelector('#tw-radar-chart,#chart')?.__chartQA?.rows.length,status:document.querySelector('.twcr-status')?.textContent})));throw e;}
