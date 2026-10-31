@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-28T18:14:47.931Z",
+  "generatedAt": "2026-10-31T08:13:15.713Z",
   "sources": [
     {
       "metric": "nonfarm-payrolls",
       "endpoint": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-28T18:14:47.931Z",
-      "lastSuccessAt": "2026-10-28T18:14:47.931Z",
+      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
+      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
       "message": null
     },
     {
       "metric": "cpi-mom",
       "endpoint": "https://www.bls.gov/news.release/cpi.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-28T18:14:47.931Z",
-      "lastSuccessAt": "2026-10-28T18:14:47.931Z",
+      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
+      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
       "message": null
     },
     {
       "metric": "fed-rate",
       "endpoint": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-28T18:14:47.931Z",
-      "lastSuccessAt": "2026-10-28T18:14:47.931Z",
+      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
+      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
       "message": null
     }
   ],
@@ -43,7 +43,7 @@
       "metric": "nonfarm-payrolls",
       "occursAt": "2026-10-02T12:30:00.000Z",
       "releasedAt": "2026-10-02T12:30:00.000Z",
-      "updatedAt": "2026-10-28T18:14:47.931Z",
+      "updatedAt": "2026-10-31T08:13:15.713Z",
       "status": "confirmed",
       "previous": 133000,
       "consensus": 90000,
@@ -103,9 +103,9 @@
       "title": "美聯準會 FOMC 利率決策",
       "titleZh": "美聯準會 FOMC 利率決策",
       "metric": "fed-rate",
-      "occursAt": null,
+      "occursAt": "2026-01-28T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-28T18:14:48.136Z",
+      "updatedAt": "2026-10-31T08:13:16.230Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -117,11 +117,12 @@
         "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
         "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
       },
-      "date": "2026-01-28",
+      "date": null,
       "unit": "%",
       "allDay": false,
-      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
-      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm"
+      "scheduleBasis": "聯準會在會議最後一天美東 14:00 公布決議（台北隔天凌晨），結果以官方聲明為準。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260128a.htm",
+      "meetingDate": "2026-01-28"
     },
     {
       "id": "macro:fed-rate:2026-03-18",
@@ -136,9 +137,9 @@
       "title": "美聯準會 FOMC 利率決策",
       "titleZh": "美聯準會 FOMC 利率決策",
       "metric": "fed-rate",
-      "occursAt": null,
+      "occursAt": "2026-03-18T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-28T18:14:48.136Z",
+      "updatedAt": "2026-10-31T08:13:16.230Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -150,11 +151,12 @@
         "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
         "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
       },
-      "date": "2026-03-18",
+      "date": null,
       "unit": "%",
       "allDay": false,
-      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
-      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm"
+      "scheduleBasis": "聯準會在會議最後一天美東 14:00 公布決議（台北隔天凌晨），結果以官方聲明為準。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260318a.htm",
+      "meetingDate": "2026-03-18"
     },
     {
       "id": "macro:fed-rate:2026-04-29",
@@ -169,9 +171,9 @@
       "title": "美聯準會 FOMC 利率決策",
       "titleZh": "美聯準會 FOMC 利率決策",
       "metric": "fed-rate",
-      "occursAt": null,
+      "occursAt": "2026-04-29T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-28T18:14:48.136Z",
+      "updatedAt": "2026-10-31T08:13:16.230Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -183,11 +185,12 @@
         "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
         "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
       },
-      "date": "2026-04-29",
+      "date": null,
       "unit": "%",
       "allDay": false,
-      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。",
-      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm"
+      "scheduleBasis": "聯準會在會議最後一天美東 14:00 公布決議（台北隔天凌晨），結果以官方聲明為準。",
+      "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260429a.htm",
+      "meetingDate": "2026-04-29"
     },
     {
       "id": "macro:fed-rate:2026-06-17",
@@ -274,7 +277,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-09-16T18:00:00.000Z",
       "releasedAt": "2026-09-16T18:00:00.000Z",
-      "updatedAt": "2026-10-28T18:14:47.931Z",
+      "updatedAt": "2026-10-31T08:13:15.713Z",
       "status": "confirmed",
       "previous": 3.75,
       "consensus": null,
@@ -292,7 +295,8 @@
       "scheduleBasis": null,
       "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20260916a.htm",
       "label": "聯邦基金利率區間上限",
-      "rateRange": "3.75–4%"
+      "rateRange": "3.75–4%",
+      "meetingDate": "2026-09-16"
     },
     {
       "id": "macro:fed-rate:2026-10-28",
@@ -309,7 +313,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-10-28T18:00:00.000Z",
       "releasedAt": "2026-10-28T18:00:00.000Z",
-      "updatedAt": "2026-10-28T18:14:47.931Z",
+      "updatedAt": "2026-10-31T08:13:15.713Z",
       "status": "confirmed",
       "previous": 4,
       "consensus": null,
@@ -327,7 +331,8 @@
       "scheduleBasis": null,
       "statementUrl": "https://www.federalreserve.gov/newsevents/pressreleases/monetary20261028a.htm",
       "label": "聯邦基金利率區間上限",
-      "rateRange": "3.75–4%"
+      "rateRange": "3.75–4%",
+      "meetingDate": "2026-10-28"
     },
     {
       "id": "macro:fed-rate:2026-12-09",
@@ -342,9 +347,9 @@
       "title": "美聯準會 FOMC 利率決策",
       "titleZh": "美聯準會 FOMC 利率決策",
       "metric": "fed-rate",
-      "occursAt": null,
+      "occursAt": "2026-12-09T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-28T18:14:48.136Z",
+      "updatedAt": "2026-10-31T08:13:16.230Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -356,10 +361,11 @@
         "evidence": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
         "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
       },
-      "date": "2026-12-09",
+      "date": null,
       "unit": "%",
       "allDay": false,
-      "scheduleBasis": "官方會議最後日（美東日期），確切台北公布時間待官方公告。"
+      "scheduleBasis": "聯準會在會議最後一天美東 14:00 公布決議（台北隔天凌晨），結果以官方聲明為準。",
+      "meetingDate": "2026-12-09"
     },
     {
       "id": "macro:cpi-mom:2026-10-14",
@@ -376,7 +382,7 @@
       "metric": "cpi-mom",
       "occursAt": "2026-10-14T12:30:00.000Z",
       "releasedAt": "2026-10-14T12:30:00.000Z",
-      "updatedAt": "2026-10-28T18:14:47.931Z",
+      "updatedAt": "2026-10-31T08:13:15.713Z",
       "status": "confirmed",
       "previous": 0.4,
       "consensus": null,
