@@ -118,3 +118,4 @@ html body.ox-terminal #view-radar#view-radar.ox-fold-anim .workspace{transition:
 html body #view-radar#view-radar .market-line-price small.ox-updated:not([hidden]){display:block!important;color:var(--muted)!important;font-size:11px!important}
 html body #view-home#view-home .oxh #home-btc-price.ox-skel:empty{display:block;width:150px;height:30px}
 html body #view-home#view-home .oxh #home-btc-change.ox-skel:empty{display:inline-block;width:120px;height:15px}
+html body.ox-terminal #ox-market-radar#ox-market-radar .scanner-tabs .radar-combined-chevron{font-size:11px!important}

@@ -16,7 +16,7 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "6e00788ead2e580e3322ec2369f3b1e6c8567e69f21b08bc0e23b9555d9ee35d",
+      "sha256": "ec487caa985370c910ad47c3512dd1fd9d64e0b9e3e8e1dc2b826669440ef67c",
       "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
@@ -142,7 +142,7 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "85f2fbb081ea944a981182c2c4bcaba309c5becc8b6a52439473b0b4e26e7ab3",
+      "sha256": "04863616de81bc579853839c03a5613bbe5d4c87639f8835aba4af977c26f987",
       "reason": "User requested chart height that leaves replay transport visible on mobile. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12). User-approved polish: no text under 11px (2026-11-01)."
     },
     {
