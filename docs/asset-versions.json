@@ -1,0 +1,842 @@
+{
+ "note": "Each file the site loads with ?v=: the tokens it is asked for with and its content (sha256, LF line endings). Written by node scripts/asset-versions.mjs --write; npm test checks it.",
+ "files": {
+  "src/app/account.js": {
+   "tokens": [
+    "20261101-v5"
+   ],
+   "sha256": "7833700d6105a905d21db433e21769a5345d89b49eb59f236c37c255550ca8b3"
+  },
+  "src/app/coin-logo.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "8a03e4ba6cd610862a7699c6aae905b7b5b0b2bb7cdacec6b32242d4ced90570"
+  },
+  "src/app/editorial-workspace.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "b6adb1ca86a543dd4fbaf4d528fa8f18435d733e244b03eb2b41b0bb9e8b02ee"
+  },
+  "src/app/fresh-html.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "0fa8516907d4b489345c4079ee8cd7f753d12bf014cdb5c9bbda80bc96fe146f"
+  },
+  "src/app/live-visibility.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "d1c5f7e0786d3732c987dd35d828a50f1e1214ecce5b3ddc529c287f970165e0"
+  },
+  "src/app/market-glass-state.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "52e3a228e3a9df42a641e16ecd19393c53efff3370ebde2bb38c29a2f29a09ad"
+  },
+  "src/app/module-boot.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "8f1ffb88c0153d7cd863c82699b2056cb852d4b7c4e3e5fb8c019d445a92f1fc"
+  },
+  "src/app/runtime-boot.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "17c74b38a804867ef9b21bacdd33ecca91b36c6a5dbb3c5eb2d5a498910f0c0d"
+  },
+  "src/app/site-features.js": {
+   "tokens": [
+    "20261028-sites1"
+   ],
+   "sha256": "4df36e77b8c3c08c9150b2e7762f5f62cb0dd7b19db0d0ea75350a528e9d78b5"
+  },
+  "src/app/sync-keys.js": {
+   "tokens": [
+    "20261101-v5"
+   ],
+   "sha256": "1a20be2688d37cf18d7b41220f45d19e11d9e232f6ba8241d6186f811dde8c1a"
+  },
+  "src/app/theme-early.js": {
+   "tokens": [
+    "20261101-v5"
+   ],
+   "sha256": "c4f651470b729be687533613bbd02dc54a180ead73d4468155062fb016a2e81d"
+  },
+  "src/app/token-logos.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "73809c1bcff179993b4a8b1708dd1286bf98ed588003646c48fd200bba6fbb03"
+  },
+  "src/app/usage.js": {
+   "tokens": [
+    "20261031-v3merge2"
+   ],
+   "sha256": "a04c37278aff01f73b1fb88b34555e4812351371c6b7f9c3f678877799be92e6"
+  },
+  "src/app/view-home-theme.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "319b80e83a23b5aff672464b1c2a7482dba956d36fb15c1cce9d74315db03d5f"
+  },
+  "src/components/account/account.js": {
+   "tokens": [
+    "20261008-orbit-login1"
+   ],
+   "sha256": "0175670d954fa3b179a34f5aff4a8197c21fbc6dca4357ff83e26d52bc1536e6"
+  },
+  "src/components/account/auth.js": {
+   "tokens": [
+    "20261005-recovery3"
+   ],
+   "sha256": "fe0c9841da5a06c646607b8d866bae9fb877ffd09e75fc7fd89533197bc320b9"
+  },
+  "src/components/account/feature-access.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "b1a7ce7723fcba798878925f0b4927b7a4ef201ea972ff6b2b620be84fd97393"
+  },
+  "src/components/account/session.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "3c7e587c0c7a966ad34575d40191dd2de1c0c8f5972306a33f66d64aa7b57d0b"
+  },
+  "src/components/account/store.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "bcfb724de8bf027e27d5af098379f18d31440c24e8e9640e5999667d7571458d"
+  },
+  "src/components/account/summary.js": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "3c4d53cd3270004d64076df9816339ef2263f06e522626bd40c43b9890fb4862"
+  },
+  "src/components/alerts/level-alerts.js": {
+   "tokens": [
+    "20261031-fast-radar1"
+   ],
+   "sha256": "9484d15492ae8611a6e5f6cdcbedd42dc23214e80c309d9d4464f3cd0e60cb24"
+  },
+  "src/components/chart/drawings.js": {
+   "tokens": [
+    "20261030-restore1"
+   ],
+   "sha256": "2f5ff98a1d43f24bf3e17a4bcac7b106154e4fb81072c5ea0c12be6c73343a76"
+  },
+  "src/components/chart/focus-viewport.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "912c210e1ac16219a16bd7e1a9a37518d312cef1d9ed99843762385bca012f9d"
+  },
+  "src/components/chart/gestures.js": {
+   "tokens": [
+    "20261028-ind1"
+   ],
+   "sha256": "c61dfd913d478f39845c4dffda6058cf7167feebd7fa99b0d908c4339a2774b6"
+  },
+  "src/components/chart/home-preview.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "6c401ab73dea8a73201ef664cfb724f7779b93294f943c28338b6930c6639093"
+  },
+  "src/components/chart/indicator-tooltip.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "768fbf20d38d32e295f7ce882373c5133defc7744944db2ca8324fe8f7df6869"
+  },
+  "src/components/chart/indicators.js": {
+   "tokens": [
+    "20261031-v2"
+   ],
+   "sha256": "9a4b16c8f630ecaa88c897949aea6a7919867f3d3bc67774aab98b511eec922d"
+  },
+  "src/components/chart/mobile-interaction.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "60d377a4a731eeddf641d2902c14e7d622517dc51371530af6778897d486dd2d"
+  },
+  "src/components/chart/toolbar.js": {
+   "tokens": [
+    "20261030-restore1"
+   ],
+   "sha256": "f4a2bfad4923df96967ff0e5db242f4a99512ada0313bfb7fa68436e3119c717"
+  },
+  "src/components/chart/workspace.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "ddd1636383694ef382a3fa058d7fa81bac6737c707268d4b1d8d0951d5db7034"
+  },
+  "src/components/control-panel/feature-pack.js": {
+   "tokens": [
+    "20261028-shell1"
+   ],
+   "sha256": "6e40a301fba4046921fe91971dc415daa9d21ac36087b9337cd6246f84c49002"
+  },
+  "src/components/control-panel/guide.js": {
+   "tokens": [
+    "20261028-shell1"
+   ],
+   "sha256": "c338a8d62de3b7f317ecde5b1150afea6a3d700e8e995231dfac0a3f2cde8108"
+  },
+  "src/components/control-panel/resource-guard.js": {
+   "tokens": [
+    "20261005-first24"
+   ],
+   "sha256": "2c2ecae844a42b8f43813dbdb1835ba0d27b48afa850914a131707df625ba95a"
+  },
+  "src/components/control-panel/short-panel-sync.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "b0be7c3a8d771c532c05563a3e6f6530f075bb30f0a7abf91c1306279fbdf9cd"
+  },
+  "src/components/layout/responsive-guard.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "6e127783ad9a4837072aa83ff7f0761e13e5d1a8c9b543f6ddd4c801139b6438"
+  },
+  "src/components/liquid-glass/runtime.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "1a18697cdcf385c9c0bc31db3451ac8f246600e468dd761b675120b79c2b6e99"
+  },
+  "src/components/loading-state.js": {
+   "tokens": [
+    "20261101-v6b"
+   ],
+   "sha256": "024fd256580008d4cedd90be4ded6f0e44cb7b34cd0f3cd3422bf16239d71ecf"
+  },
+  "src/components/motion/controller.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "8868ebdf6542af704657557718a3e709bb92a66cd0ef2a211934fb56479526a6"
+  },
+  "src/components/navigation/market-quick-switch.js": {
+   "tokens": [
+    "20261101-v5"
+   ],
+   "sha256": "80bbe743108f126be53935372e3cb2d014a1a05c577c83479c8fbbbde5ac2296"
+  },
+  "src/components/navigation/page-touch.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "23f959005265b5b9eee286e0a8abd972cafc58b912162573b4ec49217fd848b7"
+  },
+  "src/components/navigation/repair.js": {
+   "tokens": [
+    "20261002-newsv2"
+   ],
+   "sha256": "47ed7606b412fb633ddbfc32bbd0358da8b2fb92dff7ae30e681a1c5ab4e5731"
+  },
+  "src/components/navigation/runtime-actions.js": {
+   "tokens": [
+    "20261030-restore1"
+   ],
+   "sha256": "ff73c52a9c76ac3fd7261e24db254c1b201c08f4bd572eed9b91aeff467603e9"
+  },
+  "src/components/news/center.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "0e638fdcc03ceca70259729dd82a5d51b1e8bf9d54f326394646c0e3dec203d9"
+  },
+  "src/components/news/entry.js": {
+   "tokens": [
+    "20261002-nav6"
+   ],
+   "sha256": "3e4dc8a9b25c5f470f77618cafe7d2409f998aa5076938776b0f99057e8450ab"
+  },
+  "src/components/news/macro.js": {
+   "tokens": [
+    "20261005-weeklist4"
+   ],
+   "sha256": "49c5979b2d746b76dcc515e05ce187882fe7ae0477977871c2743e1029c7008f"
+  },
+  "src/components/radar/controls.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "32b0546f6bce51592d3209d3cc8dd050287424fe6ff6ff8de8256a4ce1528350"
+  },
+  "src/components/radar/modes.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "f3f5b165ae80e68dde27cd498db4bfad16c3fbc0f672a9a7fbbedae78e4c716f"
+  },
+  "src/components/radar/timeframe-filters.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "e20b0470e232c2642a1ec4756a8321222afe04197ea7e216f280529cee995dcc"
+  },
+  "src/components/search/provider-switch.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "21572f0866065ef7ce88fe43f7dc32e924f262c2186bc972578e8cfeeffa121f"
+  },
+  "src/components/strength/market-strength.js": {
+   "tokens": [
+    "20261005-touch1"
+   ],
+   "sha256": "dc523e09511ee8bac5348c558d996f4cc44293e7b41a07d87229fc06ce1ddacf"
+  },
+  "src/components/strength/snapshots.js": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "ed8227e4d73c7f63042790653aa46f99e1cbeaf9caef48fb595bc257ca0bfc5f"
+  },
+  "src/core/classic-engine.js": {
+   "tokens": [
+    "20261002-rank8"
+   ],
+   "sha256": "e01a3520b24dae8a63069c46bbfe71c1864b4f27d042dbea48e3151f8cc0eaae"
+  },
+  "src/core/price-format.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "ab890656412b5569f364f996344554610b27d2ef1eaea14ac05e22b54b56a6af"
+  },
+  "src/core/public-feed.js": {
+   "tokens": [
+    "20261006-news-rotation4"
+   ],
+   "sha256": "ad8787d9629900dea34f4656889dd39e29843b932415be92e659b26c1e75ecbb"
+  },
+  "src/core/runtime-config.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "a741a55db1fa9478abb90c843cc6bd4c41ae6a83a8a92c040ebb5b963072f9d0"
+  },
+  "src/generated/pattern-worker.js": {
+   "tokens": [
+    "20261006-perf1"
+   ],
+   "sha256": "3a108253373cc527b436182ae563ec6476cafe82a96db3bc35cc5d5f0b67df3d"
+  },
+  "src/generated/runtime.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "bfd9503c6e21e2f01d8ddb66e1b61a3e921e73b5d578b114147e227a167be679"
+  },
+  "src/generated/tool-analytics.js": {
+   "tokens": [
+    "20261101-v6b"
+   ],
+   "sha256": "5610f170ce31ef48b4722e9de3912c78e5efc898bd1c6281ba293e90f9b16307"
+  },
+  "src/generated/tool-bubbles.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "34e42d260193f067f66aedef8247dc2038e2aa496a936c2310d36ed139fbf28e"
+  },
+  "src/generated/tool-compare.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "d2fa8354978c68d8d6f10e4de45999aeb202acce5557fc7d5d7e905e5281829b"
+  },
+  "src/generated/tool-news.js": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "44d0527d8b31c83ae2c67df802e3e353e0579809386c9eb3df78e139a7cab34b"
+  },
+  "src/generated/tool-patterns.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "31d13b4571a5f41ebdf5921be38d6e96d006c5ad88445d775c7b15e2304f56df"
+  },
+  "src/markets/crypto/analytics/flow-light.css": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "abfa9cec57b33432655e24b505d928f12b0a0df63f06db1f2e686ad20d97d479"
+  },
+  "src/markets/crypto/analytics/flow-view.js": {
+   "tokens": [
+    "20261005-stable18"
+   ],
+   "sha256": "ec487caa985370c910ad47c3512dd1fd9d64e0b9e3e8e1dc2b826669440ef67c"
+  },
+  "src/markets/crypto/analytics/flow.css": {
+   "tokens": [
+    "20261012-smooth-trails",
+    "20261101-v6b"
+   ],
+   "sha256": "04863616de81bc579853839c03a5613bbe5d4c87639f8835aba4af977c26f987"
+  },
+  "src/markets/crypto/api.js": {
+   "tokens": [
+    "20261007-stable-dialog8"
+   ],
+   "sha256": "2677965045ee0087994687ee531aa18b4b901d31624dcca93712792c62339c1a"
+  },
+  "src/markets/crypto/bubbles/bubbles-light.css": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "9fd3ce1f260aa16cbe901c942b6a19947e6ac22c601997a7ad7319f61fe07b57"
+  },
+  "src/markets/crypto/bubbles/bubbles.css": {
+   "tokens": [
+    "20261005-weeklist4",
+    "20261101-v6"
+   ],
+   "sha256": "76383406e135e57fcfe87b1cde32c00de77b09321bb1e5d13f9313980cc8151e"
+  },
+  "src/markets/crypto/bubbles/view.js": {
+   "tokens": [
+    "20261005-stable18"
+   ],
+   "sha256": "1786286971283b05493d8ffe40fb8d6b940f847d29e10f973779043d24c1603f"
+  },
+  "src/markets/crypto/compare/view.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "85451dae8660f7575ef7d91e05d487b48a86892c5a38bebf8c40163ed1f83eec"
+  },
+  "src/markets/crypto/engine.js": {
+   "tokens": [
+    "20261002-rank8"
+   ],
+   "sha256": "e46cb30f1d43117ac28a90b05367dd4bcd6c9929b73118060749fd98c46d9f14"
+  },
+  "src/markets/crypto/liquidity-policy.js": {
+   "tokens": [
+    "20261002-rank8"
+   ],
+   "sha256": "b1978476b58e1abe9e45f637a48fbd0525400063c5f7604f6af00ddf16fabb30"
+  },
+  "src/markets/crypto/live-candles.js": {
+   "tokens": [
+    "20261005-first24"
+   ],
+   "sha256": "2b5ba4b8fa630119acfba00e0b3998a1e7e362ebe40c11ca393c5a37d8e9dba0"
+  },
+  "src/markets/crypto/live-quotes.js": {
+   "tokens": [
+    "20261006-quotes2"
+   ],
+   "sha256": "7da8e939fe8ad543e11cd5ee0633b5767cfd04ffb1bf65ab6d044a7c2bd53e7b"
+  },
+  "src/markets/crypto/patterns/patterns-light.css": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "676dd50c0e79e9ae8d2baf60613cfbfb14c3c58a58c92c7687e73aa9753dfc8d"
+  },
+  "src/markets/crypto/patterns/patterns.css": {
+   "tokens": [
+    "20261028-board1",
+    "20261101-v6"
+   ],
+   "sha256": "4c1056d7a97f4cf8e3f3b8ced15482d57f76603b8c9f85d76d53d59ab6e08498"
+  },
+  "src/markets/crypto/patterns/view.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "d61f69d83b7e80ef57c2db2282e8253acd2d6697f4d8c511b189c6a405b937bc"
+  },
+  "src/markets/crypto/presentation.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "f8d8b5f957c3d4c73bd847a3f05ff84f6f6e3f4a81e2af336c9ba44458fddc33"
+  },
+  "src/markets/crypto/radar-snapshot.js": {
+   "tokens": [
+    "20261101-v4"
+   ],
+   "sha256": "71c3c9a2452450732d34bd88dda06a5203d3dbb62f33e80b13f7e8503e9487d1"
+  },
+  "src/markets/crypto/scanner.js": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "5d092673d73e9e6d81a6015ac7b500990777568cf96249d36ededbc22ccfe64f"
+  },
+  "src/markets/crypto/share-image.js": {
+   "tokens": [
+    "20261031-share1"
+   ],
+   "sha256": "49e9332001fb6a9c400bd3cda736dec0a0705f6bb2b142834f4adc307db150eb"
+  },
+  "src/styles/account/account.css": {
+   "tokens": [
+    "20261008-orbit-login1"
+   ],
+   "sha256": "5edf179c48fd6709a3897556c58c84fe1013f0e67447a782a64ec937fdcb725c"
+  },
+  "src/styles/components/app-shell.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "cf21c2db59a800068adddb54497244f611e148f5b540881246212f64744cf6cf"
+  },
+  "src/styles/components/benchmark-alert-detail.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "f2c5de2bb4089b03c145ff251fc4150d93ba40d071ed6715f0397bd99bf9cfd5"
+  },
+  "src/styles/components/chart-drawings.css": {
+   "tokens": [
+    "20261007-tools2"
+   ],
+   "sha256": "1472bb1b026a36ec34038cd9e6bc7f0be6ec0bb59fb45a52d21a7134201e6d5d"
+  },
+  "src/styles/components/chart-indicators.css": {
+   "tokens": [
+    "20261031-v2"
+   ],
+   "sha256": "19ea1022ab183d9270003025370f2383858e8e588f29bc640929e950f03195b3"
+  },
+  "src/styles/components/chart-toolbar.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "3623a9ae98d00f67535afcf7a3077c5b1c48584afdfff98c044eed17f89c6c7e"
+  },
+  "src/styles/components/control-center.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "41c3f3eba883bf23bb33d24cd6dd0c78797eba0b0e650eb9b5a9f085ec9c7ca9"
+  },
+  "src/styles/components/control-menu-compact.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "dc51727287806e21f5e8e37a86062697c91658e8ec0cdfbd5123adc63fc979b9"
+  },
+  "src/styles/components/crypto-home.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "7750a7314e42436a6ca88bbc62bf19a53ea6af81cdddba68b50bf896df575676"
+  },
+  "src/styles/components/crypto-shell.css": {
+   "tokens": [
+    "20261101-v6"
+   ],
+   "sha256": "453da9259da3baeae4fc38eafa8b0c7288cb5810ccad1ef24de40685f934d589"
+  },
+  "src/styles/components/feature-pack.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "9531f516d23a62764ecb61f29c6ab7f3af3a8911c297d349becf2b60d1d3786c"
+  },
+  "src/styles/components/feature-search-provider.css": {
+   "tokens": [
+    "20261005-weeklist4"
+   ],
+   "sha256": "65f3d4f6e4e529ec752c9a16925f6bde7002582c4867229e2138d166d565609d"
+  },
+  "src/styles/components/fullscreen-lightglass.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "c2fdaf2c41e548dffdbd13a593f0652a0fdd1d92c48044080e8985acf1be247c"
+  },
+  "src/styles/components/home-preview.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "9b2ac695d504af2b5bdc6f4848c8de6c7f37c729000c0f34835df22b26967ba9"
+  },
+  "src/styles/components/live-visibility.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "409a1af4301152d99ee8f736dfac18386374bfcbf23e3bc2a6357a1152f49da0"
+  },
+  "src/styles/components/member-account.css": {
+   "tokens": [
+    "20261028-sites1"
+   ],
+   "sha256": "b009edee20d4ba8a7514e1f772903da9f9b1012ab08f78024914c4052696ef25"
+  },
+  "src/styles/components/news-center.css": {
+   "tokens": [
+    "20261031-share1"
+   ],
+   "sha256": "85a0f1f51bc85e3b064056cbaf90ab57fc05a442480df03b5cbac9b09997d1fb"
+  },
+  "src/styles/components/polish.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "184272fd46671e492a72cad8e7f120f580a90f5924cc34a56188b20c07fd47d2"
+  },
+  "src/styles/components/radar-combined.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "febc242549e653bbf0fa86de1005198b2645cac69c1b38acf51997fcf6185716"
+  },
+  "src/styles/components/radar-detail-neon.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "a28ae8b0f1e29bd86b1770c99940f6a75448211232053e5e41eea0343914412d"
+  },
+  "src/styles/components/radar-light-tune.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "f716825a6340ea0ba3823c7a53ca22116bd771a9dc06a00eba2e5829e01348ee"
+  },
+  "src/styles/components/radar-polish.css": {
+   "tokens": [
+    "20261006-perf1"
+   ],
+   "sha256": "58b91f4e10f97362f873a27b507c8a7820076d58f57fb9bc815d3625ee5a9442"
+  },
+  "src/styles/components/radar-turnover.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "679f6067ae53ef29444fec5fc3ff4edf5a608636a3a1a1e5af405f8aefec94ea"
+  },
+  "src/styles/components/refine.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "623406a0c95be0dd85d50323614cd3dee9c8172342ae5a43b2361d66aab754d6"
+  },
+  "src/styles/components/settings-page.css": {
+   "tokens": [
+    "20261031-v2"
+   ],
+   "sha256": "a6c4fbd2f9baa96dbb83980f98bcba7f044b1176b1ba22e427445e4ad89cc65f"
+  },
+  "src/styles/components/share.css": {
+   "tokens": [
+    "20261031-share1"
+   ],
+   "sha256": "47f4ef95ce0ee3d60154a15502886e7b2a1719f3475145e58394da804573ad7f"
+  },
+  "src/styles/components/simple-close.css": {
+   "tokens": [
+    "20261031-close2"
+   ],
+   "sha256": "5cad468fa07fc86f12f68036a8a5558da08169fb6bc600137589696eb13adc11"
+  },
+  "src/styles/components/strength-liquidation.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "17aa165a26ab96b7772492cd92de10ef8704a96cfdca88a39b86fc3846625aa8"
+  },
+  "src/styles/core/foundation.css": {
+   "tokens": [
+    "20261005-touch1"
+   ],
+   "sha256": "ade64f797c54e45856ba27ca7019ee4841d268f26d4bfb1e30e6cc2e2cf84b8f"
+  },
+  "src/styles/core/tokens.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "ceef49ae27c85fa088c5f16b750f1545820d4e1daf71ab4ba7d64380518b0373"
+  },
+  "src/styles/layout/command-center.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "a95ff15aefe7f271351ca6f4e676316364ec2fdacc4f51799dcb5f3082a110d4"
+  },
+  "src/styles/layout/compact-header.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "146108d6281d855e0dc81ee7dccf39a23a15dcda2df576fb058370d2cbd31d06"
+  },
+  "src/styles/layout/current-uiux.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "4bd91d573923a20947b967296aa9bd88192147c7686c636d8445225d0e119106"
+  },
+  "src/styles/layout/mobile-content-width.css": {
+   "tokens": [
+    "20261101-v7"
+   ],
+   "sha256": "0b09b8e42e293ffd28a5043e113a380c63bfab32b17b8dd8b599b9549abd8616"
+  },
+  "src/styles/layout/responsive.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "248e9ecd54812d787fd977d74822e966f537d3bc8556cd80664e64b127231712"
+  },
+  "src/styles/layout/three-view-shell.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "a6d8b85dd757e197d2de44042a758b9f8bf528c5f529b814427a11c44677e2fc"
+  },
+  "src/styles/mobile/btc-hero.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "94c89479451b15adf762b57abf34d72102ef70c705f3fd3cdf2f0fa411ea11b4"
+  },
+  "src/styles/mobile/direction-chart.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "7a282eb7ae14b93b8dc90b6059efec6fcc1b9bc5ff4dfc45fe355d322c868dfe"
+  },
+  "src/styles/mobile/watchlist-chart.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "06b42586b84dfb3f8e24472a19c7cef9418c6c96f10edae8b30df5a8bb9e8016"
+  },
+  "src/styles/motion.css": {
+   "tokens": [
+    "20261031-v3merge2"
+   ],
+   "sha256": "4811bef377b4a140984d4169aa98ff36ef5e4edfc4abe2b287375c16f8462d51"
+  },
+  "src/styles/navigation/compact-dock.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "041f5d24f3c80ff8de4ce2741153add94ddac323b920e0d39a45eb8535df0072"
+  },
+  "src/styles/navigation/final-dock.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "4ab1fa64736439d55f848638860a0757c218ff162306e2dd06081e088324231b"
+  },
+  "src/styles/releases/v31-ui-refinement.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "55e2a6a494c72d89e02830d81e227bbedd57fa62274fc26408108064c876488e"
+  },
+  "src/styles/releases/v361-strength-liquidation.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "bc3b505d1a3b304b27bbf54f28b5d4c86949cd1bfac6841ad4a31a48cabad953"
+  },
+  "src/styles/releases/v37-existing-fixes.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "9f478df5785668802b7d0ab653b4799377d7f7459737cba56a1998c275ee07e4"
+  },
+  "src/styles/releases/v37-last-mile.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "262da5e492de5db1ba79d69daf04b3915168fe6500697aef8a11de34d619ada3"
+  },
+  "src/styles/releases/v38-fluid-refinement.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "0fe6fe5fddd00ab97d277a4098c684cc7be9edbfc076df8b51f2145a6b4b0778"
+  },
+  "src/styles/themes/editorial-radar.css": {
+   "tokens": [
+    "20261004-markets2"
+   ],
+   "sha256": "528defdef83c4000305bc5ce19c2526737fb86035b8207f5e6dc687456f8476c"
+  },
+  "src/styles/themes/editorial-terminal.css": {
+   "tokens": [
+    "20261006-perf1"
+   ],
+   "sha256": "e05cd9acfb03312df84c42cb5678127802863ab0a8d31a10bd2fb94c3df98fda"
+  },
+  "src/styles/themes/ios-liquid-glass.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "3a729d7114f3ed6251a2bb99cc48c4bd498bc4933395581c31d9a1b33def28ba"
+  },
+  "src/styles/themes/light-compat.css": {
+   "tokens": [
+    "20261006-perf1"
+   ],
+   "sha256": "6856977ac920dec6ccdfb5c7a545dca9907fe490e02f30276b2661ba02417211"
+  },
+  "src/styles/themes/light-complete.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "c34ab6eeeab9b04ec10f0f1b124c619a637b6f228c5155f9de1675e3579d07ad"
+  },
+  "src/styles/themes/light-platinum.css": {
+   "tokens": [
+    "20261006-perf1"
+   ],
+   "sha256": "5d94912d4c9cf6c7da5fc21ddc704b8f446851d392207150840ad3306fc18fdc"
+  },
+  "src/styles/themes/light-readability.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "781d421641a405441f690a699d1cbed6a88357c4231766ff35b413c8974cdc84"
+  },
+  "src/styles/themes/light-system.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "72f87f81c7a7c8fa3ba57c47eb3ba1b1b7696c72bb088b42ed8bf0f6caf8a7aa"
+  },
+  "src/styles/themes/light-tool-roles.css": {
+   "tokens": [
+    "20261005-graytop5"
+   ],
+   "sha256": "2dd72ab3ab803fbcb3732dc761c24f0605d4b18570ebd6be1aa04261651957bd"
+  },
+  "src/styles/themes/liquid-glass.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "79b4871d9da522b5e9c1a702db77ac59cb2218c44fcd0d8fa5f72e96b694ebd4"
+  },
+  "src/styles/themes/premium-glass.css": {
+   "tokens": [
+    "20261001-tiercomb2"
+   ],
+   "sha256": "0d4be5b74a2e3c2419fce1fe59649fc6784272ea49222155e5a5a59180dc6dc6"
+  }
+ }
+}

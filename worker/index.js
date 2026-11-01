@@ -33,6 +33,18 @@ function limited(request) {
   if (!slot || now - slot.start > 60000) { if (hits.size > 5000) hits.clear(); hits.set(ip, { start: now, count: 1 }); return false; }
   return ++slot.count > API_LIMIT;
 }
+// Cache rules for files the Worker serves (on Sites the platform serves most static files
+// itself and follows dist/client/_headers from build-sites.mjs): a page is checked with the
+// server on every visit, so a phone never keeps an old page with new CSS; a file asked for
+// with ?v= is that version for good (scripts/asset-versions.mjs makes changed files take a
+// new ?v=), so browsers keep it for a year. Everything else keeps the platform's default.
+export const PAGE_CACHE = 'no-cache, must-revalidate', VERSIONED_CACHE = 'public, max-age=31536000, immutable';
+export function cacheRule(url, response) {
+  if (!response || response.status !== 200 && response.status !== 304) return null;
+  if (/^text\/html/i.test(response.headers.get('Content-Type') || '') || url.pathname === '/' || /\.html$/.test(url.pathname) || url.pathname === '/manifest.webmanifest') return PAGE_CACHE;
+  if (url.searchParams.has('v') && /^\/(?:src|assets)\//.test(url.pathname)) return VERSIONED_CACHE;
+  return null;
+}
 // Security headers on every response; a page or reply that sets its own keeps it.
 const SECURE = { 'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin', 'Permissions-Policy': 'camera=(), microphone=(), geolocation=()', 'Strict-Transport-Security': 'max-age=15552000' };
 function secure(response) {
@@ -83,7 +95,7 @@ async function route(request, env, ctx) {
       if (url.pathname === '/admin' || url.pathname === '/admin/') return page(env, url, '/admin.html', request, { ...PAGE_HEADERS, 'X-Robots-Tag': 'noindex, nofollow' });
       if (url.pathname === '/privacy' || url.pathname === '/terms') return page(env, url, url.pathname + '.html', request, { 'Cache-Control': 'no-cache' });
     }
-    const response = await env.ASSETS.fetch(request);
+    let response = await env.ASSETS.fetch(request);
     // A mistyped address (a chat app linking "/admin，用") must not come back as an empty
     // 404 that phones save as a file. /admin… goes to the admin page; anything else gets
     // a small page with a way home.
@@ -92,6 +104,8 @@ async function route(request, env, ctx) {
       if (/^\/admin(?![a-z0-9_.-])/i.test(path)) return Response.redirect(new URL('/admin', url), 302);
       return new Response(NOT_FOUND, { status: 404, headers: { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' } });
     }
+    const rule = cacheRule(url, response);
+    if (rule) { response = new Response(response.body, response); response.headers.set('Cache-Control', rule); }
     return response;
 }
 const NOT_FOUND = '<!doctype html><html lang="zh-TW"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>找不到這個頁面｜OX 加密</title><style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#0f1114;color:#e9e7e2;font:16px/1.6 -apple-system,"PingFang TC","Noto Sans TC",sans-serif;text-align:center;padding:24px}a{display:inline-block;margin-top:18px;padding:10px 22px;border-radius:12px;background:#e9dcc0;color:#1b1a17;text-decoration:none;font-weight:700}p{opacity:.7}</style></head><body><div><h1>找不到這個頁面</h1><p>網址可能多打了字。</p><a href="/">回到 OX 加密</a></div></body></html>';
