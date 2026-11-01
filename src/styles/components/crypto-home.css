@@ -216,11 +216,18 @@ html body #view-home .oxh .oxh-list .ox-home-t1-row>small:not(.ox-home-row-tier)
 html body #view-home .oxh .oxh-list .ox-home-t1-row em{grid-area:chg;align-self:center;font:600 12.5px var(--h-font);white-space:nowrap}
 
 /* The scan's progress (loading-state.js) on one quiet line under the lists. */
-html body #view-home .oxh .oxh-radar>.ox-region-loading{padding:7px 0 0}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading{flex-direction:row;gap:6px;color:var(--h-muted);font:500 11px/1.4 var(--h-font)}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:11px}
-html body.theme-light #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-ring{border-color:#30343b24;border-top-color:#30343b}
+/* Loading sits in the 雷達 heading line (src/components/loading-state.js): a ring and a short label
+   before the close time, so nothing is added under the lists and nothing can sit under the dock. */
+html body #view-home .oxh .oxh-radar-head{gap:8px}
+html body #view-home .oxh .oxh-radar-head>h2{margin-right:auto}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading{order:1;flex:none;display:inline-flex;padding:0;grid-column:auto}
+html body #view-home .oxh .oxh-radar-head>[data-radar-freshness]{order:2}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading{flex-direction:row;gap:5px;color:var(--h-muted);font:500 11px/1.4 var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:11px}
+/* The close time already carries the scan count: the ring alone then. */
+html body #view-home .oxh .oxh-radar-head:has(>[data-radar-freshness]:not([hidden]))>.ox-region-loading :is(.ox-loading-label,.ox-loading-count){display:none}
+html body.theme-light #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{border-color:#30343b24;border-top-color:#30343b}
 
 /* ---------- 此刻發生 ---------- */
 html body #view-home .oxh .oxh-newsrow{display:block;margin:0 0 8px;padding:10px 12px}

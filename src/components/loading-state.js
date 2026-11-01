@@ -18,7 +18,9 @@
   // Radar lists publish available rows during scans. Background data tasks
   // must not append a loading animation to those lists.
   if(view==='radar'&&market==='crypto')return null;
-  if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'#view-home .oxh-radar':':not(*)');
+  // 首頁: a small ring in the 雷達 heading line, never a row under the lists that could end up
+  // under the dock while the page loads (2026-11-01).
+  if(market==='crypto')return document.querySelector(view==='radar'?'#radar-scanner-panel':view==='home'?'#view-home .oxh-radar-head':':not(*)');
   return null;
  }
  function paint(){
