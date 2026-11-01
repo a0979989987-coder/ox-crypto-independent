@@ -1,12 +1,16 @@
-/* 首頁 (#view-home .oxh): compact cards with light type, like an exchange app.
+/* 首頁 (#view-home .oxh): an exchange-style home, small and dense, on the shared scale
+   (src/styles/core/tokens.css: spacing 4/8/12/16/24, type 26 / 15 / 13 / 12 / 11, radii 10/14).
    BTC (level first, move beside it) with 畫型態 → 首頁色塊 → 今日突破 → 雷達 上漲／下跌 → 此刻發生.
    Markup in index.html; numbers and lists from renderHomeOverview (src/app/view-home-theme.js),
-   breakouts and news from src/markets/crypto/home-feed.js. Up 青藍 / down 桃紅 (--green / --red). */
+   breakouts and news from src/markets/crypto/home-feed.js. Up 青藍 / down 桃紅 (--green / --red).
+   Rhythm: 12px inside a block (hero → tiles → legend), 24px between titled sections, 8px from a
+   section title to its content. */
 html body #view-home .oxh{
- --h-card:linear-gradient(150deg,rgba(255,255,255,.065),rgba(255,255,255,.028));
- --h-edge:rgba(255,255,255,.13);
+ --h-card:linear-gradient(150deg,rgba(255,255,255,.06),rgba(255,255,255,.025));
+ --h-edge:rgba(255,255,255,.12);
+ --h-line:rgba(255,255,255,.085);
  --h-soft:rgba(255,255,255,.06);
- --h-glow:inset 0 1px 0 rgba(255,255,255,.07);
+ --h-glow:inset 0 1px 0 rgba(255,255,255,.06);
  --h-ink:var(--ink,#f0ede5);
  --h-muted:var(--muted,#acb0b7);
  --h-up:var(--green,#00b8d4);
@@ -14,20 +18,21 @@ html body #view-home .oxh{
  --h-pattern:#e8ff2e;
  --h-cta-bg:#f2f2ee;
  --h-cta-ink:#121417;
- --h-cta-glow:0 0 14px rgba(255,255,255,.2);
+ --h-cta-glow:0 0 12px rgba(255,255,255,.16);
  --h-font:var(--ox-font-ui,-apple-system,BlinkMacSystemFont,"PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif);
- display:flex;flex-direction:column;gap:10px;min-width:0;padding:0 0 10px;
+ display:flex;flex-direction:column;gap:var(--sp-3);min-width:0;padding:0;
  color:var(--h-ink);font-family:var(--h-font);font-variant-numeric:tabular-nums;text-align:left
 }
 html body.theme-light #view-home .oxh{
  --h-card:#fff;
  --h-edge:#e1e4e9;
+ --h-line:#eceef2;
  --h-soft:#f3f4f6;
- --h-glow:0 4px 14px rgba(83,97,116,.055);
+ --h-glow:0 2px 10px rgba(83,97,116,.05);
  --h-pattern:#8d712e;
  --h-cta-bg:linear-gradient(135deg,#c2a258,#8d712e);
  --h-cta-ink:#fff;
- --h-cta-glow:0 3px 10px rgba(141,113,46,.3)
+ --h-cta-glow:0 2px 8px rgba(141,113,46,.26)
 }
 
 /* The app styles buttons, headings and small text globally; these keep their own look. */
@@ -40,118 +45,124 @@ html body #view-home .oxh :is(em,i){font-style:normal}
 html body #view-home .oxh [hidden]{display:none!important}
 html body #view-home .oxh .up{color:var(--h-up)}
 html body #view-home .oxh .down{color:var(--h-down)}
-html body #view-home .oxh .oxh-muted{display:block;color:var(--h-muted);font:500 13px/1.5 var(--h-font)}
-html body #view-home .oxh .oxh-pad{padding:12px 4px}
+html body #view-home .oxh .oxh-muted{display:block;color:var(--h-muted);font:var(--fw-medium) var(--fs-label)/var(--lh-body) var(--h-font)}
+html body #view-home .oxh .oxh-pad{padding:var(--sp-3) var(--sp-1)}
 html body #view-home .oxh .oxh-card{
- border:1px solid var(--h-edge);border-radius:14px;background:var(--h-card);box-shadow:var(--h-glow);
+ border:var(--hair) solid var(--h-edge);border-radius:var(--r-m);background:var(--h-card);box-shadow:var(--h-glow);
  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)
 }
-html body #view-home .oxh button.oxh-card:active,html body #view-home .oxh .oxh-ln2:active,html body #view-home .oxh .oxh-newsrow:active{filter:brightness(1.15)}
-html body.theme-light #view-home .oxh button.oxh-card:active,html body.theme-light #view-home .oxh .oxh-ln2:active,html body.theme-light #view-home .oxh .oxh-newsrow:active{filter:brightness(.97)}
+html body #view-home .oxh button.oxh-card:active,html body #view-home .oxh .oxh-newsrow:active{filter:brightness(1.15)}
+html body.theme-light #view-home .oxh button.oxh-card:active,html body.theme-light #view-home .oxh .oxh-newsrow:active{filter:brightness(.97)}
 html body #view-home .oxh :is(button,a):focus-visible{outline:2px solid var(--h-ink);outline-offset:2px}
+/* Titled sections sit a full 24px apart; the hero, tiles and legend stay one block. */
+html body #view-home .oxh>.oxh-sec{margin-top:calc(var(--gap-section) - var(--sp-3))}
 
 /* ---------- BTC ---------- */
-html body #view-home .oxh .oxh-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 4px 4px}
-html body #view-home .oxh .oxh-big{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:10px;row-gap:0;margin-top:2px}
-html body #view-home .oxh .oxh-hero-main{flex:1 1 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
-html body #view-home .oxh .oxh-hero-main small{display:block;color:var(--h-muted);font:500 12px/1.4 var(--h-font)}
-html body #view-home .oxh .oxh-hero-main strong{display:block;color:var(--h-ink);font:700 30px/1.1 var(--h-font);letter-spacing:-.3px;white-space:nowrap}
-html body #view-home .oxh .oxh-hero-chg{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
-html body #view-home .oxh .oxh-hero-chg em{font:600 14px/1.35 var(--h-font)}
-html body #view-home .oxh .oxh-hero-chg i{color:var(--h-muted);font:500 11px var(--h-font)}
-html body #view-home .oxh .oxh-hero-actions{flex:none;display:flex;align-items:center;gap:8px}
-html body #view-home .oxh .oxh-icon{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--h-edge);border-radius:11px;background:var(--h-soft)}
+html body #view-home .oxh .oxh-hero{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-1) 0 0}
+html body #view-home .oxh .oxh-big{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:var(--sp-2);row-gap:0;margin-top:2px}
+html body #view-home .oxh .oxh-hero-main{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:0}
+html body #view-home .oxh .oxh-hero-main small{display:block;color:var(--h-muted);font:var(--fw-medium) var(--fs-caption)/1.35 var(--h-font)}
+html body #view-home .oxh .oxh-hero-main strong{display:block;color:var(--h-ink);font:var(--fw-semibold) var(--fs-num-hero)/1.15 var(--h-font);letter-spacing:-.2px;white-space:nowrap}
+html body #view-home .oxh .oxh-hero-chg{display:flex;align-items:baseline;gap:var(--sp-1);white-space:nowrap}
+html body #view-home .oxh .oxh-hero-chg em{font:var(--fw-medium) var(--fs-body)/1.35 var(--h-font)}
+html body #view-home .oxh .oxh-hero-chg i{color:var(--h-muted);font:var(--fw-medium) var(--fs-caption) var(--h-font)}
+html body #view-home .oxh .oxh-hero-actions{flex:none;display:flex;align-items:center;gap:var(--sp-2)}
+html body #view-home .oxh .oxh-icon{width:var(--ctl-h);height:var(--ctl-h);display:grid;place-items:center;border:var(--hair) solid var(--h-edge);border-radius:var(--r-s);background:var(--h-soft)}
 html body.theme-light #view-home .oxh .oxh-icon{background:#fff}
-html body #view-home .oxh :is(.oxh-icon,.oxh-cta) svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+html body #view-home .oxh :is(.oxh-icon,.oxh-cta) svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 html body #view-home .oxh .oxh-cta{
- height:36px;padding:0 14px;display:flex;align-items:center;gap:5px;border-radius:18px;white-space:nowrap;
- background:var(--h-cta-bg);color:var(--h-cta-ink);box-shadow:var(--h-cta-glow);font:700 13.5px var(--h-font)
+ height:var(--ctl-h);padding:0 var(--sp-3);display:flex;align-items:center;gap:var(--sp-1);border-radius:var(--r-pill);white-space:nowrap;
+ background:var(--h-cta-bg);color:var(--h-cta-ink);box-shadow:var(--h-cta-glow);font:var(--fw-semibold) var(--fs-body) var(--h-font)
 }
 
 /* ---------- 首頁色塊 (src/markets/crypto/home-tiles.js) ----------
    A tile's colour is its direction (u／d／f) at the strength --ht-a (darker = bigger move);
-   the rgb per theme lives here, so switching theme needs no redraw. The editor sheet sits
+   the rgb per theme lives here, so switching theme needs no redraw. Every tile is the same
+   height with the same three lines: name 11, number 14, detail 11, 4px apart like a heat
+   grid (the detail line needs the width: 漲 274・跌 188). The editor sheet sits
    outside #view-home, so its rules are not scoped to the page. */
 :root{--ht-up:0,184,212;--ht-down:255,48,120;--ht-flat:128,136,146}
 body.theme-light{--ht-up:29,116,214;--ht-down:214,65,95;--ht-flat:128,136,146}
-html body #view-home .oxh .ht-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
-html body #view-home .oxh .ht-t{position:relative;border-radius:12px;padding:9px 8px 8px;min-height:64px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:1px;color:var(--h-ink);font-variant-numeric:tabular-nums;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;transition:background-color .35s ease}
+html body #view-home .oxh .ht-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-1)}
+html body #view-home .oxh .ht-t{position:relative;box-sizing:border-box;height:58px;border-radius:var(--r-s);padding:var(--sp-2);display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:0;color:var(--h-ink);font-variant-numeric:tabular-nums;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;transition:background-color .35s ease}
 html body #view-home .oxh .ht-t.u{background:rgba(var(--ht-up),var(--ht-a,.14))}
 html body #view-home .oxh .ht-t.d{background:rgba(var(--ht-down),var(--ht-a,.14))}
 html body #view-home .oxh .ht-t.f{background:rgba(var(--ht-flat),.18)}
-html body #view-home .oxh .ht-t i{max-width:100%;overflow:hidden;font:600 11px/1.3 var(--h-font);opacity:.85;text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .ht-t b{font:700 15.5px/1.25 var(--h-font);white-space:nowrap;letter-spacing:-.2px}
-html body #view-home .oxh .ht-t s{max-width:100%;overflow:hidden;text-decoration:none;font:500 10.5px/1.3 var(--h-font);opacity:.8;text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .ht-t i{max-width:100%;overflow:hidden;font:var(--fw-medium) var(--fs-caption)/1.2 var(--h-font);opacity:.82;text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .ht-t b{max-width:100%;overflow:hidden;font:var(--fw-semibold) 14px/1.2 var(--h-font);white-space:nowrap;text-overflow:clip;letter-spacing:-.1px}
+html body #view-home .oxh .ht-t s{max-width:100%;overflow:hidden;text-decoration:none;font:var(--fw-regular) var(--fs-caption)/1.2 var(--h-font);opacity:.78;text-overflow:ellipsis;white-space:nowrap}
 html body #view-home .oxh .ht-t.hot{color:#fff}
 html body #view-home .oxh .ht-t:active{filter:brightness(1.12)}
-html body #view-home .oxh .ht-empty{grid-column:1/-1;padding:16px;text-align:center;color:var(--h-muted);font:500 13px var(--h-font)}
-html body #view-home .oxh .ht-legend{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:0 4px;color:var(--h-muted);font:500 11px var(--h-font)}
-html body #view-home .oxh .ht-legend button{padding:4px 2px;color:var(--h-muted);font:500 11.5px var(--h-font)}
+html body #view-home .oxh .ht-empty{grid-column:1/-1;padding:var(--sp-4);text-align:center;color:var(--h-muted);font:var(--fw-medium) var(--fs-body) var(--h-font)}
+html body #view-home .oxh .ht-legend{display:flex;justify-content:space-between;align-items:center;margin-top:var(--sp-2);padding:0;color:var(--h-muted);font:var(--fw-regular) var(--fs-caption)/1.3 var(--h-font)}
+html body #view-home .oxh .ht-legend button{margin:-6px 0;padding:6px 0 6px var(--sp-3);color:var(--h-muted);font:var(--fw-medium) var(--fs-caption) var(--h-font)}
 html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]{animation:ht-wig .26s ease-in-out infinite alternate;cursor:grab;touch-action:none}
 html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]:nth-child(2n){animation-delay:-.13s}
 @keyframes ht-wig{from{transform:rotate(-1.3deg)}to{transform:rotate(1.3deg)}}
 html body #view-home .oxh .ht-t.dragging{animation:none!important;z-index:5;box-shadow:0 10px 24px rgba(0,0,0,.25);transition:none}
 html body #view-home .oxh .ht-t.target{outline:2px dashed var(--h-ink);outline-offset:1px}
 html body #view-home .oxh .ht-x{position:absolute;top:-6px;left:-6px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(60,64,72,.92);color:#fff;font:600 14px/1 var(--h-font);box-shadow:0 1px 4px rgba(0,0,0,.3)}
-html body #view-home .oxh .ht-add{align-items:center;justify-content:center;border:1.5px dashed var(--h-edge);background:var(--h-soft);color:var(--h-muted);font:400 22px var(--h-font)}
+html body #view-home .oxh .ht-add{align-items:center;justify-content:center;border:1.5px dashed var(--h-edge);background:var(--h-soft);color:var(--h-muted);font:400 20px var(--h-font)}
 @media (prefers-reduced-motion:reduce){html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]{animation:none}}
 /* the editor sheet */
-.hs{display:flex;flex-direction:column;gap:8px;padding-top:4px;font-family:var(--oc-font)}
-html body .hs .hs-seg{display:flex;padding:2px;border-radius:10px;background:var(--oc-soft);gap:2px}
-html body .hs .hs-seg button{flex:1;min-height:0;border:0;background:none;box-shadow:none;padding:7px 0;border-radius:8px;font:600 13.5px var(--oc-font);color:var(--oc-muted);cursor:pointer}
-html body .hs .hs-seg button[aria-pressed="true"]{background:var(--oc-glass);color:var(--oc-ink);box-shadow:var(--oc-glow)}
-html body .hs .hs-seg.small{flex:none;width:180px}
-html body .hs .hs-seg.small button{padding:5px 0;font-size:12.5px}
-.hs-line{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;font:500 14px var(--oc-font);color:var(--oc-ink)}
-.hs-label{margin:10px 2px 2px;font:500 12px var(--oc-font);color:var(--oc-muted)}
-.hs-list{border-radius:14px;border:1px solid var(--oc-edge);background:var(--oc-glass);overflow:hidden}
-.hs-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--oc-line);background:var(--oc-solid,transparent);touch-action:none;color:var(--oc-ink)}
+.hs{display:flex;flex-direction:column;gap:var(--sp-2);padding-top:var(--sp-1);font-family:var(--oc-font)}
+html body .hs .hs-seg{display:flex;padding:2px;border-radius:var(--r-s);background:var(--oc-soft);gap:2px}
+html body .hs .hs-seg button{flex:1;min-height:0;height:28px;border:0;background:none;box-shadow:none;padding:0;border-radius:8px;font:var(--fw-medium) var(--fs-label) var(--oc-font);color:var(--oc-muted);cursor:pointer}
+html body .hs .hs-seg button[aria-pressed="true"]{background:var(--oc-glass);color:var(--oc-ink);box-shadow:var(--oc-glow);font-weight:var(--fw-semibold)}
+html body .hs .hs-seg.small{flex:none;width:168px}
+html body .hs .hs-seg.small button{height:26px;font-size:var(--fs-label)}
+.hs-line{display:flex;align-items:center;justify-content:space-between;padding:var(--sp-1) 2px;font:var(--fw-medium) var(--fs-body) var(--oc-font);color:var(--oc-ink)}
+.hs-label{margin:var(--sp-3) 2px 0;font:var(--fw-medium) var(--fs-caption) var(--oc-font);color:var(--oc-muted)}
+.hs-list{border-radius:var(--r-m);border:var(--hair) solid var(--oc-edge);background:var(--oc-glass);overflow:hidden}
+.hs-row{display:flex;align-items:center;gap:var(--sp-3);min-height:44px;box-sizing:border-box;padding:var(--sp-2) var(--sp-3);border-bottom:var(--hair) solid var(--oc-line);background:var(--oc-solid,transparent);touch-action:none;color:var(--oc-ink)}
 .hs-row:last-child{border-bottom:0}
 .hs-row.over{opacity:.45}
 .hs-row.dragging{position:relative;z-index:3;box-shadow:0 8px 20px rgba(0,0,0,.2)}
-.hs-handle{font:400 18px var(--oc-font);color:var(--oc-muted);cursor:grab;padding:0 2px;touch-action:none}
-.hs-sw{flex:none;width:14px;height:14px;border-radius:4px;background:rgba(var(--ht-flat),.3)}
+.hs-handle{font:400 16px var(--oc-font);color:var(--oc-muted);cursor:grab;padding:0 2px;touch-action:none}
+.hs-sw{flex:none;width:12px;height:12px;border-radius:4px;background:rgba(var(--ht-flat),.3)}
 .hs-sw.u{background:rgba(var(--ht-up),var(--ht-a,.3))}
 .hs-sw.d{background:rgba(var(--ht-down),var(--ht-a,.3))}
-.hs-n{flex:1;min-width:0;display:flex;flex-direction:column}
-.hs-n b{font:500 14.5px var(--oc-font)}
-.hs-n small{font:400 11.5px var(--oc-font);color:var(--oc-muted)}
-.hs-row em,.hs-chip em{font:600 12.5px var(--oc-font);font-style:normal;font-variant-numeric:tabular-nums}
-html body .hs .hs-del{width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:0;box-shadow:none;background:rgba(var(--ht-down),.14);color:rgb(var(--ht-down));font:600 16px/1 var(--oc-font);cursor:pointer}
-.hs-empty{padding:14px;text-align:center;font:400 13px var(--oc-font);color:var(--oc-muted)}
-.hs-pick{display:flex;flex-wrap:wrap;gap:6px}
-html body .hs .hs-chip{display:inline-flex;align-items:center;gap:6px;min-height:0;padding:6px 10px;border-radius:999px;border:1px solid var(--oc-edge);background:var(--oc-glass);box-shadow:none;font:500 13px var(--oc-font);color:var(--oc-ink);cursor:pointer}
+.hs-n{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.hs-n b{font:var(--fw-medium) var(--fs-body) var(--oc-font)}
+.hs-n small{font:var(--fw-regular) var(--fs-caption) var(--oc-font);color:var(--oc-muted)}
+.hs-row em,.hs-chip em{font:var(--fw-semibold) var(--fs-label) var(--oc-font);font-style:normal;font-variant-numeric:tabular-nums}
+html body .hs .hs-del{width:24px;height:24px;min-height:0;padding:0;border-radius:50%;border:0;box-shadow:none;background:rgba(var(--ht-down),.14);color:rgb(var(--ht-down));font:600 15px/1 var(--oc-font);cursor:pointer}
+.hs-empty{padding:var(--sp-3);text-align:center;font:var(--fw-regular) var(--fs-body) var(--oc-font);color:var(--oc-muted)}
+.hs-pick{display:flex;flex-wrap:wrap;gap:var(--sp-2)}
+html body .hs .hs-chip{display:inline-flex;align-items:center;gap:6px;min-height:0;height:30px;padding:0 var(--sp-3);border-radius:var(--r-pill);border:var(--hair) solid var(--oc-edge);background:var(--oc-glass);box-shadow:none;font:var(--fw-medium) var(--fs-label) var(--oc-font);color:var(--oc-ink);cursor:pointer}
 .hs-chip i{font-style:normal;color:var(--oc-muted)}
 html body .hs .hs-chip[aria-pressed="true"]{border-color:var(--oc-accent)}
 .hs-chip[aria-pressed="true"] i{color:var(--oc-accent)}
-html body .hs .hs-reset{align-self:center;margin:14px 0 4px;min-height:0;padding:4px;border:0;background:none;box-shadow:none;font:500 13px var(--oc-font);color:var(--oc-muted);text-decoration:underline;cursor:pointer}
+html body .hs .hs-reset{align-self:center;margin:var(--sp-3) 0 var(--sp-1);min-height:0;padding:var(--sp-1);border:0;background:none;box-shadow:none;font:var(--fw-medium) var(--fs-label) var(--oc-font);color:var(--oc-muted);text-decoration:underline;cursor:pointer}
 
-/* ---------- section heads ---------- */
-html body #view-home .oxh .oxh-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;margin:6px 2px 7px}
-html body #view-home .oxh .oxh-head h2{display:flex;align-items:baseline;gap:8px;min-width:0;color:var(--h-ink);font:700 16px/1.3 var(--h-font);white-space:nowrap}
-html body #view-home .oxh .oxh-head h2 small{overflow:hidden;color:var(--h-muted);font:500 12px var(--h-font);text-overflow:ellipsis}
-html body #view-home .oxh .oxh-head>small{min-width:0;overflow:hidden;color:var(--h-muted);font:500 11.5px/1.4 var(--h-font);text-align:right;text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .oxh-link{flex:none;padding:4px 9px;border-radius:10px;background:var(--h-soft);color:var(--h-muted);font:500 12px/1.4 var(--h-font);white-space:nowrap}
+/* ---------- section heads: 15px title, 11px note, a quiet 「全部 ›」 ---------- */
+html body #view-home .oxh .oxh-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);min-height:20px;margin:0 0 var(--gap-head)}
+html body #view-home .oxh .oxh-head h2{display:flex;align-items:baseline;gap:var(--sp-2);min-width:0;color:var(--h-ink);font:var(--fw-semibold) var(--fs-section)/1.3 var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-head h2 small{overflow:hidden;color:var(--h-muted);font:var(--fw-regular) var(--fs-caption) var(--h-font);text-overflow:ellipsis}
+html body #view-home .oxh .oxh-head>small{min-width:0;overflow:hidden;color:var(--h-muted);font:var(--fw-regular) var(--fs-caption)/1.4 var(--h-font);text-align:right;text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .oxh-link{flex:none;margin:-6px 0;padding:6px 0 6px var(--sp-3);color:var(--h-muted);font:var(--fw-medium) var(--fs-label)/1.3 var(--h-font);white-space:nowrap}
 
-/* ---------- 今日突破 ---------- */
-/* Cards line up with the page edge (scroll-padding), not the screen edge, when the strip snaps. */
+/* ---------- 今日突破 ----------
+   About two and a half cards across a phone: the third shows enough of itself (logo, name,
+   half its chart) to read as "more this way". Cards snap to the page edge (scroll-padding). */
 html body #view-home .oxh .oxh-strip{
- display:flex;gap:8px;min-height:60px;margin:0 -12px -12px;padding:0 12px 16px;overflow-x:auto;overscroll-behavior-x:contain;
- scroll-padding-inline:12px;scroll-snap-type:x proximity;scrollbar-width:none
+ --brk-w:clamp(132px,calc((100vw - var(--gutter) - 2 * var(--gap-card)) / 2.45),168px);
+ display:flex;gap:var(--gap-card);min-height:60px;margin:0 calc(-1 * var(--gutter));padding:0 var(--gutter) 2px;overflow-x:auto;overscroll-behavior-x:contain;
+ scroll-padding-inline:var(--gutter);scroll-snap-type:x mandatory;scrollbar-width:none
 }
 html body #view-home .oxh .oxh-strip::-webkit-scrollbar{display:none}
 html body #view-home .oxh .oxh-strip::after{content:"";flex:0 0 1px}
-html body #view-home .oxh .oxh-break{flex:none;width:158px;display:flex;flex-direction:column;padding:8px 9px;scroll-snap-align:start}
-html body #view-home .oxh .oxh-bn{display:flex;align-items:center;gap:5px;min-width:0}
-html body #view-home .oxh .oxh-bn b{min-width:0;overflow:hidden;font:600 13.5px/1.3 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .oxh-bn i{flex:none;margin-left:auto;padding:0 4px;border:1.2px solid rgba(255,255,255,.42);border-radius:5px;color:var(--h-ink);font:650 9.5px/1.45 var(--h-font)}
-html body #view-home .oxh .oxh-bn i[data-tier="1"]{border-color:rgba(255,255,255,.8);box-shadow:0 0 6px rgba(255,255,255,.28)}
-html body #view-home .oxh .oxh-bn i[data-tier="3"]{border-color:rgba(255,255,255,.24);color:var(--h-muted)}
+html body #view-home .oxh .oxh-break{flex:none;box-sizing:border-box;width:var(--brk-w);display:flex;flex-direction:column;padding:var(--sp-2) 10px;scroll-snap-align:start}
+html body #view-home .oxh .oxh-bn{display:flex;align-items:center;gap:6px;min-width:0;height:18px}
+html body #view-home .oxh .oxh-bn b{min-width:0;overflow:hidden;font:var(--fw-semibold) var(--fs-title)/1.3 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .oxh-bn i{flex:none;margin-left:auto;padding:0 4px;border:1px solid rgba(255,255,255,.4);border-radius:var(--r-xs);color:var(--h-ink);font:var(--fw-semibold) var(--fs-caption)/15px var(--h-font)}
+html body #view-home .oxh .oxh-bn i[data-tier="1"]{border-color:rgba(255,255,255,.78);box-shadow:0 0 6px rgba(255,255,255,.22)}
+html body #view-home .oxh .oxh-bn i[data-tier="3"]{border-color:rgba(255,255,255,.22);color:var(--h-muted)}
 html body.theme-light #view-home .oxh .oxh-bn i{border-color:#b7a579;color:var(--h-ink);box-shadow:none}
 html body.theme-light #view-home .oxh .oxh-bn i[data-tier="1"]{border-color:#8d712e;background:#8d712e14}
 html body.theme-light #view-home .oxh .oxh-bn i[data-tier="3"]{border-color:var(--h-edge);color:var(--h-muted)}
-html body #view-home .oxh .oxh-break small{margin:1px 0 3px;overflow:hidden;color:var(--h-muted);font:500 10.5px/1.4 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .oxh-mini{display:block;height:74px;overflow:hidden;border-radius:8px}
+html body #view-home .oxh .oxh-break small{margin:2px 0 var(--sp-1);overflow:hidden;color:var(--h-muted);font:var(--fw-regular) var(--fs-caption)/1.3 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .oxh-mini{display:block;height:60px;overflow:hidden;border-radius:var(--r-xs)}
 html body #view-home .oxh .oxh-mini:empty{background:var(--h-soft)}
 html body #view-home .oxh .oxh-mini svg{display:block;width:100%;height:100%}
 html body #view-home .oxh .oxh-mini .u{fill:var(--h-up);stroke:var(--h-up)}
@@ -159,94 +170,108 @@ html body #view-home .oxh .oxh-mini .d{fill:var(--h-down);stroke:var(--h-down)}
 html body #view-home .oxh .oxh-mini :is(line.u,line.d){stroke-width:.8}
 /* The change pill tells the move since the breakout; the chart keeps only a dashed line there. */
 html body #view-home .oxh .oxh-mini :is(.zup,.zdown,.zflat,.bk){display:none}
-html body #view-home .oxh .oxh-mini .ln{fill:none;stroke:var(--h-pattern);stroke-width:1.6;stroke-linejoin:round;stroke-linecap:round}
-html body #view-home .oxh .oxh-mini .cl{fill:none;stroke:var(--h-muted);stroke-width:1.5;stroke-linejoin:round}
+html body #view-home .oxh .oxh-mini .ln{fill:none;stroke:var(--h-pattern);stroke-width:1.5;stroke-linejoin:round;stroke-linecap:round}
+html body #view-home .oxh .oxh-mini .cl{fill:none;stroke:var(--h-muted);stroke-width:1.4;stroke-linejoin:round}
 html body #view-home .oxh .oxh-mini .cl.up{stroke:var(--h-up)}
 html body #view-home .oxh .oxh-mini .cl.down{stroke:var(--h-down)}
 html body #view-home .oxh .oxh-mini .dot{fill:var(--h-ink)}
 html body #view-home .oxh .oxh-mini .mk{stroke:var(--h-muted);stroke-width:1;stroke-dasharray:3 2}
 html body #view-home .oxh .oxh-mini text{display:none}
-html body #view-home .oxh .oxh-bf{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:5px}
-html body #view-home .oxh .oxh-bf>span{color:var(--h-muted);font:500 10.5px var(--h-font);white-space:nowrap}
-html body #view-home .oxh .oxh-chg{min-width:62px;padding:3px 6px;border-radius:6px;color:#fff;font:600 12.5px/1.3 var(--h-font);text-align:center;white-space:nowrap}
+html body #view-home .oxh .oxh-bf{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-1);margin-top:var(--sp-2)}
+html body #view-home .oxh .oxh-bf>span{color:var(--h-muted);font:var(--fw-regular) var(--fs-caption) var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-chg{min-width:58px;height:22px;box-sizing:border-box;padding:0 6px;border-radius:var(--r-xs);color:#fff;font:var(--fw-semibold) var(--fs-label)/22px var(--h-font);text-align:center;white-space:nowrap}
 html body #view-home .oxh .oxh-chg.u{background:var(--h-up)}
 html body #view-home .oxh .oxh-chg.d{background:var(--h-down)}
 html body #view-home .oxh .oxh-chg.f{background:var(--h-soft);color:var(--h-ink);box-shadow:inset 0 0 0 1px var(--h-edge)}
 html body #view-home .oxh .oxh-chg.n{background:var(--h-soft);color:var(--h-muted)}
 html body #view-home .oxh .oxh-logo,html body #view-home .oxh .ox-home-t1-identity .ox-coin-logo{
- position:relative;flex:none;width:18px;height:18px;display:grid;place-items:center;overflow:hidden;border-radius:50%;
- background:var(--h-soft);color:var(--h-muted);font:700 7.5px/1 var(--h-font);letter-spacing:0
+ position:relative;flex:none;width:16px;height:16px;display:grid;place-items:center;overflow:hidden;border-radius:50%;
+ background:var(--h-soft);color:var(--h-muted);font:700 7px/1 var(--h-font);letter-spacing:0
 }
 html body #view-home .oxh :is(.oxh-logo,.ox-home-t1-identity .ox-coin-logo) img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 
-/* ---------- 雷達 上漲／下跌 T1／T2／T3 ---------- */
+/* ---------- 雷達 上漲／下跌 T1／T2／T3 ----------
+   Two dense columns: one 32px line per coin (logo, symbol, OX score; the move on the right),
+   the tier as a slim group line where it starts. About eight coins show per column; the list
+   scrolls inside its card and fades at the bottom edge so the cut reads as "more below". */
 html body #view-home .oxh .oxh-radar{display:flex;flex-direction:column;min-width:0}
-html body #view-home .oxh .oxh-sides{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:8px}
-html body #view-home .oxh .oxh-side{min-width:0;padding:8px 0 2px}
-html body #view-home .oxh .oxh-side-head{display:flex;align-items:baseline;gap:6px;margin:0 10px;padding-bottom:6px;border-bottom:1px solid var(--h-edge);font:650 13.5px/1.4 var(--h-font)}
+html body #view-home .oxh .oxh-sides{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:start;gap:var(--sp-2)}
+html body #view-home .oxh .oxh-side{min-width:0;padding:0}
+html body #view-home .oxh .oxh-side-head{display:flex;align-items:baseline;gap:6px;height:32px;box-sizing:border-box;margin:0 10px;padding:9px 0 0;border-bottom:var(--hair) solid var(--h-line);font:var(--fw-semibold) var(--fs-title)/1.2 var(--h-font)}
 html body #view-home .oxh .oxh-side-head.up{color:var(--h-up)}
 html body #view-home .oxh .oxh-side-head.down{color:var(--h-down)}
-html body #view-home .oxh .oxh-side-head span{color:var(--h-muted);font:500 10.5px var(--h-font)}
-html body #view-home .oxh .oxh-list{display:block;max-height:300px;padding:0 10px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none}
+html body #view-home .oxh .oxh-side-head span{color:var(--h-muted);font:var(--fw-regular) var(--fs-caption) var(--h-font)}
+html body #view-home .oxh .oxh-list{
+ --row-h:32px;display:block;max-height:calc(var(--row-h) * 8 + 44px);padding:0 10px 2px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:none;
+ -webkit-mask-image:linear-gradient(#000 calc(100% - 18px),transparent);mask-image:linear-gradient(#000 calc(100% - 18px),transparent)
+}
+html body #view-home .oxh .oxh-list:not(:has(.ox-home-t1-row:nth-child(9))){-webkit-mask-image:none;mask-image:none}
 html body #view-home .oxh .oxh-list::-webkit-scrollbar{display:none}
-html body #view-home .oxh .oxh-list .ox-home-t1-empty{display:block;padding:12px 0;color:var(--h-muted);font:500 12px/1.5 var(--h-font)}
+html body #view-home .oxh .oxh-list .ox-home-t1-empty{display:block;padding:var(--sp-3) 0;color:var(--h-muted);font:var(--fw-medium) var(--fs-label)/1.5 var(--h-font)}
 /* Rows keep .ox-home-t1-row for the double tap / long press preview (home-preview.js); its old
    fixed heights and grid rows (home-preview.css) give way to these. */
 html body #view-home .oxh .oxh-list .ox-home-t1-row{
- box-sizing:border-box;width:100%;height:auto;min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:none;
- grid-template-areas:"tier tier" "name chg" "score chg";column-gap:6px;row-gap:0;margin:0;padding:6px 0;
- border:0;border-bottom:1px solid var(--h-edge);border-radius:0;background:none;box-shadow:none;color:var(--h-ink);text-align:left
+ box-sizing:border-box;width:100%;height:auto;min-height:var(--row-h);display:grid;
+ grid-template-columns:minmax(0,max-content) minmax(max-content,1fr) auto;grid-template-rows:none;
+ grid-template-areas:"tier tier tier" "name score chg";align-items:center;column-gap:5px;row-gap:0;margin:0;padding:0;
+ border:0;border-bottom:var(--hair) solid var(--h-line);border-radius:0;background:none;box-shadow:none;color:var(--h-ink);text-align:left
 }
-html body.theme-light.theme-light.ox-terminal #view-home .oxh .oxh-list .ox-home-t1-row{border-bottom:1px solid var(--h-edge)!important}
+html body.theme-light.theme-light.ox-terminal #view-home .oxh .oxh-list .ox-home-t1-row{border-bottom:var(--hair) solid var(--h-line)!important}
 html body #view-home .oxh .oxh-list .ox-home-t1-row:last-child{border-bottom:0}
 html body.theme-light.theme-light.ox-terminal #view-home .oxh .oxh-list .ox-home-t1-row:last-child{border-bottom:0!important}
-html body #view-home .oxh .oxh-list .ox-home-t1-row.is-tier-start:not(:first-child){padding-top:10px}
+html body #view-home .oxh .oxh-list .ox-home-t1-row>:is(.ox-home-t1-identity,small:not(.ox-home-row-tier),em){height:calc(var(--row-h) - 1px);display:flex;align-items:center}
+/* the tier: a slim line where its group starts (T1 bright, T2 plain, T3 quiet) */
 html body #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-row-tier{
- grid-area:tier;justify-self:start;margin:0 0 5px;padding:0 4px;border:1px solid rgba(255,255,255,.42);border-radius:5px;
- color:var(--h-ink);font:650 9.5px/1.45 var(--h-font);letter-spacing:0
+ grid-area:tier;justify-self:stretch;display:flex;align-items:center;gap:6px;height:22px;margin:0;padding:6px 0 0;border:0;border-radius:0;box-shadow:none;background:none;
+ color:var(--h-ink);font:var(--fw-semibold) var(--fs-caption)/1 var(--h-font);letter-spacing:.02em
 }
-html body #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t1"] .ox-home-row-tier{border-color:rgba(255,255,255,.8);box-shadow:0 0 6px rgba(255,255,255,.28)}
-html body #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t3"] .ox-home-row-tier{border-color:rgba(255,255,255,.24);color:var(--h-muted)}
-html body.theme-light #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-row-tier{border-color:#b7a579;box-shadow:none}
-html body.theme-light #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t1"] .ox-home-row-tier{border-color:#8d712e;background:#8d712e14}
-html body.theme-light #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t3"] .ox-home-row-tier{border-color:var(--h-edge);color:var(--h-muted)}
+html body #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-row-tier::after{content:"";flex:1;height:0;border-top:var(--hair) solid var(--h-line)}
+html body #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t1"] .ox-home-row-tier{text-shadow:0 0 8px rgba(255,255,255,.45)}
+html body #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t3"] .ox-home-row-tier{color:var(--h-muted)}
+html body.theme-light #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-row-tier{color:#7a6227;text-shadow:none}
+html body.theme-light #view-home .oxh .oxh-list .ox-home-t1-row[data-home-tier="t3"] .ox-home-row-tier{color:var(--h-muted)}
 html body #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-t1-identity{grid-area:name;display:flex;align-items:center;gap:6px;min-width:0}
-html body #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-t1-identity strong{min-width:0;overflow:hidden;color:var(--h-ink);font:600 13px/1.35 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .oxh-list .ox-home-t1-row>small:not(.ox-home-row-tier){grid-area:score;padding-left:24px;color:var(--h-muted);font:500 10.5px/1.35 var(--h-font)}
-html body #view-home .oxh .oxh-list .ox-home-t1-row em{grid-area:chg;align-self:center;font:600 12.5px var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-list .ox-home-t1-row .ox-home-t1-identity strong{min-width:0;overflow:hidden;color:var(--h-ink);font:var(--fw-semibold) var(--fs-title)/1.2 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .oxh-list .ox-home-t1-row>small:not(.ox-home-row-tier){grid-area:score;padding:0;color:var(--h-muted);font:var(--fw-regular) var(--fs-caption)/1 var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-list .ox-home-t1-row em{grid-area:chg;justify-content:flex-end;font:var(--fw-semibold) var(--fs-label)/1 var(--h-font);white-space:nowrap}
 
 /* The scan's progress (loading-state.js) on one quiet line under the lists. */
 /* Loading sits in the 雷達 heading line (src/components/loading-state.js): a ring and a short label
    before the close time, so nothing is added under the lists and nothing can sit under the dock. */
-html body #view-home .oxh .oxh-radar-head{gap:8px}
+html body #view-home .oxh .oxh-radar-head{gap:var(--sp-2)}
 html body #view-home .oxh .oxh-radar-head>h2{margin-right:auto}
 html body #view-home .oxh .oxh-radar-head>.ox-region-loading{order:1;flex:none;display:inline-flex;padding:0;grid-column:auto}
 html body #view-home .oxh .oxh-radar-head>[data-radar-freshness]{order:2}
-html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading{flex-direction:row;gap:5px;color:var(--h-muted);font:500 11px/1.4 var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading{flex-direction:row;gap:5px;color:var(--h-muted);font:var(--fw-medium) var(--fs-caption)/1.4 var(--h-font);white-space:nowrap}
 html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
-html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:11px}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:var(--fs-caption)}
 /* The close time already carries the scan count: the ring alone then. */
 html body #view-home .oxh .oxh-radar-head:has(>[data-radar-freshness]:not([hidden]))>.ox-region-loading :is(.ox-loading-label,.ox-loading-count){display:none}
 html body.theme-light #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{border-color:#30343b24;border-top-color:#30343b}
 
-/* ---------- 此刻發生 ---------- */
-html body #view-home .oxh .oxh-newsrow{display:block;margin:0 0 8px;padding:10px 12px}
-html body #view-home .oxh .oxh-newsrow h4{display:-webkit-box;overflow:hidden;color:var(--h-ink);font:600 14.5px/1.45 var(--h-font);-webkit-box-orient:vertical;-webkit-line-clamp:3}
-html body #view-home .oxh .oxh-meta{display:block;margin-top:6px;color:var(--h-muted);font:500 11px/1.4 var(--h-font)}
+/* ---------- 此刻發生: one card, rows split by hairlines ---------- */
+html body #view-home .oxh [data-home-news-list]:has(.oxh-newsrow){border:var(--hair) solid var(--h-edge);border-radius:var(--r-m);background:var(--h-card);box-shadow:var(--h-glow);overflow:hidden}
+html body #view-home .oxh .oxh-newsrow{display:block;margin:0;padding:10px var(--sp-3);border:0;border-radius:0;background:none;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none}
+html body #view-home .oxh .oxh-newsrow+.oxh-newsrow{border-top:var(--hair) solid var(--h-line)}
+html body #view-home .oxh .oxh-newsrow h4{display:-webkit-box;overflow:hidden;color:var(--h-ink);font:var(--fw-medium) 14px/1.45 var(--h-font);-webkit-box-orient:vertical;-webkit-line-clamp:2}
+html body #view-home .oxh .oxh-meta{display:block;margin-top:var(--sp-1);color:var(--h-muted);font:var(--fw-regular) var(--fs-caption)/1.4 var(--h-font)}
 
 /* ---------- wide screens: the radar lists beside the rest ---------- */
 @media (min-width:980px){
  html body #view-home .oxh{
   display:grid;grid-template-columns:minmax(0,1.3fr) minmax(340px,1fr);grid-template-rows:auto auto auto 1fr;
-  grid-template-areas:"hero radar" "tiles radar" "breaks radar" "news radar";column-gap:18px;row-gap:10px;align-items:start;
-  max-width:1240px;margin:0 auto;padding-top:12px
+  grid-template-areas:"hero radar" "tiles radar" "breaks radar" "news radar";column-gap:var(--sp-5);row-gap:var(--sp-3);align-items:start;
+  max-width:1240px;margin:0 auto;padding-top:var(--sp-3)
  }
+ html body #view-home .oxh>.oxh-sec{margin-top:0}
+ html body #view-home .oxh>:is(.oxh-breaks,.oxh-news){margin-top:var(--sp-3)}
  html body #view-home .oxh .oxh-hero{grid-area:hero}
  html body #view-home .oxh .oxh-tiles{grid-area:tiles}
  html body #view-home .oxh .oxh-breaks{grid-area:breaks;min-width:0}
  html body #view-home .oxh .oxh-radar{grid-area:radar}
  html body #view-home .oxh .oxh-news{grid-area:news}
- html body #view-home .oxh .oxh-strip{margin:0 0 -12px;padding:0 0 16px;scroll-padding-inline:0}
- html body #view-home .oxh .oxh-list{max-height:min(640px,calc(100vh - 220px))}
- html body #view-home .oxh .oxh-hero-main strong{font-size:30px}
+ html body #view-home .oxh .oxh-strip{--brk-w:158px;margin:0;padding:0 0 2px;scroll-padding-inline:0}
+ html body #view-home .oxh .oxh-list{--row-h:34px;max-height:min(680px,calc(100vh - 210px))}
+ html body #view-home .oxh .ht-t{height:62px}
+ html body #view-home .oxh .ht-t b{font-size:var(--fs-num-l)}
 }

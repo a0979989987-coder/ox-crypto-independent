@@ -1,8 +1,8 @@
-/* Shared mobile gutters: widen surfaces without changing their inner layout. */
+/* Shared mobile gutters: one page edge on every view (tokens.css --gutter, 12px). */
 @media (max-width:720px) {
   body.ox-terminal[data-view] main.wrap {
-    padding-left:max(8px,env(safe-area-inset-left))!important;
-    padding-right:max(8px,env(safe-area-inset-right))!important;
+    padding-left:max(var(--gutter,12px),env(safe-area-inset-left))!important;
+    padding-right:max(var(--gutter,12px),env(safe-area-inset-right))!important;
   }
 
   /* Both-edge scrollbar reservation left an empty vertical rail on the list. */

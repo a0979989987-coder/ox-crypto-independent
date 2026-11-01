@@ -1,0 +1,31 @@
+/* OX 加密 design tokens (2026-11-01, exchange-style refinement: smaller, denser, crisp).
+   The one place for spacing, type, radii, lines and the dock's room. The page layers
+   (crypto-home.css, app-shell.css, refine.css) and the tab rows read these; change a value
+   here and every page follows.
+
+   Spacing: 4 / 8 / 12 / 16 / 24 only.
+     gutter 12 (page sides on phones) · section 24 (between a page's sections) · head 8
+     (section title to its content) · card gap 8 · card padding 12 · list row 8 above/below.
+   Type (px · weight): page title 17·600 · section title 15·600 · list / tab / headline 14·500 ·
+     card title 13·600 · body 13·400/500 · label 12·500 · caption 11·400/500 (the floor: no
+     text under 11px) · numbers: hero 26·600, large 15·600, list 13–14·500/600, always tabular.
+   Weights 400 / 500 / 600 only. Radii: 10 for controls (buttons, chips, tiles), 14 for
+   cards and sheets, 6 for tiny badges. Lines are hairlines (half a pixel on phone screens). */
+:root{
+ --sp-1:4px;--sp-2:8px;--sp-3:12px;--sp-4:16px;--sp-5:24px;
+ --gutter:12px;--gap-section:24px;--gap-head:8px;--gap-card:8px;--pad-card:12px;--row-y:8px;
+ --fs-page:17px;--fs-section:15px;--fs-list:14px;--fs-title:13px;--fs-body:13px;--fs-label:12px;--fs-caption:11px;
+ --fs-num-hero:26px;--fs-num-l:15px;--fs-num:13px;
+ --fw-regular:400;--fw-medium:500;--fw-semibold:600;
+ --lh-tight:1.25;--lh-body:1.45;
+ --r-xs:6px;--r-s:10px;--r-m:14px;--r-pill:999px;
+ --hair:1px;
+ --ctl-h:32px;--ctl-h-l:40px;
+ /* The glass dock: 56px tall, 9px off the bottom. Every page ends this far above the screen's
+    bottom edge, so its last row can always be scrolled clear of the dock. */
+ --dock-h:56px;--dock-gap:9px;
+ --dock-space:calc(var(--dock-h) + var(--dock-gap) + env(safe-area-inset-bottom,0px) + var(--sp-4));
+ --tnum:tabular-nums
+}
+@media (min-resolution:2dppx){:root{--hair:.5px}}
+@media (min-width:721px){:root{--gutter:16px}}

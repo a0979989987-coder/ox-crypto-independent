@@ -8,7 +8,7 @@ export function createTextTabs({ tabs, selected, label, attribute = 'data-tab', 
   const element = document.createElement('div');
   if (sticky) element.dataset.sticky = '';
   // Same place and spacing on every page; page styles must not move it.
-  element.style.setProperty('margin', '0 0 10px', 'important');
+  element.style.setProperty('margin', '0 0 var(--sp-3,12px)', 'important');
   const shadow = element.attachShadow({ mode: 'open' });
   shadow.innerHTML = `<style>
 :host{display:block;min-width:0}
@@ -16,15 +16,15 @@ export function createTextTabs({ tabs, selected, label, attribute = 'data-tab', 
 :host([data-sticky]){position:sticky;top:max(var(--oc-top-h,0px),env(safe-area-inset-top,0px));z-index:40}
 nav{transition:background-color .2s ease}
 :host([data-stuck]) nav{background:var(--oc-bar,rgba(10,12,15,.66));-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3)}
-@media (max-width:720px){:host([data-sticky]) nav{margin-inline:-8px;padding-inline:8px}}
+@media (max-width:720px){:host([data-sticky]) nav{margin-inline:calc(-1 * var(--gutter,12px));padding-inline:var(--gutter,12px)}}
 @media (min-width:721px){:host([data-sticky]) nav{margin-inline:-12px;padding-inline:12px}}
 /* Dragging the row only slides it sideways; the page underneath never moves up or down. */
-.ox-mode-rail{position:relative;display:flex;gap:22px;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;touch-action:pan-x;scrollbar-width:none;padding:0 2px;border-bottom:1px solid var(--oc-line,rgba(255,255,255,.09));-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)}
+.ox-mode-rail{position:relative;display:flex;gap:20px;overflow-x:auto;overflow-y:hidden;overscroll-behavior:contain;touch-action:pan-x;scrollbar-width:none;padding:0 2px;border-bottom:var(--hair,1px) solid var(--oc-line,rgba(255,255,255,.09));-webkit-mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent);mask-image:linear-gradient(90deg,#000 calc(100% - 30px),transparent)}
 .ox-mode-rail.fits,.ox-mode-rail.at-end{-webkit-mask-image:none;mask-image:none}
 .ox-mode-rail::-webkit-scrollbar{display:none}
-button{position:relative;flex:none;border:0;background:none;margin:0;padding:9px 0 11px;font:500 15px/1.1 var(--oc-font,-apple-system,"PingFang TC",sans-serif);letter-spacing:.01em;color:var(--oc-muted,#9aa1a8);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s}
-button[aria-selected="true"]{color:var(--oc-ink,#f1f1eb);font-weight:600}
-button::after{content:"";position:absolute;left:50%;bottom:-1px;width:18px;height:3px;margin-left:-9px;border-radius:3px;background:var(--oc-accent,#fff);transform:scaleX(0);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
+button{position:relative;flex:none;border:0;background:none;margin:0;padding:10px 0;font:var(--fw-medium,500) var(--fs-list,14px)/1.15 var(--oc-font,-apple-system,"PingFang TC",sans-serif);letter-spacing:.01em;color:var(--oc-muted,#9aa1a8);cursor:pointer;white-space:nowrap;-webkit-tap-highlight-color:transparent;transition:color .15s}
+button[aria-selected="true"]{color:var(--oc-ink,#f1f1eb);font-weight:var(--fw-semibold,600)}
+button::after{content:"";position:absolute;left:50%;bottom:-1px;width:16px;height:2.5px;margin-left:-8px;border-radius:2px;background:var(--oc-accent,#fff);transform:scaleX(0);transition:transform .2s cubic-bezier(.2,.8,.2,1)}
 button[aria-selected="true"]::after{transform:none}
 button.is-off{opacity:.42}
 button:focus-visible{outline:2px solid var(--oc-accent,#fff);outline-offset:2px;border-radius:4px}

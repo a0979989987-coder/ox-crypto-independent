@@ -24,6 +24,11 @@ const apiFiles = readdirSync(resolve(root, "api"), { recursive: true, withFileTy
   .filter(entry => entry.isFile() && /\.[cm]?js$/.test(entry.name));
 if (apiFiles.length > 12) errors.push(`Vercel Hobby function limit exceeded: ${apiFiles.length}/12 API files`);
 
+// Files loaded with ?v= are kept by browsers for a year: a changed file that kept its old ?v=,
+// or a page whose build mark is out of date, must not be deployed (scripts/asset-versions.mjs).
+const { check: checkAssetVersions } = await import("./asset-versions.mjs");
+errors.push(...(await checkAssetVersions({ root, strict: false })).problems);
+
 if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);

@@ -7,12 +7,20 @@
 // Run `npm run build:tools` first (it refreshes the browser bundles in src/generated);
 // `npm run build:sites` does both. Vercel keeps serving the repository as before.
 import { build } from 'esbuild';
-import { cp, mkdir, readFile, readdir, rm, stat } from 'node:fs/promises';
+import { cp, mkdir, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises';
 import { resolve, relative, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
 const root = resolve(import.meta.dirname, '..');
 const PAGES = ['index.html', 'admin.html', 'privacy.html', 'terms.html', 'ox-logo.png', 'favicon.svg', 'manifest.webmanifest'];
 const DATA_DIRS = ['data', 'previews/data'];
+// Static files on Sites are served before the Worker sees them; the platform takes their
+// headers from _headers (Cloudflare's format). Every page is checked with the server on each
+// visit, so a phone never keeps an old page while the CSS and JS are new. (_headers cannot
+// match ?v=, so versioned files keep the platform's default there; Vercel keeps them a year.)
+export const SITE_HEADERS = ['/', '/index.html', '/admin.html', '/privacy.html', '/terms.html', '/manifest.webmanifest']
+  .map(path => `${path}
+  Cache-Control: no-cache, must-revalidate
+`).join('');
 
 async function files(dir) {
   const out = [];
@@ -28,6 +36,7 @@ export async function buildSites({ out = resolve(root, 'dist'), log = console.lo
   const client = resolve(out, 'client');
   await mkdir(client, { recursive: true });
   for (const name of PAGES) await cp(resolve(root, name), resolve(client, name));
+  await writeFile(resolve(client, '_headers'), SITE_HEADERS);
   for (const dir of ['src', 'assets']) await cp(resolve(root, dir), resolve(client, dir), { recursive: true, filter: source => !relative(root, source).split(sep).some(part => part.startsWith('.')) });
   // Data files are not static files on the Site: the Worker serves them from the latest
   // release, so a static copy at /data/… must not exist (it would shadow new data).
