@@ -238,7 +238,7 @@ html body.ox-terminal #ox-market-radar .ox-rl-setup{display:none}
 
 /* ---------- 個股 page: the chart full width; a bar in the dock's place ---------- */
 html body.ox-terminal[data-view="stock"] nav.app-dock.glass-nav{display:none!important}
-html body.ox-terminal #view-radar #radar-scanner-toggle,html body.ox-terminal #view-radar .radar-scanner-reopen{display:none!important}
+html body.ox-terminal:not([data-view="chart"]) #view-radar #radar-scanner-toggle,html body.ox-terminal #view-radar .radar-scanner-reopen{display:none!important}
 html body.ox-terminal[data-view="stock"] #view-radar{padding-bottom:84px}
 html body.ox-terminal[data-view="stock"] #view-radar .ox-chart-share{display:none!important}
 .ox-stock-bar{position:fixed;left:0;right:0;bottom:0;z-index:70;display:none;gap:8px;padding:10px 12px calc(env(safe-area-inset-bottom,0px) + 10px);border-top:1px solid var(--oc-line);background:var(--oc-bar);-webkit-backdrop-filter:blur(18px) saturate(1.2);backdrop-filter:blur(18px) saturate(1.2);font-family:var(--oc-font)}
@@ -276,3 +276,42 @@ html body.ox-terminal .oc-drawer .oc-item{font:500 16px var(--oc-font)}
 @media (min-width:980px){.oc-top{position:relative;max-width:1240px;margin:0 auto;padding:14px 0 0;background:none;-webkit-backdrop-filter:none;backdrop-filter:none}}
 html body.ox-terminal .oc-drawer:focus{outline:none!important}
 html body.ox-terminal .oc-drawer :is(.oc-item,.oc-btn):focus-visible{outline:2px solid var(--oc-accent)!important;outline-offset:2px;border-radius:12px;box-shadow:none!important}
+
+/* ---------- Coin logos (src/app/coin-logo.js): the two letters show only without a picture ---------- */
+.ox-logo.has-img{color:transparent!important}
+.ox-logo img{-webkit-user-drag:none;user-select:none}
+
+/* ---------- 行情 → 圖表 (view chart): the original radar page. The 行情 tab row on top, the
+   chart with the T1／T2／T3 list on its right (the original side cards, scanner.js
+   sideCard), coin details below; the arrow folds the list and the chart gets its drawing
+   tools and 全螢幕. The rest is the original radar CSS (editorial-radar.css, radar-combined.css). ---------- */
+html body.ox-terminal[data-view="chart"] #view-radar > #ox-crypto-tools-nav{position:sticky}
+html body.ox-terminal #view-radar .workspace #radar-scanner-panel :is(.radar-tab-text,.direction-toggle-text){display:none!important}
+html body.ox-terminal #view-radar .workspace #radar-scanner-panel [data-radar-freshness]{padding:3px 8px 4px!important;font-size:10px!important;line-height:1.35!important;text-align:left!important;white-space:normal}
+html body.ox-terminal #view-radar .ox-side-logo{position:relative;display:inline-grid;place-items:center;flex:none;align-self:center;width:15px;height:15px;margin:0 1px;border-radius:50%;overflow:hidden;background:#363a42;color:#f0f1f4;font:700 6.5px/1 var(--oc-font,system-ui);letter-spacing:0;vertical-align:middle}
+html body.ox-terminal #view-radar .ox-side-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+html body.ox-terminal.theme-light #view-radar .ox-side-logo{background:#e9ecf0;color:#374151}
+html body.ox-terminal #view-radar .turnover-name .ox-side-logo{margin:0 3px 0 1px}
+html body.ox-terminal #view-radar .ox-side-empty{padding:24px 10px;text-align:center;color:var(--muted);font-size:12px;line-height:1.6}
+html body.ox-terminal #view-radar .ox-side-empty b{display:block;color:var(--ink);font-size:12.5px;margin-bottom:4px}
+html body.ox-terminal #view-radar .ox-side-empty p{margin:0;font-size:11px}
+html body.ox-terminal #view-radar .ox-side-empty button{margin-top:10px;min-height:40px;padding:0 12px;border:1px solid currentColor;border-radius:10px;background:transparent;color:inherit;font:inherit}
+html body.ox-terminal #view-radar .workspace #radar-scanner-panel [data-radar-freshness] .rf-n{display:none}
+/* A thin ring keeps dark logos (ZRX, NMR, GLM…) visible on the dark page. */
+html body.ox-terminal:not(.theme-light) .ox-logo.has-img::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.13);pointer-events:none}
+
+/* ---------- The radar's close time and its picture button (行情 → 圖表 and 雷達) ---------- */
+html body.ox-terminal #radar-scanner-panel .ox-radar-meta{display:flex;align-items:center;gap:6px;min-width:0;flex:none}
+html body.ox-terminal #radar-scanner-panel .ox-radar-meta [data-radar-freshness]{flex:1 1 auto;min-width:0}
+html body.ox-terminal #radar-scanner-panel .ox-radar-share{position:relative;flex:none;display:grid;place-items:center;width:30px;height:30px;min-width:0;min-height:0;margin:0 0 0 auto;padding:0;border:1px solid var(--oc-line,rgba(255,255,255,.12));border-radius:9px;background:transparent;box-shadow:none;color:var(--oc-muted,#9aa1a8);cursor:pointer;-webkit-tap-highlight-color:transparent}
+html body.ox-terminal #radar-scanner-panel .ox-radar-share::after{content:"";position:absolute;inset:-7px -6px}
+html body.ox-terminal #radar-scanner-panel .ox-radar-share svg{width:17px;height:17px}
+html body.ox-terminal #radar-scanner-panel .ox-radar-share:active{filter:brightness(1.3)}
+html body.ox-terminal #ox-market-radar .ox-radar-meta{padding:0 2px 4px}
+html body.ox-terminal #view-radar .workspace .ox-radar-meta{padding:2px 6px 2px 0}
+html body.ox-terminal #view-radar .workspace .ox-radar-share{width:24px;height:24px;border-radius:7px}
+html body.ox-terminal #view-radar .workspace .ox-radar-share svg{width:14px;height:14px}
+html body.ox-terminal.theme-light #radar-scanner-panel .ox-radar-share{border-color:#dde1e6;color:#636b77;background:#fff}
+html body.ox-terminal #view-radar .workspace #radar-scanner-panel .ox-radar-meta [data-radar-freshness]{padding:3px 0 3px 8px!important;font-size:9.5px!important;letter-spacing:-.01em;white-space:nowrap!important;overflow:hidden;text-overflow:clip}
+html body.ox-terminal #view-radar .workspace .ox-radar-meta{gap:3px;padding:2px 5px 2px 0}
+html body.ox-terminal #view-radar .workspace .ox-radar-share{width:22px;height:22px}

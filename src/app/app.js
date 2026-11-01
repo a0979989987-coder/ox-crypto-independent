@@ -21,7 +21,7 @@ export function bootOXModules(modules = []) {
 const router = bootOXModules([cryptoModule]);
 let currentView = document.body.dataset.view || "home";
 let renderToken = 0;
-const isMarketView = () => ["home", "strength", "radar", "pattern", "stock"].includes(currentView);
+const isMarketView = () => ["home", "strength", "chart", "radar", "pattern", "stock"].includes(currentView);
 
 function scheduleMarketView() {
   const token = ++renderToken;

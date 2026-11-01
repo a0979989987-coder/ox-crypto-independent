@@ -232,7 +232,7 @@
     restartTicker(){
       clearInterval(this.timer);this.timer=0;
       this.refreshTicker({quiet:true});
-      this.timer=setInterval(()=>{if(state.activeView==="stock")this.refreshTicker({quiet:true})},6000);
+      this.timer=setInterval(()=>{if(state.activeView==="stock"||state.activeView==="chart")this.refreshTicker({quiet:true})},6000);
     },
     async select(id){
       id=String(id||"").toLowerCase();
@@ -417,7 +417,7 @@
     const control=q("#ox-control-panel");
     if(control)observer.observe(control,{childList:true,subtree:true});
     document.addEventListener("ox:viewchange",()=>{
-      if(state.activeView==="stock"){
+      if(state.activeView==="stock"||state.activeView==="chart"){
         ProviderController.ensureTitleTrigger();
         ProviderController.refreshTicker({quiet:true});
       }

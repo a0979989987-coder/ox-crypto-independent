@@ -48,7 +48,7 @@ async function visit(name, { serve = null, github = null, holdCandles = false, w
     const started = Date.now();
     await page.goto(testBase + '/', { waitUntil: 'domcontentloaded' });
     if (view === 'home') await page.locator('.app-dock [data-view-target="home"]').click();
-    // The radar list is 行情's first tab (雷達).
+    // 行情 opens on 圖表, the chart with the radar list beside it.
     else { await page.waitForFunction(() => !!window.OXMarketTabs, null, { timeout: 20000 }); await page.locator('.app-dock [data-view-target="strength"]').click(); }
     const list = view === 'home' ? '#home-t1-long-list [data-home-symbol], #home-t1-short-list [data-home-symbol]' : '#screener-list .coin-card[data-tier]';
     await page.locator(list).first().waitFor({ timeout: 20000 });
@@ -70,7 +70,12 @@ try {
   assert.ok(v.info.ready);
   assert.ok(v.info.queue < v.info.total || v.info.total <= 62, 'only candidates and the most traded coins');
   await v.page.locator('.app-dock [data-view-target="strength"]').click();
-  assert.equal(await v.page.evaluate(() => OXMarketTabs.current()), 'radar');
+  // 行情 opens on 圖表: the list beside the chart paints from the snapshot too, with its close time.
+  assert.equal(await v.page.evaluate(() => OXMarketTabs.current()), 'chart');
+  await v.page.locator('#view-radar .workspace #screener-list .coin-card[data-tier]').first().waitFor();
+  assert.deepEqual(await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol)), expected('long'));
+  assert.match(await v.page.locator('#screener-list').evaluate(el => el.previousElementSibling?.textContent || ''), /^\d\d:\d\d 收盤・更新中/);
+  await v.page.evaluate(() => OXMarketTabs.select('radar'));
   await v.page.locator('#ox-market-radar #screener-list .coin-card[data-tier]').first().waitFor();
   const longCards = await v.page.locator('#screener-list .coin-card[data-tier]').evaluateAll(cards => cards.map(c => c.dataset.symbol));
   assert.deepEqual(longCards, expected('long'));

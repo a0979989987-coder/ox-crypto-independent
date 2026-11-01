@@ -24,10 +24,12 @@ export function quoteOf(ticker) {
   return { symbol: ticker.symbol, price: finite(live?.lastPr ?? ticker.lastPr), change: change == null ? null : change * 100, volume: finite(live?.usdtVolume ?? ticker.usdtVolume) };
 }
 // The coin's logo (src/assets/token-logos), else its first two letters.
+// src/app/coin-logo.js keeps one decoded copy of each picture, so a redrawn row does not blink.
+// Search results are patched in place while typing, so the logos do not blink.
+const paint = (el, html) => { if (globalThis.OXPatchHTML) globalThis.OXPatchHTML(el, html); else el.innerHTML = html; };
 export function logoHTML(symbol, cls = 'oc-logo-coin') {
-  const base = coinOf(symbol), key = base.replace(/^1000(?=[A-Z])/, '').toLowerCase();
-  let src = null; try { src = typeof OX_COIN_LOGOS !== 'undefined' ? OX_COIN_LOGOS[key] : null; } catch {}
-  return `<span class="${cls}" aria-hidden="true">${escapeHTML(base.slice(0, 2))}${src ? `<img src="${escapeHTML(src)}" alt="" width="30" height="30" decoding="async" loading="lazy" onerror="this.remove()">` : ''}</span>`;
+  if (globalThis.OXCoinLogo) return globalThis.OXCoinLogo.html(symbol, { cls, size: 30 });
+  return `<span class="${cls}" aria-hidden="true">${escapeHTML(coinOf(symbol).slice(0, 2))}</span>`;
 }
 const taipei = iso => new Date(iso).toLocaleString('zh-TW', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', weekday: 'short', hour: '2-digit', minute: '2-digit', hour12: false });
 
@@ -80,16 +82,16 @@ export function openSearch(initial = '') {
     if (!term) {
       const recent = (globalThis.OXRecent?.list() || []).filter(x => x.type === 'coin').slice(0, 8);
       const hot = byTurnover().slice(0, 10);
-      body.innerHTML = (recent.length ? `<div class="oc-sec"><span>最近看過</span></div><div class="oc-chips">${recent.map(x => `<button type="button" class="oc-btn oc-chip" data-coin="${escapeHTML(x.id)}">${escapeHTML(coinOf(x.id))}</button>`).join('')}</div>` : '')
+      paint(body, (recent.length ? `<div class="oc-sec"><span>最近看過</span></div><div class="oc-chips">${recent.map(x => `<button type="button" class="oc-btn oc-chip" data-coin="${escapeHTML(x.id)}">${escapeHTML(coinOf(x.id))}</button>`).join('')}</div>` : '')
         + `<div class="oc-sec"><span>功能</span></div><div class="oc-chips">${FEATURES.slice(0, 9).map((f, i) => `<button type="button" class="oc-btn oc-chip" data-feature="${i}">${f[0]}</button>`).join('')}</div>`
-        + (hot.length ? `<div class="oc-sec"><span>24H 成交額最大</span><span>Bitget USDT 永續</span></div>${hot.map(coinRow).join('')}` : '<div class="oc-empty">幣種清單載入中…</div>');
+        + (hot.length ? `<div class="oc-sec"><span>24H 成交額最大</span><span>Bitget USDT 永續</span></div>${hot.map(coinRow).join('')}` : '<div class="oc-empty">幣種清單載入中…</div>'));
       return;
     }
     const found = rank(all, term).slice(0, 40), t = term.toLowerCase();
     const features = FEATURES.map((f, i) => [f, i]).filter(([f]) => (f[0] + ' ' + f[1]).toLowerCase().includes(t));
-    body.innerHTML = (features.length ? `<div class="oc-sec"><span>功能</span></div>${features.map(([f, i]) => `<button type="button" class="oc-btn oc-row" data-feature="${i}"><span class="oc-kind">${icon('tool')}</span><div class="grow"><b>${f[0]}</b><small>${f[1]}</small></div></button>`).join('')}` : '')
+    paint(body, (features.length ? `<div class="oc-sec"><span>功能</span></div>${features.map(([f, i]) => `<button type="button" class="oc-btn oc-row" data-feature="${i}"><span class="oc-kind">${icon('tool')}</span><div class="grow"><b>${f[0]}</b><small>${f[1]}</small></div></button>`).join('')}` : '')
       + (found.length ? `<div class="oc-sec"><span>幣種</span><span>${found.length >= 40 ? '前 40 個' : found.length + ' 個'}</span></div>${found.map(coinRow).join('')}` : '')
-      + (!features.length && !found.length ? `<div class="oc-empty">${all.length ? `找不到「${escapeHTML(term)}」` : '幣種清單載入中…'}</div>` : '');
+      + (!features.length && !found.length ? `<div class="oc-empty">${all.length ? `找不到「${escapeHTML(term)}」` : '幣種清單載入中…'}</div>` : ''));
   }
   const close = () => { sheet.remove(); document.removeEventListener('keydown', onKey); clearInterval(refresh); };
   const onKey = e => { if (e.key === 'Escape') close(); };

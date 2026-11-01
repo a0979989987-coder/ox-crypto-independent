@@ -109,7 +109,7 @@ export function mountCompare(host, { onOpen } = {}) {
     return `<button type="button" class="ox-cmp-pick" data-cmp-symbol="${esc(pick.s)}" data-cmp-at="${point.at}" data-track="compare.pick" data-track-detail="${esc(pick.s)}" aria-label="${esc(pick.coin)} ${esc(pick.name)}，看型態詳情" aria-haspopup="dialog">
       <span class="ox-cmp-mini"${svg ? '' : ' data-pending'} data-key="${esc(key)}">${svg || ''}</span>
       <span class="ox-cmp-main">
-        <span class="ox-cmp-name"><b>${esc(pick.coin)}</b>${pick.t ? `<span class="ox-cmp-tier" data-tier="${pick.t}">T${pick.t}</span>` : ''}<span class="ox-cmp-pic" role="button" data-cmp-share data-track="share.compare" data-track-detail="${esc(pick.s)}" aria-label="把 ${esc(pick.coin)} 做成圖片分享">${PICTURE_ICON}</span><span class="ox-cmp-go" aria-hidden="true">›</span></span>
+        <span class="ox-cmp-name">${globalThis.OXCoinLogo ? OXCoinLogo.html(pick.s, { cls: "ox-cmp-logo", size: 22 }) : ""}<b>${esc(pick.coin)}</b>${pick.t ? `<span class="ox-cmp-tier" data-tier="${pick.t}">T${pick.t}</span>` : ''}<span class="ox-cmp-pic" role="button" data-cmp-share data-track="share.compare" data-track-detail="${esc(pick.s)}" aria-label="把 ${esc(pick.coin)} 做成圖片分享">${PICTURE_ICON}</span><span class="ox-cmp-go" aria-hidden="true">›</span></span>
         <span class="ox-cmp-pattern">${esc(pick.name)}</span>
         <span class="ox-cmp-rets">${resultCells(pick)}</span>
       </span>

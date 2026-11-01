@@ -34,8 +34,8 @@
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "eaa2fbeffe281573c91c2ad6239aeb2718e0d1551a03f2668e9deb14a7f60727",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore). User-requested app redesign like the Taiwan site: 行情 page with small text tabs: 雷達, 自選, 排行 join the tools (2026-10-31)."
+      "sha256": "271c90cbb15befae72ba1300dbb2e1d9de40b71998c7f5890e8791d8a1096386",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore). User-requested app redesign like the Taiwan site: 行情 page with small text tabs: 雷達, 自選, 排行 join the tools (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
@@ -124,14 +124,14 @@
     {
       "path": "src/markets/crypto/presentation.js",
       "sourceSha256": "ded9e88cc60959b8027f9ecc7d02a16884d6046c6c51ee8aadd4b8afeeba36e4",
-      "sha256": "619f567fa3d0c5fe5eb82a30cfde9a9714d8992b7e9a36b9b53b41ae82d7345e",
-      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. Opening a coin selects the 盤面 tab of the 畫板 dock view before switching to it. User-requested app redesign like the Taiwan site: a coin opens the 個股 page; live quotes follow 行情 and 個股 (2026-10-31)."
+      "sha256": "f8d8b5f957c3d4c73bd847a3f05ff84f6f6e3f4a81e2af336c9ba44458fddc33",
+      "reason": "Decouple visible live quote presentation from retained scan classifications; shared bounded ticker socket, stale-message rejection and desktop/mobile push regression. Opening a coin selects the 盤面 tab of the 畫板 dock view before switching to it. User-requested app redesign like the Taiwan site: a coin opens the 個股 page; live quotes follow 行情 and 個股 (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "b51997bb6e13b482558deeb0f089313070917bbcc38d04d592269f5f23906227",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged. User-requested app redesign like the Taiwan site: the radar list moves to 行情 → 雷達 as full-width rows; the scan runs on 首頁, 行情 and 個股 (2026-10-31)."
+      "sha256": "ef32a3128b28f8deb3df190868b900a690f1101e6372b4960bc06df519ae27cd",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged. User-requested app redesign like the Taiwan site: the radar list moves to 行情 → 雷達 as full-width rows; the scan runs on 首頁, 行情 and 個股 (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",

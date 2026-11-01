@@ -2,7 +2,7 @@
 // 首頁 (the picture button beside 畫型態), and the handlers the 畫板 tab passes to the
 // board (card long press / picture button, 分享 after drawing). The images themselves
 // are drawn by ./share-image.js; the 型態 tab, 型態詳情 and 資訊 call it directly.
-import { shareCoin, shareDrawing, shareHome, sharePct, shareTone, sharePrice, shareMoney, shareTime, PICTURE_ICON } from './share-image.js?v=20261031-v3merge';
+import { shareCoin, shareDrawing, shareHome, shareRadar, sharePct, shareTone, sharePrice, shareMoney, shareTime, PICTURE_ICON } from './share-image.js?v=20261101-radar1';
 import { homeBreakSummary } from './home-feed.js';
 
 const runtime = () => typeof state !== 'undefined' ? state : null;
@@ -73,6 +73,28 @@ export function shareHomeOverview() {
   });
 }
 
+// 行情 → 圖表 and 雷達: the T1／T2／T3 of the hour's close, for the direction on screen
+// (the preview switches 多頭／空頭／多空). The close is the snapshot's, else the last full hour.
+export function radarShareRows() {
+  const rt = runtime(), out = {};
+  for (const side of ['long', 'short']) out[side] = ['t1', 't2', 't3'].flatMap(tier => (rt?.tierMapBySide?.[side]?.[tier] || []).map(c => {
+    const live = ticker(c.symbol), change = live.change ?? (finite(c.change24h) == null ? null : finite(c.change24h) * 100);
+    return { symbol: c.symbol, name: coin(c.symbol), tier: String(c.displayTier || c.tier || tier).toUpperCase(), ox: c.oxScore ?? null, change };
+  }));
+  return out;
+}
+export function radarCloseText() {
+  const stats = globalThis.OXRadarSnapshot?.stats?.(), hour = 3600000;
+  const close = stats?.refreshing && Number.isFinite(stats.close) ? stats.close : Math.floor((stats?.updatedAt || Date.now()) / hour) * hour;
+  const p = Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(close)).map(x => [x.type, x.value]));
+  return `${p.month}/${p.day} ${p.hour}:00 收盤`;
+}
+export function shareRadarList(side = runtime()?.directionFilter === 'short' ? 'short' : 'long') {
+  const rows = radarShareRows();
+  if (!rows.long.length && !rows.short.length) return null;
+  return shareRadar({ side, rows, closeText: radarCloseText() });
+}
+
 // The 個股 price card's button, added once its place exists; styles in share.css.
 function button(className, label, track, html) {
   const b = document.createElement('button');
@@ -93,6 +115,12 @@ if (typeof document !== 'undefined') {
   document.addEventListener('click', event => {
     if (!event.target.closest?.('#view-home .ox-home-share')) return;
     event.stopPropagation(); shareHomeOverview();
+  });
+  // The radar list's picture button (index.html, beside the close time on 圖表 and 雷達).
+  document.addEventListener('click', event => {
+    if (!event.target.closest?.('#radar-scanner-panel .ox-radar-share')) return;
+    event.stopPropagation();
+    if (!shareRadarList()) { const t = document.getElementById('toast'); if (t) { t.textContent = '雷達還在整理，稍後再試'; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 2200); } }
   });
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, { once: true }); else mount();
   // The price card is rebuilt by some layouts; put the button back when it goes missing.

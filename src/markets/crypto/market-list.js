@@ -74,7 +74,8 @@ export function mountMarketList(host, { mode = 'watch' } = {}) {
       if (list.length && (funding || oi)) html += `<p class="ml-foot">${funding ? '資金費率：每次結算時多空互付的比例，正數是多單付給空單。' : '持倉：未平倉合約張數 × 標記價格，以 USDT 計。'}資料來自 Bitget。</p>`;
     }
     const input = root.querySelector('.ml-search input'), focused = input && document.activeElement === input, caret = focused ? input.selectionStart : null;
-    root.innerHTML = html;
+    // Patched in place: rows, their logos and the search box stay the same nodes (src/app/coin-logo.js).
+    if (globalThis.OXPatchHTML) globalThis.OXPatchHTML(root, html); else root.innerHTML = html;
     if (focused) { const next = root.querySelector('.ml-search input'); next.focus({ preventScroll: true }); try { next.setSelectionRange(caret, caret); } catch {} }
     syncQuotes();
   }

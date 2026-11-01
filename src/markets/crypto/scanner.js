@@ -1,8 +1,8 @@
 // The radar list lives on 行情 → 雷達, the chart and its quote card on the 個股 page;
 // the full-market scan runs while 首頁, 行情 or 個股 is on screen.
-const RADAR_SCAN_VIEWS=['home','strength','stock'];
+const RADAR_SCAN_VIEWS=['home','strength','stock','chart'];
 const radarScanView=()=>RADAR_SCAN_VIEWS.includes(state.activeView);
-const radarListVisible=()=>state.activeView==='strength'&&document.getElementById('ox-market-radar')?.hidden===false;
+const radarListVisible=()=>state.activeView==='chart'||state.activeView==='strength'&&document.getElementById('ox-market-radar')?.hidden===false;
 const WATCH_STAR_SVG = '<svg class="watch-star-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 2.78 5.63L21 9.54l-4.5 4.39 1.06 6.2L12 17.2l-5.56 2.93 1.06-6.2L3 9.54l6.22-.91Z"/></svg>';
 
 const RADAR_RETAIN_MS=2*60*60*1000;
@@ -209,7 +209,7 @@ async function refreshMarketTickers() {
 
     rebuildTierLists();
     if (radarListVisible()) renderCurrentTab();
-    if (state.activeView === 'stock') { updateHeaderHUD(); renderBenchmarkBar(); }
+    if (state.activeView === 'stock' || state.activeView === 'chart') { updateHeaderHUD(); renderBenchmarkBar(); }
     checkLevelAlerts();
 
     if (!state.isQueueRunning) {
@@ -234,7 +234,7 @@ function publishRadarProgress(immediate=false) {
   if (state.activeMarket !== 'crypto') return;
   rebuildTierLists();
   if (radarListVisible()) renderCurrentTab();
-  if (state.activeView === 'stock') { updateHeaderHUD();renderBenchmarkBar(); }
+  if (state.activeView === 'stock' || state.activeView === 'chart') { updateHeaderHUD();renderBenchmarkBar(); }
 }
 async function runScanQueueLoop() {
   while (true) {
@@ -391,34 +391,49 @@ function rebuildTierLists() {
   renderOxLive();
 }
 
-// 行情 → 雷達: the radar list, one full-width row per coin (logo, name with the tier,
-// OX score and 24H 量, price, a solid change block, a star), T1／T2／T3 headings in
-// the combined list. 熱門 is the 50 largest 24H 成交額; 自選 the starred coins.
-// A tap opens the coin's 個股 page (runtime-actions.js). Class names the live
-// quote painter patches stay: .coin-change, .turnover-price, .coin-volume-value.
-function radarRowLogo(symbol) {
-  const base = String(symbol).replace(/USDT$/, ""), key = base.replace(/^1000(?=[A-Z])/, "").toLowerCase();
-  const src = typeof OX_COIN_LOGOS !== "undefined" ? OX_COIN_LOGOS[key] : null;
-  return `<span class="ox-rl-logo" aria-hidden="true">${base.slice(0, 2)}${src ? `<img src="${src}" alt="" width="30" height="30" decoding="async" loading="lazy" onerror="this.remove()">` : ""}</span>`;
-}
+// The radar list is drawn in two places. 行情 → 雷達: one full-width row per coin (logo,
+// name with the tier, OX score and 24H 量, price, a solid change block, a star), T1／T2／T3
+// headings in the combined list. 行情 → 圖表: the original narrow cards beside the chart
+// (#rank, logo and name, OX score, 24H 量, change, star) — the same panel moves between
+// the two (analytics/entry.js), so the cards follow where it sits. 熱門 is the 50 largest
+// 24H 成交額; 自選 the starred coins. A tap opens the coin (runtime-actions.js): its 個股
+// page, or on 圖表 the chart beside the list. Rows are patched in place (OXPatchHTML in
+// src/app/coin-logo.js), so logos never reload and a held touch survives a refresh.
+// Class names the live quote painter patches stay: .coin-change, .turnover-price,
+// .coin-volume-value.
+const radarLogo = (symbol, cls, size) => globalThis.OXCoinLogo ? OXCoinLogo.html(symbol, { cls, size }) : "";
 function radarRow(symbol, { sub, star = true, tier = "", extra = "" } = {}) {
   const t = state.tickers.find(x => x.symbol === symbol), coin = symbol.replace(/USDT$/, "");
   const change = num(t?.change24h), starred = isWatchlisted(symbol);
-  return `<div class="coin-card ox-rl-row ${symbol === state.symbol ? "selected" : ""}" data-symbol="${symbol}"${tier ? ` data-tier="${tier}"` : ""} role="button" tabindex="0" aria-label="${coin}，打開個股頁">
-    ${radarRowLogo(symbol)}<span class="ox-rl-name"><b>${coin}</b><small>${sub}${extra}</small></span>
-    <span class="turnover-price">${t ? fmtPrice(t.lastPr) : "—"}</span>
-    <span class="coin-change ${change >= 0 ? "positive" : "negative"}">${t ? fmtPct(t.change24h) : "—"}</span>
-    ${star ? `<button class="watch-star ${starred ? "is-starred" : ""}" type="button" data-watch-symbol="${symbol}" aria-pressed="${starred}" aria-label="${starred ? "移出" : "加入"}自選 ${coin}">${WATCH_STAR_SVG}</button>` : "<span></span>"}
-  </div>`;
+  return `<div class="coin-card ox-rl-row ${symbol === state.symbol ? "selected" : ""}" data-symbol="${symbol}"${tier ? ` data-tier="${tier}"` : ""} role="button" tabindex="0" aria-label="${coin}，打開個股頁">${radarLogo(symbol, "ox-rl-logo", 30)}<span class="ox-rl-name"><b>${coin}</b><small>${sub}${extra}</small></span><span class="turnover-price">${t ? fmtPrice(t.lastPr) : "—"}</span><span class="coin-change ${change >= 0 ? "positive" : "negative"}">${t ? fmtPct(t.change24h) : "—"}</span>${star ? `<button class="watch-star ${starred ? "is-starred" : ""}" type="button" data-watch-symbol="${symbol}" aria-pressed="${starred}" aria-label="${starred ? "移出" : "加入"}自選 ${coin}">${WATCH_STAR_SVG}</button>` : "<span></span>"}</div>`;
 }
 const radarEmpty = (title, text) => `<div class="ox-rl-empty"><b>${title}</b>${text ? `<p>${text}</p>` : ""}</div>`;
 const radarVolume = v => `<span class="coin-volume-value">${fmtCryptoVolume(v).replaceAll(",", "")}</span>`;
+// 圖表: the original side-list cards.
+const sideStar = (symbol, cls) => { const on = isWatchlisted(symbol), coin = symbol.replace(/USDT$/, ""); return `<button class="watch-star ${cls} ${on ? "is-starred" : ""}" type="button" data-watch-symbol="${symbol}" aria-pressed="${on}" aria-label="${on ? "移出" : "加入"}自選 ${coin}">${WATCH_STAR_SVG}</button>`; };
+function sideCard(c, idx, { tier, startsTier = false, endsTier = false, star = true, volume = c.quoteVol, change = c.change24h, ox = c.oxScore, side = c.side }) {
+  const coin = c.symbol.replace(/USDT$/, ""), up = num(change) >= 0;
+  return `<div class="coin-card ox-side-card ${startsTier ? "is-tier-start " : ""}${endsTier ? "is-tier-end " : ""}${c.symbol === state.symbol ? "selected" : ""}" data-symbol="${c.symbol}" data-tier="${tier}" role="button" tabindex="0" aria-label="${coin}，在左邊看 K 線">${startsTier ? `<small class="coin-tier-heading">${tier.toUpperCase()}</small>` : ""}<div class="coin-top"><span class="coin-title"><span class="coin-rank">#${idx + 1}</span>${radarLogo(c.symbol, "ox-side-logo", 16)}<span class="coin-symbol-full">${c.symbol}</span><span class="coin-symbol-mobile" title="${coin}">${coin}</span>${side ? `<span class="badge badge-${side === "SHORT" ? "short" : "long"}">${side}</span>` : ""}<span class="badge badge-${["t1", "t2", "t3"].includes(tier) ? tier : "t3"}">${tier.toUpperCase()}</span></span><span class="coin-top-right"><span class="coin-ox" aria-label="OX 分數 ${ox ?? "—"}"><span class="coin-ox-label">OX</span> <strong class="coin-ox-value">${ox ?? "—"}</strong></span>${star ? sideStar(c.symbol, "watch-star-desktop") : ""}</span></div><div class="coin-mid"><span class="meta desktop-coin-meta">24H 量 ${fmtCryptoVolume(volume)} USDT</span><span class="mobile-coin-volume"><span class="coin-volume-label">24H 量</span>${radarVolume(volume)}</span><span class="coin-change desktop-coin-change ${up ? "positive" : "negative"}">${fmtPct(change)}</span></div><div class="coin-mobile-bottom">${star ? sideStar(c.symbol, "watch-star-mobile") : "<span></span>"}<span class="coin-change ${up ? "positive" : "negative"}">${fmtPct(change)}</span></div></div>`;
+}
+function turnoverCard(t, index) {
+  const coin = t.symbol.replace(/USDT$/, "");
+  return `<div class="coin-card turnover-card ${t.symbol === state.symbol ? "selected" : ""}" data-symbol="${t.symbol}" role="button" tabindex="0" aria-label="第 ${index + 1} 名 ${coin}，24 小時成交額 ${fmtCryptoVolume(t.usdtVolume)} USDT"><div class="turnover-name"><span class="turnover-rank">#${index + 1}</span>${radarLogo(t.symbol, "ox-side-logo", 16)}<span class="turnover-symbol" title="${t.symbol}">${coin}</span></div><div class="turnover-volume">24H ${fmtCryptoVolume(t.usdtVolume)} USDT</div><div class="turnover-price">${fmtPrice(t.lastPr)}</div><div class="turnover-change ${num(t.change24h) >= 0 ? "positive" : "negative"}">${fmtPct(t.change24h)}</div></div>`;
+}
+function watchCard(rec, idx, analyzed, current) {
+  const ticker = state.tickers.find(t => t.symbol === rec.symbol), c = analyzed || rec;
+  const tier = current?.tier?.toLowerCase() || "待確認", sideName = c.side || rec.side || "—";
+  const price = ticker ? ticker.lastPr : (c.lastPr || rec.lastPr), change = ticker ? ticker.change24h : (c.change24h ?? rec.change24h);
+  return `<div class="coin-card watch-list-card ${rec.symbol === state.symbol ? "selected" : ""}" data-symbol="${rec.symbol}" role="button" tabindex="0"><div class="watch-card-main"><div class="watch-card-copy"><div class="coin-title watch-coin-title"><span class="coin-rank">#${idx + 1}</span>${radarLogo(rec.symbol, "ox-side-logo", 16)}<span class="watch-symbol" title="${rec.symbol}">${rec.symbol.replace(/USDT$/, "")}</span><span class="badge badge-${sideName === "SHORT" ? "short" : "long"}">${sideName}</span><span class="badge badge-${["t1", "t2", "t3"].includes(tier) ? tier : "t3"}">${tier.toUpperCase()}</span></div><div class="watch-metrics"><span class="watch-metric"><label>最新價格</label><strong>${fmtPrice(price)}</strong></span><span class="watch-metric"><label>24H 漲跌</label><strong class="${num(change) >= 0 ? "positive" : "negative"}">${fmtPct(change)}</strong></span><span class="watch-metric"><label>OX 分數</label><strong style="color:var(--gold)">${c.oxScore ?? rec.oxScore ?? "—"}</strong></span></div></div>${sideStar(rec.symbol, "is-starred-only")}</div></div>`;
+}
+const sideEmpty = (title, text) => `<div class="ox-side-empty"><b>${title}</b>${text ? `<p>${text}</p>` : ""}</div>`;
 
 function renderCurrentTab() {
   const container = document.getElementById("screener-list");
   const tab = state.currentTab;
   if (!container) return;
   syncScannerFilterUI();
+  const side = !!container.closest(".workspace"), empty = side ? sideEmpty : radarEmpty;
+  const paint = html => globalThis.OXPatchHTML ? OXPatchHTML(container, html) : (container.innerHTML = html);
 
   if (tab === "surge") {
     const top = state.tickers
@@ -426,9 +441,9 @@ function renderCurrentTab() {
       .sort((a, b) => num(b.usdtVolume) - num(a.usdtVolume))
       .slice(0, 50);
     document.getElementById("pool-count").textContent = `24H 成交額前 ${top.length} 個`;
-    container.innerHTML = top.length
-      ? top.map((t, index) => radarRow(t.symbol, { sub: `#${index + 1}・24H 成交額 ${radarVolume(t.usdtVolume)}` })).join("")
-      : radarEmpty("正在取得合約成交額…");
+    paint(top.length
+      ? top.map((t, index) => side ? turnoverCard(t, index) : radarRow(t.symbol, { sub: `#${index + 1}・24H 成交額 ${radarVolume(t.usdtVolume)}` })).join("")
+      : empty("正在取得合約成交額…"));
     return;
   }
 
@@ -442,16 +457,17 @@ function renderCurrentTab() {
     document.getElementById("pool-count").textContent = `${saved.length} 個${dir}自選`;
     syncWatchBadge();
     if (!saved.length) {
-      container.innerHTML = radarEmpty(savedAll.length ? `自選裡目前沒有${dir}的幣種` : "還沒有自選", "在 T1／T2／T3 點 ☆ 就能加入自選。");
+      paint(empty(savedAll.length ? `自選裡目前沒有${dir}的幣種` : "還沒有自選", "在 T1／T2／T3 點 ☆ 就能加入自選。"));
       return;
     }
-    container.innerHTML = saved.map(rec => {
+    paint(saved.map((rec, idx) => {
       const analyzed = state.analyzedCache.get(rec.symbol);
       const current = analyzed && OXClassic.qualifyClassicRow(analyzed, analyzed.side);
       const tier = current?.tier ? current.tier.toUpperCase() : "待確認";
       const score = analyzed?.oxScore ?? rec.oxScore;
+      if (side) return watchCard(rec, idx, analyzed, current);
       return radarRow(rec.symbol, { sub: `${tier}${score != null ? `・OX <em>${score}</em>` : ""}`, tier: current?.tier?.toLowerCase() || "" });
-    }).join("");
+    }).join(""));
     return;
   }
 
@@ -471,23 +487,29 @@ function renderCurrentTab() {
   if (!list.length) {
     if(state.radarLoadError||state.radarScanFailed||!state.radarSnapshotReady){
       const failed=state.radarLoadError||state.radarScanFailed;
-      container.innerHTML=radarEmpty(failed?'行情資料尚未取得':'正在載入與分析行情',failed?'目前無法判斷入選幣種，連線恢復後會自動重試。':`已處理 ${state.scanIndex||0} / ${state.scanQueue.length||'—'} 個`);
-      if(failed){const retry=document.createElement('button');retry.type='button';retry.textContent='重新連線';retry.onclick=()=>{state.radarScanFailed=false;state.radarSnapshotReady=false;refreshMarketTickers();};container.firstElementChild.append(retry);}
+      paint(empty(failed?'行情資料尚未取得':'正在載入與分析行情',failed?'目前無法判斷入選幣種，連線恢復後會自動重試。':`已處理 ${state.scanIndex||0} / ${state.scanQueue.length||'—'} 個`));
+      if(failed&&!container.querySelector('[data-radar-retry]')){const retry=document.createElement('button');retry.type='button';retry.dataset.radarRetry='';retry.textContent='重新連線';retry.onclick=()=>{state.radarScanFailed=false;state.radarSnapshotReady=false;refreshMarketTickers();};container.firstElementChild?.append(retry);}
       return;
     }
-    container.innerHTML = radarEmpty(`目前沒有符合 OX 經典的${directionLabel}幣種`, `符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。`);
+    paint(empty(`目前沒有符合 OX 經典的${directionLabel}幣種`, `符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。`));
     return;
   }
 
   const counts = {};
   for (const c of list) { const t = c.displayTier || c.tier || "t3"; counts[t] = (counts[t] || 0) + 1; }
-  container.innerHTML = list.map((c, idx) => {
+  paint(list.map((c, idx) => {
     const displayTier = c.displayTier || c.tier || "t3";
     const previousTier = idx > 0 ? (list[idx-1].displayTier || list[idx-1].tier || "t3") : null;
-    const heading = (combinedRadar || idx === 0) && displayTier !== previousTier ? `<div class="ox-rl-sec" data-tier="${displayTier}">${displayTier.toUpperCase()}<small>${counts[displayTier]} 個</small></div>` : "";
+    const startsTier = displayTier !== previousTier;
+    if (side) {
+      // Follow real group boundaries even while a scan or custom filter has fewer results.
+      const nextTier = list[idx+1] && (list[idx+1].displayTier || list[idx+1].tier || "t3");
+      return sideCard(c, idx, { tier: displayTier, startsTier, endsTier: combinedRadar && nextTier && nextTier !== displayTier, star: combinedRadar || isTierTab });
+    }
+    const heading = (combinedRadar || idx === 0) && startsTier ? `<div class="ox-rl-sec" data-key="sec-${displayTier}" data-tier="${displayTier}">${displayTier.toUpperCase()}<small>${counts[displayTier]} 個</small></div>` : "";
     const stale = c.at && Date.now() - c.at > 300000 ? "・更新中" : "";
     return heading + radarRow(c.symbol, { tier: displayTier, sub: `OX <em class="coin-ox-value">${c.oxScore}</em>・24H 量 ${radarVolume(c.quoteVol)}${stale}`, extra: c.setupName ? `<span class="ox-rl-setup">・${c.setupName}</span>` : "" });
-  }).join("");
+  }).join(""));
 }
 
 if(typeof document!=='undefined')document.addEventListener('ox:timeframe-tier-change',event=>{

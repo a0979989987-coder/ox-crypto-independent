@@ -277,3 +277,8 @@ html body.ox-terminal.theme-light #view-radar .ox-cmp-days tr[aria-current="true
 #view-radar .ox-cmp-days td{font-weight:500}
 html body.ox-terminal #view-radar .ox-cmp-more{min-height:36px;margin:0;border:1px solid var(--cmp-border);border-radius:10px;background:var(--cmp-soft);box-shadow:none;color:var(--ink);font:inherit;font-size:12.5px;font-weight:500;cursor:pointer}
 @media(max-width:380px){#view-radar .ox-cmp-days{font-size:11.5px}}
+
+/* 型態 cards: the coin's logo before its name (src/app/coin-logo.js). */
+#view-radar .ox-cmp-logo{position:relative;display:inline-grid;place-items:center;flex:none;width:22px;height:22px;margin-right:-1px;border-radius:50%;overflow:hidden;background:#363a42;color:#f0f1f4;font:700 8px/1 var(--oc-font,system-ui)}
+#view-radar .ox-cmp-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+html body.ox-terminal.theme-light #view-radar .ox-cmp-logo{background:#e9ecf0;color:#374151}

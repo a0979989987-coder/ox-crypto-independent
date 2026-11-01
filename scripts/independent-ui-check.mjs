@@ -33,9 +33,33 @@ try{
     assert.deepEqual(await page.locator('.app-dock .dock-btn').evaluateAll(list=>list.map(b=>b.textContent.trim())),['首頁','行情','畫板','型態','資訊']);
     assert.equal(await page.evaluate(()=>document.getElementById('view-radar').dataset.radarMode),'board');
     await page.locator('#ox-radar-board .px-board').waitFor({timeout:15000});
-    // 行情 opens on 雷達, the T1/T2/T3 list at full width; 自選 and 排行 are coin lists.
+    // 行情 opens on 圖表: the original radar page (the chart, the T1/T2/T3 list on its right, coin
+    // details below). A coin in the list switches the chart in place; the arrow folds the list
+    // and brings the drawing tools. 雷達 is the same list at full width; 自選 and 排行 are coin lists.
     await page.evaluate(()=>switchAppView('strength'));
-    assert.deepEqual(await page.locator('#ox-crypto-tools-nav [data-crypto-tool]').evaluateAll(list=>list.map(b=>b.textContent.trim())),['雷達','自選','排行','泡泡圖','強弱對比','熱力圖','板塊輪動','主動買賣']);
+    assert.deepEqual(await page.locator('#ox-crypto-tools-nav [data-crypto-tool]').evaluateAll(list=>list.map(b=>b.textContent.trim())),['圖表','雷達','自選','排行','泡泡圖','強弱對比','熱力圖','板塊輪動','主動買賣']);
+    await page.waitForFunction(()=>document.body.dataset.view==='chart'&&document.getElementById('view-radar').dataset.radarMode==='chart');
+    assert.equal(await page.locator('.app-dock [data-view-target="strength"]').evaluate(b=>b.classList.contains('active')),true);
+    const sideCard=page.locator('#view-radar .workspace #radar-scanner-panel #screener-list .coin-card').first();
+    await sideCard.waitFor({timeout:15000});
+    assert.equal(await page.locator('#view-radar').evaluate(el=>el.classList.contains('ox-scanner-collapsed')),false);
+    const sideSymbol=await sideCard.getAttribute('data-symbol');
+    await sideCard.click();
+    await page.waitForFunction(s=>state.symbol===s,sideSymbol);
+    assert.equal(await page.evaluate(()=>document.body.dataset.view),'chart');
+    assert.equal(await page.evaluate(()=>!!history.state?.oxStock),false);
+    await page.locator('#radar-scanner-toggle').click();
+    await page.waitForFunction(()=>document.getElementById('view-radar').classList.contains('ox-scanner-collapsed'));
+    assert.equal(await page.locator('#view-radar .chart-drawing-tools').isVisible(),true);
+    await page.locator('#radar-scanner-toggle').click();
+    await page.waitForFunction(()=>!document.getElementById('view-radar').classList.contains('ox-scanner-collapsed'));
+    // The picture of T1／T2／T3: a 1080×1350 preview with 多頭／空頭／多空.
+    await page.locator('#radar-scanner-panel .ox-radar-share').click();
+    await page.waitForFunction(()=>document.querySelector('dialog.ox-share-preview img')?.naturalWidth===1080);
+    assert.equal(await page.locator('dialog.ox-share-preview [data-share-choice]').count(),3);
+    await page.locator('dialog.ox-share-preview [data-share-close]').click();
+    await page.locator('#ox-crypto-tools-nav [data-crypto-tool="radar"]').click();
+    await page.waitForFunction(()=>document.body.dataset.view==='strength');
     await page.locator('#ox-market-radar #screener-list .coin-card').first().waitFor({timeout:15000});
     await page.locator('#ox-crypto-tools-nav [data-crypto-tool="rank"]').click();
     await page.locator('#ox-market-list .ml-row').first().waitFor({timeout:15000});
@@ -115,10 +139,11 @@ try{
     await page.evaluate(()=>switchAppView('strength'));
     await page.locator('#ox-crypto-tools-nav').waitFor();
     assert.equal(await page.locator('#ox-crypto-tools-nav [data-crypto-tool="patterns"]').count(),0);
-    for(const tool of ['radar','watch','rank','bubbles','strength','heatmap','rotation','flow']){
+    for(const tool of ['chart','radar','watch','rank','bubbles','strength','heatmap','rotation','flow']){
       try { await page.locator(`#ox-crypto-tools-nav [data-crypto-tool="${tool}"]`).click({timeout:5000}); }
       catch(error){console.log(await page.evaluate(()=>({view:document.body.dataset.view,market:document.body.dataset.market,classes:document.body.className,gate:document.getElementById('ox-feature-gate')?.textContent,navHidden:document.getElementById('ox-crypto-tools-nav')?.hidden,active:[...document.querySelectorAll('.app-view.active')].map(e=>e.id)})));await page.screenshot({path:'/workspace/scratch/ac5c466affa8/smoke-failure.png'});throw error;}
       await page.waitForFunction(t=>document.querySelector('#view-strength .strength-page').dataset.cryptoTool===t,tool);
+      if(tool==='chart'){await page.waitForFunction(()=>document.body.dataset.view==='chart');await page.locator('#view-radar .workspace #screener-list').waitFor();continue;}
       if(tool==='radar')await page.locator('#ox-market-radar #screener-list').waitFor();
       else if(tool==='watch'||tool==='rank')await page.locator('#ox-market-list .ml').waitFor();
       else if(tool==='bubbles'){await page.locator('#ox-crypto-tools-inline .oxb-stage canvas').waitFor();
@@ -154,7 +179,7 @@ try{
     assert.deepEqual(audit.localHttpErrors,[]);
     assert.equal(await page.locator('body').evaluate(b=>b.classList.contains('theme-light')),theme==='light');
     assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth+1),'No horizontal overflow');
-    console.log(JSON.stringify({theme,width,marketTabs:8,patternBoard:true,pattern:true,stockPage:true,calendar:true,news:true,media:true,drawer:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
+    console.log(JSON.stringify({theme,width,marketTabs:9,chartTab:true,radarShare:true,patternBoard:true,pattern:true,stockPage:true,calendar:true,news:true,media:true,drawer:true,accountEntry:true,taiwanRequests:0,runtimeErrors:audit.pageErrors,localHttpErrors:audit.localHttpErrors}));
     await context.close();
   }
 }finally{await browser.close();await new Promise(resolve=>server.close(resolve));}
