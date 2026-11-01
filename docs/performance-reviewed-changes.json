@@ -204,6 +204,12 @@
       "sourceSha256": "8112393e3565ebbda9dcf47d0b0832f13902c739507b011f8dd07232a9b9094d",
       "sha256": "6c401ab73dea8a73201ef664cfb724f7779b93294f943c28338b6930c6639093",
       "reason": "User-approved polish (2026-11-01): the 首頁 long-press K-line preview shows tiny prices with the zero count (0.0₃8023) on its axis, like the rest of the site."
+    },
+    {
+      "path": "src/core/runtime-config.js",
+      "sourceSha256": "ecbf9571a713a50d8d6409993562f554b14d907fd3108056cacbafbe626a7067",
+      "sha256": "a741a55db1fa9478abb90c843cc6bd4c41ae6a83a8a92c040ebb5b963072f9d0",
+      "reason": "User-approved polish (2026-11-01): fmtPrice uses the shared tiny-price format (src/core/price-format.js, 0.0008023 → 0.0₃8023) so every price on the site reads the same."
     }
   ]
 }
