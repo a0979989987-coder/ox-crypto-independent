@@ -104,7 +104,7 @@ html body.ox-terminal #view-radar > .ox-radar-compare > .ox-tool-loading{min-hei
 #view-radar .ox-cmp{--cmp-card:linear-gradient(145deg,#22252a,#181b20 70%);--cmp-border:#747b8340;--cmp-soft:#ffffff08;--cmp-line:#e8dcc0;--cmp-mark:#ffffff;
  display:flex;flex-direction:column;gap:8px;min-width:0;color:var(--ink);font-variant-numeric:tabular-nums}
 html body.ox-terminal.theme-light #view-radar .ox-cmp{--cmp-card:#fff;--cmp-border:var(--line,#dde1e6);--cmp-soft:#f5f6f8;--cmp-line:#8d712e;--cmp-mark:#30343b}
-#view-radar .ox-cmp .up{color:var(--green)}#view-radar .ox-cmp .down{color:var(--red)}#view-radar .ox-cmp .mu,#view-radar .ox-cmp .flat{color:var(--muted)}
+#view-radar .ox-cmp .up{color:var(--green)}#view-radar .ox-cmp .down{color:var(--red)}#view-radar .ox-cmp .mu{color:var(--muted)}#view-radar .ox-cmp .flat{color:var(--ink)}
 #view-radar .ox-cmp-intro{margin:0 2px 2px;color:var(--muted);font-size:12px;line-height:1.5}
 #view-radar .ox-cmp-list{display:flex;flex-direction:column;gap:8px;min-width:0}
 #view-radar .ox-cmp-point{min-width:0;border:1px solid var(--cmp-border);border-radius:14px;background:var(--cmp-card);overflow:hidden}

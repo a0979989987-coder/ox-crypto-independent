@@ -8,6 +8,7 @@ import "../markets/crypto/radar-compare.js";
 import "../markets/crypto/share-entries.js";
 import "../markets/crypto/home-feed.js";
 import "../markets/crypto/home-tiles.js";
+import "./updated-stamp.js";
 import "./swipe-views.js";
 import "./recent.js";
 import { initTopbar } from "./topbar.js";

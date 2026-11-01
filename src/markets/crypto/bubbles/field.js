@@ -67,10 +67,12 @@ export class BubbleField {
     if(url&&!img){img=new Image();img.decoding='async';this.images.set(url,img);img.onload=()=>{if(this.life.signal.aborted)return;for(const row of this.nodes)if((this.logo(canonical(row.base))||row.image)===url)row.sprite=this.sprite(row);this.paint();};img.src=url;}
     const full=r>=23,logoSize=Math.min(25,r*.43);let nameY=center+(full?0:2);
     // N 日漲跌 sits above the name once the coin's daily candles are in; the logo until then.
-    if(full&&Number.isFinite(n.period?.change)){const ly=center-r*.56,v=n.period.change;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`600 ${Math.min(12,Math.max(8,r*.22))}px Inter,system-ui`;ctx.fillStyle=light?'#4b5563':'#dfe3e1';ctx.fillText(`${n.period.days}日 ${v>0?'+':''}${v.toFixed(1)}%`,center,ly,r*1.7);}
+    if(full&&r>=30&&Number.isFinite(n.period?.change)){const ly=center-r*.56,v=n.period.change;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`600 ${Math.min(12,Math.max(11,r*.22))}px Inter,system-ui`;ctx.fillStyle=light?'#4b5563':'#dfe3e1';ctx.fillText(`${n.period.days}日 ${v>0?'+':''}${v.toFixed(1)}%`,center,ly,r*1.7);}
     else if(full){const ly=center-r*.58;ctx.save();ctx.beginPath();ctx.arc(center,ly,logoSize/2,0,Math.PI*2);ctx.clip();if(img?.complete&&img.naturalWidth)ctx.drawImage(img,center-logoSize/2,ly-logoSize/2,logoSize,logoSize);else{ctx.fillStyle=tone+'45';ctx.fillRect(center-logoSize/2,ly-logoSize/2,logoSize,logoSize);ctx.fillStyle=light?'#374151':'#fff';ctx.font=`600 ${logoSize*.48}px system-ui`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(n.base.slice(0,1),center,ly);}ctx.restore();}
     ctx.textAlign='center';ctx.textBaseline='middle';let font=Math.min(27,r*.48);ctx.font=`500 ${font}px Inter,system-ui`;const maxWidth=r*1.68;if(ctx.measureText(n.base).width>maxWidth){font*=maxWidth/ctx.measureText(n.base).width;ctx.font=`500 ${font}px Inter,system-ui`;}
-    ctx.fillStyle=light?'#374151':'#f1f1eb';ctx.fillText(n.base,center,nameY);if(r>=19){ctx.font=`500 ${Math.min(13,Math.max(8,r*.25))}px Inter,system-ui`;ctx.fillStyle=light?'#585347':'#e6e9e8';ctx.fillText(this.formatMetric(n.value,n.metric),center,nameY+Math.min(22,r*.39),r*1.73);}return c;
+    // Names and values never go under 11px: a bubble too small for them shows its colour only.
+    if(font<11)return c;
+    ctx.fillStyle=light?'#374151':'#f1f1eb';ctx.fillText(n.base,center,nameY);if(r>=24){ctx.font=`500 ${Math.min(13,Math.max(11,r*.25))}px Inter,system-ui`;ctx.fillStyle=light?'#585347':'#e6e9e8';ctx.fillText(this.formatMetric(n.value,n.metric),center,nameY+Math.min(22,r*.39),r*1.73);}return c;
   }
   extents(n){const d=deformation(n),c=Math.cos(d.angle),s=Math.sin(d.angle);return {x:n.r*Math.hypot(d.sx*c,d.sy*s),y:n.r*Math.hypot(d.sx*s,d.sy*c)};}
   advanceDrag(dt){const d=this.drag;if(!d?.moved||!d.node||!d.target)return;const n=d.node,r=this.extents(n),ease=this.reduced.matches?1:1-Math.exp(-.8*dt),x=n.x,y=n.y;

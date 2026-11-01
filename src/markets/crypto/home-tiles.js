@@ -12,6 +12,7 @@
 // A tile waits as 「—」 in its place until its number arrives, so nothing jumps; live prices
 // patch the text in place (OXPatchHTML) instead of drawing the tiles again.
 import { SECTOR_GROUPS, AMBIGUOUS_BASES, CONTRACT_BASES } from './analytics/sector-taxonomy.js';
+import '../../core/price-format.js';
 
 export const TILES_KEY = 'ox-crypto:home-tiles-v1';
 const GLOBAL_KEY = 'ox-crypto:home-global-v1';
@@ -27,10 +28,7 @@ const fin = v => { const n = typeof v === 'string' && v.trim() === '' ? NaN : Nu
 const sgn = v => v > 0 ? '+' : v < 0 ? '-' : '';
 const pct = v => v == null ? '—' : `${sgn(v)}${Math.abs(v).toFixed(2)}%`;
 const coin = symbol => String(symbol || '').replace(/USDT$/, '');
-function priceText(v) {
-  if (!v) return '—';
-  return v.toLocaleString('en-US', { maximumFractionDigits: v >= 1000 ? 1 : v >= 1 ? 4 : v >= .01 ? 6 : 8 });
-}
+const priceText = v => globalThis.OXPriceText(v);
 const trillion = v => v >= 1e12 ? `${(v / 1e12).toFixed(2)} 兆美元` : `${(v / 1e8).toFixed(0)} 億美元`;
 const runtime = () => { try { return typeof state !== 'undefined' ? state : null; } catch { return null; } };
 
@@ -78,7 +76,7 @@ export function catalog({ tickers: list = runtime()?.tickers || [], global = glo
   const rows = [...tickers.values()].map(t => [t.symbol, fin(t.change24h)]).filter(([, v]) => v != null);
   if (rows.length) {
     const ups = rows.filter(([, v]) => v > 0).length, downs = rows.filter(([, v]) => v < 0).length, share = ups + downs ? ups / (ups + downs) * 100 : 50;
-    out.push({ id: 'm:breadth', cat: '全市場', name: '上漲家數', big: `${Math.round(share)}%`, sub: `漲 ${ups}・跌 ${downs}`, move: share - 50, scale: 40, open: 'rank' });
+    out.push({ id: 'm:breadth', cat: '全市場', name: '上漲家數', big: `${Math.round(share)}%`, sub: `漲${ups}・跌${downs}`, move: share - 50, scale: 40, open: 'rank' });
     const mid = median(rows.map(([, v]) => v * 100));
     out.push({ id: 'm:median', cat: '全市場', name: '中位數漲跌', big: pct(mid), sub: `${rows.length} 個幣`, move: mid, scale: 5, open: 'rank' });
     const btc = quote('BTCUSDT', tickers)?.change;
@@ -157,7 +155,7 @@ const tone = (move, scale) => {
 let editing = false;
 function tileHTML(id, t, edit) {
   const c = tone(t?.move ?? null, t?.scale || 1), label = t ? `${t.full || t.name} ${t.big}` : '資料更新中';
-  return `<button type="button" class="ht-t ${c.dir}${c.hot ? ' hot' : ''}" style="--ht-a:${c.a}" data-key="${esc(id)}" data-ht="${esc(id)}" aria-label="${esc(label)}">${edit ? `<span class="ht-x" data-ht-del="${esc(id)}" aria-label="移除">×</span>` : ''}<i>${esc(t?.name || placeholderName(id))}</i><b>${esc(t?.big || '—')}</b><s>${esc(t?.sub || '　')}</s></button>`;
+  return `<button type="button" class="ht-t ${c.dir}${c.hot ? ' hot' : ''}" style="--ht-a:${c.a}" data-key="${esc(id)}" data-ht="${esc(id)}" aria-label="${esc(label)}">${edit ? `<span class="ht-x" data-ht-del="${esc(id)}" aria-label="移除">×</span>` : ''}<i>${esc(t?.name || placeholderName(id))}</i>${t ? `<b>${esc(t.big)}</b><s>${esc(t.sub || '　')}</s>` : '<b class="ox-skel"></b><s class="ox-skel"></s>'}</button>`;
 }
 // A chosen tile whose number has not arrived keeps its place with its name.
 function placeholderName(id) {
@@ -171,7 +169,7 @@ export function tilesHTML(model = { tickers: runtime()?.tickers || [] }) {
   const p = readPrefs(), all = new Map(catalog(model).map(t => [t.id, t]));
   const shown = p.list.filter(known).slice(0, p.size);
   return `<div class="ht-grid${editing ? ' editing' : ''}">${shown.map(id => tileHTML(id, all.get(id), editing)).join('')}${editing ? '<button type="button" class="ht-t ht-add" data-key="ht-add" data-ht-add aria-label="加入色塊">＋</button>' : ''}${!shown.length && !editing ? '<div class="ht-empty" data-key="ht-empty">還沒有色塊，按「編輯」加入</div>' : ''}</div>
-    <div class="ht-legend"><span>顏色越深＝漲跌越大</span><button type="button" data-ht-edit>${editing ? '完成' : '✎ 編輯'}</button></div>`;
+    <div class="ht-legend"><span>顏色越深＝漲跌越大${globalThis.OXUpdated?.text() ? `・${globalThis.OXUpdated.text()}` : ''}</span><button type="button" data-ht-edit>${editing ? '完成' : '✎ 編輯'}</button></div>`;
 }
 export const tileSymbols = () => readPrefs().list.filter(id => /^c:/.test(id)).slice(0, 12).map(id => id.slice(2));
 

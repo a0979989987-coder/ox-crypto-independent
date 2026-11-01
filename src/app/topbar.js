@@ -3,6 +3,7 @@
 // The search box rotates the most traded USDT perpetuals so it always suggests
 // something. Other pages give its room to their content (app-shell.css).
 import { icon, escapeHTML, avatarHTML, tickers, coinOf, openCoin, runtime } from './chrome-style.js';
+import '../core/price-format.js';
 
 const SEEN_KEY = 'ox-crypto:notice-seen-v1';
 const readJSON = (key, fallback) => { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } };
@@ -10,10 +11,8 @@ const finite = v => { const n = Number(v); return Number.isFinite(n) ? n : null;
 export const MENU = '<svg class="oc-menu" viewBox="0 0 34 34" aria-hidden="true"><path d="M9.5 11.5h15M9.5 17h15M9.5 22.5h10"/></svg>';
 export const pctText = v => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(2)}%`;
 export const block = v => v > 0 ? 'u' : v < 0 ? 'd' : 'f';
-export function priceText(v) {
-  const x = finite(v); if (!x) return '—';
-  return x.toLocaleString('en-US', { maximumFractionDigits: x >= 1000 ? 2 : x >= 1 ? 4 : x >= .01 ? 6 : 8 });
-}
+// One price format for the site (src/core/price-format.js): 0.0008023 → 0.0₃8023.
+export function priceText(v) { return globalThis.OXPriceText(v); }
 export function moneyText(v) {
   const x = finite(v); if (x == null) return '—';
   return x >= 1e8 ? `${(x / 1e8).toLocaleString('zh-TW', { maximumFractionDigits: 2 })}億` : x >= 1e4 ? `${(x / 1e4).toLocaleString('zh-TW', { maximumFractionDigits: x >= 1e6 ? 0 : 1 })}萬` : x.toLocaleString('zh-TW', { maximumFractionDigits: 0 });

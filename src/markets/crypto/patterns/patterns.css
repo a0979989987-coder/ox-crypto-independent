@@ -230,3 +230,5 @@
 .px-logo.has-img{color:transparent;background:transparent}
 .px-logo.has-img::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.13);pointer-events:none}
 .px-grid.px-compact .px-logo{width:15px;height:15px;margin-right:4px;vertical-align:-2.5px}
+/* 看得清楚: no text under 11px (2026-11-01). Coin-logo initials and icons keep their size. */
+.px-frame,.px-match,.px-energy,.px-group,.px-change,.px-turnover,.px-meta,.px-count-status,.px-modes button,.px-detail-footer,.px-tier-filters button,.px-tier-badge,.px-tier-heading span,.px-mode-toggle,.px-status,.px-grid.px-compact .px-frame,.px-grid.px-compact .px-tier-badge,.px-grid.px-compact .px-change,.px-grid.px-compact .px-match{font-size:11px!important}

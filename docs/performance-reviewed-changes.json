@@ -4,8 +4,8 @@
     {
       "path": "src/markets/crypto/bubbles/view.js",
       "sourceSha256": "a13dd70582d688dcf2233171c4200d1a37299cb83b09b18e8f022b28d7ce8894",
-      "sha256": "c51c733f450ac28c39f88acc9f23232a17cdaa9e105042a9efbdfd528866b9b2",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: the coin button opens the 個股 page (2026-10-31). User-requested coin logos in the coin list under the bubbles (2026-11-01)."
+      "sha256": "1786286971283b05493d8ffe40fb8d6b940f847d29e10f973779043d24c1603f",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: the coin button opens the 個股 page (2026-10-31). User-requested coin logos in the coin list under the bubbles (2026-11-01). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/analytics/flow-chart.js",
@@ -16,14 +16,14 @@
     {
       "path": "src/markets/crypto/analytics/flow-view.js",
       "sourceSha256": "2b377fd971b8eb04f63e7040311b4bc8260976abe524aeb4406312dc9024aa36",
-      "sha256": "6cd510c589281264e081430073c2c1821a0d62f24e4ad022119ccfb96498771a",
-      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
+      "sha256": "6e00788ead2e580e3322ec2369f3b1e6c8567e69f21b08bc0e23b9555d9ee35d",
+      "reason": "User requested period load repair, shorter replay layout and current time stages; retain stable replay cohorts. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/analytics/tools-charts.js",
       "sourceSha256": "fca2a60f8bfd5f8cd7f2c9140f7eec50175c4bbd71f20b77fd9100184c2a86f8",
-      "sha256": "7df34ca9a83dc0c9a743200259a005e165f189de694b623d3ad051f65c5c07e4",
-      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite."
+      "sha256": "9ec69435b968971805ffebefe4691a3956635cf4a45468fe18dbfc1e8b5da478",
+      "reason": "Crypto-only cleanup, resource scheduling, or retained tool lifecycle; reviewed by the performance regression suite. User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/analytics/market-live.js",
@@ -34,8 +34,8 @@
     {
       "path": "src/markets/crypto/analytics/entry.js",
       "sourceSha256": "ed9ed1d8ace08b58790f2a985304dde2d0f3a3be6e4e318b401a5244dcdc5ec4",
-      "sha256": "271c90cbb15befae72ba1300dbb2e1d9de40b71998c7f5890e8791d8a1096386",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore). User-requested app redesign like the Taiwan site: 行情 page with small text tabs: 雷達, 自選, 排行 join the tools (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01)."
+      "sha256": "98b1137968a14916de095c2a16f596cc33eb755d42ec0dc61f534a992d0ae1c2",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. 型態搜尋 moved from the 指標 rail to the 畫板 dock view; on phones the bubble zoom buttons keep their original 26px size with a tap area 4px wider (2026-10-30 restore). User-requested app redesign like the Taiwan site: 行情 page with small text tabs: 雷達, 自選, 排行 join the tools (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/analytics/flow-source.js",
@@ -52,14 +52,14 @@
     {
       "path": "src/markets/crypto/patterns/view.js",
       "sourceSha256": "5bddc36ce6f8d078c5b189e9b289c51305a3c1c3a31ae7b8e9190c92e928f95c",
-      "sha256": "25a69d98868a6edeab355a0f78745a43983cde084de22c76d3729d662fd9b4b9",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: 畫相似型態 from the 個股 page (drawShape); the detail button opens the 個股 page (2026-10-31). User-requested coin logos on the 畫板 result cards, and the background scan patches the cards in place (kept elements, charts and logos; only changed charts update) instead of redrawing the whole grid several times a second (2026-11-01)."
+      "sha256": "d61f69d83b7e80ef57c2db2282e8253acd2d6697f4d8c511b189c6a405b937bc",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: 量能放大 and 指標信號 篩選 on each card's own candles, compact cards with named shapes first and plain lines last (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested app redesign like the Taiwan site: 畫相似型態 from the 個股 page (drawShape); the detail button opens the 個股 page (2026-10-31). User-requested coin logos on the 畫板 result cards, and the background scan patches the cards in place (kept elements, charts and logos; only changed charts update) instead of redrawing the whole grid several times a second (2026-11-01). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/patterns/charts.js",
       "sourceSha256": "53bcea4fdde642bbd0723dc979f240022b40c565b178eb834b861b98d1493d06",
-      "sha256": "abca6b5e551e5534a41410756f7ef877891f3c6cc6b3ac800b4c8d7dc1e42320",
-      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions."
+      "sha256": "7765035832f54de31c1e5f0eaa6a9e9be1d1bb13c471931d7e0cd329782a1b0e",
+      "reason": "Framed sector and coin details, readable unoutlined labels, shared live candle requests and retained chart viewport. Verified with bounded-failure, stale-data, keyboard and desktop/mobile interaction regressions. User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/patterns/source.js",
@@ -94,8 +94,8 @@
     {
       "path": "src/markets/crypto/bubbles/bubbles-light.css",
       "sourceSha256": "306237a373a8ac5334cbc9871dc72116f9f2ad2b22af9c64a5c6f66d3c8945cf",
-      "sha256": "113ed1081ada4300a51415071125edc0500e86fafe54f97adb40e8eeeff3576e",
-      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos in the coin list under the bubbles, 白金 (2026-11-01)."
+      "sha256": "9fd3ce1f260aa16cbe901c942b6a19947e6ac22c601997a7ad7319f61fe07b57",
+      "reason": "Remove unused Taiwan radar branch from shared :is selector; Crypto choices and CSS specificity retained. Validated in desktop/mobile light and dark UI regression. User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos in the coin list under the bubbles, 白金 (2026-11-01). User-approved polish: no text under 11px (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/analytics/flow-light.css",
@@ -130,8 +130,8 @@
     {
       "path": "src/markets/crypto/scanner.js",
       "sourceSha256": "bb9fce4e755c603c5c6e51231b7a8bedea81f773481bc775894629b37b043ad5",
-      "sha256": "ef32a3128b28f8deb3df190868b900a690f1101e6372b4960bc06df519ae27cd",
-      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged. User-requested app redesign like the Taiwan site: the radar list moves to 行情 → 雷達 as full-width rows; the scan runs on 首頁, 行情 and 個股 (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01)."
+      "sha256": "5d092673d73e9e6d81a6015ac7b500990777568cf96249d36ededbc22ccfe64f",
+      "reason": "Reviewed locked BTC dashboard, compact tool spacing, fair streaming radar scan, strength sizes, localized labels, real historical replay ranges and versioned assets; verified by UX/replay and browser regressions. User-requested fast radar (2026-10-31): the per-coin scan, contract catalog and quote filter are named functions so the hourly snapshot job (scripts/collect-crypto-radar.mjs) runs this exact code; saved rows restore through restoreRadarRows with live quotes; pass planning and the device cache live in radar-snapshot.js; ranking unchanged. User-requested app redesign like the Taiwan site: the radar list moves to 行情 → 雷達 as full-width rows; the scan runs on 首頁, 行情 and 個股 (2026-10-31). User-requested 行情 → 圖表 (the original radar page: chart with the T1／T2／T3 list beside it, coins switch the chart in place), coin logos for every coin patched in place without flicker, and the T1／T2／T3 share picture (2026-11-01). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/markets/crypto/analytics/flow-model.js",
@@ -142,14 +142,14 @@
     {
       "path": "src/markets/crypto/analytics/flow.css",
       "sourceSha256": "9a312f43995bf1fb0ec3e0b97ad1922c10a58cd75f5454bd5bd3c6626e69914a",
-      "sha256": "7cd9c33f9ff6a03de567a78e0d73103f1a40a4adc270f47d0c6a30e9ebe0e4d1",
-      "reason": "User requested chart height that leaves replay transport visible on mobile. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12)."
+      "sha256": "85f2fbb081ea944a981182c2c4bcaba309c5becc8b6a52439473b0b4e26e7ab3",
+      "reason": "User requested chart height that leaves replay transport visible on mobile. User-requested Taiwan-style smooth bounded replay motion, fading discontinuity-safe trails, and quiet glass chart background (2026-10-12). User-approved polish: no text under 11px (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/patterns/patterns.css",
       "sourceSha256": "1b7a9e6f58491c4fe8aa9e498f07dd3f6a497a7f3bc9028b2a3e9dd89443a05c",
-      "sha256": "f3a50570887238105712003a0a3ed4c50f99acd6ff1e702a3404c32c6198f3aa",
-      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: compact three-across cards while nothing is drawn, 指標信號 row (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos on the 畫板 result cards (2026-11-01)."
+      "sha256": "4c1056d7a97f4cf8e3f3b8ced15482d57f76603b8c9f85d76d53d59ab6e08498",
+      "reason": "Round 4: retained chart updates and research layout, centered scan indicator, staged news preparation and source translation. Verified by unit, source-result parity, and desktop/mobile regression; no account or shared database changes. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. User-requested Taiwan board port: compact three-across cards while nothing is drawn, 指標信號 row (2026-10-30). User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos on the 畫板 result cards (2026-11-01). User-approved polish: no text under 11px (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/analytics/tools-model.js",
@@ -160,8 +160,8 @@
     {
       "path": "src/components/chart/workspace.js",
       "sourceSha256": "07e86e10d04e4fa9627be8eb35a924a5c0f95be56c3ba30c16146bead04954e1",
-      "sha256": "f1714f13a4de7fe775f54f925f85f0037a5cb66523e669cb519a35a1dc04970a",
-      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. The chart hands its candle series to the indicator controller for the user-requested K 線／線圖 switch (2026-10-30)."
+      "sha256": "ddd1636383694ef382a3fa058d7fa81bac6737c707268d4b1d8d0951d5db7034",
+      "reason": "Reviewed chart tools: compact mobile spacing and conditional toolbar, draggable long/short risk-reward, freehand/highlighter and emoji annotations; preserved navigation, live data and legacy storage. Verified with real-chart and complete-app desktop/mobile interaction checks. Initial radar viewport adds modest future space beyond the live price label; complete-app regression verifies BTC position and preserved user pan/zoom on return. Ported OX 台股 board tools to Crypto (2026-10-28): 篩選 by 24H 成交額 and verified 板塊 remembered on the device, T1/T2/T3 count chips under the board, mixed patterns on the default board with harmonics kept, phone-sized controls, KD/RSI/MACD/均線/布林 chart indicators. Verified by unit tests, live Bitget board/chart runs and Chromium/WebKit 390px screenshots. The chart hands its candle series to the indicator controller for the user-requested K 線／線圖 switch (2026-10-30). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     },
     {
       "path": "src/components/chart/drawings.js",
@@ -190,14 +190,14 @@
     {
       "path": "src/markets/crypto/bubbles/bubbles.css",
       "sourceSha256": "63c13c1a4bfc785a8937a0d421c234e648e1a1150066af95a588a507a5de386c",
-      "sha256": "07861d6b8500404315c9c51eb306b8b17c30956852d7fe206aceaecc7bb28f50",
-      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos in the coin list under the bubbles (2026-11-01)."
+      "sha256": "76383406e135e57fcfe87b1cde32c00de77b09321bb1e5d13f9313980cc8151e",
+      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-requested coin logos in the coin list under the bubbles (2026-11-01). User-approved polish: no text under 11px (2026-11-01)."
     },
     {
       "path": "src/markets/crypto/bubbles/field.js",
       "sourceSha256": "12c3f1892f777848c05ec0820a19a75c6dab03f74ac9582807955428a592fa1c",
-      "sha256": "faa0152ef538b8e7cd4ca1c498b0a6648d3cf28b826fcdc7ba68eec5cebd27b3",
-      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31)."
+      "sha256": "05c23f43e16ca3b0196c2e73dba03ccac0b76ba304ebb343e36f4775ef7bc0f5",
+      "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
     }
   ]
 }

@@ -60,6 +60,8 @@
   document.addEventListener('click', event => {
     if (!event.target.closest?.('#radar-scanner-toggle') || document.body.dataset.view !== 'chart') return;
     folded = !folded;
+    // Only the arrow animates the list folding; opening 圖表 from another tab places it at once.
+    root.classList.add('ox-fold-anim'); clearTimeout(syncFold.anim); syncFold.anim = setTimeout(() => root.classList.remove('ox-fold-anim'), 450);
     try { localStorage.setItem(FOLD_KEY, folded ? '1' : '0'); } catch {}
     fade?.cancel();
     if (!matchMedia('(prefers-reduced-motion: reduce)').matches) fade = document.getElementById('chart')?.animate([{ opacity: .72 }, { opacity: 1 }], { duration: 620, easing: 'cubic-bezier(.22,.8,.22,1)' }) || null;

@@ -99,7 +99,7 @@ export function mountCompare(host, { onOpen } = {}) {
 
   function resultCells(pick) {
     return pick.results.map(r => {
-      const value = r.state === 'done' ? `<b class="${tone(r.ret)}">${pct(r.ret)}</b>` : `<b class="mu">${r.state === 'wait' ? '還沒到' : '—'}</b>`;
+      const value = r.state === 'done' ? `<b class="${tone(r.ret)}">${r.ret > 0 ? '▲ ' : r.ret < 0 ? '▼ ' : ''}${pct(r.ret)}</b>` : `<b class="mu">${r.state === 'wait' ? '還沒到' : '—'}</b>`;
       const btc = r.state === 'wait' ? '' : r.btc == null ? 'BTC —' : `BTC ${pct(r.btc)}`;
       return `<span class="ox-cmp-k">${r.label}</span>${value}<span class="ox-cmp-btc">${btc}</span>`;
     }).join('');
@@ -117,7 +117,8 @@ export function mountCompare(host, { onOpen } = {}) {
   }
   function footHTML(model) {
     const lines = model.method.split(/[；;]/).map(s => s.trim()).filter(Boolean);
-    return `<footer class="ox-cmp-foot">${lines.length ? `<p>計算：${lines.map(esc).join('。')}。</p>` : ''}<p>${model.updated ? `紀錄更新 ${model.updated}（台北時間）・` : ''}只是紀錄，不是投資建議。</p></footer>`;
+    // The method sits behind ⓘ; the record time and the note stay in view.
+    return `<footer class="ox-cmp-foot">${lines.length ? `<details class="ox-info"><summary>ⓘ 怎麼計算</summary><p>計算：${lines.map(esc).join('。')}。</p></details>` : ''}<p>${model.updated ? `紀錄更新 ${model.updated}（台北時間）・` : ''}只是紀錄，不是投資建議。</p></footer>`;
   }
   function stateHTML(kind) {
     if (kind === 'loading') return `<div class="ox-cmp-state" role="status">${window.OXLoading?.markup?.('型態紀錄載入中') || '型態紀錄載入中…'}</div>`;

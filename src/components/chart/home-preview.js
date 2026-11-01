@@ -39,7 +39,7 @@
     if(!dialog.open)dialog.showModal();
     if(!chart){
       chart=LightweightCharts.createChart(stage,{width:stage.clientWidth,height:stage.clientHeight,layout:{background:{type:'solid',color:'#15191d'},textColor:'#aeb3b3',attributionLogo:false},grid:{vertLines:{visible:false},horzLines:{color:'#ffffff0b'}},rightPriceScale:{autoScale:true,scaleMargins:{top:.12,bottom:.12}},timeScale:{timeVisible:true,rightOffset:5},handleScroll:{pressedMouseMove:true,horzTouchDrag:true,vertTouchDrag:false},handleScale:{pinch:true,mouseWheel:true,axisPressedMouseMove:{price:true,time:true}}});
-      series=chart.addCandlestickSeries({upColor:'#00b8d4',downColor:'#ff3078',borderVisible:false,wickUpColor:'#00b8d4',wickDownColor:'#ff3078',priceFormat:{type:'custom',minMove:.00000001,formatter:p=>Number(p).toFixed(chartAxisPrecision(p)).replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'')}});
+      series=chart.addCandlestickSeries({upColor:'#00b8d4',downColor:'#ff3078',borderVisible:false,wickUpColor:'#00b8d4',wickDownColor:'#ff3078',priceFormat:{type:'custom',minMove:.00000001,formatter:p=>p&&Math.abs(p)<0.001&&globalThis.OXPriceText?globalThis.OXPriceText(p,{sig:5}):Number(p).toFixed(chartAxisPrecision(p)).replace(/(\.\d*?)0+$/,'$1').replace(/\.$/,'')}});
     }
     syncTheme();resize();load();
   }

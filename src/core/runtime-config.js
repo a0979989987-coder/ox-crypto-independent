@@ -153,7 +153,9 @@ const fmtCryptoVolume = v => {
   const format = (amount, digits = 2) => new Intl.NumberFormat("zh-TW", { maximumFractionDigits: digits }).format(amount);
   return value >= 1e8 ? `${format(value / 1e8)}億` : value >= 1e6 ? `${format(value / 1e4, 0)}萬` : value >= 1e4 ? `${format(value / 1e4, 1)}萬` : format(value);
 };
+// src/core/price-format.js: 0.0008023 → 0.0₃8023, like the exchanges.
 const fmtPrice = v => {
+  if (globalThis.OXPriceText) return globalThis.OXPriceText(v);
   const x = num(v);
   if (!Number.isFinite(x) || x === 0) return "—";
   const d = x >= 1000 ? 2 : x >= 1 ? 4 : x >= 0.01 ? 6 : 8;

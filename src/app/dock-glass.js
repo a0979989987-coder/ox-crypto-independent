@@ -28,7 +28,7 @@ html:root body .app-dock.glass-nav.glass-nav.glass-nav::before,html:root body .a
 html:root body .app-dock.glass-nav.glass-nav > span.ox-dock-indicator.ox-dock-indicator.ox-dock-indicator{display:none!important}
 html:root body .app-dock.glass-nav.glass-nav.glass-nav > .dock-btn.dock-btn{height:46px!important;min-height:46px!important;background:transparent!important;box-shadow:none!important;border-color:transparent!important;position:relative;z-index:2}
 html:root body .app-dock.glass-nav.glass-nav .dock-btn.dock-btn::before{display:none!important}
-html:root body .app-dock.glass-nav.glass-nav .dock-btn > span:not(.dock-icon):not(.dock-radar-orb),html:root body .app-dock.glass-nav.glass-nav .dock-radar-label{font-size:9.5px!important;font-weight:500!important;letter-spacing:.02em}
+html:root body .app-dock.glass-nav.glass-nav .dock-btn > span:not(.dock-icon):not(.dock-radar-orb),html:root body .app-dock.glass-nav.glass-nav .dock-radar-label{font-size:11px!important;font-weight:500!important;letter-spacing:0}
 /* the bar: clear glass that lifts what is behind it a little, a lit rim that
    catches light at the top-left and bottom-right, and a soft edge band where the
    background is bent (blurred and brighter), like the lip of a thick lens */

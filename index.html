@@ -15,6 +15,7 @@
   <meta name="application-name" content="OX加密">
   <meta name="color-scheme" content="dark light">
   <meta name="description" content="OX Market Command Center - 市場總覽、指標、雷達篩選、K 線與提醒工作區。">
+  <script src="src/core/price-format.js?v=20261101-v6"></script>
   <script src="src/app/live-visibility.js?v=20261001-tiercomb2"></script>
   <script src="src/components/loading-state.js?v=20261031-v3merge"></script>
   <!-- Starts the hourly radar snapshot download before the rest of the page; it paints once the DOM is parsed. -->
@@ -102,11 +103,12 @@
   <link rel="stylesheet" href="src/styles/components/simple-close.css?v=20261031-close2">
   <link rel="stylesheet" href="src/styles/layout/mobile-content-width.css?v=20261005-gutters1">
   <link rel="stylesheet" href="src/styles/components/radar-polish.css?v=20261006-perf1">
-  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261101-v4">
+  <link rel="stylesheet" href="src/styles/components/crypto-shell.css?v=20261101-v6">
   <link rel="stylesheet" href="src/styles/components/settings-page.css?v=20261031-v2">
   <link rel="stylesheet" href="src/styles/components/member-account.css?v=20261028-sites1">
   <link rel="stylesheet" href="src/styles/components/share.css?v=20261031-share1">
-  <link rel="stylesheet" href="src/styles/components/app-shell.css?v=20261101-v5">
+  <link rel="stylesheet" href="src/styles/components/app-shell.css?v=20261101-v6">
+  <link rel="stylesheet" href="src/styles/components/polish.css?v=20261101-v6">
 </head>
 <body class="ox-terminal" data-view="radar">
 <script src="src/app/theme-early.js?v=20261101-v5"></script>
@@ -191,12 +193,12 @@
        both radar lists and what is happening now. renderHomeOverview (src/app/view-home-theme.js) paints the numbers and
        lists, src/markets/crypto/home-feed.js the breakouts and news; styles in crypto-home.css. -->
   <section class="app-view" id="view-home" data-app-view="home">
-    <link rel="stylesheet" href="src/styles/components/crypto-home.css?v=20261101-v5">
+    <link rel="stylesheet" href="src/styles/components/crypto-home.css?v=20261101-v6">
     <div class="oxh">
       <section class="oxh-hero" aria-label="BTC 永續即時價格">
         <button type="button" class="oxh-hero-main" data-home-symbol="BTCUSDT" aria-label="打開 BTC K 線">
           <small>BTC 永續・即時</small>
-          <span class="oxh-big"><strong id="home-btc-price">—</strong><span class="oxh-hero-chg"><em id="home-btc-change">—</em><i>24H</i></span></span>
+          <span class="oxh-big"><strong id="home-btc-price" class="ox-skel"></strong><span class="oxh-hero-chg"><em id="home-btc-change" class="ox-skel"></em><i>24H</i></span></span>
         </button>
         <div class="oxh-hero-actions">
           <button type="button" class="oxh-icon ox-home-share" data-track="share.home" aria-label="把首頁做成圖片分享" title="做成圖片"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="15" rx="2.6"/><circle cx="9" cy="10" r="1.7"/><path d="m20.5 15.5-4.8-4.8-8.7 8.8"/></svg></button>
@@ -205,7 +207,7 @@
       </section>
       <!-- 首頁色塊 (src/markets/crypto/home-tiles.js): the reader picks which markets and how many; these
            placeholders hold the places until the numbers arrive, so nothing jumps. -->
-      <section class="oxh-tiles" data-home-tiles aria-label="首頁色塊"><div class="ht-grid"><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:ETHUSDT" data-ht="c:ETHUSDT" aria-label="資料更新中"><i>ETH</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:SOLUSDT" data-ht="c:SOLUSDT" aria-label="資料更新中"><i>SOL</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="m:breadth" data-ht="m:breadth" aria-label="資料更新中"><i>上漲家數</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="g:btc-dom" data-ht="g:btc-dom" aria-label="資料更新中"><i>BTC 市佔</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:BNBUSDT" data-ht="c:BNBUSDT" aria-label="資料更新中"><i>BNB</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:XRPUSDT" data-ht="c:XRPUSDT" aria-label="資料更新中"><i>XRP</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="g:total" data-ht="g:total" aria-label="資料更新中"><i>總市值</i><b>—</b><s>　</s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="f:BTCUSDT" data-ht="f:BTCUSDT" aria-label="資料更新中"><i>BTC 費率</i><b>—</b><s>　</s></button></div>
+      <section class="oxh-tiles" data-home-tiles aria-label="首頁色塊"><div class="ht-grid"><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:ETHUSDT" data-ht="c:ETHUSDT" aria-label="資料更新中"><i>ETH</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:SOLUSDT" data-ht="c:SOLUSDT" aria-label="資料更新中"><i>SOL</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="m:breadth" data-ht="m:breadth" aria-label="資料更新中"><i>上漲家數</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="g:btc-dom" data-ht="g:btc-dom" aria-label="資料更新中"><i>BTC 市佔</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:BNBUSDT" data-ht="c:BNBUSDT" aria-label="資料更新中"><i>BNB</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="c:XRPUSDT" data-ht="c:XRPUSDT" aria-label="資料更新中"><i>XRP</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="g:total" data-ht="g:total" aria-label="資料更新中"><i>總市值</i><b class="ox-skel"></b><s class="ox-skel"></s></button><button type="button" class="ht-t f" style="--ht-a:0.14" data-key="f:BTCUSDT" data-ht="f:BTCUSDT" aria-label="資料更新中"><i>BTC 費率</i><b class="ox-skel"></b><s class="ox-skel"></s></button></div>
         <div class="ht-legend"><span>顏色越深＝漲跌越大</span><button type="button" data-ht-edit>✎ 編輯</button></div></section>
       <section class="oxh-sec oxh-breaks" data-home-breaks aria-label="今日突破">
         <div class="oxh-head"><h2>今日突破<small data-home-breaks-time></small></h2><button type="button" class="oxh-link" data-home-go="compare">全部 ›</button></div>
@@ -214,8 +216,8 @@
       <section class="oxh-sec oxh-radar" data-home-radar aria-label="上漲與下跌 T1 T2 T3">
         <div class="oxh-head oxh-radar-head"><h2>雷達</h2><small data-radar-freshness aria-live="polite" hidden></small></div>
         <div class="oxh-sides">
-          <div class="oxh-card oxh-side"><div class="oxh-side-head up">上漲<span>T1／T2／T3</span></div><div id="home-t1-long-list" class="oxh-list"><span class="ox-home-t1-empty">等待上漲候選</span></div></div>
-          <div class="oxh-card oxh-side"><div class="oxh-side-head down">下跌<span>T1／T2／T3</span></div><div id="home-t1-short-list" class="oxh-list"><span class="ox-home-t1-empty">等待下跌候選</span></div></div>
+          <div class="oxh-card oxh-side"><div class="oxh-side-head up">上漲<span>T1／T2／T3</span></div><div id="home-t1-long-list" class="oxh-list" aria-busy="true"><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span></div></div>
+          <div class="oxh-card oxh-side"><div class="oxh-side-head down">下跌<span>T1／T2／T3</span></div><div id="home-t1-short-list" class="oxh-list" aria-busy="true"><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span><span class="ox-home-skel" aria-hidden="true"></span></div></div>
         </div>
       </section>
       <section class="oxh-sec oxh-news" data-home-news aria-label="此刻發生">
@@ -238,17 +240,17 @@
     <div class="metric-card market-line-card">
       <div class="market-line-item market-line-price">
         <div class="ox-pair-row"><span class="ox-pair-logo" aria-hidden="true"></span><label id="ticker-pair">BTCUSDT · Bitget</label></div>
-        <strong id="price">—</strong>
+        <strong id="price" class="ox-skel"></strong>
         <small id="ticker-meta">等待行情資料中…</small>
       </div>
       <div class="market-line-item">
         <label>24H 漲跌幅</label>
-        <strong id="change">—</strong>
+        <strong id="change" class="ox-skel"></strong>
         <small id="btc-rel">相對 BTC：—</small>
       </div>
       <div class="market-line-item">
         <label>24H 成交額</label>
-        <strong id="quote">—</strong>
+        <strong id="quote" class="ox-skel"></strong>
         <small id="quote-rank">全市場百分位：—</small>
       </div>
       <div class="market-line-item radar-analysis-cell">
@@ -309,7 +311,9 @@
       <h3 class="panel-title">OX 幣種詳情 · <span id="detail-symbol">BTCUSDT</span></h3>
       <span class="pill" id="detail-tier">Benchmark</span>
     </div>
-    <div class="detail-grid">
+    <!-- One line of the key facts; 展開 shows every cell (src/app/stock-page.js). -->
+    <button type="button" class="ox-detail-summary" aria-expanded="false" aria-controls="ox-detail-grid"><span data-detail-summary></span><b>展開</b></button>
+    <div class="detail-grid" id="ox-detail-grid" hidden>
       <div class="detail-cell"><label>OX Score</label><strong id="detail-ox">—</strong></div>
       <div class="detail-cell"><label>流動性</label><strong id="detail-liq">—</strong></div>
       <div class="detail-cell"><label>資金活躍</label><strong id="detail-flow">—</strong></div>
@@ -330,7 +334,7 @@
     <div class="alert-state-row">
       <span class="alert-chip" id="detail-high-alert">前高提醒：未設定</span>
       <span class="alert-chip" id="detail-low-alert">前低提醒：未設定</span>
-      <span class="alert-chip">小級別看圖時，提醒自動使用 4H 結構關鍵位</span>
+      <details class="ox-info"><summary aria-label="提醒怎麼用">ⓘ</summary><span class="alert-chip">小級別看圖時，提醒自動使用 4H 結構關鍵位</span></details>
     </div>
   </section>
 
@@ -744,22 +748,22 @@
   </section>
 </div>
 
-<script src="src/core/runtime-config.js?v=20261002-rank8"></script>
+<script src="src/core/runtime-config.js?v=20261101-v6"></script>
 <script src="src/components/strength/snapshots.js?v=20261001-tiercomb2"></script>
 <script src="src/components/alerts/level-alerts.js?v=20261031-fast-radar1"></script>
 <script src="src/components/strength/market-strength.js?v=20261005-touch1"></script>
 <script src="src/app/token-logos.js?v=20261101-v4"></script>
-<script src="src/app/coin-logo.js?v=20261101-v5"></script>
-<script src="src/app/view-home-theme.js?v=20261101-v5"></script>
+<script src="src/app/coin-logo.js?v=20261101-v6"></script>
+<script src="src/app/view-home-theme.js?v=20261101-v6"></script>
 <script src="src/markets/crypto/live-quotes.js?v=20261006-quotes2"></script>
 <script src="src/markets/crypto/api.js?v=20261007-stable-dialog8"></script>
 <script src="src/markets/crypto/live-candles.js?v=20261005-first24"></script>
 <script src="src/core/classic-engine.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/liquidity-policy.js?v=20261002-rank8"></script>
 <script src="src/markets/crypto/engine.js?v=20261002-rank8"></script>
-<script src="src/markets/crypto/scanner.js?v=20261101-v4"></script>
+<script src="src/markets/crypto/scanner.js?v=20261101-v6"></script>
 <script src="src/components/chart/gestures.js?v=20261028-ind1"></script>
-<script src="src/components/chart/workspace.js?v=20261030-board2"></script>
+<script src="src/components/chart/workspace.js?v=20261101-v6"></script>
 <script src="src/components/chart/indicators.js?v=20261031-v2"></script>
 <script src="src/markets/crypto/presentation.js?v=20261101-v4"></script>
 <script src="src/components/account/store.js?v=20261101-v4"></script>
@@ -768,7 +772,7 @@
 <script src="src/components/navigation/runtime-actions.js?v=20261030-restore1"></script>
 <script src="src/components/radar/timeframe-filters.js?v=20261001-tiercomb2"></script>
 <script src="src/components/chart/toolbar.js?v=20261030-restore1"></script>
-<script src="src/components/radar/modes.js?v=20261101-v4"></script>
+<script src="src/components/radar/modes.js?v=20261101-v6"></script>
 <script src="src/app/runtime-boot.js?v=20261101-v4"></script>
 
 <script src="src/components/motion/controller.js?v=20261001-tiercomb2"></script>
@@ -778,7 +782,7 @@
 <script src="src/components/navigation/repair.js?v=20261002-newsv2"></script>
 
 <script src="src/components/navigation/market-quick-switch.js?v=20261101-v5"></script>
-<script src="src/components/news/center.js?v=20261031-v3merge2"></script>
+<script src="src/components/news/center.js?v=20261101-v6"></script>
 <script src="src/components/news/entry.js?v=20261002-nav6"></script>
 
 
@@ -812,14 +816,14 @@
 <!-- CSS moved: ox-v383-fullscreen-lightglass-fix -->
 <script src="src/components/chart/focus-viewport.js?v=20261001-tiercomb2"></script>
 <script src="src/components/chart/drawings.js?v=20261030-restore1"></script>
-<script src="src/components/chart/home-preview.js?v=20261005-graytop5"></script>
+<script src="src/components/chart/home-preview.js?v=20261101-v6"></script>
 
 
 <!-- OX v3.8.4 — OX CONTROL 功能搜尋 + 真實交易所 Data Provider 切換 -->
 <!-- CSS moved: ox-v384-feature-search-provider-switch-styles -->
 
 <script src="src/components/search/provider-switch.js?v=20261101-v4"></script>
-<script src="src/app/module-boot.js?v=20261101-v5"></script>
+<script src="src/app/module-boot.js?v=20261101-v6"></script>
 
 <script src="src/app/editorial-workspace.js?v=20261101-v4"></script>
 <script src="src/components/radar/controls.js?v=20261001-tiercomb2"></script>

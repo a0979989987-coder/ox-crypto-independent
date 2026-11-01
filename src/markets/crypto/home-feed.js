@@ -35,7 +35,7 @@ function logo(symbol) {
 const dropBrokenLogos = () => {};
 
 // ---------- 今日突破 ----------
-const compareURL = () => new URL('./compare/view.js?v=20261101-v4', import.meta.url).href;
+const compareURL = () => new URL('./compare/view.js?v=20261101-v6', import.meta.url).href;
 const breaks = { at: null, time: '', count: 0, picks: [], charts: new Map(), queue: [], queued: new Set(), active: 0, observer: null, module: null, job: null, candle: 0 };
 
 function sinceBreak(pick) {
@@ -47,7 +47,8 @@ function refreshChanges() {
   if (!box) return;
   for (const el of box.querySelectorAll('[data-chg]')) {
     const pick = breaks.picks.find(p => p.s === el.dataset.chg), v = pick ? sinceBreak(pick) : NaN;
-    const text = pct(v), cls = `oxh-chg ${Number.isFinite(v) ? v > 0 ? 'u' : v < 0 ? 'd' : 'f' : 'f'}`;
+    // ▲ up, ▼ down, 0.00% flat in a neutral tone; — until the price arrives.
+    const text = Number.isFinite(v) ? `${v > 0 ? '▲ ' : v < 0 ? '▼ ' : ''}${pct(v)}` : '—', cls = `oxh-chg ${Number.isFinite(v) ? v > 0 ? 'u' : v < 0 ? 'd' : 'f' : 'n'}`;
     if (el.textContent !== text) el.textContent = text;
     if (el.className !== cls) el.className = cls;
   }
@@ -61,7 +62,7 @@ function cardHTML(pick) {
     <span class="oxh-bn">${logo(pick.s)}<b>${esc(pick.coin)}</b>${pick.t ? `<i data-tier="${pick.t}">T${pick.t}</i>` : ''}</span>
     <small>${esc(pick.name)}</small>
     <span class="oxh-mini" data-mini="${esc(pick.s)}"${breaks.charts.has(key) ? '' : ' data-outline'}>${chart}</span>
-    <span class="oxh-bf"><span>突破後</span><em class="oxh-chg f" data-chg="${esc(pick.s)}">—</em></span>
+    <span class="oxh-bf"><span>突破後</span><em class="oxh-chg n" data-chg="${esc(pick.s)}">—</em></span>
   </button>`;
 }
 // Only cards on screen (and the next one) ask for candles, two at a time.

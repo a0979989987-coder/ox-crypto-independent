@@ -11,8 +11,9 @@ const C = { bg0: '#1c2532', bg1: '#0e1217', bg2: '#08090c', ink: '#eef1f4', mute
 export const PERFORMANCE_NOTE = '過去表現不代表未來\n僅供研究參考・未含手續費';
 export const sharePct = v => Number.isFinite(v) ? `${v > 0 ? '+' : ''}${v.toFixed(2)}%` : '—';
 export const shareTone = v => v > 0 ? C.up : v < 0 ? C.down : C.ink;
-// Coin prices run from 0.00001 to 100,000: keep about six significant digits.
-export const sharePrice = v => !Number.isFinite(v) ? '—' : Math.abs(v) >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 1 }) : v.toLocaleString('en-US', { maximumSignificantDigits: 6 });
+// Coin prices run from 0.00001 to 100,000: keep about six significant digits; three or more
+// zeros after the point show as 0.0₃8023 (src/core/price-format.js), as on the page.
+export const sharePrice = v => !Number.isFinite(v) ? '—' : v !== 0 && Math.abs(v) < 0.001 && globalThis.OXPriceText ? globalThis.OXPriceText(v) : Math.abs(v) >= 1000 ? v.toLocaleString('en-US', { maximumFractionDigits: 1 }) : v.toLocaleString('en-US', { maximumSignificantDigits: 6 });
 export const shareMoney = v => !Number.isFinite(v) ? '—' : v >= 1e8 ? (v / 1e8).toFixed(2) + ' 億' : v >= 1e4 ? (v / 1e4).toFixed(1) + ' 萬' : v.toFixed(0);
 const parts = (ms = Date.now()) => Object.fromEntries(new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Taipei', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(new Date(ms)).map(p => [p.type, p.value]));
 // 10/31 14:05 (Taipei): crypto trades all day, so a card names its minute.

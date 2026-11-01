@@ -41,7 +41,7 @@ function renderCompactChartPriceAxis() {
   for(let index=Math.ceil(low/step);index*step<high&&labels.length<80;index++){
     const value=index*step;
     const y=state.candleSeries.priceToCoordinate(value);
-    if (y>8&&y<height-8) labels.push({text:value.toFixed(Math.min(12,digits)),y});
+    if (y>8&&y<height-8) labels.push({text:value!==0&&Math.abs(value)<0.001&&globalThis.OXPriceText?globalThis.OXPriceText(value,{sig:5}):value.toFixed(Math.min(12,digits)),y});
   }
   const ctx=renderCompactChartPriceAxis.context ||= document.createElement('canvas').getContext('2d');
   ctx.font=`${mobile?9:10}px system-ui`;
@@ -70,6 +70,8 @@ function chartAxisPrecision(price) {
 }
 
 function formatChartAxisPrice(price) {
+  // 0.0000035 → 0.0₅35 on the axis too (src/core/price-format.js).
+  if (price && Math.abs(price) < 0.001 && globalThis.OXPriceText) return globalThis.OXPriceText(price, { sig: 5 });
   const digits = state.chartAxisDigits ?? 2;
   return Number(price).toFixed(digits).replace(/(\.\d*?)0+$/, '$1').replace(/\.$/, '');
 }
@@ -268,7 +270,7 @@ function initChart() {
     layout: {
       background: { type: "solid", color: "#121417" },
       textColor: "#929995",
-      fontSize: window.matchMedia("(max-width:720px)").matches ? 10 : 11,
+      fontSize: 11,
       attributionLogo: false
     },
     grid: {
@@ -300,7 +302,7 @@ function initChart() {
   // Mobile only: use a smaller scale font while preserving the full price.
   if (window.matchMedia("(max-width: 720px)").matches) {
     state.chart.applyOptions({
-      layout: { fontSize: 10 },
+      layout: { fontSize: 11 },
       rightPriceScale: { borderColor: "#343b37", autoScale: true, scaleMargins: getChartScaleMargins() }
     });
   }
@@ -392,7 +394,7 @@ function initChart() {
     const mobileNow = window.matchMedia('(max-width:720px)').matches;
     if (mobileNow !== mobileScale) {
       mobileScale = mobileNow;
-      state.chart.applyOptions({ layout: { fontSize: mobileNow ? 10 : 11 } });
+      state.chart.applyOptions({ layout: { fontSize: 11 } });
       state.chart.priceScale('right').applyOptions({scaleMargins:getChartScaleMargins()});
       state.chart.priceScale('vol').applyOptions({scaleMargins:getChartVolumeMargins()});
       applyChartFutureSpace();
