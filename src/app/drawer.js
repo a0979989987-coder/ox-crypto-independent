@@ -1,12 +1,15 @@
-// Left drawer from the avatar: account and sync, 我的自選, 通知, 意見回饋, 使用說明,
-// the LINE community, OX Journal, the last four places used, then 設定, 取得幫助 and
+// Left drawer from the menu button: account and sync, 我的自選, 通知, 意見回饋, 使用說明,
+// the LINE community, OX Journal, 遊戲 (合成市場) and 交易教學 (as on the Taiwan site), the last four places used, then 設定, 取得幫助 and
 // the theme at the foot. The page slides right under a scrim; tap the scrim, swipe
 // left or press Esc to close. 設定 (and the media page) open as pages with a title
 // and ‹, which returns to where you were with the drawer open again.
 import { icon, escapeHTML, avatarHTML, coinOf, openCoin } from './chrome-style.js';
 import { FEATURES, openFeature, logoHTML } from './topbar.js';
 import { openPage } from './pages.js';
+import { openLearn } from './learn.js';
 
+// The owner's 合成市場 game, the same link as the Taiwan site's drawer.
+export const GAME_URL = 'https://merge-market.btcfly.chatgpt.site/';
 export const LINE_URL = 'https://line.me/ti/g2/FXj0yahd04U4JecSoC4uPInXiqhLulqdCl54Ag?utm_source=invitation';
 const TOOL_NAMES = { radar: '雷達', watch: '自選', rank: '排行', bubbles: '泡泡圖', strength: '強弱對比', heatmap: '熱力圖', rotation: '板塊輪動', flow: '主動買賣' };
 const TOOL_ICONS = { radar: 'radar', watch: 'star', rank: 'rank', bubbles: 'bubbles', strength: 'tool', heatmap: 'grid', rotation: 'spark', flow: 'tool' };
@@ -28,6 +31,7 @@ function render() {
       <a class="oc-item" data-dr="line" href="${escapeHTML(LINE_URL)}" target="_blank" rel="noopener">${icon('group')}<span>加入 LINE 社群</span></a>
       <button type="button" class="oc-btn oc-item" data-dr="journal">${icon('journal')}<span>OX Journal</span></button>
     </div>
+    <div class="oc-explore"><a class="oc-card" data-dr="game" href="${GAME_URL}" target="_blank" rel="noopener">${icon('game')}<b>遊戲</b><small>合成市場</small></a><button type="button" class="oc-btn oc-card" data-dr="learn">${icon('learn')}<b>交易教學</b><small>闖關學交易・製作中</small></button></div>
     <div class="oc-hr"></div>
     <div class="oc-dsec">${icon('clock')}最近使用</div>
     <div class="oc-recent">${recent.length ? recent.map(x => x.type === 'coin'
@@ -110,6 +114,7 @@ export function initDrawer() {
     const act = b.dataset.dr;
     if (b.dataset.theme) { document.querySelector(`[data-control-theme="${b.dataset.theme}"]`)?.click(); setTimeout(render, 50); return; }
     if (act === 'line') { close(); return; }
+    if (act === 'game') { globalThis.OXTrack?.('game.open'); close(); return; }
     if (act === 'login') { globalThis.OXMember?.signIn?.(); return; }
     close();
     if (b.dataset.coin) openCoin(b.dataset.coin);
@@ -117,6 +122,7 @@ export function initDrawer() {
     if (act === 'watch') openFeature(FEATURES.find(f => f[3] === 'watch'));
     if (act === 'notices') globalThis.OXNotices?.open();
     if (act === 'feedback') feedback();
+    if (act === 'learn') openLearn();
     if (act === 'settings') openSub('settings');
     if (act === 'journal' || act === 'guide' || act === 'help') openPage(act === 'help' ? 'guide' : act);
   });

@@ -33,8 +33,9 @@ if (section) {
     if (chart && radarView && nav.parentElement !== radarView) radarView.prepend(nav);
     else if (!chart && nav.parentElement !== section) section.prepend(nav);
     if (!scannerPanel) return;
-    if (chart && workspace && scannerPanel.parentElement !== workspace) { workspace.append(scannerPanel); scannerPanel.classList.add('panel'); }
-    else if (!chart && radarPane && scannerPanel.parentElement !== radarPane) { radarPane.append(scannerPanel); scannerPanel.classList.remove('panel'); }
+    // The list is drawn for its new place at once (side cards beside the chart, rows at full width), so it does not show the old layout first and jump.
+    if (chart && workspace && scannerPanel.parentElement !== workspace) { workspace.append(scannerPanel); scannerPanel.classList.add('panel'); try { renderCurrentTab(); } catch {} }
+    else if (!chart && radarPane && scannerPanel.parentElement !== radarPane) { radarPane.append(scannerPanel); scannerPanel.classList.remove('panel'); try { renderCurrentTab(); } catch {} }
   }
   const listPane = document.createElement('section'); listPane.id = 'ox-market-list'; listPane.hidden = true; listPane.setAttribute('aria-label', '幣種清單');
   (radarPane || nav).after(listPane);
@@ -93,6 +94,8 @@ if (section) {
   // 雷達 and the lists stay mounted; they only stop drawing while hidden.
   function syncPanes() {
     const on = active() && section.dataset.cryptoTool === selected;
+    // Draw 雷達 before it shows, so switching tabs never shows a stale list that then jumps.
+    if (on && selected === 'radar' && radarPane?.hidden) { try { renderCurrentTab(); } catch {} }
     if (radarPane) radarPane.hidden = !(on && selected === 'radar');
     listPane.hidden = !(on && LISTS.has(selected));
     if (on && selected === 'radar') { try { renderCurrentTab(); } catch {} }

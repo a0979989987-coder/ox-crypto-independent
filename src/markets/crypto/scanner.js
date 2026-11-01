@@ -427,7 +427,23 @@ function watchCard(rec, idx, analyzed, current) {
 }
 const sideEmpty = (title, text) => `<div class="ox-side-empty"><b>${title}</b>${text ? `<p>${text}</p>` : ""}</div>`;
 
+// The radar list re-ranks as the scan and live prices move. A tap (tab, filter, star) draws it at
+// once; background updates are gathered and drawn at most every 3 seconds, so rows do not hop
+// several times a second, least of all right after switching to the tab.
+let listPaintAt = 0, listPaintTimer = 0, userInputAt = 0, listPaintKey = "";
+if (typeof document !== "undefined") for (const type of ["pointerdown", "keydown", "click"]) document.addEventListener(type, () => { userInputAt = performance.now(); }, { capture: true, passive: true });
 function renderCurrentTab() {
+  const now = performance.now(), list = document.getElementById("screener-list");
+  // A different tab, direction or place (beside the chart / full width) is drawn at once too.
+  const key = `${state.currentTab}|${state.directionFilter}|${!!list?.closest(".workspace")}|${state.tierFilter || ""}`;
+  if (listPaintAt && key === listPaintKey && now - userInputAt > 600 && now - listPaintAt < 3000 && document.getElementById("screener-list")?.querySelector(".coin-card,.ox-rl-row")) {
+    if (!listPaintTimer) listPaintTimer = setTimeout(() => { listPaintTimer = 0; renderCurrentTab(); }, 3000 - (now - listPaintAt));
+    return;
+  }
+  clearTimeout(listPaintTimer); listPaintTimer = 0; listPaintAt = now; listPaintKey = key;
+  renderCurrentTabNow();
+}
+function renderCurrentTabNow() {
   const container = document.getElementById("screener-list");
   const tab = state.currentTab;
   if (!container) return;
@@ -491,7 +507,9 @@ function renderCurrentTab() {
       if(failed&&!container.querySelector('[data-radar-retry]')){const retry=document.createElement('button');retry.type='button';retry.dataset.radarRetry='';retry.textContent='重新連線';retry.onclick=()=>{state.radarScanFailed=false;state.radarSnapshotReady=false;refreshMarketTickers();};container.firstElementChild?.append(retry);}
       return;
     }
-    paint(empty(`目前沒有符合 OX 經典的${directionLabel}幣種`, `符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。`));
+    // Say why it is empty (the market leans the other way, or nothing meets the conditions), not a bare blank.
+    const why = typeof radarEmptyReason === "function" ? radarEmptyReason(state.directionFilter) : null;
+    paint(empty(why?.title || `目前沒有${directionLabel}候選`, why?.text || `符合條件後會依${combinedRadar ? " T1 → T2 → T3 順序" : `目前 T${isTierTab ? tab.slice(1) : ""} 排名`}顯示。`));
     return;
   }
 

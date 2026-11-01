@@ -18,7 +18,8 @@ export const SYNC_KEYS = Object.freeze([
   { storage: 'ox-crypto:bubble-days-v1', key: 'bubble-days', type: 'text', merge: 'value', label: '泡泡圖天數' },
   { storage: 'ox-radar-filter-mode', key: 'radar-filter-mode', type: 'text', merge: 'value', label: '雷達篩選模式' },
   { storage: 'ox-radar-custom-filters', key: 'radar-custom-filters', type: 'json', merge: 'value', label: '雷達自訂篩選' },
-  { storage: 'ox-crypto-sector-watch:guest', key: 'sector-watch', type: 'json', merge: 'list', label: '板塊關注' }
+  { storage: 'ox-crypto-sector-watch:guest', key: 'sector-watch', type: 'json', merge: 'list', label: '板塊關注' },
+  { storage: 'ox-crypto:home-tiles-v1', key: 'home-tiles', type: 'json', merge: 'value', label: '首頁色塊' }
 ].map(Object.freeze));
 // Largest saved value for one key, in characters of JSON.
 export const MAX_SYNC_CHARS = 24000;

@@ -10,7 +10,32 @@ import { shareChart } from '../markets/crypto/share-entries.js?v=20261031-share1
 let bar;
 const symbol = () => runtime()?.symbol || null;
 const starred = s => { try { return isWatchlisted(s); } catch { return false; } };
+// The coin's logo beside its name at the top of the page (src/app/coin-logo.js); drawn again
+// only when the coin changes, so price ticks never touch it.
+function paintLogo(s) {
+  const box = document.querySelector('#view-radar .ox-pair-logo'); if (!box || !s || box.dataset.symbol === s || !globalThis.OXCoinLogo) return;
+  box.dataset.symbol = s; box.innerHTML = globalThis.OXCoinLogo.html(s, { cls: 'ox-pair-coin', size: 20 });
+}
+// 幣種詳情: the nine cells fold into one line of the key facts; 展開 shows them all.
+const SIDE = { LONG: '多頭', SHORT: '空頭', NEUTRAL: '中性', '—': '—' };
+function paintSummary() {
+  const text = id => document.getElementById(id)?.textContent.trim() || '—', box = document.querySelector('#ox-detail-panel [data-detail-summary]');
+  if (!box) return;
+  const side = text('detail-side'), parts = [`OX ${text('detail-ox')}`, text('detail-structure'), SIDE[side.toUpperCase()] || side, `RS ${text('detail-rs').replace(/\s*\/\s*100$/, '')}`, text('detail-confidence')];
+  const line = parts.filter(p => p && p !== '—' && p !== 'OX —' && p !== 'RS —').join('・') || '分析中…';
+  if (box.textContent !== line) box.textContent = line;
+}
+function initDetailSummary() {
+  const panel = document.getElementById('ox-detail-panel'), grid = document.getElementById('ox-detail-grid'), button = panel?.querySelector('.ox-detail-summary');
+  if (!panel || !grid || !button) return;
+  const set = open => { grid.hidden = !open; button.setAttribute('aria-expanded', String(open)); button.querySelector('b').textContent = open ? '收合' : '展開'; };
+  set(matchMedia('(min-width:980px)').matches);
+  button.addEventListener('click', () => set(grid.hidden));
+  new MutationObserver(paintSummary).observe(grid, { subtree: true, childList: true, characterData: true });
+  paintSummary();
+}
 function sync() {
+  paintLogo(symbol());
   if (!bar) return;
   const s = symbol(), on = !!s && starred(s), star = bar.querySelector('[data-stock-act="watch"]');
   star.setAttribute('aria-pressed', String(on)); star.querySelector('span').textContent = on ? '已自選' : '自選';
@@ -45,5 +70,6 @@ export function initStockPage() {
   for (const type of ['ox:viewchange', 'ox:watchlist', 'ox:accountchange']) document.addEventListener(type, () => requestAnimationFrame(sync));
   const radar = document.getElementById('view-radar');
   if (radar) new MutationObserver(sync).observe(radar, { attributes: true, attributeFilter: ['data-selected-symbol'] });
+  initDetailSummary();
   sync();
 }

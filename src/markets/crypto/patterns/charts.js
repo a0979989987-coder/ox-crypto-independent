@@ -1,4 +1,4 @@
-const price=n=>n.toLocaleString('en-US',{maximumSignificantDigits:6});
+const price=n=>n!==0&&Math.abs(n)<0.001&&globalThis.OXPriceText?globalThis.OXPriceText(n):n.toLocaleString('en-US',{maximumSignificantDigits:6});
 export function candleChart(canvas,row,{interactive=false,onRange=()=>{},palette=null}={}){
   const ctx=canvas.getContext('2d'),life=new AbortController();let width=0,height=0,raf=0;
   let candles=row.candles;

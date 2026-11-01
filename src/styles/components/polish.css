@@ -1,0 +1,121 @@
+/* Owner-approved polish (2026-11-01): 看得清楚, 不讓人以為壞掉, 少一點字, 手感.
+   看得清楚: no text under 11px. Loaded last, so it only
+   raises the sizes the older layers set too small (7.5–10px); proportions stay the same.
+   Coin-logo initials are icon glyphs inside a 15–20px badge and keep their size.
+   Numbers line up: tabular figures, right-aligned in lists. */
+
+/* ---------- 設定 · 通知設定 ---------- */
+html body .ox-theme-segment.ox-theme-segment button{font-size:11.5px!important;min-height:30px!important;padding:0 9px!important}
+html body .ox-control-ui-tag.ox-control-ui-tag{font-size:11px!important;padding:2px 7px!important}
+html body .ox-control-row .ox-control-copy small{font-size:11.5px!important;line-height:1.4!important}
+html body .ox-control-view .btn-act.btn-act{font-size:11.5px!important;min-height:30px}
+html body .ox-control-refresh.ox-control-refresh{font-size:11.5px!important}
+html body .settings-card.settings-card :is(.settings-field > span,.settings-switch > span,.notification-health-head span,.notification-health-head strong){font-size:12px!important}
+html body .settings-card.settings-card .notification-health > small{font-size:11.5px!important;line-height:1.45!important}
+
+/* ---------- 個股頁 and 行情 → 圖表 ---------- */
+html body #view-radar#view-radar .market-line-card .market-line-item > label{font-size:11px!important;letter-spacing:0!important}
+html body #view-radar#view-radar .chart-timeframe-strip .btn-tf.btn-tf{font-size:11.5px!important}
+html body #view-radar#view-radar .btn-tf .tf-hint{font-size:10px!important}
+html body #view-radar#view-radar .chart-price-axis.chart-price-axis span{font-size:11px!important}
+html body #view-radar#view-radar :is(.chart-mobile-last-price,.chart-cursor-price,.chart-current-price) :is(strong,small,span){font-size:11px!important}
+html body #view-radar#view-radar .chart-current-price small{font-size:11px!important;opacity:.85}
+html body #view-radar#view-radar .detail-panel .panel-title,html body #view-radar#view-radar .detail-panel .panel-title span{font-size:12.5px!important}
+html body #view-radar#view-radar .detail-panel .pill{font-size:11px!important;padding:2px 8px!important}
+html body #view-radar#view-radar .detail-grid .detail-cell > label{font-size:11px!important}
+html body #view-radar#view-radar .detail-reasons .detail-reason{font-size:12px!important}
+html body #view-radar#view-radar .alert-state-row .alert-chip{font-size:11.5px!important}
+html body #view-radar#view-radar .radar-combined-chevron{font-size:11px!important}
+html body #view-radar#view-radar .ox-loading-count{font-size:11px!important}
+/* the T1／T2／T3 list beside the chart */
+html body #view-radar#view-radar :is(.coin-ox-label,.coin-rank,.coin-tier-heading,.coin-volume-label,.coin-volume-value){font-size:11px!important;letter-spacing:0!important}
+html body #view-radar#view-radar [data-radar-freshness]{font-size:11px!important}
+html body #view-radar#view-radar .coin-card :is(.coin-price,.coin-change,.coin-volume-value,.coin-ox-value,.turnover-price){font-variant-numeric:tabular-nums}
+
+/* ---------- 首頁 ---------- */
+html body #view-home#view-home .oxh .ox-home-row-tier{font-size:11px!important}
+html body #view-home#view-home .oxh .ht-t s,html body #view-home#view-home .oxh .ht-t i{font-size:11px!important}
+html body #view-home#view-home .oxh .oxh-side-head span{font-size:11px!important}
+html body #view-home#view-home .oxh .ox-home-t1-row small{font-size:11px!important}
+html body #view-home#view-home .oxh .ox-home-t1-row em{font-variant-numeric:tabular-nums;text-align:right}
+
+
+/* ---------- lists: numbers line up ---------- */
+:is(.ml-row,.oc-row,.ox-home-t1-row,.coin-card,.hs-row,.hs-chip) :is(.px,.oc-chg,em,b,strong){font-variant-numeric:tabular-nums}
+.ml-row :is(.px,.oc-chg),.oc-row :is(.px,.oc-chg){text-align:right}
+
+/* ---------- 行情 → 強弱對比 ---------- */
+html body .strength-page.strength-page :is(.strength-compare-leader,.strength-compare-side small,.strength-compare-gap span,.strength-state,.strength-scale span,.strength-scale b){font-size:11px!important}
+html body .strength-page.strength-page :is(.strength-note,.strength-note strong){font-size:12px!important;line-height:1.5!important}
+
+/* ---------- smaller leftovers: the live price tag on the chart, the radar's close time, loading counts ---------- */
+html body #view-radar#view-radar #chart .chart-mobile-last-price.chart-mobile-last-price :is(strong,small){font-size:11px!important}
+html body #view-radar#view-radar #radar-scanner-panel#radar-scanner-panel .ox-radar-meta [data-radar-freshness]{font-size:11px!important}
+html body #view-radar#view-radar .btn-tf .tf-hint.tf-hint,html body #view-radar#view-radar .radar-combined-chevron.radar-combined-chevron{font-size:11px!important}
+html body .ox-loading .ox-loading-count.ox-loading-count{font-size:11px!important}
+
+/* ===================== 不讓人以為壞掉 =====================
+   Skeletons: an element waiting for its first number is empty and shimmers (:empty), so the
+   page never shows a row of 「—」 that reads as broken; the first value replaces it in place. */
+@keyframes ox-skel{from{background-position:120% 0}to{background-position:-20% 0}}
+:root{--ox-skel-a:rgba(255,255,255,.06);--ox-skel-b:rgba(255,255,255,.14)}
+body.theme-light{--ox-skel-a:rgba(30,40,60,.06);--ox-skel-b:rgba(30,40,60,.12)}
+.ox-skel:empty,.ox-home-skel,.ox-list-skel{display:inline-block;border-radius:6px;background:linear-gradient(90deg,var(--ox-skel-a) 30%,var(--ox-skel-b) 50%,var(--ox-skel-a) 70%) 0 0/300% 100%;animation:ox-skel 1.4s ease-in-out infinite;vertical-align:middle;color:transparent}
+#home-btc-price.ox-skel:empty{width:9.5em;height:28px;font-size:16px}
+#home-btc-change.ox-skel:empty{width:8em;height:14px;font-size:14px}
+:is(#price,#change,#quote).ox-skel:empty{width:5.5em;height:1em}
+html body #view-home#view-home .oxh .ht-t b.ox-skel:empty{width:62%;height:16px;margin:3px 0 2px}
+html body #view-home#view-home .oxh .ht-t s.ox-skel:empty{width:44%;height:10px}
+.ox-home-skel{display:block;height:44px;margin:6px 0;border-radius:10px}
+.ox-list-skel{display:block;height:48px;margin:6px 0;border-radius:10px}
+html body #view-home#view-home .oxh .ox-home-t1-empty{display:block;padding:10px 4px 6px;color:var(--h-muted)}
+html body #view-home#view-home .oxh .ox-home-t1-empty b{display:block;color:var(--h-ink);font:600 13px/1.45 var(--h-font)}
+html body #view-home#view-home .oxh .ox-home-t1-empty span{display:block;margin-top:2px;font:500 12px/1.5 var(--h-font)}
+@media (prefers-reduced-motion:reduce){.ox-skel:empty,.ox-home-skel,.ox-list-skel{animation:none}}
+/* 「HH:MM 更新」 (src/app/updated-stamp.js) */
+.ox-updated{display:block;margin:-6px 4px 6px;color:var(--oc-muted);font:500 11px/1.4 var(--oc-font);text-align:right;font-variant-numeric:tabular-nums}
+.ox-updated[hidden]{display:none}
+html body #view-radar#view-radar .market-line-price .ox-updated{margin:3px 0 0;text-align:left}
+#ox-radar-board + .ox-updated,small[data-ox-updated="board"]{margin:0 4px 6px}
+
+/* ===================== 少一點字 ===================== */
+details.ox-info{margin:0}
+details.ox-info > summary{display:inline-flex;align-items:center;gap:4px;list-style:none;cursor:pointer;color:var(--oc-muted,var(--muted));font:500 12px/1.6 var(--oc-font,system-ui);-webkit-tap-highlight-color:transparent}
+details.ox-info > summary::-webkit-details-marker{display:none}
+details.ox-info[open] > summary{margin-bottom:2px}
+html body #view-radar#view-radar .alert-state-row details.ox-info{display:inline-flex;align-items:center;gap:6px}
+html body #view-radar#view-radar .ox-detail-summary{display:flex;align-items:center;justify-content:space-between;gap:10px;width:100%;margin:0;padding:10px 14px;border:0;border-bottom:1px solid var(--line,rgba(255,255,255,.08));background:none;box-shadow:none;color:var(--ink);font:600 13px/1.5 var(--oc-font);text-align:left;min-height:0;cursor:pointer}
+html body #view-radar#view-radar .ox-detail-summary span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #view-radar#view-radar .ox-detail-summary b{flex:none;color:var(--muted);font:500 12px var(--oc-font)}
+html body #view-radar#view-radar .ox-detail-summary b::after{content:" ›";display:inline-block;transition:transform .2s}
+html body #view-radar#view-radar .ox-detail-summary[aria-expanded="true"] b::after{transform:rotate(90deg)}
+html body #view-radar#view-radar .detail-grid[hidden]{display:none!important}
+
+/* ===================== 手感: one motion spec =====================
+   fast 160ms (presses), base 240ms (tab switches, sheets), slow 300ms (drawer, a page pushed in);
+   one easing for all of it. */
+:root{--ox-fast:160ms;--ox-base:240ms;--ox-slow:300ms;--ox-ease:cubic-bezier(.2,.8,.2,1)}
+@keyframes ox-view-in{from{opacity:.001;transform:translateY(4px)}to{opacity:1;transform:none}}
+@keyframes ox-push-in{from{opacity:.001;transform:translateX(18px)}to{opacity:1;transform:none}}
+@keyframes ox-sheet-in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+html body .app-view.active.ox-mobile-view-in.ox-mobile-view-in{animation:ox-view-in var(--ox-base) var(--ox-ease) both!important}
+html body[data-view="stock"] #view-radar.active.ox-mobile-view-in.ox-mobile-view-in{animation:ox-push-in var(--ox-slow) var(--ox-ease) both!important}
+html body .oc-sheet{animation:ox-sheet-in var(--ox-base) var(--ox-ease)}
+html body .oc-drawer{transition:transform var(--ox-slow) var(--ox-ease)!important}
+html body .oc-scrim{transition:opacity var(--ox-slow) var(--ox-ease)!important}
+html body.oc-drawer-open main.wrap{transition:transform var(--ox-slow) var(--ox-ease)!important}
+@media (prefers-reduced-motion:reduce){html body .app-view.active.ox-mobile-view-in.ox-mobile-view-in,html body .oc-sheet{animation:none!important}html body :is(.oc-drawer,.oc-scrim),html body.oc-drawer-open main.wrap{transition:none!important}}
+html body.oc-drawer-closing main.wrap{transition:transform var(--ox-slow) var(--ox-ease)!important}
+
+/* ===================== 白金 contrast: text reaches WCAG AA (4.5:1) ===================== */
+html body.theme-light{--oc-muted:#5d6470;--oc-down-solid:#c93454}
+html body.theme-light .ml-seg button:not([aria-pressed="true"]),html body.theme-light #radar-scanner-panel .tab-btn:not(.active) :is(.radar-tab-text,.watch-tab-desktop){color:#5d6470!important}
+html body.theme-light #view-radar#view-radar #chart .chart-mobile-last-price.is-up strong{color:#1361bb!important}
+html body.theme-light.theme-light .oxn-root .oxn-week-date[aria-pressed="true"] small{color:#2f4767!important}
+/* 圖表's list beside the chart: no width animation when the tab opens (it read as the page jumping); the arrow still animates the fold. */
+html body.ox-terminal #view-radar#view-radar .workspace{transition:none!important}
+html body.ox-terminal #view-radar#view-radar.ox-fold-anim .workspace{transition:grid-template-columns 340ms var(--ox-ease),gap 340ms var(--ox-ease)!important}
+html body #view-radar#view-radar .market-line-price small.ox-updated:not([hidden]){display:block!important;color:var(--muted)!important;font-size:11px!important}
+html body #view-home#view-home .oxh #home-btc-price.ox-skel:empty{display:block;width:150px;height:30px}
+html body #view-home#view-home .oxh #home-btc-change.ox-skel:empty{display:inline-block;width:120px;height:15px}
+html body.ox-terminal #ox-market-radar#ox-market-radar .scanner-tabs .radar-combined-chevron{font-size:11px!important}

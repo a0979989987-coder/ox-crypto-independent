@@ -63,15 +63,15 @@ export function mountMarketList(host, { mode = 'watch' } = {}) {
         if (view.sort) list = [...list].sort((a, b) => view.sort * ((finite(b.change24h) ?? -99) - (finite(a.change24h) ?? -99)));
         html += `<div class="ml-lh"><span>幣種</span><span>最新價</span><button type="button" data-sort aria-label="照 24H 漲跌排序">24H 漲跌 ${view.sort === 1 ? '↓' : view.sort === -1 ? '↑' : '↕'}</button><span></span></div>`;
         html += list.length ? list.map(t => row(t, mine)).join('')
-          : `<div class="ml-empty">${all.length ? '還沒有自選。<br>點右邊的 ☆ 就能加入，登入 Google 後換手機也在。' : '正在取得幣種清單…'}</div>${all.length ? `<div class="ml-sec">24H 成交額最大</div>${rankTickers(all, 'turnover', { limit: 10 }).map(t => row(t, mine)).join('')}` : ''}`;
+          : `<div class="ml-empty">${all.length ? '還沒有自選。<br>點右邊的 ☆ 就能加入，登入 Google 後換手機也在。' : '<span class="ox-list-skel"></span>'.repeat(6)}</div>${all.length ? `<div class="ml-sec">24H 成交額最大</div>${rankTickers(all, 'turnover', { limit: 10 }).map(t => row(t, mine)).join('')}` : ''}`;
       }
     } else {
       const list = rankTickers(all, view.rank, { flip: view.flip }), funding = view.rank === 'funding', oi = view.rank === 'oi';
       html += `<div class="ml-seg" role="group" aria-label="排行">${RANKS.map(([id, t]) => `<button type="button" data-rank="${id}" aria-pressed="${view.rank === id}" data-track="rank.kind" data-track-detail="${id}">${t}</button>`).join('')}</div>`;
       html += `<div class="ml-lh"><span>幣種</span><span>最新價</span>${funding ? `<button type="button" data-flip aria-label="切換資金費率排序">資金費率 ${view.flip ? '↑' : '↓'}</button>` : `<span>${oi ? '持倉' : '24H 漲跌'}</span>`}<span></span></div>`;
       html += list.map((t, i) => row(t, mine, funding ? fundingText(finite(t.fundingRate)) : oi ? moneyText(oiOf(t)) : null, `#${i + 1}・24H 成交額 ${moneyText(quoteOf(t).volume)}`)).join('')
-        || `<div class="ml-empty">${all.length ? '目前沒有符合的幣種' : '資料載入中…'}</div>`;
-      if (list.length && (funding || oi)) html += `<p class="ml-foot">${funding ? '資金費率：每次結算時多空互付的比例，正數是多單付給空單。' : '持倉：未平倉合約張數 × 標記價格，以 USDT 計。'}資料來自 Bitget。</p>`;
+        || (all.length ? '<div class="ml-empty">目前沒有符合的幣種</div>' : `<div class="ml-empty ml-loading" aria-busy="true">${'<span class="ox-list-skel"></span>'.repeat(8)}</div>`);
+      if (list.length && (funding || oi)) html += `<details class="ox-info ml-foot"><summary>ⓘ ${funding ? '資金費率是什麼' : '持倉怎麼算'}</summary><p>${funding ? '資金費率：每次結算時多空互付的比例，正數是多單付給空單。' : '持倉：未平倉合約張數 × 標記價格，以 USDT 計。'}資料來自 Bitget。</p></details>`;
     }
     const input = root.querySelector('.ml-search input'), focused = input && document.activeElement === input, caret = focused ? input.selectionStart : null;
     // Patched in place: rows, their logos and the search box stay the same nodes (src/app/coin-logo.js).

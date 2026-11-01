@@ -224,3 +224,11 @@
 .px-share svg{width:14px;height:14px}
 .px-share:active{transform:scale(.95)}
 .px-board .px-board-bottom>.px-share:not([hidden])~.px-icon{margin-left:0}
+/* Coin logos on the result cards (src/app/coin-logo.js): the two letters show only without a picture. */
+.px-logo{position:relative;display:inline-grid;place-items:center;flex:none;width:17px;height:17px;margin:0 5px 0 0;border-radius:50%;overflow:hidden;vertical-align:-3px;background:#363a42;color:#f0f1f4;font:700 7px/1 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:0}
+.px-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;-webkit-user-drag:none;user-select:none}
+.px-logo.has-img{color:transparent;background:transparent}
+.px-logo.has-img::after{content:"";position:absolute;inset:0;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(255,255,255,.13);pointer-events:none}
+.px-grid.px-compact .px-logo{width:15px;height:15px;margin-right:4px;vertical-align:-2.5px}
+/* 看得清楚: no text under 11px (2026-11-01). Coin-logo initials and icons keep their size. */
+.px-frame,.px-match,.px-energy,.px-group,.px-change,.px-turnover,.px-meta,.px-count-status,.px-modes button,.px-detail-footer,.px-tier-filters button,.px-tier-badge,.px-tier-heading span,.px-mode-toggle,.px-status,.px-grid.px-compact .px-frame,.px-grid.px-compact .px-tier-badge,.px-grid.px-compact .px-change,.px-grid.px-compact .px-match{font-size:11px!important}

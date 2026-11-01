@@ -1,18 +1,18 @@
-// The 首頁 top bar (static markup in index.html, #ox-topbar): the avatar opens the
+// The 首頁 top bar (static markup in index.html, #ox-topbar): the menu lines open the
 // left drawer, one search box finds coins and features, and 通知 lists what is new.
 // The search box rotates the most traded USDT perpetuals so it always suggests
 // something. Other pages give its room to their content (app-shell.css).
 import { icon, escapeHTML, avatarHTML, tickers, coinOf, openCoin, runtime } from './chrome-style.js';
+import '../core/price-format.js';
 
 const SEEN_KEY = 'ox-crypto:notice-seen-v1';
 const readJSON = (key, fallback) => { try { const v = JSON.parse(localStorage.getItem(key)); return v ?? fallback; } catch { return fallback; } };
 const finite = v => { const n = Number(v); return Number.isFinite(n) ? n : null; };
+export const MENU = '<svg class="oc-menu" viewBox="0 0 34 34" aria-hidden="true"><path d="M9.5 11.5h15M9.5 17h15M9.5 22.5h10"/></svg>';
 export const pctText = v => v == null ? '—' : `${v > 0 ? '+' : ''}${v.toFixed(2)}%`;
 export const block = v => v > 0 ? 'u' : v < 0 ? 'd' : 'f';
-export function priceText(v) {
-  const x = finite(v); if (!x) return '—';
-  return x.toLocaleString('en-US', { maximumFractionDigits: x >= 1000 ? 2 : x >= 1 ? 4 : x >= .01 ? 6 : 8 });
-}
+// One price format for the site (src/core/price-format.js): 0.0008023 → 0.0₃8023.
+export function priceText(v) { return globalThis.OXPriceText(v); }
 export function moneyText(v) {
   const x = finite(v); if (x == null) return '—';
   return x >= 1e8 ? `${(x / 1e8).toLocaleString('zh-TW', { maximumFractionDigits: 2 })}億` : x >= 1e4 ? `${(x / 1e4).toLocaleString('zh-TW', { maximumFractionDigits: x >= 1e6 ? 0 : 1 })}萬` : x.toLocaleString('zh-TW', { maximumFractionDigits: 0 });
@@ -174,7 +174,9 @@ export function initTopbar() {
     if (b.dataset.oc === 'search') { openSearch(); globalThis.OXTrack?.('search.open'); }
     if (b.dataset.oc === 'notices') { openNotices(); globalThis.OXTrack?.('notices.open'); }
   });
-  const paintAvatar = () => { for (const el of document.querySelectorAll('[data-oc="drawer"]')) el.innerHTML = avatarHTML(); };
+  // The top-left button opens the menu, so it shows menu lines (as on the Taiwan site); the member's
+  // photo stays at the top of the menu and on the desktop header.
+  const paintAvatar = () => { for (const el of document.querySelectorAll('[data-oc="drawer"]')) { const next = el.closest('#ox-topbar') ? MENU : avatarHTML(); if (el.innerHTML !== next) el.innerHTML = next; } };
   document.addEventListener('ox:member', paintAvatar); paintAvatar();
   document.addEventListener('ox:siteconfig', refreshDot);
   document.addEventListener('ox:watchlist', refreshDot);

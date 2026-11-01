@@ -10,11 +10,11 @@ body.theme-light{--oc-ink:#30343b;--oc-muted:#6d7480;--oc-line:rgba(0,0,0,.08);-
 html body.ox-terminal .oc-btn{box-shadow:none;min-height:0}
 
 /* ---------- 首頁 top bar ---------- */
-.oc-top{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:10px;margin:0 -8px 8px;padding:calc(env(safe-area-inset-top,0px) + 8px) 8px 8px;background:var(--oc-bar);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);font-family:var(--oc-font);color:var(--oc-ink)}
+.oc-top{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:8px;margin:0 -8px 6px;padding:calc(env(safe-area-inset-top,0px) + 6px) 8px 6px;background:var(--oc-bar);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);font-family:var(--oc-font);color:var(--oc-ink)}
 html body.ox-terminal main.wrap{padding-top:10px}
 html body.ox-terminal[data-view="home"] main.wrap{padding-top:0!important}
 body:not([data-view="home"]) .oc-top{display:none!important}
-.oc-ava{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;overflow:hidden;font:600 15px var(--oc-font);position:relative}
+.oc-ava{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;overflow:hidden;font:600 15px var(--oc-font);position:relative}
 .oc-ava img{width:100%;height:100%;object-fit:cover}
 .oc-ava b{font-weight:600}
 .oc-ava .oc-person{width:100%;height:100%;fill:none;stroke-width:2.4;stroke-linecap:round}
@@ -23,13 +23,17 @@ body:not(.theme-light) .oc-ava{background:radial-gradient(circle at 30% 25%,#3a4
 body:not(.theme-light) .oc-ava .oc-person{stroke:#e6ebf1}
 body.theme-light .oc-ava{background:radial-gradient(circle at 30% 25%,#fffdf7,#f1e7cf 75%);box-shadow:0 2px 8px rgba(80,60,20,.12),inset 0 0 0 1px rgba(141,113,46,.28);color:#8d712e}
 body.theme-light .oc-ava .oc-person{stroke:#8d712e}
-.oc-back,.oc-round{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);position:relative;color:var(--oc-ink)}
+.oc-back,.oc-round{flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);position:relative;color:var(--oc-ink)}
 html body.ox-terminal .oc-back,html body.ox-terminal .oc-round{border:1px solid var(--oc-edge)}
-.oc-search{flex:1;min-width:0;height:38px;border-radius:19px;display:flex;align-items:center;gap:8px;padding:0 14px;font:500 14px var(--oc-font);color:var(--oc-muted);background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);text-align:left;overflow:hidden}
+.oc-search{flex:1;min-width:0;height:34px;border-radius:17px;display:flex;align-items:center;gap:7px;padding:0 12px;font:500 13.5px var(--oc-font);color:var(--oc-muted);background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);text-align:left;overflow:hidden}
 html body.ox-terminal .oc-search{border:1px solid var(--oc-edge);color:var(--oc-muted)}
 .oc-search span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .25s,transform .25s}.oc-search span.out{opacity:0;transform:translateY(-6px)}
-.oc-dot{position:absolute;right:8px;top:8px;width:8px;height:8px;border-radius:50%;background:#f16a70;box-shadow:0 0 0 2px var(--oc-solid)}
+.oc-dot{position:absolute;right:7px;top:7px;width:7px;height:7px;border-radius:50%;background:#f16a70;box-shadow:0 0 0 2px var(--oc-solid)}
 .oc-dot[hidden]{display:none}
+/* The top-left button opens the menu: menu lines in a glass circle, like the Taiwan site (the member photo stays in the menu). */
+.oc-top .oc-search .oc-i,.oc-top .oc-round .oc-i{width:17px;height:17px}
+html body .oc-top .oc-ava.oc-ava.oc-ava{background:var(--oc-glass);border:1px solid var(--oc-edge);box-shadow:var(--oc-glow);color:var(--oc-ink)}
+.oc-ava .oc-menu{width:100%;height:100%;fill:none;stroke:var(--oc-ink);stroke-width:1.9;stroke-linecap:round}
 
 /* ---------- sheets: search, 通知, 意見回饋 and the drawer's pages ---------- */
 .oc-sheet{position:fixed;inset:0;z-index:2147483200;display:flex;flex-direction:column;background:var(--oc-solid);color:var(--oc-ink);font-family:var(--oc-font);animation:oc-in .22s ease}
@@ -90,6 +94,11 @@ html body.ox-terminal .oc-drawer a.oc-item{color:var(--oc-ink)}
 .oc-item em{font-style:normal;min-width:20px;height:20px;border-radius:10px;background:#f16a70;color:#fff;font:600 12px/20px var(--oc-font);text-align:center;padding:0 6px;box-sizing:border-box}
 .oc-hr{height:1px;background:var(--oc-line);margin:8px 0}
 .oc-dsec{display:flex;align-items:center;gap:8px;margin:10px 2px 8px;font:500 13px var(--oc-font);color:var(--oc-muted)}.oc-dsec svg{width:16px;height:16px}
+/* 遊戲 and 交易教學: two cards under the list (Taiwan #49) */
+.oc-explore{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:4px 0 2px}
+.oc-card{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:12px;border-radius:16px;border:1px solid var(--oc-edge);background:var(--oc-glass);color:var(--oc-ink);text-decoration:none;text-align:left;font-family:var(--oc-font);cursor:pointer;box-sizing:border-box;min-width:0}
+html body .oc-drawer a.oc-card,html body .oc-drawer button.oc-card{color:var(--oc-ink);border:1px solid var(--oc-edge);background:var(--oc-glass)}
+.oc-card .oc-i{width:24px;height:24px;color:var(--oc-accent)}.oc-card b{font:600 15px var(--oc-font)}.oc-card small{font:400 11.5px var(--oc-font);color:var(--oc-muted)}
 .oc-recent{display:grid;grid-template-columns:repeat(4,1fr);padding:14px 4px;border-radius:18px;background:var(--oc-glass);border:1px solid var(--oc-edge);margin-top:2px}
 .oc-recent button{display:flex;flex-direction:column;align-items:center;gap:6px;font:400 11.5px var(--oc-font);color:var(--oc-muted);min-width:0}
 .oc-recent i{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;overflow:hidden;position:relative;background:var(--oc-soft);color:var(--oc-accent);font:600 12px var(--oc-font);font-style:normal}
@@ -280,6 +289,14 @@ html body.ox-terminal .oc-drawer :is(.oc-item,.oc-btn):focus-visible{outline:2px
 /* ---------- Coin logos (src/app/coin-logo.js): the two letters show only without a picture ---------- */
 .ox-logo.has-img{color:transparent!important}
 .ox-logo img{-webkit-user-drag:none;user-select:none}
+/* 個股 page and 行情 → 圖表: the coin's logo before its name (src/app/stock-page.js) */
+html body #view-radar .market-line-price .ox-pair-row{display:flex;align-items:center;gap:6px;min-width:0}
+html body #view-radar .market-line-price .ox-pair-row label#ticker-pair{min-width:0;flex:0 1 auto}
+html body #view-radar .ox-pair-logo{flex:none;display:inline-flex}
+html body #view-radar .ox-pair-logo:empty{display:none}
+html body #view-radar .ox-pair-coin{position:relative;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;overflow:hidden;background:#363a42;color:#f0f1f4;font:700 7.5px/1 var(--oc-font,system-ui)}
+html body.theme-light #view-radar .ox-pair-coin{background:#e9ecf0;color:#374151}
+html body #view-radar .ox-pair-coin img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
 
 /* ---------- 行情 → 圖表 (view chart): the original radar page. The 行情 tab row on top, the
    chart with the T1／T2／T3 list on its right (the original side cards, scanner.js

@@ -1,5 +1,5 @@
 /* 首頁 (#view-home .oxh): compact cards with light type, like an exchange app.
-   BTC with 畫型態 → 市場寬度 and 主流 → 今日突破 → 雷達 上漲／下跌 → 此刻發生.
+   BTC (level first, move beside it) with 畫型態 → 首頁色塊 → 今日突破 → 雷達 上漲／下跌 → 此刻發生.
    Markup in index.html; numbers and lists from renderHomeOverview (src/app/view-home-theme.js),
    breakouts and news from src/markets/crypto/home-feed.js. Up 青藍 / down 桃紅 (--green / --red). */
 html body #view-home .oxh{
@@ -51,12 +51,13 @@ html body.theme-light #view-home .oxh button.oxh-card:active,html body.theme-lig
 html body #view-home .oxh :is(button,a):focus-visible{outline:2px solid var(--h-ink);outline-offset:2px}
 
 /* ---------- BTC ---------- */
-html body #view-home .oxh .oxh-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:11px 12px 11px 13px}
+html body #view-home .oxh .oxh-hero{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:2px 4px 4px}
+html body #view-home .oxh .oxh-big{display:flex;align-items:baseline;flex-wrap:wrap;column-gap:10px;row-gap:0;margin-top:2px}
 html body #view-home .oxh .oxh-hero-main{flex:1 1 auto;display:flex;flex-direction:column;align-items:flex-start;gap:1px}
 html body #view-home .oxh .oxh-hero-main small{display:block;color:var(--h-muted);font:500 12px/1.4 var(--h-font)}
-html body #view-home .oxh .oxh-hero-main strong{display:block;color:var(--h-ink);font:700 26px/1.15 var(--h-font);letter-spacing:-.3px;white-space:nowrap}
+html body #view-home .oxh .oxh-hero-main strong{display:block;color:var(--h-ink);font:700 30px/1.1 var(--h-font);letter-spacing:-.3px;white-space:nowrap}
 html body #view-home .oxh .oxh-hero-chg{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
-html body #view-home .oxh .oxh-hero-chg em{font:600 13.5px/1.35 var(--h-font)}
+html body #view-home .oxh .oxh-hero-chg em{font:600 14px/1.35 var(--h-font)}
 html body #view-home .oxh .oxh-hero-chg i{color:var(--h-muted);font:500 11px var(--h-font)}
 html body #view-home .oxh .oxh-hero-actions{flex:none;display:flex;align-items:center;gap:8px}
 html body #view-home .oxh .oxh-icon{width:34px;height:34px;display:grid;place-items:center;border:1px solid var(--h-edge);border-radius:11px;background:var(--h-soft)}
@@ -67,22 +68,63 @@ html body #view-home .oxh .oxh-cta{
  background:var(--h-cta-bg);color:var(--h-cta-ink);box-shadow:var(--h-cta-glow);font:700 13.5px var(--h-font)
 }
 
-/* ---------- 市場寬度 · 主流 ---------- */
-html body #view-home .oxh .oxh-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
-html body #view-home .oxh .oxh-tile{display:flex;flex-direction:column;justify-content:flex-start;gap:1px;min-width:0;padding:9px 11px 8px}
-html body #view-home .oxh .oxh-tile-h{display:block;margin:0 0 3px;color:var(--h-muted);font:600 13px/1.4 var(--h-font)}
-html body #view-home .oxh .oxh-bar{display:flex;gap:2px;height:4px;margin:2px 0 3px}
-html body #view-home .oxh .oxh-bar i{display:block;width:50%;border-radius:2px;background:var(--h-up)}
-html body #view-home .oxh .oxh-bar i+i{flex:1;width:auto;background:var(--h-down)}
-html body #view-home .oxh .oxh-ln{display:flex;align-items:baseline;justify-content:space-between;gap:9px;font:500 12px/1.75 var(--h-font)}
-html body #view-home .oxh .oxh-ln>span{color:var(--h-muted);white-space:nowrap}
-html body #view-home .oxh .oxh-ln :is(b,em){font:600 12.5px var(--h-font);white-space:nowrap}
-/* Name over value, change on the right: numbers never run into each other. */
-html body #view-home .oxh .oxh-ln2{width:100%;display:flex;align-items:center;justify-content:space-between;gap:6px;padding:3px 0}
-html body #view-home .oxh .oxh-ln2>span{display:flex;flex-direction:column;min-width:0}
-html body #view-home .oxh .oxh-ln2 i{overflow:hidden;color:var(--h-muted);font:500 11.5px/1.3 var(--h-font);text-overflow:ellipsis;white-space:nowrap}
-html body #view-home .oxh .oxh-ln2 b{font:600 13px/1.3 var(--h-font);white-space:nowrap}
-html body #view-home .oxh .oxh-ln2 em{flex:none;font:600 12.5px var(--h-font);white-space:nowrap}
+/* ---------- 首頁色塊 (src/markets/crypto/home-tiles.js) ----------
+   A tile's colour is its direction (u／d／f) at the strength --ht-a (darker = bigger move);
+   the rgb per theme lives here, so switching theme needs no redraw. The editor sheet sits
+   outside #view-home, so its rules are not scoped to the page. */
+:root{--ht-up:0,184,212;--ht-down:255,48,120;--ht-flat:128,136,146}
+body.theme-light{--ht-up:29,116,214;--ht-down:214,65,95;--ht-flat:128,136,146}
+html body #view-home .oxh .ht-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+html body #view-home .oxh .ht-t{position:relative;border-radius:12px;padding:9px 8px 8px;min-height:64px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-start;gap:1px;color:var(--h-ink);font-variant-numeric:tabular-nums;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;touch-action:manipulation;transition:background-color .35s ease}
+html body #view-home .oxh .ht-t.u{background:rgba(var(--ht-up),var(--ht-a,.14))}
+html body #view-home .oxh .ht-t.d{background:rgba(var(--ht-down),var(--ht-a,.14))}
+html body #view-home .oxh .ht-t.f{background:rgba(var(--ht-flat),.18)}
+html body #view-home .oxh .ht-t i{max-width:100%;overflow:hidden;font:600 11px/1.3 var(--h-font);opacity:.85;text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .ht-t b{font:700 15.5px/1.25 var(--h-font);white-space:nowrap;letter-spacing:-.2px}
+html body #view-home .oxh .ht-t s{max-width:100%;overflow:hidden;text-decoration:none;font:500 10.5px/1.3 var(--h-font);opacity:.8;text-overflow:ellipsis;white-space:nowrap}
+html body #view-home .oxh .ht-t.hot{color:#fff}
+html body #view-home .oxh .ht-t:active{filter:brightness(1.12)}
+html body #view-home .oxh .ht-empty{grid-column:1/-1;padding:16px;text-align:center;color:var(--h-muted);font:500 13px var(--h-font)}
+html body #view-home .oxh .ht-legend{display:flex;justify-content:space-between;align-items:center;margin-top:6px;padding:0 4px;color:var(--h-muted);font:500 11px var(--h-font)}
+html body #view-home .oxh .ht-legend button{padding:4px 2px;color:var(--h-muted);font:500 11.5px var(--h-font)}
+html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]{animation:ht-wig .26s ease-in-out infinite alternate;cursor:grab;touch-action:none}
+html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]:nth-child(2n){animation-delay:-.13s}
+@keyframes ht-wig{from{transform:rotate(-1.3deg)}to{transform:rotate(1.3deg)}}
+html body #view-home .oxh .ht-t.dragging{animation:none!important;z-index:5;box-shadow:0 10px 24px rgba(0,0,0,.25);transition:none}
+html body #view-home .oxh .ht-t.target{outline:2px dashed var(--h-ink);outline-offset:1px}
+html body #view-home .oxh .ht-x{position:absolute;top:-6px;left:-6px;width:20px;height:20px;border-radius:50%;display:grid;place-items:center;background:rgba(60,64,72,.92);color:#fff;font:600 14px/1 var(--h-font);box-shadow:0 1px 4px rgba(0,0,0,.3)}
+html body #view-home .oxh .ht-add{align-items:center;justify-content:center;border:1.5px dashed var(--h-edge);background:var(--h-soft);color:var(--h-muted);font:400 22px var(--h-font)}
+@media (prefers-reduced-motion:reduce){html body #view-home .oxh .ht-grid.editing .ht-t[data-ht]{animation:none}}
+/* the editor sheet */
+.hs{display:flex;flex-direction:column;gap:8px;padding-top:4px;font-family:var(--oc-font)}
+html body .hs .hs-seg{display:flex;padding:2px;border-radius:10px;background:var(--oc-soft);gap:2px}
+html body .hs .hs-seg button{flex:1;min-height:0;border:0;background:none;box-shadow:none;padding:7px 0;border-radius:8px;font:600 13.5px var(--oc-font);color:var(--oc-muted);cursor:pointer}
+html body .hs .hs-seg button[aria-pressed="true"]{background:var(--oc-glass);color:var(--oc-ink);box-shadow:var(--oc-glow)}
+html body .hs .hs-seg.small{flex:none;width:180px}
+html body .hs .hs-seg.small button{padding:5px 0;font-size:12.5px}
+.hs-line{display:flex;align-items:center;justify-content:space-between;padding:4px 2px;font:500 14px var(--oc-font);color:var(--oc-ink)}
+.hs-label{margin:10px 2px 2px;font:500 12px var(--oc-font);color:var(--oc-muted)}
+.hs-list{border-radius:14px;border:1px solid var(--oc-edge);background:var(--oc-glass);overflow:hidden}
+.hs-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border-bottom:1px solid var(--oc-line);background:var(--oc-solid,transparent);touch-action:none;color:var(--oc-ink)}
+.hs-row:last-child{border-bottom:0}
+.hs-row.over{opacity:.45}
+.hs-row.dragging{position:relative;z-index:3;box-shadow:0 8px 20px rgba(0,0,0,.2)}
+.hs-handle{font:400 18px var(--oc-font);color:var(--oc-muted);cursor:grab;padding:0 2px;touch-action:none}
+.hs-sw{flex:none;width:14px;height:14px;border-radius:4px;background:rgba(var(--ht-flat),.3)}
+.hs-sw.u{background:rgba(var(--ht-up),var(--ht-a,.3))}
+.hs-sw.d{background:rgba(var(--ht-down),var(--ht-a,.3))}
+.hs-n{flex:1;min-width:0;display:flex;flex-direction:column}
+.hs-n b{font:500 14.5px var(--oc-font)}
+.hs-n small{font:400 11.5px var(--oc-font);color:var(--oc-muted)}
+.hs-row em,.hs-chip em{font:600 12.5px var(--oc-font);font-style:normal;font-variant-numeric:tabular-nums}
+html body .hs .hs-del{width:26px;height:26px;min-height:0;padding:0;border-radius:50%;border:0;box-shadow:none;background:rgba(var(--ht-down),.14);color:rgb(var(--ht-down));font:600 16px/1 var(--oc-font);cursor:pointer}
+.hs-empty{padding:14px;text-align:center;font:400 13px var(--oc-font);color:var(--oc-muted)}
+.hs-pick{display:flex;flex-wrap:wrap;gap:6px}
+html body .hs .hs-chip{display:inline-flex;align-items:center;gap:6px;min-height:0;padding:6px 10px;border-radius:999px;border:1px solid var(--oc-edge);background:var(--oc-glass);box-shadow:none;font:500 13px var(--oc-font);color:var(--oc-ink);cursor:pointer}
+.hs-chip i{font-style:normal;color:var(--oc-muted)}
+html body .hs .hs-chip[aria-pressed="true"]{border-color:var(--oc-accent)}
+.hs-chip[aria-pressed="true"] i{color:var(--oc-accent)}
+html body .hs .hs-reset{align-self:center;margin:14px 0 4px;min-height:0;padding:4px;border:0;background:none;box-shadow:none;font:500 13px var(--oc-font);color:var(--oc-muted);text-decoration:underline;cursor:pointer}
 
 /* ---------- section heads ---------- */
 html body #view-home .oxh .oxh-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;margin:6px 2px 7px}
@@ -129,7 +171,8 @@ html body #view-home .oxh .oxh-bf>span{color:var(--h-muted);font:500 10.5px var(
 html body #view-home .oxh .oxh-chg{min-width:62px;padding:3px 6px;border-radius:6px;color:#fff;font:600 12.5px/1.3 var(--h-font);text-align:center;white-space:nowrap}
 html body #view-home .oxh .oxh-chg.u{background:var(--h-up)}
 html body #view-home .oxh .oxh-chg.d{background:var(--h-down)}
-html body #view-home .oxh .oxh-chg.f{background:#6f767e}
+html body #view-home .oxh .oxh-chg.f{background:var(--h-soft);color:var(--h-ink);box-shadow:inset 0 0 0 1px var(--h-edge)}
+html body #view-home .oxh .oxh-chg.n{background:var(--h-soft);color:var(--h-muted)}
 html body #view-home .oxh .oxh-logo,html body #view-home .oxh .ox-home-t1-identity .ox-coin-logo{
  position:relative;flex:none;width:18px;height:18px;display:grid;place-items:center;overflow:hidden;border-radius:50%;
  background:var(--h-soft);color:var(--h-muted);font:700 7.5px/1 var(--h-font);letter-spacing:0
@@ -173,11 +216,18 @@ html body #view-home .oxh .oxh-list .ox-home-t1-row>small:not(.ox-home-row-tier)
 html body #view-home .oxh .oxh-list .ox-home-t1-row em{grid-area:chg;align-self:center;font:600 12.5px var(--h-font);white-space:nowrap}
 
 /* The scan's progress (loading-state.js) on one quiet line under the lists. */
-html body #view-home .oxh .oxh-radar>.ox-region-loading{padding:7px 0 0}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading{flex-direction:row;gap:6px;color:var(--h-muted);font:500 11px/1.4 var(--h-font)}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
-html body #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:11px}
-html body.theme-light #view-home .oxh .oxh-radar>.ox-region-loading .ox-loading-ring{border-color:#30343b24;border-top-color:#30343b}
+/* Loading sits in the 雷達 heading line (src/components/loading-state.js): a ring and a short label
+   before the close time, so nothing is added under the lists and nothing can sit under the dock. */
+html body #view-home .oxh .oxh-radar-head{gap:8px}
+html body #view-home .oxh .oxh-radar-head>h2{margin-right:auto}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading{order:1;flex:none;display:inline-flex;padding:0;grid-column:auto}
+html body #view-home .oxh .oxh-radar-head>[data-radar-freshness]{order:2}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading{flex-direction:row;gap:5px;color:var(--h-muted);font:500 11px/1.4 var(--h-font);white-space:nowrap}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{width:12px;height:12px;border-width:1.5px}
+html body #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-count{order:2;color:var(--h-muted);font-size:11px}
+/* The close time already carries the scan count: the ring alone then. */
+html body #view-home .oxh .oxh-radar-head:has(>[data-radar-freshness]:not([hidden]))>.ox-region-loading :is(.ox-loading-label,.ox-loading-count){display:none}
+html body.theme-light #view-home .oxh .oxh-radar-head>.ox-region-loading .ox-loading-ring{border-color:#30343b24;border-top-color:#30343b}
 
 /* ---------- 此刻發生 ---------- */
 html body #view-home .oxh .oxh-newsrow{display:block;margin:0 0 8px;padding:10px 12px}
@@ -188,11 +238,11 @@ html body #view-home .oxh .oxh-meta{display:block;margin-top:6px;color:var(--h-m
 @media (min-width:980px){
  html body #view-home .oxh{
   display:grid;grid-template-columns:minmax(0,1.3fr) minmax(340px,1fr);grid-template-rows:auto auto auto 1fr;
-  grid-template-areas:"hero radar" "two radar" "breaks radar" "news radar";column-gap:18px;row-gap:10px;align-items:start;
+  grid-template-areas:"hero radar" "tiles radar" "breaks radar" "news radar";column-gap:18px;row-gap:10px;align-items:start;
   max-width:1240px;margin:0 auto;padding-top:12px
  }
  html body #view-home .oxh .oxh-hero{grid-area:hero}
- html body #view-home .oxh .oxh-two{grid-area:two}
+ html body #view-home .oxh .oxh-tiles{grid-area:tiles}
  html body #view-home .oxh .oxh-breaks{grid-area:breaks;min-width:0}
  html body #view-home .oxh .oxh-radar{grid-area:radar}
  html body #view-home .oxh .oxh-news{grid-area:news}

@@ -19,7 +19,7 @@ export const FRAMES = Object.freeze([['1H', '1 小時'], ['4H', '4 小時'], ['1
 const SECONDS = { '1H': 3600, '4H': 14400, '1D': 86400, '1W': 604800 };
 const LOGGED = '@log', BOARD_CANDLES = 199, BASE = 'https://api.bitget.com', TRANSPORT = { owner: 'compare', priority: 8 };
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
-const price = v => Number.isFinite(v) ? v.toLocaleString('en-US', { maximumSignificantDigits: 6 }) : '—';
+const price = v => !Number.isFinite(v) ? '—' : v !== 0 && Math.abs(v) < 0.001 && globalThis.OXPriceText ? globalThis.OXPriceText(v) : v.toLocaleString('en-US', { maximumSignificantDigits: 6 });
 const name = id => patternById(id)?.name || String(id || '型態');
 const f = v => v.toFixed(1);
 

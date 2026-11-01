@@ -5,7 +5,7 @@
 //             and of each coin's 4H candles. A card draws the pattern outline from the record at
 //             once and its 4H chart when the candles arrive (only cards on screen ask for them).
 //   此刻發生  three current crypto headlines from the 資訊 news snapshot (window.OXNews).
-//   live      BTC, ETH, SOL and the breakout coins on the public quote stream while 首頁 shows.
+//   live      BTC, the 首頁色塊 coins and the breakout coins on the public quote stream while 首頁 shows.
 // Buttons: 畫型態 → 畫板, 全部 → 型態 or 資訊, a breakout card → that coin's 4H chart.
 import { loadToolModule } from '../../components/load-tool-module.js';
 import { localizeNewsText } from '../../components/news/localization.js';
@@ -35,7 +35,7 @@ function logo(symbol) {
 const dropBrokenLogos = () => {};
 
 // ---------- 今日突破 ----------
-const compareURL = () => new URL('./compare/view.js?v=20261101-v4', import.meta.url).href;
+const compareURL = () => new URL('./compare/view.js?v=20261101-v6', import.meta.url).href;
 const breaks = { at: null, time: '', count: 0, picks: [], charts: new Map(), queue: [], queued: new Set(), active: 0, observer: null, module: null, job: null, candle: 0 };
 
 function sinceBreak(pick) {
@@ -47,7 +47,8 @@ function refreshChanges() {
   if (!box) return;
   for (const el of box.querySelectorAll('[data-chg]')) {
     const pick = breaks.picks.find(p => p.s === el.dataset.chg), v = pick ? sinceBreak(pick) : NaN;
-    const text = pct(v), cls = `oxh-chg ${Number.isFinite(v) ? v > 0 ? 'u' : v < 0 ? 'd' : 'f' : 'f'}`;
+    // ▲ up, ▼ down, 0.00% flat in a neutral tone; — until the price arrives.
+    const text = Number.isFinite(v) ? `${v > 0 ? '▲ ' : v < 0 ? '▼ ' : ''}${pct(v)}` : '—', cls = `oxh-chg ${Number.isFinite(v) ? v > 0 ? 'u' : v < 0 ? 'd' : 'f' : 'n'}`;
     if (el.textContent !== text) el.textContent = text;
     if (el.className !== cls) el.className = cls;
   }
@@ -61,7 +62,7 @@ function cardHTML(pick) {
     <span class="oxh-bn">${logo(pick.s)}<b>${esc(pick.coin)}</b>${pick.t ? `<i data-tier="${pick.t}">T${pick.t}</i>` : ''}</span>
     <small>${esc(pick.name)}</small>
     <span class="oxh-mini" data-mini="${esc(pick.s)}"${breaks.charts.has(key) ? '' : ' data-outline'}>${chart}</span>
-    <span class="oxh-bf"><span>突破後</span><em class="oxh-chg f" data-chg="${esc(pick.s)}">—</em></span>
+    <span class="oxh-bf"><span>突破後</span><em class="oxh-chg n" data-chg="${esc(pick.s)}">—</em></span>
   </button>`;
 }
 // Only cards on screen (and the next one) ask for candles, two at a time.
@@ -191,8 +192,9 @@ function hydrateNews(force = false) {
 
 // ---------- live prices while 首頁 shows ----------
 let quotes = null;
-const quoteSymbols = () => ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', ...breaks.picks.map(p => p.s)];
-function onQuotes() { window.renderHomeQuotes?.(); refreshChanges(); }
+// BTC, the coins in the 首頁色塊 and the breakout cards.
+const quoteSymbols = () => [...new Set(['BTCUSDT', ...(globalThis.OXHomeTiles?.symbols() || []), ...breaks.picks.map(p => p.s)])];
+function onQuotes() { window.renderHomeQuotes?.(); refreshChanges(); globalThis.OXHomeTiles?.render(); }
 function syncQuotes() {
   if (!onHome() || !globalThis.OXCryptoQuotes) { quotes?.stop(); quotes = null; return; }
   if (quotes) quotes.update(quoteSymbols()); else quotes = globalThis.OXCryptoQuotes.subscribe(quoteSymbols(), onQuotes);
@@ -233,7 +235,7 @@ function start() {
   if (started || !root()) return;
   started = true;
   document.addEventListener('click', onClick);
-  for (const type of ['ox:viewchange', 'ox:marketchange', 'visibilitychange']) document.addEventListener(type, () => requestAnimationFrame(sync));
+  for (const type of ['ox:viewchange', 'ox:marketchange', 'visibilitychange', 'ox:home-tiles']) document.addEventListener(type, () => requestAnimationFrame(sync));
   // A new 4H record lands a few minutes after each close; prices between quote updates.
   setInterval(() => { if (onHome()) { hydrateBreaks(); refreshChanges(); } }, 60000);
   sync();

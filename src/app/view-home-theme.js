@@ -167,12 +167,26 @@ function homeBreadth(tickers = state.tickers) {
     median: sorted.length ? sorted.length % 2 ? sorted[mid] : (sorted[mid - 1] + sorted[mid]) / 2 : null
   };
 }
-// 24H change as 「-2,735.6（-3.44%）」: the amount from the 24H change ratio.
+// 24H change as 「-2,735.6（-3.44%）」: the amount from the 24H change ratio, with as many
+// decimals as the price itself (BTC 77,898 → +517, not +516.9057).
 function homeChangeText(quote) {
   const last = Number(quote?.lastPr), ratio = Number(quote?.change24h);
   if (!Number.isFinite(last) || !Number.isFinite(ratio) || last <= 0 || ratio <= -1) return "—";
   const amount = last - last / (1 + ratio), sign = amount > 0 ? "+" : amount < 0 ? "-" : "";
-  return `${sign}${Math.abs(amount) > 0 ? fmtPrice(Math.abs(amount)) : "0"}（${fmtPct(ratio)}）`;
+  const digits = Math.min(8, (String(quote.lastPr).split(".")[1] || "").length);
+  const text = Math.abs(amount).toLocaleString("en-US", { minimumFractionDigits: digits, maximumFractionDigits: digits });
+  return `${sign}${Math.abs(amount) > 0 ? text : "0"}（${fmtPct(ratio)}）`;
+}
+// Why a radar list is empty, in words, so an empty list never looks like one still loading.
+function radarEmptyReason(side) {
+  const label = side === "long" ? "多頭" : "空頭";
+  const queue = state.scanQueue?.length || 0, done = Math.min(state.scanIndex || 0, queue);
+  if (state.radarLoadError || state.radarScanFailed) return { title: "行情資料尚未取得", text: "連線恢復後會自動重試。", busy: false };
+  if (!state.tickers?.length) return { title: "取得行情中…", text: "", busy: true };
+  if (!state.radarSnapshotReady && (!queue || done < queue)) return { title: queue ? `掃描中 ${done}/${queue}` : "掃描中…", text: `${label}候選會陸續出現。`, busy: true };
+  const b = homeBreadth(), share = b.up + b.down ? b.up / (b.up + b.down) : .5;
+  const tilt = side === "long" && share < .45 ? "・市場偏空" : side === "short" && share > .55 ? "・市場偏多" : "";
+  return { title: `目前沒有${label}候選${tilt}`, text: `${b.total ? `${b.up} 個上漲、${b.down} 個下跌；` : ""}沒有幣種同時達到結構與量能條件。`, busy: false };
 }
 function renderHomeQuotes() {
   const setText = (id, value) => { const el = document.getElementById(id); if (el && el.textContent !== value) el.textContent = value; };
@@ -185,21 +199,21 @@ function renderHomeQuotes() {
   const btc = homeQuote("BTCUSDT");
   setText("home-btc-price", btc ? fmtPrice(btc.lastPr) : "—");
   setTone("home-btc-change", Number(btc?.change24h), btc ? homeChangeText(btc) : "—");
-  for (const coin of ["eth", "sol"]) {
-    const quote = homeQuote(`${coin.toUpperCase()}USDT`), change = Number(quote?.change24h);
-    setText(`home-${coin}-price`, quote ? fmtPrice(quote.lastPr) : "—");
-    setTone(`home-${coin}-change`, change, quote && Number.isFinite(change) ? fmtPct(change) : "—");
-  }
-  const breadth = homeBreadth();
-  setText("home-breadth-up", breadth.total ? String(breadth.up) : "—");
-  setText("home-breadth-down", breadth.total ? String(breadth.down) : "—");
-  setTone("home-breadth-median", breadth.median, breadth.median == null ? "—" : fmtPct(breadth.median));
-  const bar = document.getElementById("home-breadth-bar");
-  if (bar) bar.style.width = `${breadth.up + breadth.down ? (breadth.up / (breadth.up + breadth.down) * 100).toFixed(1) : 50}%`;
 }
 
+let homeListsAt = 0, homeListsTimer = 0;
 function renderHomeOverview() {
   renderHomeQuotes();
+  // The colour tiles (src/markets/crypto/home-tiles.js) take the new tickers too.
+  globalThis.OXHomeTiles?.render();
+  // The two lists re-rank as the scan and live prices move. Redrawn at most every 3 seconds,
+  // their rows no longer hop back and forth several times a second.
+  const wait = 3000 - (performance.now() - homeListsAt);
+  if (homeListsAt && wait > 0 && document.querySelector("#home-t1-long-list .ox-home-t1-row, #home-t1-short-list .ox-home-t1-row")) {
+    if (!homeListsTimer) homeListsTimer = setTimeout(() => { homeListsTimer = 0; renderHomeOverview(); }, wait);
+    return;
+  }
+  homeListsAt = performance.now();
   // The paired lists read the radar's independent long and short rankings.
   for (const [side, label] of [["long", "上漲"], ["short", "下跌"]]) {
     const rows = ["t1","t2","t3"].flatMap(tier => state.tierMapBySide?.[side]?.[tier] || []).filter(candidate =>
@@ -210,12 +224,18 @@ function renderHomeOverview() {
     const existing=new Map([...box.querySelectorAll('.ox-home-t1-row')].map(row=>[row.dataset.homeSymbol,row]));
     const displayed=[];
     if (!rows.length) {
-      const empty = document.createElement("span");
-      empty.className = "ox-home-t1-empty";
-      empty.textContent = `等待${label}候選`;
-      box.replaceChildren(empty);
+      // Still scanning: the skeleton rows stay with the progress under them. Done: say why it is empty.
+      const why = radarEmptyReason(side), text = why.title + (why.text ? " | " + why.text : "");
+      let empty = box.querySelector(":scope > .ox-home-t1-empty");
+      if (!empty || box.querySelector(".ox-home-t1-row")) {
+        empty = document.createElement("div"); empty.className = "ox-home-t1-empty";
+        box.replaceChildren(...(why.busy ? Array.from({ length: 4 }, () => Object.assign(document.createElement("span"), { className: "ox-home-skel" })) : []), empty);
+      } else if (!why.busy) box.querySelectorAll(":scope > .ox-home-skel").forEach(el => el.remove());
+      if (empty.dataset.text !== text) { empty.dataset.text = text; empty.innerHTML = `<b>${why.title}</b>${why.text ? `<span>${why.text}</span>` : ""}`; }
+      box.setAttribute("aria-busy", String(why.busy));
       continue;
     }
+    box.setAttribute("aria-busy", "false");
     let previousTier=null;
     for (const candidate of rows.slice(0, 30)) {
       // .ox-home-t1-row keeps the double tap / long press K-line preview (home-preview.js).
