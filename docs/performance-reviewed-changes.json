@@ -198,6 +198,12 @@
       "sourceSha256": "12c3f1892f777848c05ec0820a19a75c6dab03f74ac9582807955428a592fa1c",
       "sha256": "05c23f43e16ca3b0196c2e73dba03ccac0b76ba304ebb343e36f4775ef7bc0f5",
       "reason": "User-requested 分享圖片 (board card picture button, long press, 分享 after drawing) and 泡泡圖 N 日漲跌 (3／5／自訂 days, remembered on the device) (2026-10-31). User-approved polish (2026-11-01): one price format with the zero count (0.0₃8023), 11px floor for labels, labels fitted to their bubble/tile, lists that do not jump on tab switches."
+    },
+    {
+      "path": "src/components/chart/home-preview.js",
+      "sourceSha256": "8112393e3565ebbda9dcf47d0b0832f13902c739507b011f8dd07232a9b9094d",
+      "sha256": "6c401ab73dea8a73201ef664cfb724f7779b93294f943c28338b6930c6639093",
+      "reason": "User-approved polish (2026-11-01): the 首頁 long-press K-line preview shows tiny prices with the zero count (0.0₃8023) on its axis, like the rest of the site."
     }
   ]
 }
