@@ -2045,6 +2045,11 @@ body.theme-light
 
     bindDesktopRadar();
 
+    // With one market there is nothing to switch to: on phones 畫板 is a plain dock tab
+    // whose press, hold and slide belong to the liquid-glass dock (src/app/dock-glass.js).
+    // Holding it opened a menu with only 加密 and swallowed the lens dropping onto 畫板.
+    if (MARKETS.length > 1) {
+
     /*
      * =======================================================
      * MOBILE
@@ -2181,6 +2186,8 @@ body.theme-light
 
       }
     );
+
+    }
 
     document.addEventListener('pointerdown', event => {
       if (menu?.classList.contains('is-open') && !menu.contains(event.target) && !radar.contains(event.target) && !desktopRadar?.contains(event.target)) closeMenu();

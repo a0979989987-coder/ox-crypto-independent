@@ -3,7 +3,7 @@ import { fetchCaps, fetchQuotes, fetchLargeTrades, pause, json } from './source.
 import { PERIOD_PRESETS, readPeriodDays, writePeriodDays, clampDays, periodChange, createDailyCloses } from './period.js?v=20261031-share1';
 import { BubbleField } from './field.js?v=20261031-share1';
 import { revealStyledShadow, preloadToolStyles } from '../../../components/style-ready.js?v=20261005-stable18';
-const css=new URL('./bubbles.css?v=20261031-share1',import.meta.url);
+const css=new URL('./bubbles.css?v=20261101-v5',import.meta.url);
 export const preloadBubblesStyles=()=>preloadToolStyles(css.href);
 const DIRECTIONS=[['both','多空'],['long','看多'],['short','看空']];
 const icon=(name)=>`<svg viewBox="0 0 24 24" aria-hidden="true"><path d="${{both:'M8 19V5m-4 4 4-4 4 4M16 5v14m-4-4 4 4 4-4',long:'M12 20V4m-6 6 6-6 6 6',short:'M12 4v16m-6-6 6 6 6-6',close:'m6 6 12 12M18 6 6 18',reset:'M3 4v6h6M4 10a8 8 0 1 1 1 8',cycle:'m7 8 3-3 3 3M10 5v9m7 2-3 3-3-3m3 3V10',filter:'M4 5h16l-6 7v6l-4 2v-8Z',chevron:'m7 9 5 5 5-5',check:'m5 12 4 4L19 6'}[name]||''}"/></svg>`;
@@ -42,8 +42,8 @@ export function mountBubbles(host,{restore=null,quotes=null,caps:initialCaps=nul
   function setPeriod(days,{custom=false}={}){periodDays=writePeriodDays(days);const input=q('[data-period-input]'),isCustom=custom||periodCustom();input.hidden=!isCustom;if(isCustom&&shadow.activeElement!==input)input.value=String(periodDays);shadow.querySelectorAll('[data-period]').forEach(x=>x.setAttribute('aria-pressed',String(x.dataset.period==='custom'?isCustom:!isCustom&&Number(x.dataset.period)===periodDays)));paint();}
   function renderList(){
     const grid=q('.oxb-asset-grid'),seen=new Set();
-    rows.forEach((r,i)=>{let button=assetButtons.get(r.symbol);if(!button){button=document.createElement('button');button.dataset.asset=r.symbol;button.innerHTML='<span></span><b></b>';assetButtons.set(r.symbol,button);}
-      const label=format(r.value,metric),base=button.querySelector('span'),value=button.querySelector('b');const title=r.base;if(base.textContent!==title)base.textContent=title;if(value.textContent!==label)value.textContent=label;
+    rows.forEach((r,i)=>{let button=assetButtons.get(r.symbol);if(!button){button=document.createElement('button');button.dataset.asset=r.symbol;button.innerHTML=`<i class="oxb-name">${globalThis.OXCoinLogo?.html(r.symbol,{cls:'oxb-logo',size:16})||''}<span></span></i><b></b>`;assetButtons.set(r.symbol,button);}
+      const label=format(r.value,metric),base=button.querySelector('.oxb-name>span:last-child'),value=button.querySelector('b');const title=r.base;if(base.textContent!==title)base.textContent=title;if(value.textContent!==label)value.textContent=label;
       const sign=r.sign??(metric==='flow'?r.value:r.change);button.classList.toggle('up',sign>0);button.classList.toggle('down',sign<0);button.setAttribute('aria-label',`${r.base}，${metrics.find(m=>m[0]===metric)[1]} ${label}，查看${asset}詳情`);
       if(grid.children[i]!==button)grid.insertBefore(button,grid.children[i]||null);seen.add(r.symbol);
     });

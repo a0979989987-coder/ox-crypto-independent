@@ -63,7 +63,8 @@ test('synced settings are the keys the features really use', async () => {
     'ox-chart-indicators': 'src/components/chart/toolbar.js',
     'ox-crypto:chart-style-v1': 'src/components/chart/indicators.js',
     'ox-crypto:board-filter-v1': 'src/markets/crypto/patterns/filters.js',
-    'ox-crypto:bubble-days-v1': 'src/markets/crypto/bubbles/period.js'
+    'ox-crypto:bubble-days-v1': 'src/markets/crypto/bubbles/period.js',
+    'ox-crypto:home-tiles-v1': 'src/markets/crypto/home-tiles.js'
   };
   for (const [key, file] of Object.entries(uses)) {
     assert.ok(synced.has(key), key + ' is synced');

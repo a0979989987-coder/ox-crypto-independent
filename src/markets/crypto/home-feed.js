@@ -5,7 +5,7 @@
 //             and of each coin's 4H candles. A card draws the pattern outline from the record at
 //             once and its 4H chart when the candles arrive (only cards on screen ask for them).
 //   此刻發生  three current crypto headlines from the 資訊 news snapshot (window.OXNews).
-//   live      BTC, ETH, SOL and the breakout coins on the public quote stream while 首頁 shows.
+//   live      BTC, the 首頁色塊 coins and the breakout coins on the public quote stream while 首頁 shows.
 // Buttons: 畫型態 → 畫板, 全部 → 型態 or 資訊, a breakout card → that coin's 4H chart.
 import { loadToolModule } from '../../components/load-tool-module.js';
 import { localizeNewsText } from '../../components/news/localization.js';
@@ -191,8 +191,9 @@ function hydrateNews(force = false) {
 
 // ---------- live prices while 首頁 shows ----------
 let quotes = null;
-const quoteSymbols = () => ['BTCUSDT', 'ETHUSDT', 'SOLUSDT', ...breaks.picks.map(p => p.s)];
-function onQuotes() { window.renderHomeQuotes?.(); refreshChanges(); }
+// BTC, the coins in the 首頁色塊 and the breakout cards.
+const quoteSymbols = () => [...new Set(['BTCUSDT', ...(globalThis.OXHomeTiles?.symbols() || []), ...breaks.picks.map(p => p.s)])];
+function onQuotes() { window.renderHomeQuotes?.(); refreshChanges(); globalThis.OXHomeTiles?.render(); }
 function syncQuotes() {
   if (!onHome() || !globalThis.OXCryptoQuotes) { quotes?.stop(); quotes = null; return; }
   if (quotes) quotes.update(quoteSymbols()); else quotes = globalThis.OXCryptoQuotes.subscribe(quoteSymbols(), onQuotes);
@@ -233,7 +234,7 @@ function start() {
   if (started || !root()) return;
   started = true;
   document.addEventListener('click', onClick);
-  for (const type of ['ox:viewchange', 'ox:marketchange', 'visibilitychange']) document.addEventListener(type, () => requestAnimationFrame(sync));
+  for (const type of ['ox:viewchange', 'ox:marketchange', 'visibilitychange', 'ox:home-tiles']) document.addEventListener(type, () => requestAnimationFrame(sync));
   // A new 4H record lands a few minutes after each close; prices between quote updates.
   setInterval(() => { if (onHome()) { hydrateBreaks(); refreshChanges(); } }, 60000);
   sync();

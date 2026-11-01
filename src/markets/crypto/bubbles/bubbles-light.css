@@ -55,3 +55,4 @@
 :host([data-ox-theme="light"]) .oxb-period button[aria-pressed=true]{background:#30343b;color:#fff}
 :host([data-ox-theme="light"]) .oxb-period input{border-color:#00000026;color:#30343b}
 :host([data-ox-theme="light"]) .oxb-period input:focus{border-color:#30343b80}
+:host([data-ox-theme="light"]) .oxb-logo:not(.has-img) {background:#e9ecf0!important;color:#374151!important}

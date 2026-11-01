@@ -55,7 +55,9 @@
   }
   function morph(from, to) {
     if (from.nodeType !== 1) { if (from.nodeValue !== to.nodeValue) from.nodeValue = to.nodeValue; return; }
-    for (const { name } of [...from.attributes]) if (!to.hasAttribute(name)) from.removeAttribute(name);
+    // A canvas's width/height are its drawn pixels (set by its chart); dropping them would blank it.
+    const drawn = from.nodeName === 'CANVAS';
+    for (const { name } of [...from.attributes]) if (!to.hasAttribute(name) && !(drawn && (name === 'width' || name === 'height'))) from.removeAttribute(name);
     for (const { name, value } of to.attributes) if (from.getAttribute(name) !== value) from.setAttribute(name, value);
     if (from.nodeName === 'INPUT' && from !== document.activeElement && from.value !== to.value) from.value = to.value;
     children(from, to);

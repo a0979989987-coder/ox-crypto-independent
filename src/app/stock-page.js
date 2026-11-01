@@ -10,7 +10,14 @@ import { shareChart } from '../markets/crypto/share-entries.js?v=20261031-share1
 let bar;
 const symbol = () => runtime()?.symbol || null;
 const starred = s => { try { return isWatchlisted(s); } catch { return false; } };
+// The coin's logo beside its name at the top of the page (src/app/coin-logo.js); drawn again
+// only when the coin changes, so price ticks never touch it.
+function paintLogo(s) {
+  const box = document.querySelector('#view-radar .ox-pair-logo'); if (!box || !s || box.dataset.symbol === s || !globalThis.OXCoinLogo) return;
+  box.dataset.symbol = s; box.innerHTML = globalThis.OXCoinLogo.html(s, { cls: 'ox-pair-coin', size: 20 });
+}
 function sync() {
+  paintLogo(symbol());
   if (!bar) return;
   const s = symbol(), on = !!s && starred(s), star = bar.querySelector('[data-stock-act="watch"]');
   star.setAttribute('aria-pressed', String(on)); star.querySelector('span').textContent = on ? '已自選' : '自選';

@@ -62,11 +62,12 @@ export function shareHomeOverview() {
   const list = side => ['t1', 't2', 't3'].flatMap(tier => (rt?.tierMapBySide?.[side]?.[tier] || []).map(c => ({ c, tier: String(c.displayTier || c.tier || tier).toUpperCase() })))
     .filter(({ c }) => side === 'long' ? Number(c.change24h) > 0 : Number(c.change24h) < 0)
     .slice(0, 8).map(({ c, tier }) => ({ tier, name: coin(c.symbol), change: sharePct(Number(c.change24h) * 100), color: shareTone(Number(c.change24h)) }));
-  const count = id => { const v = finite(text(id)); return v == null ? '—' : `${v} 個`; };
+  // 上漲／下跌 counts every eligible coin, as the 首頁 tile 上漲家數 does.
+  const breadth = typeof globalThis.homeBreadth === 'function' ? globalThis.homeBreadth() : null, count = n => breadth?.total ? `${n} 個` : '—';
   const breaks = homeBreakSummary();
   return shareHome({
     btc: { price: btc.price == null ? text('home-btc-price') : sharePrice(btc.price), change: btc.change == null ? '' : sharePct(btc.change), color: shareTone(btc.change) },
-    tiles: [['上漲', count('home-breadth-up'), shareTone(1)], ['下跌', count('home-breadth-down'), shareTone(-1)],
+    tiles: [['上漲', count(breadth?.up), shareTone(1)], ['下跌', count(breadth?.down), shareTone(-1)],
       ['ETH', sharePct(eth.change), shareTone(eth.change)], ['SOL', sharePct(sol.change), shareTone(sol.change)]],
     breaks: breaks && { title: `今日突破・${breaks.time}`, items: breaks.picks.slice(0, 6).map(p => ({ name: p.coin, change: sharePct(p.change), color: shareTone(p.change) })) },
     long: list('long'), short: list('short')

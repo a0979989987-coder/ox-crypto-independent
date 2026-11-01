@@ -30,7 +30,7 @@ try{
     await page.goto(testBase,{waitUntil:'domcontentloaded'});
     await page.waitForFunction(()=>OXFeatures.ready&&globalThis.OXToolModules);
     // The dock: 首頁／行情／畫板／型態／資訊. 畫板 is the pattern board alone.
-    assert.deepEqual(await page.locator('.app-dock .dock-btn').evaluateAll(list=>list.map(b=>b.textContent.trim())),['首頁','行情','畫板','型態','資訊']);
+    assert.deepEqual(await page.locator('.app-dock > .dock-btn').evaluateAll(list=>list.map(b=>b.textContent.trim())),['首頁','行情','畫板','型態','資訊']);
     assert.equal(await page.evaluate(()=>document.getElementById('view-radar').dataset.radarMode),'board');
     await page.locator('#ox-radar-board .px-board').waitFor({timeout:15000});
     // 行情 opens on 圖表: the original radar page (the chart, the T1/T2/T3 list on its right, coin
@@ -105,13 +105,21 @@ try{
     assert.equal(await page.locator('dialog.ox-pd').count(),0);
     await page.waitForFunction(()=>document.body.dataset.view==='stock'&&document.getElementById('view-radar').dataset.radarMode==='chart'&&state.symbol==='SOLUSDT'&&state.period==='4H');
     assert.equal(await page.locator('#chart-timeframe-strip .btn-tf.active').getAttribute('data-tf'),'4H');
-    // 首頁: BTC with 畫型態, 市場寬度 and 主流, 今日突破 from the same record, both radar lists, 此刻發生.
+    // 首頁: BTC (level first) with 畫型態, the colour tiles, 今日突破 from the same record, both radar lists, 此刻發生.
     await page.evaluate(()=>{setChartPeriod('1D',{load:false});switchSymbol('BTCUSDT');switchAppView('home');});
     await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"]').waitFor({timeout:15000});
     assert.match(await page.locator('#home-btc-price').innerText(),/^[\d,.]+$/);
     assert.match(await page.locator('#home-btc-change').innerText(),/^[+-]?[\d,.]+（[+-]\d+\.\d\d%）$/);
-    assert.match(await page.locator('#home-breadth-up').innerText(),/^\d+$/);
-    assert.match(await page.locator('#home-eth-change').innerText(),/^[+-]\d+\.\d\d%$/);
+    // 首頁色塊: ETH from the tickers, 上漲家數 from every coin; ✎ 編輯 picks how many and which.
+    await page.waitForFunction(()=>/^[+-]\d+\.\d\d%$/.test(document.querySelector('#view-home [data-ht="c:ETHUSDT"] b')?.textContent||''),null,{timeout:15000});
+    assert.match(await page.locator('#view-home [data-ht="m:breadth"] b').innerText(),/^\d+%$/);
+    assert.equal(await page.locator('#view-home .ht-t[data-ht]').count(),8);
+    await page.locator('#view-home [data-ht-edit]').click();
+    await page.locator('.oc-sheet[data-ht-sheet] [data-hs-size="12"]').click();
+    assert.equal(await page.locator('#view-home .ht-t[data-ht]').count(),12);
+    await page.locator('.oc-sheet[data-ht-sheet] [data-hs-reset]').click();
+    await page.locator('.oc-sheet[data-ht-sheet] [data-x]').click();
+    assert.equal(await page.locator('#view-home .ht-t[data-ht]').count(),8);
     assert.match(await page.locator('#view-home [data-home-breaks-time]').innerText(),/^\d+\/\d+ \d\d:00 突破・1 個$/);
     assert.match(await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"]').innerText(),/SOL[\s\S]*T1[\s\S]*W 底・雙底[\s\S]*突破後/);
     await page.locator('#view-home .oxh-break[data-home-break="SOLUSDT"] .oxh-mini svg').waitFor();
@@ -166,7 +174,13 @@ try{
     await page.evaluate(()=>switchAppView('home'));
     await page.locator('[data-oc="drawer"]').filter({visible:true}).first().click();
     await page.locator('.oc-drawer [data-dr="settings"]').waitFor({state:'visible'});
-    assert.match(await page.locator('.oc-drawer').innerText(),/我的自選[\s\S]*通知[\s\S]*意見回饋[\s\S]*使用說明[\s\S]*加入 LINE 社群[\s\S]*OX Journal[\s\S]*最近使用[\s\S]*設定[\s\S]*取得幫助/);
+    assert.match(await page.locator('.oc-drawer').innerText(),/我的自選[\s\S]*通知[\s\S]*意見回饋[\s\S]*使用說明[\s\S]*加入 LINE 社群[\s\S]*OX Journal[\s\S]*遊戲[\s\S]*交易教學[\s\S]*最近使用[\s\S]*設定[\s\S]*取得幫助/);
+    assert.equal(await page.locator('.oc-drawer a[data-dr="game"]').getAttribute('href'),'https://merge-market.btcfly.chatgpt.site/');
+    await page.locator('.oc-drawer [data-dr="learn"]').click();
+    await page.locator('.oc-sheet[data-learn] [data-lr="funding"]').click();
+    assert.match(await page.locator('.oc-sheet[data-learn] h2').innerText(),/資金費率與持倉/);
+    await page.locator('.oc-sheet[data-learn] [data-x]').click();await page.locator('.oc-sheet[data-learn] [data-x]').click();
+    await page.locator('.oc-drawer [data-dr="settings"]').waitFor({state:'visible'});
     // One login system: the Google member card sits in 設定's account slot; the old OX ACCOUNT entry stays hidden.
     await page.locator('.oc-drawer [data-dr="settings"]').click();await page.locator('#view-settings.active #ox-settings-account #ox-member-account').waitFor({state:'visible'});
     assert.equal(await page.locator('#view-settings .oc-subhead h1').innerText(),'設定');

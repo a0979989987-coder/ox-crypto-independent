@@ -83,3 +83,9 @@
 .oxb-period input:focus{outline:none;border-color:#ffffff9c}
 .oxb-period+.oxb-direction{margin-left:0}
 @media(max-width:380px){.oxb-period button{padding:0 6px}.oxb-period input{width:34px}}
+/* The coin list under the bubbles: each coin's logo before its name (src/app/coin-logo.js). */
+.oxb-asset-grid .oxb-name{display:flex;align-items:center;gap:5px;min-width:0;font-style:normal}
+.oxb-asset-grid .oxb-name>span:last-child{min-width:0}
+.oxb-logo{position:relative;display:inline-grid;place-items:center;flex:none;width:15px;height:15px;border-radius:50%;overflow:hidden;background:#363a42;color:#f0f1f4;font:700 6.5px/1 system-ui,sans-serif}
+.oxb-logo img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
+.oxb-logo.has-img{color:transparent;background:transparent}

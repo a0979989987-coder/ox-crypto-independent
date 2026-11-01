@@ -29,7 +29,7 @@ test('此刻發生 picks three current crypto headlines, the same story once (th
   assert.deepEqual(pickNews(null, { now }), []);
 });
 
-test('首頁 numbers: 市場寬度 counts every coin, the median 24H change, and BTC change as amount（%）', async () => {
+test('首頁 numbers: 上漲／下跌 counts every coin, the median 24H change, and BTC change as amount（%） in the price\'s own decimals', async () => {
   const source = await read('src/app/view-home-theme.js');
   const fns = source.slice(source.indexOf('function homeBreadth('), source.indexOf('function renderHomeQuotes('));
   const fmtPrice = v => new Intl.NumberFormat('en-US', { maximumFractionDigits: v >= 1000 ? 2 : 4 }).format(v);
@@ -38,20 +38,22 @@ test('首頁 numbers: 市場寬度 counts every coin, the median 24H change, and
   const tickers = ['0.05', '-0.02', '0', '0.01', '-0.1', 'x'].map((change24h, i) => ({ symbol: `C${i}USDT`, change24h }));
   assert.deepEqual({ ...homeBreadth(tickers) }, { up: 2, down: 2, total: 5, median: 0 });
   assert.equal(homeBreadth([]).median, null);
-  assert.equal(homeChangeText({ lastPr: '76825.4', change24h: '-0.03442' }), '-2,738.59（-3.44%）');
+  assert.equal(homeChangeText({ lastPr: '76825.4', change24h: '-0.03442' }), '-2,738.6（-3.44%）');
+  assert.equal(homeChangeText({ lastPr: '78032', change24h: '0.0067' }), '+519（+0.67%）');
   assert.equal(homeChangeText({ lastPr: '2.5', change24h: '0.25' }), '+0.5（+25.00%）');
   assert.equal(homeChangeText(null), '—');
 });
 
-test('首頁 markup: BTC with 畫型態 and the picture button, tiles, 今日突破, both radar lists, 此刻發生', async () => {
+test('首頁 markup: BTC level first with 畫型態 and the picture button, colour tiles, 今日突破, both radar lists, 此刻發生', async () => {
   const html = await read('index.html');
   const home = html.slice(html.indexOf('id="view-home"'), html.indexOf('id="view-radar"'));
-  for (const part of ['BTC 永續・即時', 'id="home-btc-price"', 'id="home-btc-change"', 'data-home-go="board"', 'ox-home-share', '市場寬度', 'id="home-breadth-up"',
-    'id="home-eth-price"', 'id="home-sol-price"', 'data-home-breaks', '今日突破', 'data-home-go="compare"', 'oxh-radar-head', 'data-radar-freshness',
+  for (const part of ['BTC 永續・即時', 'class="oxh-big"><strong id="home-btc-price"', 'id="home-btc-change"', 'data-home-go="board"', 'ox-home-share', 'data-home-tiles', 'data-ht-edit',
+    'data-home-breaks', '今日突破', 'data-home-go="compare"', 'oxh-radar-head', 'data-radar-freshness',
     'id="home-t1-long-list"', 'id="home-t1-short-list"', '此刻發生', 'data-home-go="news"', 'crypto-home.css?v='])
     assert.ok(home.includes(part), part);
   // The gauges and the BTC chart are gone; 市場強度 lives on the 市場指標 page.
-  for (const gone of ['home-btc-strength', 'home-alt-strength', 'home-market-score', 'home-btc-mini-chart', 'data-home-mini-tf'])
+  // The fixed 市場寬度 and 主流 cards gave way to the tiles the reader picks (home-tiles.js).
+  for (const gone of ['home-btc-strength', 'home-alt-strength', 'home-market-score', 'home-btc-mini-chart', 'data-home-mini-tf', 'id="home-breadth-up"', 'id="home-eth-price"', 'oxh-two'])
     assert.ok(!home.includes(gone), gone);
   // The hourly snapshot's 「收盤・更新中」 label and the scan's progress find the new lists.
   assert.match(await read('src/markets/crypto/radar-snapshot.js'), /#view-home \.oxh-radar-head/);
