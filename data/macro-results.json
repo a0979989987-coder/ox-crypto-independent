@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-10-31T08:13:15.713Z",
+  "generatedAt": "2026-11-06T19:12:21.768Z",
   "sources": [
     {
       "metric": "nonfarm-payrolls",
       "endpoint": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
-      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
+      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
+      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
       "message": null
     },
     {
       "metric": "cpi-mom",
       "endpoint": "https://www.bls.gov/news.release/cpi.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
-      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
+      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
+      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
       "message": null
     },
     {
       "metric": "fed-rate",
       "endpoint": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-10-31T08:13:15.713Z",
-      "lastSuccessAt": "2026-10-31T08:13:15.713Z",
+      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
+      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
       "message": null
     }
   ],
@@ -105,7 +105,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-01-28T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-31T08:13:16.230Z",
+      "updatedAt": "2026-11-06T19:12:22.496Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -139,7 +139,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-03-18T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-31T08:13:16.230Z",
+      "updatedAt": "2026-11-06T19:12:22.496Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -173,7 +173,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-04-29T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-31T08:13:16.230Z",
+      "updatedAt": "2026-11-06T19:12:22.496Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -277,7 +277,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-09-16T18:00:00.000Z",
       "releasedAt": "2026-09-16T18:00:00.000Z",
-      "updatedAt": "2026-10-31T08:13:15.713Z",
+      "updatedAt": "2026-11-06T19:12:21.768Z",
       "status": "confirmed",
       "previous": 3.75,
       "consensus": null,
@@ -313,7 +313,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-10-28T18:00:00.000Z",
       "releasedAt": "2026-10-28T18:00:00.000Z",
-      "updatedAt": "2026-10-31T08:13:15.713Z",
+      "updatedAt": "2026-11-06T19:12:21.768Z",
       "status": "confirmed",
       "previous": 4,
       "consensus": null,
@@ -349,7 +349,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-12-09T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-10-31T08:13:16.230Z",
+      "updatedAt": "2026-11-06T19:12:22.496Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -382,7 +382,7 @@
       "metric": "cpi-mom",
       "occursAt": "2026-10-14T12:30:00.000Z",
       "releasedAt": "2026-10-14T12:30:00.000Z",
-      "updatedAt": "2026-10-31T08:13:15.713Z",
+      "updatedAt": "2026-11-06T19:12:21.768Z",
       "status": "confirmed",
       "previous": 0.4,
       "consensus": null,
@@ -396,6 +396,37 @@
       },
       "matchTitle": "Consumer Price Index for ",
       "unit": "%"
+    },
+    {
+      "id": "macro:nonfarm-payrolls:2026-11-06",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "bls-calendar",
+      "source": "U.S. BLS",
+      "markets": [
+        "crypto"
+      ],
+      "title": "美國非農就業人口",
+      "titleZh": "美國非農就業人口",
+      "metric": "nonfarm-payrolls",
+      "occursAt": "2026-11-06T13:30:00.000Z",
+      "releasedAt": "2026-11-06T13:30:00.000Z",
+      "updatedAt": "2026-11-06T19:12:21.768Z",
+      "status": "confirmed",
+      "previous": 60000,
+      "consensus": null,
+      "actual": 165000,
+      "sourceUrl": "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.bls.gov/news.release/archives/empsit_11062026.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "matchTitle": "Employment Situation for ",
+      "previousOriginal": 29000,
+      "unit": "人"
     }
   ]
 }
