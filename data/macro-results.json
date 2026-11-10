@@ -1,29 +1,29 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-06T19:12:21.768Z",
+  "generatedAt": "2026-11-10T19:34:13.196Z",
   "sources": [
     {
       "metric": "nonfarm-payrolls",
       "endpoint": "https://www.bls.gov/news.release/empsit.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
-      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
+      "lastAttemptAt": "2026-11-10T19:34:13.196Z",
+      "lastSuccessAt": "2026-11-10T19:34:13.196Z",
       "message": null
     },
     {
       "metric": "cpi-mom",
       "endpoint": "https://www.bls.gov/news.release/cpi.nr0.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
-      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
+      "lastAttemptAt": "2026-11-10T19:34:13.196Z",
+      "lastSuccessAt": "2026-11-10T19:34:13.196Z",
       "message": null
     },
     {
       "metric": "fed-rate",
       "endpoint": "https://www.federalreserve.gov/monetarypolicy/fomccalendars.htm",
       "status": "ready",
-      "lastAttemptAt": "2026-11-06T19:12:21.768Z",
-      "lastSuccessAt": "2026-11-06T19:12:21.768Z",
+      "lastAttemptAt": "2026-11-10T19:34:13.196Z",
+      "lastSuccessAt": "2026-11-10T19:34:13.196Z",
       "message": null
     }
   ],
@@ -105,7 +105,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-01-28T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-11-06T19:12:22.496Z",
+      "updatedAt": "2026-11-10T19:34:13.463Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -139,7 +139,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-03-18T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-11-06T19:12:22.496Z",
+      "updatedAt": "2026-11-10T19:34:13.463Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -173,7 +173,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-04-29T18:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-11-06T19:12:22.496Z",
+      "updatedAt": "2026-11-10T19:34:13.463Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -277,7 +277,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-09-16T18:00:00.000Z",
       "releasedAt": "2026-09-16T18:00:00.000Z",
-      "updatedAt": "2026-11-06T19:12:21.768Z",
+      "updatedAt": "2026-11-10T19:34:13.196Z",
       "status": "confirmed",
       "previous": 3.75,
       "consensus": null,
@@ -313,7 +313,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-10-28T18:00:00.000Z",
       "releasedAt": "2026-10-28T18:00:00.000Z",
-      "updatedAt": "2026-11-06T19:12:21.768Z",
+      "updatedAt": "2026-11-10T19:34:13.196Z",
       "status": "confirmed",
       "previous": 4,
       "consensus": null,
@@ -349,7 +349,7 @@
       "metric": "fed-rate",
       "occursAt": "2026-12-09T19:00:00.000Z",
       "releasedAt": null,
-      "updatedAt": "2026-11-06T19:12:22.496Z",
+      "updatedAt": "2026-11-10T19:34:13.463Z",
       "status": "confirmed",
       "previous": null,
       "consensus": null,
@@ -412,7 +412,7 @@
       "metric": "nonfarm-payrolls",
       "occursAt": "2026-11-06T13:30:00.000Z",
       "releasedAt": "2026-11-06T13:30:00.000Z",
-      "updatedAt": "2026-11-06T19:12:21.768Z",
+      "updatedAt": "2026-11-10T19:34:13.196Z",
       "status": "confirmed",
       "previous": 60000,
       "consensus": null,
@@ -427,6 +427,36 @@
       "matchTitle": "Employment Situation for ",
       "previousOriginal": 29000,
       "unit": "人"
+    },
+    {
+      "id": "macro:cpi-mom:2026-11-10",
+      "category": "macro",
+      "kind": "event",
+      "country": "美國",
+      "sourceId": "bls-calendar",
+      "source": "U.S. BLS",
+      "markets": [
+        "crypto"
+      ],
+      "title": "美國 CPI 月增率",
+      "titleZh": "美國 CPI 月增率",
+      "metric": "cpi-mom",
+      "occursAt": "2026-11-10T13:30:00.000Z",
+      "releasedAt": "2026-11-10T13:30:00.000Z",
+      "updatedAt": "2026-11-10T19:34:13.196Z",
+      "status": "confirmed",
+      "previous": 0.6,
+      "consensus": null,
+      "actual": 0.4,
+      "sourceUrl": "https://www.bls.gov/news.release/archives/cpi_11102026.htm",
+      "impact": {
+        "stars": 5,
+        "ruleVersion": "official-major-macro-v1",
+        "evidence": "https://www.bls.gov/news.release/archives/cpi_11102026.htm",
+        "reason": "官方重大經濟數據／貨幣政策決策，重要性 5 星。"
+      },
+      "matchTitle": "Consumer Price Index for ",
+      "unit": "%"
     }
   ]
 }
